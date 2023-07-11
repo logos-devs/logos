@@ -1,0 +1,12 @@
+%syntax-version=1.0.0
+%project=logos
+%uri=logos.dev/storage/pg
+
+uuid_extension 2020-12-05T03:31:46Z Michael Trinque <trinque@logos.dev> # Add uuid-ossp extension.
+review_schema 2020-12-05T03:01:19Z Michael Trinque <trinque@logos.dev> # Add review schema.
+review_project_table [review_schema] 2020-12-05T03:20:49Z Michael Trinque <trinque@logos.dev> # Add review.project table
+schema_digits 2022-09-21T00:16:23Z trinque <trinque@logos.dev> # add digits schema
+table_digits_phone_number 2022-09-21T00:33:53Z trinque <trinque@logos.dev> # add table digits.phone_number
+schema_auth 2022-12-06T17:11:50Z trinque <trinque@logos.dev> # add schema_auth
+table_auth_credential [schema_auth uuid_extension] 2022-12-06T17:17:02Z trinque <trinque@trinquepad> # add table auth.credential
+table_auth_user [table_auth_credential] 2023-01-18T01:42:42Z trinque <trinque@trinquepad> # add table auth.user and foreign key to auth.credential

@@ -1,0 +1,61 @@
+{
+  "compilerOptions": {
+    "allowJs": false,
+    "baseUrl": ".",
+    "composite": true,
+    "emitDecoratorMetadata": true,
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "lib": [
+      "es6",
+      "dom"
+    ],
+    "module": "ES2022",
+    "moduleResolution": "Node",
+    "resolveJsonModule": true,
+    "paths": {
+      "@app/*": [
+        "./app/*",
+        "./bazel-out/k8-fastbuild/bin/app/*",
+        "./bazel-out/k8-dbg/bin/app/*"
+      ],
+      "@logos/*": [
+        "./dev/logos/stack/service/client/web/*",
+        "./bazel-out/k8-fastbuild/bin/dev/logos/stack/service/client/web/*",
+        "./bazel-out/k8-dbg/bin/dev/logos/stack/service/client/web/*"
+      ]
+    },
+    // FIXME remove when mwc-drawer works without throwing TS2430
+    "skipLibCheck": true,
+    "sourceMap": true,
+    // TODO : Re-enable strict after fixing d.ts generation for grpc-web clients
+    "strict": false,
+    "target": "ES2022",
+    "types": [
+      "node",
+      "reflect-metadata"
+    ],
+    "rootDir": ".",
+    "rootDirs": [
+      ".",
+      "./bazel-out/k8-fastbuild/bin/",
+      "./bazel-out/k8-dbg/bin/"
+    ],
+    // Enabling this flag breaks decorators as used for dependency injection,
+    // and is otherwise automatically enabled by targeting ES2022. Check that
+    // decorators still work before removing or setting to true.
+    // https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-7.html#the-usedefineforclassfields-flag-and-the-declare-property-modifier
+    "useDefineForClassFields": false
+  },
+  "include": [
+    "./app/**/*.js",
+    "./app/**/*.json",
+    "./app/**/*.ts",
+    "./dev/logos/stack/service/client/web/**/*.js",
+    "./dev/logos/stack/service/client/web/**/*.json",
+    "./dev/logos/stack/service/client/web/**/*.ts",
+    "./dev/logos/stack/service/storage/**/*.js",
+    "./dev/logos/stack/service/storage/**/*.json",
+    "./dev/logos/stack/service/storage/**/*.ts"
+  ]
+}

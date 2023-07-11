@@ -1,0 +1,41 @@
+syntax = 'proto3';
+
+option java_package = "app.review.proto.annotation";
+option java_multiple_files = true;
+
+message Comment {
+  string name = 1;
+  string author = 2;
+  string body = 3;
+}
+
+message Substring {
+  int32 start = 1;
+  int32 end = 2;
+}
+
+message Annotation {
+  string parent = 1;
+
+  oneof position {
+    Substring substring = 2;
+  }
+
+  oneof payload {
+    Comment comment = 3;
+  }
+}
+
+message ListAnnotationsRequest {
+  string parent = 1;
+  int32 page_size = 2;
+  string page_token = 3;
+}
+
+message ListAnnotationsResponse {
+  repeated Annotation annotations = 1;
+}
+
+service AnnotationService {
+  rpc ListAnnotations(ListAnnotationsRequest) returns (ListAnnotationsResponse) {}
+}

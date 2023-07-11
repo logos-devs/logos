@@ -1,0 +1,38 @@
+syntax = 'proto3';
+
+option java_package = "app.review.proto.file";
+option java_multiple_files = true;
+
+enum FileType {
+  FILE_TYPE_UNSPECIFIED = 0;
+  REGULAR_FILE = 1;
+  DIRECTORY = 2;
+}
+
+message File {
+  string parent = 1;
+  string name = 2;
+  FileType type = 3;
+  string display_name = 4;
+  /** Omitted on list requests */
+  string contents = 5;
+}
+
+message GetFileRequest {
+  string name = 1;
+}
+
+message ListFilesRequest {
+  string parent = 1;
+  int32 page_size = 2;
+  string page_token = 3;
+}
+
+message ListFilesResponse {
+  repeated File files = 1;
+}
+
+service FileService {
+  rpc ListFiles(ListFilesRequest) returns (ListFilesResponse) {}
+  rpc GetFile(GetFileRequest) returns (File) {}
+}

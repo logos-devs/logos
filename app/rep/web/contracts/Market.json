@@ -1,0 +1,196 @@
+{
+  "contractName": "Market",
+  "abi": [],
+  "metadata": "{\"compiler\":{\"version\":\"0.8.13+commit.abaa5c0e\"},\"language\":\"Solidity\",\"output\":{\"abi\":[],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/storage/eth/contracts/Market.sol\":\"Market\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"project:/storage/eth/contracts/Market.sol\":{\"keccak256\":\"0xa3073b3b2678cab42d2924ba14e80595958e2d9a517691f3099a8f55d47dc084\",\"license\":\"0BSD\",\"urls\":[\"bzz-raw://a551f093c65b11c14784681281b8b7f54bcd5cecc43dc998ed880139768b72b5\",\"dweb:/ipfs/QmbYsKTPduJccF3Rz33dYa9L72PcJSYayYKkBuLHMo59Pi\"]}},\"version\":1}",
+  "bytecode": "0x6080604052348015600f57600080fd5b50603f80601d6000396000f3fe6080604052600080fdfea264697066735822122041c3addf8fab8c55a2144d134d6efa892e26de16684b2d4884f6d1fd3926145264736f6c634300080d0033",
+  "deployedBytecode": "0x6080604052600080fdfea264697066735822122041c3addf8fab8c55a2144d134d6efa892e26de16684b2d4884f6d1fd3926145264736f6c634300080d0033",
+  "immutableReferences": {},
+  "generatedSources": [],
+  "deployedGeneratedSources": [],
+  "sourceMap": "120:33:0:-:0;;;;;;;;;;;;;;;;;;;",
+  "deployedSourceMap": "120:33:0:-:0;;;;;",
+  "source": "// SPDX-License-Identifier: 0BSD\npragma solidity 0.8.13;\n\ncontract Ad {\n    address author;\n    uint256 conversions;\n}\n\ncontract Market {\n    Ad[] ads;\n}\n",
+  "sourcePath": "/home/trinque/src/logos/storage/eth/contracts/Market.sol",
+  "ast": {
+    "absolutePath": "project:/storage/eth/contracts/Market.sol",
+    "exportedSymbols": {
+      "Ad": [
+        6
+      ],
+      "Market": [
+        11
+      ]
+    },
+    "id": 12,
+    "license": "0BSD",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 1,
+        "literals": [
+          "solidity",
+          "0.8",
+          ".13"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "33:23:0"
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "Ad",
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "fullyImplemented": true,
+        "id": 6,
+        "linearizedBaseContracts": [
+          6
+        ],
+        "name": "Ad",
+        "nameLocation": "67:2:0",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "constant": false,
+            "id": 3,
+            "mutability": "mutable",
+            "name": "author",
+            "nameLocation": "84:6:0",
+            "nodeType": "VariableDeclaration",
+            "scope": 6,
+            "src": "76:14:0",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_address",
+              "typeString": "address"
+            },
+            "typeName": {
+              "id": 2,
+              "name": "address",
+              "nodeType": "ElementaryTypeName",
+              "src": "76:7:0",
+              "stateMutability": "nonpayable",
+              "typeDescriptions": {
+                "typeIdentifier": "t_address",
+                "typeString": "address"
+              }
+            },
+            "visibility": "internal"
+          },
+          {
+            "constant": false,
+            "id": 5,
+            "mutability": "mutable",
+            "name": "conversions",
+            "nameLocation": "104:11:0",
+            "nodeType": "VariableDeclaration",
+            "scope": 6,
+            "src": "96:19:0",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 4,
+              "name": "uint256",
+              "nodeType": "ElementaryTypeName",
+              "src": "96:7:0",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "visibility": "internal"
+          }
+        ],
+        "scope": 12,
+        "src": "58:60:0",
+        "usedErrors": []
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "Market",
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "fullyImplemented": true,
+        "id": 11,
+        "linearizedBaseContracts": [
+          11
+        ],
+        "name": "Market",
+        "nameLocation": "129:6:0",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "constant": false,
+            "id": 10,
+            "mutability": "mutable",
+            "name": "ads",
+            "nameLocation": "147:3:0",
+            "nodeType": "VariableDeclaration",
+            "scope": 11,
+            "src": "142:8:0",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_array$_t_contract$_Ad_$6_$dyn_storage",
+              "typeString": "contract Ad[]"
+            },
+            "typeName": {
+              "baseType": {
+                "id": 8,
+                "nodeType": "UserDefinedTypeName",
+                "pathNode": {
+                  "id": 7,
+                  "name": "Ad",
+                  "nodeType": "IdentifierPath",
+                  "referencedDeclaration": 6,
+                  "src": "142:2:0"
+                },
+                "referencedDeclaration": 6,
+                "src": "142:2:0",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_contract$_Ad_$6",
+                  "typeString": "contract Ad"
+                }
+              },
+              "id": 9,
+              "nodeType": "ArrayTypeName",
+              "src": "142:4:0",
+              "typeDescriptions": {
+                "typeIdentifier": "t_array$_t_contract$_Ad_$6_$dyn_storage_ptr",
+                "typeString": "contract Ad[]"
+              }
+            },
+            "visibility": "internal"
+          }
+        ],
+        "scope": 12,
+        "src": "120:33:0",
+        "usedErrors": []
+      }
+    ],
+    "src": "33:121:0"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.8.13+commit.abaa5c0e.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.4.10",
+  "updatedAt": "2022-09-16T21:52:09.282Z",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {},
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {},
+    "version": 1
+  }
+}

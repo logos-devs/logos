@@ -1,0 +1,7 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Browser Debug" type="JavascriptDebugType" uri="https://dev.digits.rip/">
+    <mapping url="webpack:///." local-file="$PROJECT_DIR$/../stack/web" />
+    <mapping url="webpack:///../.." local-file="$PROJECT_DIR$/.." />
+    <method v="2" />
+  </configuration>
+</component>

@@ -1,0 +1,74 @@
+syntax = 'proto3';
+
+option java_package = "app.auth.proto.auth";
+option java_multiple_files = true;
+
+enum Transport {
+  TRANSPORT_UNSPECIFIED = 0;
+  USB = 1;
+  NFC = 2;
+  BLE = 3;
+  INTERNAL = 4;
+}
+
+message Credential {
+  bytes id = 1;
+  string username = 2;
+  bytes user_handle = 3;
+  string display_name = 4;
+  bytes key_id = 5;
+  bytes public_key_cose = 6;
+  bool discoverable = 7;
+  int32 signature_count = 8;
+  bytes attestation_object = 9;
+  string client_data_json = 10;
+}
+
+message StartRegistrationRequest {
+  Credential desired_credential = 1;
+}
+
+message CredentialsCreateOptions {
+  string payload = 1;
+  string signature = 2;
+}
+
+message StartRegistrationResponse {
+  CredentialsCreateOptions credentials_create_options = 1;
+}
+
+message ValidatePublicKeyCredentialRequest {
+  CredentialsCreateOptions credentials_create_options = 1;
+  string public_key_credential = 2;
+}
+message ValidatePublicKeyCredentialResponse {
+  string token = 1;
+}
+
+message CredentialsGetOptions {
+  string payload = 1;
+  string signature = 2;
+}
+
+message StartAssertionRequest {
+}
+
+message StartAssertionResponse {
+  CredentialsGetOptions credentials_get_options = 1;
+}
+
+message FinishAssertionRequest {
+  CredentialsGetOptions credentials_get_options = 1;
+  string public_key_credential = 2;
+}
+
+message FinishAssertionResponse {
+  string token = 1;
+}
+
+service AuthService {
+  rpc StartRegistration(StartRegistrationRequest) returns (StartRegistrationResponse) {}
+  rpc ValidatePublicKeyCredential(ValidatePublicKeyCredentialRequest) returns (ValidatePublicKeyCredentialResponse) {}
+  rpc StartAssertion(StartAssertionRequest) returns (StartAssertionResponse) {}
+  rpc FinishAssertion(FinishAssertionRequest) returns (FinishAssertionResponse) {}
+}

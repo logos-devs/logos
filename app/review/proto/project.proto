@@ -1,0 +1,24 @@
+syntax = 'proto3';
+
+option java_package = "app.review.proto.project";
+option java_multiple_files = true;
+
+message Project {
+  string name = 1;
+  string display_name = 2;
+  string fetch_url = 3;
+}
+
+message ListProjectsRequest {
+  string parent = 1;
+  int32 page_size = 2;
+  string page_token = 3;
+}
+
+message ListProjectsResponse {
+  repeated Project projects = 1;
+}
+
+service ProjectService {
+  rpc ListProjects(ListProjectsRequest) returns (ListProjectsResponse) {}
+}

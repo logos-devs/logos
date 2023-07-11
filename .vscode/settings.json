@@ -1,0 +1,9 @@
+{
+    "workbench.iconTheme": "vs-minimal",
+    "typescript.inlayHints.enumMemberValues.enabled": false,
+    "java.compile.nullAnalysis.mode": "automatic",
+    "java.project.referencedLibraries": [
+        "bazel-genfiles/**/*.jar",
+        "bazel-bin/**/*.jar"
+    ],
+}

@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: stolon-proxy-service
+spec:
+  ports:
+    - port: 5432
+      protocol: TCP
+      nodePort: 30002
+  selector:
+    component: stolon-proxy
+    stolon-cluster: kube-stolon
+  type: NodePort

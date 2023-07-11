@@ -1,0 +1,11 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: logos-eks-1-production
+  region: us-east-2
+
+nodeGroups:
+  - name: logos-nodegroup-1-production
+    instanceType: t3a.small
+    desiredCapacity: 2

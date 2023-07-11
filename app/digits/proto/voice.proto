@@ -1,0 +1,31 @@
+syntax = 'proto3';
+
+option java_package = "app.digits.proto.voice";
+option java_multiple_files = true;
+
+message PhoneNumber {
+  bytes id = 1;
+  string phone_number = 2;
+}
+
+message ListPhoneNumbersRequest {
+  string parent = 1;
+}
+
+message ListPhoneNumbersResponse {
+  repeated PhoneNumber phone_number = 1;
+}
+
+message CallRequest {
+  string from_phone_number = 1;
+  string to_phone_number = 2;
+}
+
+message CallResponse {
+  string sid = 1;
+}
+
+service VoiceService {
+  rpc ListPhoneNumbers(ListPhoneNumbersRequest) returns (ListPhoneNumbersResponse) {}
+  rpc Call(CallRequest) returns (CallResponse) {}
+}

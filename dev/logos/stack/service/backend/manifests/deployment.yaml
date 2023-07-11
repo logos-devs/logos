@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-deployment
+  labels:
+    app: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+        - name: backend
+          image: backend-image:latest
+          imagePullPolicy: Always
+          env:
+            - name: SERVER_AUTH_PRIVATE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: server-auth-key
+                  key: private-key
+                  optional: false
+            - name: STORAGE_PG_BACKEND_JDBC_URL
+              value: jdbc:postgresql://stolon-proxy-service/logos
+            - name: STORAGE_PG_BACKEND_USER
+              valueFrom:
+                secretKeyRef:
+                  name: storage-pg-root-credentials
+                  key: user
+                  optional: false
+            - name: STORAGE_PG_BACKEND_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: storage-pg-root-credentials
+                  key: password
+                  optional: false
+          ports:
+            - containerPort: 8081

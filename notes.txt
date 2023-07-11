@@ -1,0 +1,11 @@
+* feature flags
+* production-facing automation to validate whether functionality bounded by a flag is working properly
+  * validation failure should flip feature flags off
+
+* render query result as part of static media to precache redux state for
+  infrequently changing data. can display, then refresh, or start at end if
+  time-series data.
+marketing website blurbs:
+* Insert protos, get stack.
+* Insert money, get scale.
+* Insert code, get ...

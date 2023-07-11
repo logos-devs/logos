@@ -1,0 +1,25 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+    
+        {
+            "type": "java",
+            "name": "Java Debugger",
+            "request": "attach",
+            "hostName": "127.0.0.1",
+            "port": "5005"
+        },
+        {
+            "type": "chrome",
+            "request": "launch",
+            "name": "Chrome Debug (dev.digits.rip)",
+            "url": "https://dev.digits.rip",
+            "webRoot": "${workspaceFolder}",
+            "runtimeArgs": [
+                "--enable-features=WebUIDarkMode",
+                "--enable-features=UseOzonePlatform",
+                "--ozone-platform=wayland"
+            ]
+        }
+    ]
+}

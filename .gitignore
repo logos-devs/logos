@@ -1,0 +1,14 @@
+/.DS_Store
+/.bazelrc.local
+/.bazelrc.local
+/.fasl
+/.ijwb/.idea/libraries
+/bazel-bin
+/bazel-logos
+/bazel-out
+/bazel-testlogs
+/build/
+/env
+/gitops_local.bzl
+/node_modules/*
+/target
