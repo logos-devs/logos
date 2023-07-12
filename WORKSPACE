@@ -160,17 +160,17 @@ load("@rules_jvm_external//:defs.bzl", "maven_install")
 
 maven_install(
     artifacts = [
-        "com.auth0:java-jwt:4.2.2",
-        "com.fasterxml.jackson.dataformat:jackson-dataformat-cbor:2.13.4",
-        "com.google.inject:guice:5.1.0",
+        "com.auth0:java-jwt:4.4.0",
+        "com.fasterxml.jackson.dataformat:jackson-dataformat-cbor:2.15.2",
+        "com.google.inject:guice:7.0.0",
         "com.mysema.commons:mysema-commons-lang:0.2.4",
         "com.querydsl:codegen-utils:5.0.0",
         "com.querydsl:querydsl-codegen:5.0.0",
         "com.querydsl:querydsl-core:5.0.0",
         "com.querydsl:querydsl-sql-codegen:5.0.0",
         "com.querydsl:querydsl-sql:5.0.0",
-        "com.twilio.sdk:twilio:8.36.0",
-        "com.yubico:webauthn-server-core:2.2.0",
+        "com.twilio.sdk:twilio:9.8.0",
+        "com.yubico:webauthn-server-core:2.5.0",
         "com.zaxxer:HikariCP:5.0.1",
         "io.grpc:grpc-netty-shaded:1.56.1",
         "io.grpc:grpc-protobuf:1.56.1",
