@@ -16,6 +16,7 @@ import app.auth.storage.AuthCredentialStorage;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.google.inject.Inject;
 import com.google.protobuf.ByteString;
 import com.yubico.webauthn.AssertionRequest;
 import com.yubico.webauthn.AssertionResult;
@@ -61,7 +62,6 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Base64;
 import java.util.Random;
-import javax.inject.Inject;
 import javax.json.Json;
 import javax.json.JsonObject;
 

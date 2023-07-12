@@ -6,8 +6,8 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive", "http_file"
 http_file(
     name = "minikube_linux",
     executable = True,
-    sha256 = "aafb65cbee8e971ec00509fdb1817254b17d6bee4890b839c3b6e8f11e97413a",
-    url = "https://github.com/kubernetes/minikube/releases/download/v1.29.0/minikube-linux-amd64",
+    sha256 = "e53d9e8c31f4c5f683182f5323d3527aa0725f713945c6d081cf71aa548ab388",
+    url = "https://github.com/kubernetes/minikube/releases/download/v1.30.1/minikube-linux-amd64",
 )
 
 http_file(

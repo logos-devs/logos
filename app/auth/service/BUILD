@@ -20,6 +20,7 @@ java_library(
         "@maven//:com_auth0_java_jwt",
         "@maven//:com_fasterxml_jackson_core_jackson_annotations",
         "@maven//:com_fasterxml_jackson_core_jackson_core",
+        "@maven//:com_google_inject_guice",
         "@maven//:com_yubico_webauthn_server_core",
         "@maven//:javax_inject_javax_inject",
         "@maven//:javax_json_javax_json_api",
