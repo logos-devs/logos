@@ -1,4 +1,3 @@
-load("@aspect_rules_js//js:defs.bzl", "js_library")
 load("@aspect_rules_js//js/private:js_info.bzl", "js_info")
 
 def _schema_export_impl(ctx):

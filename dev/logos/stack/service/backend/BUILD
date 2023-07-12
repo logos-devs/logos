@@ -63,7 +63,6 @@ java_library(
         "@maven//:io_netty_netty_transport_classes_epoll",
         "@maven//:io_netty_netty_transport_native_unix_common",
         "@maven//:io_perfmark_perfmark_api",
-        "@maven//:io_r2dbc_r2dbc_spi",
         "@maven//:net_i2p_crypto_eddsa",
         "@maven//:org_antlr_antlr4_runtime",
         "@maven//:org_apache_httpcomponents_httpclient",
