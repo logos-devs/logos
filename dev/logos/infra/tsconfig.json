@@ -10,9 +10,8 @@
       "es6",
       "dom"
     ],
-    "module": "ES2022",
+    "module": "commonjs",
     "moduleResolution": "Node",
-    "resolveJsonModule": true,
     "paths": {
       "@app/*": [
         "./app/*",
@@ -27,7 +26,6 @@
     },
     // FIXME remove when mwc-drawer works without throwing TS2430
     "skipLibCheck": true,
-    "sourceMap": true,
     // TODO : Re-enable strict after fixing d.ts generation for grpc-web clients
     "strict": false,
     "target": "ES2022",
@@ -47,16 +45,16 @@
     // https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-7.html#the-usedefineforclassfields-flag-and-the-declare-property-modifier
     "useDefineForClassFields": false
   },
-  "include": [
-    "./app/**/*.js",
-    "./app/**/*.json",
-    "./app/**/*.ts",
-    "./dev/logos/infra/**/*.ts",
-    "./dev/logos/stack/service/client/web/**/*.js",
-    "./dev/logos/stack/service/client/web/**/*.json",
-    "./dev/logos/stack/service/client/web/**/*.ts",
-    "./dev/logos/stack/service/storage/**/*.js",
-    "./dev/logos/stack/service/storage/**/*.json",
-    "./dev/logos/stack/service/storage/**/*.ts",
-  ]
+//   "include": [
+//     "./app/**/*.js",
+//     "./app/**/*.json",
+//     "./app/**/*.ts",
+//     "./dev/logos/infra/**/*.ts",
+//     "./dev/logos/stack/service/client/web/**/*.js",
+//     "./dev/logos/stack/service/client/web/**/*.json",
+//     "./dev/logos/stack/service/client/web/**/*.ts",
+//     "./dev/logos/stack/service/storage/**/*.js",
+//     "./dev/logos/stack/service/storage/**/*.json",
+//     "./dev/logos/stack/service/storage/**/*.ts",
+//   ]
 }

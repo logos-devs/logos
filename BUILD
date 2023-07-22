@@ -11,7 +11,7 @@ exports_files(["env"])
 copy_to_bin(
     name = "tsconfig",
     srcs = ["tsconfig.json"],
-    visibility = ["//dev/logos/stack/service/client/web:__pkg__"],
+    visibility = ["//dev/logos:__subpackages__"],
 )
 
 sh_binary(

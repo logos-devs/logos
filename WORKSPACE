@@ -195,7 +195,7 @@ compat_repositories()
 
 grpc_java_repositories()
 
-# google_bazel_common
+# google_bazel_common (javadoc for server)
 http_archive(
     name = "google_bazel_common",
     sha256 = "bcb5de5a5b951434828ead94479d3e1ff6501c2c8fc490db6cf3fbf7c188684b",
@@ -222,9 +222,9 @@ rules_antlr_dependencies("4.8")
 # rules_js
 http_archive(
     name = "aspect_rules_js",
-    sha256 = "f58d7be1bb0e4b7edb7a0085f969900345f5914e4e647b4f0d2650d5252aa87d",
-    strip_prefix = "rules_js-1.8.0",
-    url = "https://github.com/aspect-build/rules_js/archive/refs/tags/v1.8.0.tar.gz",
+    sha256 = "e3e6c3d42491e2938f4239a3d04259a58adc83e21e352346ad4ef62f87e76125",
+    strip_prefix = "rules_js-1.30.0",
+    url = "https://github.com/aspect-build/rules_js/releases/download/v1.30.0/rules_js-v1.30.0.tar.gz",
 )
 
 load("@aspect_rules_js//js:repositories.bzl", "rules_js_dependencies")
@@ -238,7 +238,7 @@ nodejs_register_toolchains(
     node_version = DEFAULT_NODE_VERSION,
 )
 
-load("@aspect_rules_js//npm:npm_import.bzl", "npm_translate_lock")
+load("@aspect_rules_js//npm:repositories.bzl", "npm_translate_lock")
 
 npm_translate_lock(
     name = "npm",
@@ -253,42 +253,18 @@ npm_repositories()
 # rules_ts
 http_archive(
     name = "aspect_rules_ts",
-    sha256 = "1ed2dc702b3d5fcf2b8e6ca4a5dae23fbc8e5570643d2a5cf8f5f09c7c44bc15",
-    strip_prefix = "rules_ts-1.0.0-rc6",
-    url = "https://github.com/aspect-build/rules_ts/archive/refs/tags/v1.0.0-rc6.tar.gz",
+    sha256 = "4c3f34fff9f96ffc9c26635d8235a32a23a6797324486c7d23c1dfa477e8b451",
+    strip_prefix = "rules_ts-1.4.5",
+    url = "https://github.com/aspect-build/rules_ts/releases/download/v1.4.5/rules_ts-v1.4.5.tar.gz",
 )
 
-load("@aspect_rules_ts//ts:repositories.bzl", "LATEST_VERSION", "rules_ts_dependencies")
+load("@aspect_rules_ts//ts:repositories.bzl", "rules_ts_dependencies")
 
-rules_ts_dependencies(ts_version = LATEST_VERSION)
-
-# grpc-web
-http_archive(
-    name = "protoc_linux",
-    build_file_content = """
-filegroup(
-    name = "protoc",
-    srcs = ["bin/protoc"],
-    visibility = ["//visibility:public"]
-)
-    """,
-    sha256 = "3cd951aff8ce713b94cde55e12378f505f2b89d47bf080508cf77e3934f680b6",
-    url = "https://github.com/protocolbuffers/protobuf/releases/download/v21.9/protoc-21.9-linux-x86_64.zip",
+rules_ts_dependencies(
+    ts_version_from = "//:package.json",
 )
 
-http_archive(
-    name = "protoc_osx",
-    build_file_content = """
-filegroup(
-    name = "protoc",
-    srcs = ["bin/protoc"],
-    visibility = ["//visibility:public"]
-)
-    """,
-    sha256 = "a6419520a063242b0dedd433cbfc617424da2e8357ef96bf694d6ba3bca51887",
-    url = "https://github.com/protocolbuffers/protobuf/releases/download/v21.9/protoc-21.9-osx-x86_64.zip",
-)
-
+# protobuf_javascript
 http_archive(
     name = "protobuf_javascript",
     sha256 = "35bca1729532b0a77280bf28ab5937438e3dcccd6b31a282d9ae84c896b6f6e3",

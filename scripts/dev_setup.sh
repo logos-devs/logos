@@ -59,6 +59,9 @@ update_pgpass() {
 
 PLATFORM="$(uname -s)"
 
+command -v bazelisk || die "Please install bazelisk."
+command -v mkcert || die "Please install mkcert."
+
 if [ "$PLATFORM" = "Darwin" ]
 then
     command -v brew || die "Please install homebrew. https://brew.sh/"
@@ -70,20 +73,18 @@ then
     DRIVER="hyperkit"
     SED="gsed"
     mk_subnet="${MK_SUBNET:-"192.168.64"}"
-else 
+else
     DRIVER="kvm2"
     SED="sed"
     mk_subnet="${MK_SUBNET:-"192.168.39"}"
     virt-host-validate
 fi
 
-
-command -v mkcert || die "Please install mkcert."
-
+bazel="bazelisk"
 
 # TODO set cluster properly
-minikube="bazel run //:minikube -- -p dev "
-kubectl="bazel run //:kubectl -- --context dev "
+minikube="$bazel run //:minikube -- -p dev "
+kubectl="$bazel run //:kubectl -- --context dev "
 
 $minikube delete
 $minikube start \
@@ -193,7 +194,7 @@ fi
 eval $($minikube docker-env)
 
 # build and deploy stolon first, since we'll need postgresql running to export schema
-bazel run //dev/logos/stack/service/storage:storage.apply
+$bazel run //dev/logos/stack/service/storage:storage.apply
 
 # stolon cluster
 $kubectl run -i -t stolonctl \
@@ -231,5 +232,5 @@ _psql -c "create database logos owner root encoding utf8"
  && sqitch deploy -t "db:pg://root@${minikube_ip}:30002/logos")
 
 # k8s objects
-bazel run //dev/logos/stack/service/client:client.apply
-bazel run //dev/logos/stack/service/debug:debug.apply
+$bazel run //dev/logos/stack/service/client:client.apply
+$bazel run //dev/logos/stack/service/debug:debug.apply
