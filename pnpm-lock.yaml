@@ -101,6 +101,9 @@ dependencies:
   bn.js:
     specifier: 5.2.1
     version: 5.2.1
+  constructs:
+    specifier: ^10.2.69
+    version: 10.2.69
   cytoscape:
     specifier: 3.23.0
     version: 3.23.0

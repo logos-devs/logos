@@ -3,7 +3,12 @@ load("@npm//:aws-cdk/package_json.bzl", cdk = "bin")
 
 ts_project(
     name = "app",
-    srcs = ["app.ts"],
+    srcs = glob([
+        "construct/*.ts",
+        "stack/*.ts",
+    ]) + [
+        "app.ts",
+    ],
     composite = True,
     tsconfig = "tsconfig.json",
     deps = [
@@ -15,8 +20,8 @@ cdk.cdk_binary(
     name = "cdk",
     chdir = package_name(),
     data = [
-        ":app",
         "cdk.json",
+        ":app",
         "//:node_modules",
     ],
     tags = ["no-sandbox"],

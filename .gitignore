@@ -10,5 +10,6 @@
 /build/
 /env
 /gitops_local.bzl
+/gitops_repositories.bzl
 /node_modules/*
 /target

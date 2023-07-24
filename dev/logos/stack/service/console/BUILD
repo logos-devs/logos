@@ -4,7 +4,7 @@ load("//:gitops.bzl", "k8s_deploy")
 
 container_image(
     name = "image_base",
-    base = "@debug_container//image",
+    base = "@console_container//image",
 )
 
 container_run_and_commit(
@@ -12,7 +12,7 @@ container_run_and_commit(
     commands = [
         "echo http://mirrors.gigenet.com/alpinelinux/v3.16/main > /etc/apk/repositories",
         "echo http://mirrors.gigenet.com/alpinelinux/v3.16/community >> /etc/apk/repositories",
-        "apk add bind-tools ca-certificates curl postgresql-client",
+        "apk add bind-tools ca-certificates curl postgresql-client socat",
     ],
     image = ":image_base.tar",
 )
@@ -28,10 +28,10 @@ container_image(
 )
 
 k8s_deploy(
-    name = "debug",
-    image_repository = "logos-rds-logosecr379dfd56-wn6j1edgx7lv",
+    name = "console",
+    image_repository = "logos-ecr-console",
     images = {
-        "debug-image:latest": ":image",
+        "console-image:latest": ":image",
     },
     manifests = ["manifests/deployment.yaml"],
 )

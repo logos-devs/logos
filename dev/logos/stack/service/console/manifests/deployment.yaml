@@ -1,17 +1,17 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: debug-deployment
+  name: console-deployment
 spec:
   selector:
     matchLabels:
-      app: debug
+      app: console
   template:
     metadata:
       labels:
-        app: debug
+        app: console
     spec:
       containers:
-        - name: debug
-          image: debug-image:latest
+        - name: console
+          image: console-image:latest
           imagePullPolicy: Always

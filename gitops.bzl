@@ -30,8 +30,8 @@ CLUSTER = "arn:aws:eks:{region}:{account}:cluster/{stack}".format(
 def k8s_deploy(*args, **kwargs):
     gitops_k8s_deploy(
         namespace = NAMESPACE,
-        image_registry = REGISTRY,
         cluster = CLUSTER,
+        image_registry = REGISTRY,
         user = USER,
         #gitops = False,  # TODO toggle based upon environment with select. this is only valid for local dev.
         *args,
