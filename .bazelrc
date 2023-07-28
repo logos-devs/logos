@@ -3,6 +3,7 @@ build --incompatible_strict_action_env
 build --shell_executable=/bin/bash
 
 build --action_env=STORAGE_PG_BACKEND_USER
+build --action_env=STORAGE_PG_BACKEND_HOST
 build --action_env=STORAGE_PG_BACKEND_PASSWORD
 build --action_env=STORAGE_PG_BACKEND_JDBC_URL
 

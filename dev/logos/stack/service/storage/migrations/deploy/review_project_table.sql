@@ -10,4 +10,6 @@ create table review.project
     fetch_url    varchar(255) not null
 );
 
+grant select, update, delete on review.project to storage;
+
 COMMIT;

@@ -19,25 +19,15 @@ spec:
           image: backend-image:latest
           imagePullPolicy: Always
           env:
-            - name: SERVER_AUTH_PRIVATE_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: server-auth-key
-                  key: private-key
-                  optional: false
             - name: STORAGE_PG_BACKEND_JDBC_URL
-              value: jdbc:postgresql://stolon-proxy-service/logos
+              value: jdbc:postgresql://db-rw.logos.dev/logos
             - name: STORAGE_PG_BACKEND_USER
-              valueFrom:
-                secretKeyRef:
-                  name: storage-pg-root-credentials
-                  key: user
-                  optional: false
-            - name: STORAGE_PG_BACKEND_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: storage-pg-root-credentials
-                  key: password
-                  optional: false
+              value: backend
+#            - name: SERVER_AUTH_PRIVATE_KEY
+#              valueFrom:
+#                secretKeyRef:
+#                  name: server-auth-key
+#                  key: private-key
+#                  optional: false
           ports:
             - containerPort: 8081

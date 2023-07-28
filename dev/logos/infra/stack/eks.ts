@@ -1,4 +1,4 @@
-import { App, Environment } from 'aws-cdk-lib';
+import {App, Environment} from 'aws-cdk-lib';
 import {
     AsgClusterProvider,
     AwsLoadBalancerControllerAddOn,
@@ -11,12 +11,13 @@ import {
     NginxAddOn,
     VpcCniAddOn
 } from "@aws-quickstart/eks-blueprints";
-import { InstanceType } from 'aws-cdk-lib/aws-ec2';
-import { KubernetesVersion, MachineImageType } from 'aws-cdk-lib/aws-eks';
-import { UpdatePolicy } from 'aws-cdk-lib/aws-autoscaling';
+import {InstanceType} from 'aws-cdk-lib/aws-ec2';
+import {UpdatePolicy} from 'aws-cdk-lib/aws-autoscaling';
+import {KubernetesVersion, MachineImageType} from 'aws-cdk-lib/aws-eks';
+import {FederatedPrincipal, Role} from "aws-cdk-lib/aws-iam";
 
 export function makeEksCluster(app: App, id: string, env: Environment): EksBlueprint {
-    return EksBlueprint.builder()
+    const stack = EksBlueprint.builder()
         .account(env.account)
         .region(env.region)
         .clusterProvider(
@@ -49,5 +50,27 @@ export function makeEksCluster(app: App, id: string, env: Environment): EksBluep
             }),
         )
         .useDefaultSecretEncryption(true)
-        .build(app, id)
+        .build(app, id),
+        clusterInfo = stack.getClusterInfo();
+
+    const serviceRole = new Role(stack, id + '-service-role', {
+        assumedBy: new FederatedPrincipal(
+            clusterInfo.cluster.openIdConnectProvider.openIdConnectProviderArn,
+            { StringEquals: { 'sts:aud': 'sts.amazonaws.com' } },
+            'sts:AssumeRoleWithWebIdentity'
+        )
+    });
+
+    // serviceRole.addToPolicy(new PolicyStatement({
+    //     // Define the policy here...
+    // }));
+
+    const serviceAccountName = id + '-service-account';
+    const sa = clusterInfo.cluster.addServiceAccount(serviceAccountName, {
+        name: serviceAccountName,
+        namespace: 'default'
+    });
+    sa.role.node.addDependency(serviceRole);
+
+    return stack;
 }

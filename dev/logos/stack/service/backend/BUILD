@@ -1,5 +1,4 @@
 load("@io_bazel_rules_docker//container:container.bzl", "container_image")
-load("@io_bazel_rules_docker//contrib:test.bzl", "container_test")
 load("@io_bazel_rules_docker//java:image.bzl", "java_image")
 load("@google_bazel_common//tools/javadoc:javadoc.bzl", "javadoc_library")
 load("//:gitops.bzl", "k8s_deploy")
@@ -138,6 +137,7 @@ container_image(
 
 k8s_deploy(
     name = "backend",
+    image_repository = "logos-ecr-backend",
     images = {
         "backend-image:latest": ":image",
     },

@@ -13,4 +13,6 @@ alter table auth.credential
     add column user_id uuid
         references auth.user (id);
 
+grant select, update, delete on auth.user to storage;
+
 commit;

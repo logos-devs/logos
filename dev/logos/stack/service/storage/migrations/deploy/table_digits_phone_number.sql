@@ -7,4 +7,6 @@ create table digits.phone_number (
   phone_number varchar not null
 );
 
+grant select, update, delete on digits.phone_number to storage;
+
 COMMIT;

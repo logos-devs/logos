@@ -59,10 +59,7 @@
         <option value="org.jetbrains.kotlin.idea.run.KotlinTestMethodGradleConfigurationProducer" />
         <option value="org.jetbrains.plugins.gradle.execution.GradleGroovyScriptRunConfigurationProducer" />
         <option value="org.jetbrains.plugins.gradle.execution.test.runner.AllInDirectoryGradleConfigurationProducer" />
-        <option value="org.jetbrains.plugins.gradle.execution.test.runner.AllInPackageGradleConfigurationProducer" />
         <option value="org.jetbrains.plugins.gradle.execution.test.runner.PatternGradleConfigurationProducer" />
-        <option value="org.jetbrains.plugins.gradle.execution.test.runner.TestClassGradleConfigurationProducer" />
-        <option value="org.jetbrains.plugins.gradle.execution.test.runner.TestMethodGradleConfigurationProducer" />
         <option value="org.jetbrains.plugins.gradle.service.execution.GradleRuntimeConfigurationProducer" />
       </set>
     </option>

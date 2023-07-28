@@ -390,8 +390,7 @@ public class Exporter {
                     "select schema_name from information_schema.schemata where schema_name = '"
                         + schema + "'");
 
-            schemaResultSet.next();
-            if (schemaResultSet.isAfterLast()) {
+            if (!schemaResultSet.next()) {
                 throw new IllegalArgumentException("Schema " + schema + " does not exist");
             }
 
@@ -412,8 +411,7 @@ public class Exporter {
                 tableQueryStmt.setString(2, table);
                 ResultSet tableResultSet = tableQueryStmt.executeQuery();
 
-                tableResultSet.next();
-                if (tableResultSet.isAfterLast()) {
+                if (!tableResultSet.next()) {
                     throw new IllegalArgumentException("Table " + table + " does not exist");
                 }
 

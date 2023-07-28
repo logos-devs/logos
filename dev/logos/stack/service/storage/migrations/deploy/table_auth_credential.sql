@@ -16,4 +16,6 @@ create table auth.credential
     client_data_json   varchar
 );
 
+grant select, update, delete on auth.credential to storage;
+
 commit;

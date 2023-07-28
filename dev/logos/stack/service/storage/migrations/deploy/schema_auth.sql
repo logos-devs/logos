@@ -4,4 +4,6 @@ BEGIN;
 
 create schema auth;
 
+grant usage on schema auth to storage;
+
 COMMIT;

@@ -4,4 +4,6 @@ BEGIN;
 
 create schema review;
 
+grant usage on schema review to storage;
+
 COMMIT;
