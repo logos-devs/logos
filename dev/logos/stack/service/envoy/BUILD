@@ -15,6 +15,7 @@ container_image(
 
 k8s_deploy(
     name = "envoy",
+    image_repository = "logos-ecr-envoy",
     images = {
         "envoy-image:latest": ":image",
     },

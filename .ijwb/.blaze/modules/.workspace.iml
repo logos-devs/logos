@@ -91,6 +91,7 @@
     <orderEntry type="library" name="header_ssooidc-2.20.102_c1cdc1c2" level="project" />
     <orderEntry type="library" name="header_error_prone_annotations-2.9.0_ed648a84" level="project" />
     <orderEntry type="library" name="header_javax.inject-1_2259c8fd" level="project" />
+    <orderEntry type="library" name="header_sts-2.20.102_22316f38" level="project" />
     <orderEntry type="library" name="header_JavaEWAH-1.2.3_e04f41b2" level="project" />
     <orderEntry type="library" name="header_jackson-dataformat-xml-2.14.0_76e3911b" level="project" />
     <orderEntry type="library" name="header_netty-nio-client-2.20.102_f6ed7723" level="project" />

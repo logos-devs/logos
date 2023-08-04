@@ -10,7 +10,7 @@ import org.xbill.DNS.Lookup;
 import org.xbill.DNS.Record;
 import org.xbill.DNS.TextParseException;
 import org.xbill.DNS.Type;
-import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.regions.providers.DefaultAwsRegionProviderChain;
 import software.amazon.awssdk.services.rds.RdsUtilities;
 import software.amazon.awssdk.services.rds.model.GenerateAuthenticationTokenRequest;
@@ -35,7 +35,8 @@ class RdsIamAuthHikariDataSource extends HikariDataSource {
 
         if (records != null && records.length > 0) {
             CNAMERecord cname = (CNAMERecord) records[0];
-            return cname.getTarget().toString();
+            String hostname = cname.getTarget().toString();
+            return hostname.substring(0, hostname.length() - 1);
         } else {
             throw new RuntimeException("No CNAME found for: " + CLUSTER_RW_CNAME);
         }
@@ -50,22 +51,23 @@ class RdsIamAuthHikariDataSource extends HikariDataSource {
            deployment, this should be set by resolving via DNS. */
         String hostname = System.getenv("STORAGE_PG_BACKEND_HOST");
         if (hostname == null) {
-            // hostname = resolveEndpoint();
-            hostname = "dev-logos-dev-rds-cluster.cluster-ccx6cpd92war.us-east-2.rds.amazonaws.com";
+            hostname = resolveEndpoint();
         }
 
         assert url != null;
-        return RdsUtilities.builder()
+        String token = RdsUtilities.builder()
                            .region(new DefaultAwsRegionProviderChain().getRegion())
                            .build()
                            .generateAuthenticationToken(
                                GenerateAuthenticationTokenRequest
                                    .builder()
-                                   .credentialsProvider(ProfileCredentialsProvider.create())
+                                   .credentialsProvider(DefaultCredentialsProvider.create())
                                    .hostname(hostname)
                                    .port(CLUSTER_RW_PORT)
                                    .username(getUsername())
                                    .build());
+//        System.out.println("token: " + token);
+        return token;
     }
 }
 
@@ -74,6 +76,7 @@ public class DatabaseModule extends AbstractModule {
     @Override
     protected void configure() {
         HikariConfig config = new HikariConfig();
+
         config.setJdbcUrl(System.getenv("STORAGE_PG_BACKEND_JDBC_URL"));
         config.setUsername(System.getenv("STORAGE_PG_BACKEND_USER"));
 //        config.addDataSourceProperty("cachePrepStmts", "true");

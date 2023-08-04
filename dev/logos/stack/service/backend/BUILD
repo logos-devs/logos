@@ -99,6 +99,7 @@ java_library(
         "@maven//:software_amazon_awssdk_s3",
         "@maven//:software_amazon_awssdk_sdk_core",
         "@maven//:software_amazon_awssdk_secretsmanager",
+        "@maven//:software_amazon_awssdk_sts",
         "@maven//:software_amazon_awssdk_utils",
         "@maven//:software_amazon_eventstream_eventstream",
     ],

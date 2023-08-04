@@ -177,6 +177,7 @@ maven_install(
         "software.amazon.awssdk:sso:2.20.102",
         "software.amazon.awssdk:ssooidc:2.20.102",
         "software.amazon.awssdk:secretsmanager:2.20.102",
+        "software.amazon.awssdk:sts:2.20.102",
         "software.amazon.awssdk:regions:2.20.102",
         "software.amazon.awssdk:utils:2.20.102",
     ] + IO_GRPC_GRPC_JAVA_ARTIFACTS,

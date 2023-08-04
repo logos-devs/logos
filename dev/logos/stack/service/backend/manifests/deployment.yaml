@@ -14,15 +14,16 @@ spec:
       labels:
         app: backend
     spec:
+      serviceAccountName: logos-iam-eks-service-account
       containers:
         - name: backend
           image: backend-image:latest
           imagePullPolicy: Always
           env:
             - name: STORAGE_PG_BACKEND_JDBC_URL
-              value: jdbc:postgresql://db-rw.logos.dev/logos
+              value: jdbc:postgresql://db-rw.logos.dev/logos?usessl=require #&sslmode=verify-full&sslrootcert=/etc/ssl/certs/ca-certificates.crt
             - name: STORAGE_PG_BACKEND_USER
-              value: backend
+              value: storage
 #            - name: SERVER_AUTH_PRIVATE_KEY
 #              valueFrom:
 #                secretKeyRef:

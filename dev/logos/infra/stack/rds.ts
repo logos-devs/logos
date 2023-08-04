@@ -1,4 +1,3 @@
-import {ClusterInfo} from "@aws-quickstart/eks-blueprints";
 import {App, Environment, Stack, StackProps} from "aws-cdk-lib";
 import {Peer, Port, SecurityGroup} from "aws-cdk-lib/aws-ec2";
 import {
@@ -8,13 +7,18 @@ import {
     DatabaseClusterEngine
 } from "aws-cdk-lib/aws-rds";
 import {CnameRecord, PrivateHostedZone} from "aws-cdk-lib/aws-route53";
+import {EksBlueprint} from "@aws-quickstart/eks-blueprints";
 
 
 const PORT = 5432;
 
-class StorageStack extends Stack {
-    constructor(scope: App, id: string, clusterInfo: ClusterInfo, props?: StackProps) {
+export class RdsStack extends Stack {
+    readonly databaseCluster: DatabaseCluster;
+
+    constructor(scope: App, id: string, eksStack: EksBlueprint, props?: StackProps) {
         super(scope, id, props);
+
+        const clusterInfo = eksStack.getClusterInfo();
 
         const securityGroupName = id + '-sg';
         const rdsSecurityGroup = new SecurityGroup(this, securityGroupName, {
@@ -30,7 +34,7 @@ class StorageStack extends Stack {
         }
 
         const clusterIdentifier = id + '-db-cluster';
-        const cluster = new DatabaseCluster(this, clusterIdentifier, {
+        this.databaseCluster = new DatabaseCluster(this, clusterIdentifier, {
             clusterIdentifier: clusterIdentifier,
             credentials: { username: 'clusteradmin' },
             defaultDatabaseName: 'logos',
@@ -53,18 +57,18 @@ class StorageStack extends Stack {
         new CnameRecord(this, id + 'r53-zone-db-rw-record', {
             zone: privateDnsZone,
             recordName: 'db-rw',
-            domainName: cluster.clusterEndpoint.hostname
+            domainName: this.databaseCluster.clusterEndpoint.hostname
         });
 
         new CnameRecord(this, id + 'r53-db-ro-record', {
             zone: privateDnsZone,
             recordName: 'db-ro',
-            domainName: cluster.clusterReadEndpoint.hostname
+            domainName: this.databaseCluster.clusterReadEndpoint.hostname
         });
     }
 }
 
 
-export function makeStorageStack(app: App, id: string, clusterInfo: ClusterInfo, env: Environment): StorageStack {
-    return new StorageStack(app, id, clusterInfo, { env })
+export function makeRdsStack(app: App, id: string, eksStack: EksBlueprint, env: Environment): RdsStack {
+    return new RdsStack(app, id, eksStack, { env })
 }

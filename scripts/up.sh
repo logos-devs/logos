@@ -126,3 +126,4 @@ export STORAGE_PG_BACKEND_USER="storage"
 export STORAGE_PG_BACKEND_HOST="$CLUSTER_RW_ENDPOINT"
 
 $BAZEL run //dev/logos/stack/service/backend:backend.apply
+$BAZEL run //dev/logos/stack/service/envoy:envoy.apply

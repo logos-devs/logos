@@ -96,11 +96,12 @@ public class AuthService extends AuthServiceGrpc.AuthServiceImplBase {
     @Inject
     AuthService(AuthCredentialStorage credentialStorage) {
         this.credentialStorage = credentialStorage;
+        String privateKeyPem = "MIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQCsgwphLVGnq5gHcvRhn0IOJaKl3DyHNVtb1AqIj4J7/PLIx5iPFbSlSp3pyYKs2LpqLbx3zOGE6UIkVoqq0rC4nc9YGOt0F+cJ7K9GshU3jmq4vYUTifjQWTu4DG/Y7F6hfZvfWlB+UeASMtUd0NRXs5UKZQpA4VSYd1oQgG4mmMwrC+th3Cv9b6BEpWXIFuR3f8Zxn/RFGbyhBlhUycJa6KsJEVu0P8F3vsccP8TXMvK3sqb7qk+NsCpeYSSJ/xLzMs0FccvtlHVTodwHWNVpo44I9FtETOYJBjQcJYuVKQ+hbdNvW3rz1tc18okctr/bA19rIp8kOhw0Z1OTEnARAgMBAAECggEBAJCP8zfB6WZPdkPvwfi4o3sFcMn6x8IqJVfLVdRgJmFOdAlqsV5eOxY0dCZAlj/QEk796qydxPJDIgkfeG5zxmG+5M0XfN+5VAPOEod0njEDKE2Ni6H3AclerZuq2GN4mEhN4TwHC+L/K300mcC1ievAconWaAQ8j06A3blsVmICUrkrrhULVxCfEjFCU+vVPZtLJwniPMDzwO7UK1YS9cRgL1837zejtqv8F1qgiSFhGlDkGtGrJQV5Vc8xMpg4idFnbuSM8Qg/igJ8fn334W84uBSTb1a2WJiTR0QpQ17YPB53m9QJp4ojUJhe3zKWv5HJ+sfvoLnIyvCg5/tU6W0CgYEA2xea7taS3cYwBOwMzgkZ1g8zMPjBCmBKYMSa2V+jPPTnZWoCOf/rLoWhEbp77USYna6/KkcKv18o6sriUv6tbK6NoXX8et6JsXTgvave0gA5GNERa80kF4TBCGfdwzTsHXbG/9KR1JgP61/Eq+dP1a1t6CK1l56+RD/N9jCCvAsCgYEAyZKmPL4IfPS5jzv0NRAwhCXCNoh1DM/Ahag8JQFX5T6sFfrWEIw5UmtVHMq8XvfogDMckvvGdZ9wo6GAvXJpk4nzKww2XcFsGBs6qjrpBxDbj5m7UrmQCqFuvLy/alOp1jCxshWmsiXvCxHORRhmIrRY6o4p0W2xtRwFdvc5OdMCgYEAw7RRPBlFtX6sNClawsyUXIbVVmBNp2Qd7FSScauhV/j3nbpU5NQ6kyLgnsJyop3MqcWHk09ERW/OT/UMt9Awv80oTFrlPif83RwnCKY28mUqm4VdR2tGWw/FkimdiRqD80m/NpM0mq9+QOUZ++gygw9ZBqvCg/5TvQk1hD0O+sMCgYBCyGx9OXS0eZw04WcyYW/BiIUE7kbhfL9LSQbMN9q4IACBs75SczLWpKrpRB4O1NHaD5UK+ZGyDKYUAIEXwx1JfW3sODqW62t1vSe9mJD1/1bPB97xNHuNmhiHPX2pq5hcV3u4BcZZxYmiQD7303KbUucWpw0hztcOqv8AgD4ccwKBgQCJtnfwuMlbucpyj1pZzAlXi3okj4FrZHXQxo7C2WaOvPMPPyCLuqnToAgHhFLBKIySkfC9yXZeicS+K9A0c63YeEAEqZrFZizZkLhuQAS4gv4ye5choaFp79KRB44U+jBnMS8aoFR/QubEA/JoG2q1o4tFID8Ef0gpp88nOAWiBQ==";
+//        String privateKeyPem = System.getenv("SERVER_AUTH_PRIVATE_KEY")
+//                                     .replace("-----BEGIN PRIVATE KEY-----", "")
+//                                     .replace("-----END PRIVATE KEY-----", "")
+//                                     .replaceAll(System.lineSeparator(), "");
 
-        String privateKeyPem = System.getenv("SERVER_AUTH_PRIVATE_KEY")
-                                     .replace("-----BEGIN PRIVATE KEY-----", "")
-                                     .replace("-----END PRIVATE KEY-----", "")
-                                     .replaceAll(System.lineSeparator(), "");
         try {
             privateKey = KeyFactory.getInstance(cipher.toString()).generatePrivate(
                 new PKCS8EncodedKeySpec(

@@ -1,5 +1,5 @@
-import { Stack, App, StackProps, Environment, RemovalPolicy } from "aws-cdk-lib";
-import { Repository } from "aws-cdk-lib/aws-ecr";
+import {App, Environment, RemovalPolicy, Stack, StackProps} from "aws-cdk-lib";
+import {Repository} from "aws-cdk-lib/aws-ecr";
 
 
 class EcrStack extends Stack {
@@ -15,6 +15,7 @@ class EcrStack extends Stack {
 
         this.makeEcrRepo(id + '-backend');
         this.makeEcrRepo(id + '-console');
+        this.makeEcrRepo(id + '-envoy');
         this.makeEcrRepo(id + '-storage');
     }
 }
