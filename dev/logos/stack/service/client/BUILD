@@ -28,6 +28,7 @@ k8s_deploy(
 
 k8s_deploy(
     name = "client",
+    image_repository = "logos-ecr-client",
     images = {
         "client-image:latest": "//dev/logos/stack/service/client:image",
     },

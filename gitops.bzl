@@ -27,13 +27,15 @@ CLUSTER = "arn:aws:eks:{region}:{account}:cluster/{stack}".format(
 # TODO I need to extract the USER and CLUSTER to use from the
 # most recent infra cdk deploy.
 
-def k8s_deploy(*args, **kwargs):
+def k8s_deploy(**kwargs):
+    if "image_repository" not in kwargs and "images" in kwargs:
+        fail("image_repository is a required argument for k8s_deploy if images are supplied")
+
     gitops_k8s_deploy(
         namespace = NAMESPACE,
         cluster = CLUSTER,
         image_registry = REGISTRY,
         user = USER,
         #gitops = False,  # TODO toggle based upon environment with select. this is only valid for local dev.
-        *args,
         **kwargs
     )

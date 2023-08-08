@@ -2,12 +2,19 @@ import {App, Environment, Stack, StackProps} from "aws-cdk-lib";
 import {PublicHostedZone} from "aws-cdk-lib/aws-route53";
 
 export class R53Stack extends Stack {
+    readonly zones: Array<PublicHostedZone>;
+
     constructor(scope: App, id: string, props?: StackProps) {
         super(scope, id, props);
 
-        new PublicHostedZone(this, 'logos-r53-hosted-zone', {
-            zoneName: 'dev.logos.dev',
-        });
+        this.zones = [
+            "dev.digits.rip",
+            "dev.logos.dev",
+            "dev.rep.dev"
+        ].map(domain => new PublicHostedZone(this, id + domain.replace(/\./g, '-'), {
+                zoneName: domain,
+            })
+        );
     }
 }
 

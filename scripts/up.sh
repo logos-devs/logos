@@ -33,7 +33,7 @@ REGION="$(aws configure get region)"
 STACK="logos-eks"
 
 export AWS_DEFAULT_REGION="$REGION"
-$BAZEL run //dev/logos/infra:cdk -- deploy --all --no-rollback
+#$BAZEL run //dev/logos/infra:cdk -- deploy --all --no-rollback
 
 ROLE_ARN="$(aws cloudformation describe-stacks \
                     --stack-name $STACK \
@@ -127,3 +127,5 @@ export STORAGE_PG_BACKEND_HOST="$CLUSTER_RW_ENDPOINT"
 
 $BAZEL run //dev/logos/stack/service/backend:backend.apply
 $BAZEL run //dev/logos/stack/service/envoy:envoy.apply
+$BAZEL run //dev/logos/stack/service/client:client.apply
+$BAZEL run //dev/logos/stack/ingress/nginx:nginx.apply

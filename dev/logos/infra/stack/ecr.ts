@@ -14,6 +14,7 @@ class EcrStack extends Stack {
         super(scope, id, props);
 
         this.makeEcrRepo(id + '-backend');
+        this.makeEcrRepo(id + '-client');
         this.makeEcrRepo(id + '-console');
         this.makeEcrRepo(id + '-envoy');
         this.makeEcrRepo(id + '-storage');

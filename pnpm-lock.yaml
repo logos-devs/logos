@@ -6,8 +6,8 @@ settings:
 
 dependencies:
   '@aws-quickstart/eks-blueprints':
-    specifier: ^1.10.0
-    version: 1.10.0
+    specifier: 1.10.1
+    version: 1.10.1
   '@github/webauthn-json':
     specifier: 2.0.1
     version: 2.0.1
@@ -87,11 +87,11 @@ dependencies:
     specifier: 2.6.0
     version: 2.6.0
   aws-cdk:
-    specifier: 2.86.0
-    version: 2.86.0
+    specifier: 2.88.0
+    version: 2.88.0
   aws-cdk-lib:
-    specifier: 2.86.0
-    version: 2.86.0(constructs@10.2.69)
+    specifier: 2.88.0
+    version: 2.88.0(constructs@10.2.69)
   bignumber.js:
     specifier: 9.1.0
     version: 9.1.0
@@ -269,47 +269,47 @@ packages:
     resolution: {integrity: sha512-3M2tELJOxQv0apCIiuKQ4pAbncz9GuLwnKFqxifWfe77wuMxyTRPmxssYHs42ePqzap1LT6GDcPygGs+hHstLg==}
     dev: false
 
-  /@aws-cdk/asset-node-proxy-agent-v5@2.0.165:
-    resolution: {integrity: sha512-bsyLQD/vqXQcc9RDmlM1XqiFNO/yewgVFXmkMcQkndJbmE/jgYkzewwYGrBlfL725hGLQipXq19+jwWwdsXQqg==}
+  /@aws-cdk/asset-node-proxy-agent-v5@2.0.166:
+    resolution: {integrity: sha512-j0xnccpUQHXJKPgCwQcGGNu4lRiC1PptYfdxBIH1L4dRK91iBxtSQHESRQX+yB47oGLaF/WfNN/aF3WXwlhikg==}
     dev: false
 
-  /@aws-cdk/lambda-layer-kubectl-v23@2.0.8(aws-cdk-lib@2.86.0)(constructs@10.2.69):
+  /@aws-cdk/lambda-layer-kubectl-v23@2.0.8(aws-cdk-lib@2.88.0)(constructs@10.2.69):
     resolution: {integrity: sha512-egSftvjCVB9JHxNAtGLs8g1vMS2JYd+2NX51K9EqrjF2ew9FcsQFy9KGJVGpfMuyIe2GQBY6hX+VeeFw5R2JDQ==}
     peerDependencies:
       aws-cdk-lib: ^2.28.0
       constructs: ^10.0.5
     dependencies:
-      aws-cdk-lib: 2.86.0(constructs@10.2.69)
+      aws-cdk-lib: 2.88.0(constructs@10.2.69)
       constructs: 10.2.69
     dev: false
 
-  /@aws-cdk/lambda-layer-kubectl-v24@2.0.242(aws-cdk-lib@2.86.0)(constructs@10.2.69):
+  /@aws-cdk/lambda-layer-kubectl-v24@2.0.242(aws-cdk-lib@2.88.0)(constructs@10.2.69):
     resolution: {integrity: sha512-7/wIOo685tmrEe4hh6zqDELhBZh5OQGf3Hd2FU2Vnwy2ZubW8qTmEw5gqJCsCrGKeYDoa1BcVhDRZ/nzjkaqyA==}
     peerDependencies:
       aws-cdk-lib: ^2.28.0
       constructs: ^10.0.5
     dependencies:
-      aws-cdk-lib: 2.86.0(constructs@10.2.69)
+      aws-cdk-lib: 2.88.0(constructs@10.2.69)
       constructs: 10.2.69
     dev: false
 
-  /@aws-cdk/lambda-layer-kubectl-v25@2.0.4(aws-cdk-lib@2.86.0)(constructs@10.2.69):
+  /@aws-cdk/lambda-layer-kubectl-v25@2.0.4(aws-cdk-lib@2.88.0)(constructs@10.2.69):
     resolution: {integrity: sha512-q7pI3B+djl0L5QPMcQzBWnif9/3yCCVmW8xJhgk5G9ydD59ioZRHw/g5mrcRVYvq8m5KETqnLkSR520w8WJwVg==}
     peerDependencies:
       aws-cdk-lib: ^2.28.0
       constructs: ^10.0.5
     dependencies:
-      aws-cdk-lib: 2.86.0(constructs@10.2.69)
+      aws-cdk-lib: 2.88.0(constructs@10.2.69)
       constructs: 10.2.69
     dev: false
 
-  /@aws-cdk/lambda-layer-kubectl-v26@2.0.1(aws-cdk-lib@2.86.0)(constructs@10.2.69):
+  /@aws-cdk/lambda-layer-kubectl-v26@2.0.1(aws-cdk-lib@2.88.0)(constructs@10.2.69):
     resolution: {integrity: sha512-xnrCzYgIKEL+Ad1QqTpN4Wsly8mVVvVGsgu1+xKcOCS6IL3Rz1AMUUtpJoEjVjq/UdJl2oJ/KmD3am+hV86scQ==}
     peerDependencies:
       aws-cdk-lib: ^2.28.0
       constructs: ^10.0.5
     dependencies:
-      aws-cdk-lib: 2.86.0(constructs@10.2.69)
+      aws-cdk-lib: 2.88.0(constructs@10.2.69)
       constructs: 10.2.69
     dev: false
 
@@ -362,20 +362,20 @@ packages:
       tslib: 1.14.1
     dev: false
 
-  /@aws-quickstart/eks-blueprints@1.10.0:
-    resolution: {integrity: sha512-EGFW6HiR9ha3vDgPEucZhkT6i5mm4rHPaiFo5UZF4pe3ltUhsw/JIcOmC3xlZn2PsmRXiiegaDZgJoajQ0VBww==}
+  /@aws-quickstart/eks-blueprints@1.10.1:
+    resolution: {integrity: sha512-QjhAEvAL2kDFOLT5DCwlSDKU2Uj8KzoxJ9UNvr3oap4Yo5HmlOWx2f4iPR5TP7szQH4bhej4PWkKaN75R0bkHA==}
     dependencies:
-      '@aws-cdk/lambda-layer-kubectl-v23': 2.0.8(aws-cdk-lib@2.86.0)(constructs@10.2.69)
-      '@aws-cdk/lambda-layer-kubectl-v24': 2.0.242(aws-cdk-lib@2.86.0)(constructs@10.2.69)
-      '@aws-cdk/lambda-layer-kubectl-v25': 2.0.4(aws-cdk-lib@2.86.0)(constructs@10.2.69)
-      '@aws-cdk/lambda-layer-kubectl-v26': 2.0.1(aws-cdk-lib@2.86.0)(constructs@10.2.69)
+      '@aws-cdk/lambda-layer-kubectl-v23': 2.0.8(aws-cdk-lib@2.88.0)(constructs@10.2.69)
+      '@aws-cdk/lambda-layer-kubectl-v24': 2.0.242(aws-cdk-lib@2.88.0)(constructs@10.2.69)
+      '@aws-cdk/lambda-layer-kubectl-v25': 2.0.4(aws-cdk-lib@2.88.0)(constructs@10.2.69)
+      '@aws-cdk/lambda-layer-kubectl-v26': 2.0.1(aws-cdk-lib@2.88.0)(constructs@10.2.69)
       '@aws-sdk/client-eks': 3.370.0
       '@aws-sdk/client-secrets-manager': 3.370.0
       '@types/assert': 1.5.6
       '@types/bcrypt': 5.0.0
       '@types/lodash.clonedeep': 4.5.7
       '@types/uuid': 9.0.2
-      aws-cdk-lib: 2.86.0(constructs@10.2.69)
+      aws-cdk-lib: 2.88.0(constructs@10.2.69)
       bcrypt: 5.1.0
       constructs: 10.2.69
       dot-object: 2.1.4
@@ -854,10 +854,6 @@ packages:
     engines: {node: '>=6.9.0'}
     dependencies:
       regenerator-runtime: 0.13.11
-    dev: false
-
-  /@balena/dockerignore@1.0.2:
-    resolution: {integrity: sha512-wMue2Sy4GAVTk6Ic4tJVcnfdau+gx2EnG7S+uAEe+TWJFqE4YoWN4/H8MSLj4eYJKxGg26lZwboEniNiNwZQ6Q==}
     dev: false
 
   /@bazel/bazelisk@0.0.0-PLACEHOLDER:
@@ -3380,6 +3376,7 @@ packages:
   /astral-regex@2.0.0:
     resolution: {integrity: sha512-Z7tMw1ytTXt5jqMcOP+OQteU1VuNK9Y02uuJtKQ1Sv69jXQKKg5cibLwGJow8yzZP+eAc18EmLGPal0bp36rvQ==}
     engines: {node: '>=8'}
+    dev: true
 
   /async-limiter@1.0.1:
     resolution: {integrity: sha512-csOlWGAcRFJaI6m+F2WKdnMKr4HhdhFVBk0H/QbJFMCr+uO2kwohwXQPxw/9OCxp05r5ghVBFSyioixx3gfkNQ==}
@@ -3400,26 +3397,16 @@ packages:
       layout-base: 1.0.2
     dev: false
 
-  /aws-cdk-lib@2.86.0(constructs@10.2.69):
-    resolution: {integrity: sha512-76yZ2MawAGXLD3ox4FjhUIPmAMXteGKkeo3tPMthemusDCCkD2X6DBssXBHjB7r9GnrOMMf8JH5BGq2lOZ539g==}
+  /aws-cdk-lib@2.88.0(constructs@10.2.69):
+    resolution: {integrity: sha512-bmhokh30HVeqlotWaoEmK7mKB9SJbJwpbsiVgmYe3JcMu8DposHQqaIPI7LnC+dg015tZaxUsExxOYBEw+vntQ==}
     engines: {node: '>= 14.15.0'}
     peerDependencies:
       constructs: ^10.0.0
     dependencies:
       '@aws-cdk/asset-awscli-v1': 2.2.200
       '@aws-cdk/asset-kubectl-v20': 2.1.2
-      '@aws-cdk/asset-node-proxy-agent-v5': 2.0.165
-      '@balena/dockerignore': 1.0.2
-      case: 1.6.3
+      '@aws-cdk/asset-node-proxy-agent-v5': 2.0.166
       constructs: 10.2.69
-      fs-extra: 11.1.1
-      ignore: 5.2.4
-      jsonschema: 1.4.1
-      minimatch: 3.1.2
-      punycode: 2.3.0
-      semver: 7.5.4
-      table: 6.8.1
-      yaml: 1.10.2
     dev: false
     bundledDependencies:
       - '@balena/dockerignore'
@@ -3433,8 +3420,8 @@ packages:
       - table
       - yaml
 
-  /aws-cdk@2.86.0:
-    resolution: {integrity: sha512-GRcdU6p00Zu3fIZYPG+EbpDYppYMtzebuf0jrmCfKhCytRGaPWDHHfu3hrv0de4d0zbUD/+AmiODPMu3J6nXbQ==}
+  /aws-cdk@2.88.0:
+    resolution: {integrity: sha512-7Tj0uusA2nsEOsqkd4kB5vmzciz7l/eGBN5a+Ce4/CCcoe4ZCvT85L+T6tK0aohUTLZTAlTPBceH34RN5iMYpA==}
     engines: {node: '>= 14.15.0'}
     hasBin: true
     optionalDependencies:
@@ -3799,11 +3786,6 @@ packages:
     resolution: {integrity: sha512-RrBgVL5qCEDIXpJ6NrzyRNoTnXxYarqm/cS/W6ERhUJts5UQtt/XPEosGN3rqUkZ4fjBArlnCbsISJ+KCFnIAg==}
     dependencies:
       '@types/node': 18.7.18
-    dev: false
-
-  /case@1.6.3:
-    resolution: {integrity: sha512-mzDSXIPaFwVDvZAHqZ9VlbyF4yyXRuX6IvB06WvPYkqJVO24kX1PPhv9bfpKNFZyxYFmmgo03HUiD8iklmJYRQ==}
-    engines: {node: '>= 0.8.0'}
     dev: false
 
   /caseless@0.12.0:
@@ -5230,15 +5212,6 @@ packages:
     resolution: {integrity: sha512-zJ2mQYM18rEFOudeV4GShTGIQ7RbzA7ozbU9I/XBpm7kqgMywgmylMwXHxZJmkVoYkna9d2pVXVXPdYTP9ej8Q==}
     engines: {node: '>= 0.6'}
 
-  /fs-extra@11.1.1:
-    resolution: {integrity: sha512-MGIE4HOvQCeUCzmlHs0vXpih4ysz4wg9qiSAu6cd42lVwPbTM1TjV7RusoyQqMmk/95gdQZX72u+YW+c3eEpFQ==}
-    engines: {node: '>=14.14'}
-    dependencies:
-      graceful-fs: 4.2.11
-      jsonfile: 6.1.0
-      universalify: 2.0.0
-    dev: false
-
   /fs-extra@4.0.3:
     resolution: {integrity: sha512-q6rbdDd1o2mAnQreO7YADIxf/Whx4AHBiRf6d+/cVT8h44ss+lHgxf1FemcqDnQt9X3ct4McHr+JMGlYSsK7Cg==}
     dependencies:
@@ -5905,6 +5878,7 @@ packages:
   /ignore@5.2.4:
     resolution: {integrity: sha512-MAb38BcSbH0eHNBxn7ql2NH/kX33OkB3lZ1BNdh7ENeRChHTYsTvWrMubiIAMNS2llXEEgZ1MUOBtXChP3kaFQ==}
     engines: {node: '>= 4'}
+    dev: true
 
   /immer@9.0.21:
     resolution: {integrity: sha512-bc4NBHqOqSfRW7POMkHd51LvClaeMXpm8dx0e8oE2GORbq5aRK7Bxl4FyzVLdGtLmvLKL7BTDBG5ACQm4HWjTA==}
@@ -6357,18 +6331,6 @@ packages:
       graceful-fs: 4.2.11
     dev: false
 
-  /jsonfile@6.1.0:
-    resolution: {integrity: sha512-5dgndWOriYSm5cnYaJNhalLNDKOqFwyDB/rr1E9ZsGciGvKPs8R2xYGCacuf3z6K1YKDz182fd+fY3cn3pMqXQ==}
-    dependencies:
-      universalify: 2.0.0
-    optionalDependencies:
-      graceful-fs: 4.2.11
-    dev: false
-
-  /jsonschema@1.4.1:
-    resolution: {integrity: sha512-S6cATIPVv1z0IlxdN+zUk5EPjkGCdnhN4wVSBlvoUO1tOLJootbo9CquNJmbIh4yikWHiUedhRYrNPn1arpEmQ==}
-    dev: false
-
   /jsprim@1.4.2:
     resolution: {integrity: sha512-P2bSOMAc/ciLz6DzgjVlGJP9+BrJWu5UDGK70C2iweC5QBIeFf0ZXRvGjEj2uYgrY2MkAAhsSWHDWlFtEroZWw==}
     engines: {node: '>=0.6.0'}
@@ -6607,6 +6569,7 @@ packages:
 
   /lodash.truncate@4.4.2:
     resolution: {integrity: sha512-jttmRe7bRse52OsWIMDLaXxWqRAmtIUccAQ3garviCqJjafXOfNMO0yMfNpdD6zbGaTU0P5Nz7e7gAT6cKmJRw==}
+    dev: true
 
   /lodash@4.17.21:
     resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
@@ -8161,6 +8124,7 @@ packages:
       ansi-styles: 4.3.0
       astral-regex: 2.0.0
       is-fullwidth-code-point: 3.0.0
+    dev: true
 
   /sockjs@0.3.24:
     resolution: {integrity: sha512-GJgLTZ7vYb/JtPSSZ10hsOYIvEYsjbNU+zPdIHcUaWVNUEPivzxku31865sSSud0Da0W4lEeOPlmw93zLQchuQ==}
@@ -8582,6 +8546,7 @@ packages:
       slice-ansi: 4.0.0
       string-width: 4.2.3
       strip-ansi: 6.0.1
+    dev: true
 
   /tapable@2.2.1:
     resolution: {integrity: sha512-GNzQvQTOIP6RyTfE2Qxb8ZVlNmw0n88vp1szwWRimP02mnTsx3Wtn5qRdqY9w2XduFNUgvOwhNnQsjwCp+kqaQ==}
@@ -8939,11 +8904,6 @@ packages:
   /universalify@0.1.2:
     resolution: {integrity: sha512-rBJeI5CXAlmy1pV+617WB9J63U6XcazHHF2f2dbJix4XzpUF0RS3Zbj0FGIOCAva5P/d/GBOYaACQ1w+0azUkg==}
     engines: {node: '>= 4.0.0'}
-    dev: false
-
-  /universalify@2.0.0:
-    resolution: {integrity: sha512-hAZsKq7Yy11Zu1DE0OzWjw7nnLZmJZYTDZZyEFHZdUhV8FkH5MCfoU1XMaxXovpyW5nq5scPqq0ZDP9Zyl04oQ==}
-    engines: {node: '>= 10.0.0'}
     dev: false
 
   /unpipe@1.0.0:
@@ -9730,6 +9690,7 @@ packages:
   /yaml@1.10.2:
     resolution: {integrity: sha512-r3vXyErRCYJ7wg28yvBY5VSoAF8ZvlcW9/BwUzEtUsjvX/DKs24dIkuwjtuprwJJHsbyUbLApepYTR1BN4uHrg==}
     engines: {node: '>= 6'}
+    dev: true
 
   /yaml@2.3.1:
     resolution: {integrity: sha512-2eHWfjaoXgTBC2jNM1LRef62VQa0umtvRiDSk6HSzW7RvS5YtkabJrwYLLEKWBc8a5U2PTSCs+dJjUTJdlHsWQ==}

@@ -7,7 +7,7 @@
     "truffle_console": "truffle console"
   },
   "dependencies": {
-    "@aws-quickstart/eks-blueprints": "^1.10.0",
+    "@aws-quickstart/eks-blueprints": "1.10.1",
     "@github/webauthn-json": "2.0.1",
     "@grpc/grpc-js": "1.7.3",
     "@material/dialog": "=14.0.0-canary.53b3cad2f.0",
@@ -34,8 +34,8 @@
     "@types/google-libphonenumber": "7.4.23",
     "@types/node": "18.7.18",
     "@webcomponents/webcomponentsjs": "2.6.0",
-    "aws-cdk": "2.86.0",
-    "aws-cdk-lib": "2.86.0",
+    "aws-cdk": "2.88.0",
+    "aws-cdk-lib": "2.88.0",
     "bignumber.js": "9.1.0",
     "blocking-elements": "^0.1.0",
     "bn.js": "5.2.1",
