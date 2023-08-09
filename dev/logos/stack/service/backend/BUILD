@@ -151,11 +151,3 @@ k8s_deploy(
     ],
     visibility = ["//dev/logos/stack:__subpackages__"],
 )
-
-# Routes traffic to a webpack-dev-server instance residing on the minikube host machine.
-# Note : This service should *ONLY* be used in local development!
-k8s_deploy(
-    name = "service_hot",
-    manifests = ["manifests/service_hot.yaml"],
-    visibility = ["//dev/logos/stack:__subpackages__"],
-)

@@ -18,14 +18,6 @@ container_image(
     ],
 )
 
-# Routes traffic to a webpack-dev-server instance residing on the minikube host machine.
-# Note : This service should *ONLY* be used in local development!
-k8s_deploy(
-    name = "service_hot",
-    manifests = ["manifests/service_hot.yaml"],
-    visibility = ["//dev/logos/stack:__pkg__"],
-)
-
 k8s_deploy(
     name = "client",
     image_repository = "logos-ecr-client",
