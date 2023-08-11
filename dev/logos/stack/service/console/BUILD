@@ -15,6 +15,7 @@ container_run_and_commit(
         "apk add bind-tools ca-certificates curl postgresql-client socat",
     ],
     image = ":image_base.tar",
+    tags = ["no-remote"],
 )
 
 container_image(
