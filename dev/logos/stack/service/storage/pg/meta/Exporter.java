@@ -384,6 +384,7 @@ public class Exporter {
     private List<String> getSchemaIdentifiers(Set<String> selectedSchemas) throws SQLException {
         List<String> schemaIdentifiers = new ArrayList<>();
 
+
         for (String schema : selectedSchemas) {
             ResultSet schemaResultSet =
                 connection.createStatement().executeQuery(

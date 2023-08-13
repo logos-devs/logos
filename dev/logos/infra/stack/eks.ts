@@ -40,7 +40,7 @@ export function makeEksStack(
                    instanceType: new InstanceType('t3.medium'),
                    machineImageType: MachineImageType.BOTTLEROCKET,
                    updatePolicy: UpdatePolicy.rollingUpdate(),
-                   version: KubernetesVersion.V1_26,
+                   version: KubernetesVersion.V1_27,
                })
             );
 
@@ -67,16 +67,15 @@ export function makeEksStack(
                 }
             }),
             new ClusterAutoScalerAddOn(),
-            new CoreDnsAddOn("v1.9.3-eksbuild.2"),
-            new KubeProxyAddOn("v1.26.2-eksbuild.1"),
+            new CoreDnsAddOn("v1.10.1-eksbuild.2"),
+            new KubeProxyAddOn("v1.27.4-eksbuild.2"),
             new MetricsServerAddOn(),
             new NginxAddOn({
                 internetFacing: true,
-                externalDnsHostname: 'dev.digits.rip',
-                certificateResourceName: `${id}-ingress-cert`
+                certificateResourceName: `${id}-ingress-cert`,
             }),
             new VpcCniAddOn({
-                version: "v1.12.5-eksbuild.2",
+                version: "v1.13.4-eksbuild.1",
             }),
         )
         .useDefaultSecretEncryption(true)

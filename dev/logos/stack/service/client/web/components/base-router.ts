@@ -57,6 +57,7 @@ export class BaseRouter extends connect(store)(LitElement) {
                 ["rep.dev", () => html`${until(import("@app/rep/web/components/frame/Browse").then(() => html`
                     <frame-browser></frame-browser>
                 `))}`],
+                ["summer.app", () => html`<h1>Summer</h1>`],
             ])}
         `;
     }

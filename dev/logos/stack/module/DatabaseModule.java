@@ -15,7 +15,6 @@ import software.amazon.awssdk.regions.providers.DefaultAwsRegionProviderChain;
 import software.amazon.awssdk.services.rds.RdsUtilities;
 import software.amazon.awssdk.services.rds.model.GenerateAuthenticationTokenRequest;
 
-
 class RdsIamAuthHikariDataSource extends HikariDataSource {
     private final String CLUSTER_RW_CNAME = "db-rw.logos.dev";
     private final int CLUSTER_RW_PORT = 5432;
@@ -46,9 +45,11 @@ class RdsIamAuthHikariDataSource extends HikariDataSource {
     public String getPassword() {
         var url = Driver.parseURL(getJdbcUrl(), null);
 
-        /* This allows the hostname to be overridden when DNS resolution is
-           not possible, such as at build-time or in dev environments. In
-           deployment, this should be set by resolving via DNS. */
+        /*
+         * This allows the hostname to be overridden when DNS resolution is
+         * not possible, such as at build-time or in dev environments. In
+         * deployment, this should be set by resolving via DNS.
+         */
         String hostname = System.getenv("STORAGE_PG_BACKEND_HOST");
         if (hostname == null) {
             hostname = resolveEndpoint();
@@ -56,17 +57,17 @@ class RdsIamAuthHikariDataSource extends HikariDataSource {
 
         assert url != null;
         String token = RdsUtilities.builder()
-                           .region(new DefaultAwsRegionProviderChain().getRegion())
-                           .build()
-                           .generateAuthenticationToken(
-                               GenerateAuthenticationTokenRequest
-                                   .builder()
-                                   .credentialsProvider(DefaultCredentialsProvider.create())
-                                   .hostname(hostname)
-                                   .port(CLUSTER_RW_PORT)
-                                   .username(getUsername())
-                                   .build());
-//        System.out.println("token: " + token);
+                .region(new DefaultAwsRegionProviderChain().getRegion())
+                .build()
+                .generateAuthenticationToken(
+                        GenerateAuthenticationTokenRequest
+                                .builder()
+                                .credentialsProvider(DefaultCredentialsProvider.create())
+                                .hostname(hostname)
+                                .port(CLUSTER_RW_PORT)
+                                .username(getUsername())
+                                .build());
+        // System.out.println("token: " + token);
         return token;
     }
 }
@@ -79,9 +80,9 @@ public class DatabaseModule extends AbstractModule {
 
         config.setJdbcUrl(System.getenv("STORAGE_PG_BACKEND_JDBC_URL"));
         config.setUsername(System.getenv("STORAGE_PG_BACKEND_USER"));
-//        config.addDataSourceProperty("cachePrepStmts", "true");
-//        config.addDataSourceProperty("prepStmtCacheSize", "200");
-//        config.addDataSourceProperty("prepStmtCacheSqlLimit", "1024");
+        // config.addDataSourceProperty("cachePrepStmts", "true");
+        // config.addDataSourceProperty("prepStmtCacheSize", "200");
+        // config.addDataSourceProperty("prepStmtCacheSqlLimit", "1024");
 
         bind(DataSource.class).toInstance(new RdsIamAuthHikariDataSource(config));
 
