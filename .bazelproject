@@ -6,6 +6,7 @@
 # You should customize it to suite your needs.
 
 directories:
-  .
+  app
+  dev
 
 derive_targets_from_directories: true
