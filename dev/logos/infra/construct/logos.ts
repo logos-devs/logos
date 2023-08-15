@@ -6,6 +6,7 @@ import {makeEksStack} from '../stack/eks';
 import {makeR53Stack} from '../stack/r53';
 import {makeRdsStack} from '../stack/rds';
 import {makeIamStack} from "../stack/iam";
+import {makeCognitoStack} from "../stack/cognito";
 
 
 export class Deployment {
@@ -53,19 +54,20 @@ export class Logos extends Construct {
         const
             deployment = Deployment.Development,
             apps = [
-                new LogosApp("Digits", "digits.rip", deployment),
-                new LogosApp("Rep", "rep.dev", deployment),
-                new LogosApp("Summer", "summer.app", deployment),
+                new LogosApp("digits", "digits.rip", deployment),
+                new LogosApp("rep", "rep.dev", deployment),
+                new LogosApp("summer", "summer.app", deployment),
             ],
-            r53Stack = makeR53Stack(app, id + '-r53', deployment.getFQDN("logos.dev"), env, apps),
+            r53Stack = makeR53Stack(app, `${id}-r53`, deployment.getFQDN("logos.dev"), env, apps),
             acmStack = makeAcmStack(app, `${id}-acm`, r53Stack, env);
 
-        makeEcrStack(app, id + '-ecr', env);
+        makeEcrStack(app, `${id}-ecr`, env);
 
         const
-            eksStack = makeEksStack(app, id + '-eks', acmStack, r53Stack, env),
-            rdsStack = makeRdsStack(app, id + '-rds', eksStack, env);
+            eksStack = makeEksStack(app, `${id}-eks`, acmStack, r53Stack, env),
+            rdsStack = makeRdsStack(app, `${id}-rds`, eksStack, env);
 
-        makeIamStack(app, id + '-iam', eksStack, rdsStack, env);
+        makeIamStack(app, `${id}-iam`, eksStack, rdsStack, env);
+        makeCognitoStack(app, `${id}-cognito`, acmStack, env, apps);
     }
 }

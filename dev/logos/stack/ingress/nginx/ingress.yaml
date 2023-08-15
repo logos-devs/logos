@@ -32,3 +32,13 @@ spec:
                 name: envoy-service
                 port:
                   number: 8081
+    - host: dev.rep.dev
+      http:
+        paths:
+          - path: /services/
+            pathType: Prefix
+            backend:
+              service:
+                name: envoy-service
+                port:
+                  number: 8081

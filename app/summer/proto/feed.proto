@@ -1,0 +1,28 @@
+syntax = 'proto3';
+
+option java_package = "app.summer.proto.feed";
+option java_multiple_files = true;
+
+/* UI can dial detail up and down from single sentence summary to list of
+ * paragraphs to whole articles. */
+
+message Entry {
+  string id = 1;
+  string title = 2;
+  string content = 3;
+}
+
+message Feed {
+  repeated Entry entry = 1;
+}
+
+message GetFeedRequest {
+}
+
+message GetFeedResponse {
+  Feed feed = 1;
+}
+
+service FeedService {
+  rpc GetFeed (GetFeedRequest) returns (GetFeedResponse) {}
+}

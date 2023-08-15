@@ -27,6 +27,12 @@ export class IamStack extends Stack {
                 ]
             })
         )
+        //
+        // serviceAccount.addToPrincipalPolicy(
+        //     new PolicyStatement({
+        //         actions: ["k"]
+        //     })
+        // );
     }
 }
 

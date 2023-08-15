@@ -32,7 +32,8 @@ REGION="$(aws configure get region)"
 STACK="logos-eks"
 
 export AWS_DEFAULT_REGION="$REGION"
-$BAZEL run --config=remote //dev/logos/infra:cdk -- deploy --all --no-rollback
+#$BAZEL run --config=remote //dev/logos/infra:cdk -- deploy --all --no-rollback
+$BAZEL build --config=remote //dev/logos/infra:cdk_deploy
 
 ROLE_ARN="$(aws cloudformation describe-stacks \
                     --stack-name $STACK \

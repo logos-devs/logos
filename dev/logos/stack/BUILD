@@ -1,28 +1,6 @@
 load("@com_adobe_rules_gitops//gitops:defs.bzl", "k8s_deploy")
 load("//:gitops.bzl", "k8s_deploy")
 
-# exports_files(["eks_production.yaml"])
-
-sh_binary(
-    name = "eks_production",
-    srcs = select({
-        "@platforms//os:osx": [
-            "@eksctl_osx//file",
-        ],
-        "@platforms//os:linux": [
-            "@eksctl_linux//:eksctl_linux",
-        ],
-        "//conditions:default": ["@platforms//:incompatible"],
-    }),
-    args = [
-        "create",
-        "cluster",
-        "-f",
-        "eks_production.yaml",
-    ],
-    data = ["eks_production.yaml"],
-)
-
 k8s_deploy(
     name = "hot",
     objects = [

@@ -7,6 +7,7 @@
     "truffle_console": "truffle console"
   },
   "dependencies": {
+    "aws-sdk": "2.1435.0",
     "@aws-quickstart/eks-blueprints": "1.10.1",
     "@github/webauthn-json": "2.0.1",
     "@grpc/grpc-js": "1.7.3",
