@@ -24,6 +24,7 @@ RUN ( \
   ./"${KREW}" install krew \
 )
 RUN echo 'export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"' >> ~/.bashrc
+RUN source ~/.bashrc
 RUN kubectl krew update
 RUN kubectl krew install tunnel
 
