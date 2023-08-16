@@ -1,7 +1,5 @@
 FROM mcr.microsoft.com/devcontainers/base:ubuntu
 
-SHELL ["/bin/bash", "-c"]
-
 RUN apt update
 RUN apt upgrade -y
 
@@ -25,10 +23,10 @@ RUN ( \
   tar zxvf "${KREW}.tar.gz" && \
   ./"${KREW}" install krew \
 )
-RUN echo 'export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"' >> ~/.bashrc
-RUN source ~/.bashrc
-RUN kubectl krew update
-RUN kubectl krew install tunnel
+RUN echo 'export PATH="$HOME/.krew/bin:$PATH"' >> ~/.bashrc
+
+RUN PATH="$HOME/.krew/bin:$PATH" kubectl krew update
+RUN PATH="$HOME/.krew/bin:$PATH" kubectl krew install tunnel
 
 RUN curl -L https://github.com/bazelbuild/buildtools/releases/download/6.0.0/buildifier-linux-amd64 -o /usr/local/bin/buildifier && \
     chmod +x /usr/local/bin/buildifier
