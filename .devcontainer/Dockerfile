@@ -14,10 +14,18 @@ RUN curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key
 RUN apt-add-repository -y "deb http://apt.kubernetes.io/ kubernetes-xenial main"
 RUN apt install -y kubectl
 
-RUN curl -L https://github.com/kubernetes-sigs/krew/releases/download/v0.4.4/krew-linux_amd64.tar.gz -o /usr/local/bin/krew-bootstrap && \
-    chmod +x /usr/local/bin/krew-bootstrap && \
-    krew-bootstrap install krew && \
-    rm /usr/local/bin/krew-bootstrap
+RUN ( \\
+  set -x; cd "$(mktemp -d)" && \\
+  OS="$(uname | tr '[:upper:]' '[:lower:]')" && \\
+  ARCH="$(uname -m | sed -e 's/x86_64/amd64/' -e 's/\(arm\)\(64\)\?.*/\1\2/' -e 's/aarch64$/arm64/')" && \\
+  KREW="krew-${OS}_${ARCH}" && \\
+  curl -fsSLO "https://github.com/kubernetes-sigs/krew/releases/latest/download/${KREW}.tar.gz" && \\
+  tar zxvf "${KREW}.tar.gz" && \\
+  ./"${KREW}" install krew \\
+)
+RUN echo 'export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"' >> ~/.bashrc
+RUN kubectl krew update
+RUN kubectl krew install tunnel
 
 RUN curl -L https://github.com/bazelbuild/buildtools/releases/download/6.0.0/buildifier-linux-amd64 -o /usr/local/bin/buildifier && \
     chmod +x /usr/local/bin/buildifier
