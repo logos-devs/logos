@@ -1,5 +1,7 @@
 FROM mcr.microsoft.com/devcontainers/base:ubuntu
 
+SHELL ["/bin/bash", "-c"]
+
 RUN apt update
 RUN apt upgrade -y
 
