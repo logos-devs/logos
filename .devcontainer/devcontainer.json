@@ -29,7 +29,6 @@
 	},
 	"privileged": true,
 	"postStartCommand": {
-		"aws": "/workspaces/logos/.devcontainer/aws_config.sh",
 		"usermod": "sudo usermod -aG docker vscode"
 	}
 }

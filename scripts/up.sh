@@ -31,10 +31,6 @@ ACCOUNT="$(aws sts get-caller-identity --query "Account" --output text)"
 REGION="$(aws configure get region)"
 STACK="logos-eks"
 
-export AWS_DEFAULT_REGION="$REGION"
-#$BAZEL run --config=remote //dev/logos/infra:cdk -- deploy --all --no-rollback
-$BAZEL build --config=remote //dev/logos/infra:cdk_deploy
-
 ROLE_ARN="$(aws cloudformation describe-stacks \
                     --stack-name $STACK \
                     --query "Stacks[0].Outputs[?starts_with(OutputKey, \`logoseksConfigCommand\`)].OutputValue | [0]" \
@@ -53,6 +49,9 @@ aws ecr get-login-password \
             | docker login \
                 --username AWS \
                 --password-stdin "$ACCOUNT.dkr.ecr.$REGION.amazonaws.com"
+
+export AWS_DEFAULT_REGION="$REGION"
+$BAZEL build --config=remote //dev/logos/infra:cdk_deploy
 
 $BAZEL run //dev/logos/stack/service/console:console.apply
 

@@ -6,8 +6,6 @@ buildifier(name = "buildifier")
 
 npm_link_all_packages(name = "node_modules")
 
-exports_files(["env"])
-
 copy_to_bin(
     name = "tsconfig",
     srcs = ["tsconfig.json"],

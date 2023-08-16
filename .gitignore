@@ -8,6 +8,7 @@
 /bazel-out
 /bazel-testlogs
 /build/
+/cfg/*
 /env
 /gitops_local.bzl
 /gitops_repositories.bzl

@@ -1,0 +1,103 @@
+#!/bin/bash -eu
+
+SELF="$0"
+WORKSPACE_DIR="$(dirname "$(realpath "$0")")"
+
+AWS_REGION="${AWS_REGION:-"us-east-2"}"
+# TODO create a role with diminished permissions
+AWS_SSO_ROLE="${AWS_SSO_ROLE:-"AWSAdministratorAccess"}"
+AWS_SSO_URL="${AWS_SSO_URL:-"https://logos-dev.awsapps.com/start"}"
+
+stderr() {
+  echo -e "$@" 2>&1
+}
+
+dev_config_aws_profile() {
+  AWS_ACCOUNT_ID="${AWS_ACCOUNT_ID:-""}"
+
+  while [ -z "$AWS_ACCOUNT_ID" ]; do
+    read -r -p "AWS Account ID: " AWS_ACCOUNT_ID
+  done
+  stderr
+
+  cat <<EOF
+[profile default]
+sso_session = logos-dev
+sso_account_id = $AWS_ACCOUNT_ID
+sso_role_name = $AWS_SSO_ROLE
+region = $AWS_REGION
+
+[sso-session logos-dev]
+sso_start_url = $AWS_SSO_URL
+sso_region = $AWS_REGION
+sso_registration_scopes = sso:account:access
+EOF
+}
+
+dev_config_aws_bzl() {
+  cat <<EOF
+ACCOUNT="$AWS_ACCOUNT_ID"
+REGION="$AWS_REGION"
+EOF
+}
+
+dev_config() {
+    case "${1:-"help"}" in
+        aws_profile)
+            shift 1
+            dev_config_aws_profile "$@"
+            ;;
+        aws_bzl)
+            shift 1
+            dev_config_aws_bzl "$@"
+            ;;
+        *)
+            help
+            ;;
+    esac
+}
+
+dev_setup() {
+  mkdir -p ~/.aws
+  dev_config_aws_profile > ~/.aws/config
+  dev_config_aws_bzl > $WORKSPACE_DIR/cfg/aws.bzl
+  aws sso login
+}
+
+dev() {
+    case "${1:-"help"}" in
+        config)
+            shift 1
+            dev_config "$@"
+            ;;
+        setup)
+            shift 1
+            dev_setup "$@"
+            ;;
+        *)
+            help
+            ;;
+    esac
+}
+
+logos() {
+    case "${1:-"help"}" in
+
+        dev)
+            shift 1
+            dev "$@"
+            ;;
+        *)
+            help
+            ;;
+    esac
+}
+
+help() {
+    stderr
+    stderr "$SELF \e[4mcommand\e[0m ..."
+    stderr
+    exit 1
+}
+
+logos "$@"
