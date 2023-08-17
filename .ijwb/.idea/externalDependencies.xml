@@ -3,8 +3,11 @@
   <component name="ExternalDependencies">
     <plugin id="Docker" />
     <plugin id="com.google.idea.bazel.ijwb" />
+    <plugin id="com.intellij.grpc" />
     <plugin id="com.intellij.kubernetes" />
     <plugin id="mobi.hsz.idea.gitignore" />
+    <plugin id="org.jetbrains.plugins.docker.gateway" />
+    <plugin id="org.jetbrains.plugins.github" />
     <plugin id="tslint" />
   </component>
 </project>

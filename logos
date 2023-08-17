@@ -7,6 +7,25 @@ AWS_REGION="${AWS_REGION:-"us-east-2"}"
 # TODO create a role with diminished permissions
 AWS_SSO_ROLE="${AWS_SSO_ROLE:-"AWSAdministratorAccess"}"
 AWS_SSO_URL="${AWS_SSO_URL:-"https://logos-dev.awsapps.com/start"}"
+BAZEL="bazelisk"
+
+PG_TUNNEL_HOST="127.0.0.1"
+PG_TUNNEL_PORT=15432
+PG_TUNNEL_SOCAT_PID=""
+PG_TUNNEL_PORT_FORWARD_PID=""
+PG_TUNNEL_LOCAL_PORT=15432
+PG_TUNNEL_REMOTE_PORT=5432
+PG_AUTH_PORT=5432
+PG_AUTH_HOST="db-rw.logos.dev"
+PG_DB_NAME="logos"
+PG_DB_MIGRATION_USER="root"
+
+trap 'cleanup' INT TERM ERR
+
+cleanup() {
+    trap - INT TERM ERR
+    rds_tunnel_down
+}
 
 stderr() {
   echo -e "$@" 2>&1
@@ -57,11 +76,49 @@ dev_config() {
     esac
 }
 
+dev_env() {
+    CONSOLE_POD_NAME="pod/$(kubectl get pods -l app=console -o jsonpath="{.items[0].metadata.name}")"
+
+    kubectl wait --for=condition=Ready "$CONSOLE_POD_NAME"
+
+    STORAGE_PG_BACKEND_HOST="$(kubectl exec "$CONSOLE_POD_NAME" -- nslookup -type=cname "$PG_AUTH_HOST" | grep "canonical name = " | cut -d' ' -f4 | sed -e 's/\.$//')"
+
+    export STORAGE_PG_BACKEND_HOST
+    export STORAGE_PG_BACKEND_JDBC_URL="jdbc:postgresql://localhost:15432/logos"
+    export STORAGE_PG_BACKEND_USER="storage"
+}
+
 dev_setup() {
-  mkdir -p ~/.aws
-  dev_config_aws_profile > ~/.aws/config
-  dev_config_aws_bzl > $WORKSPACE_DIR/cfg/aws.bzl
-  aws sso login
+    mkdir -p ~/.aws
+    dev_config_aws_profile > ~/.aws/config
+
+    mkdir -p $WORKSPACE_DIR/cfg
+    dev_config_aws_bzl > $WORKSPACE_DIR/cfg/aws.bzl
+
+    aws sso login
+
+    ACCOUNT="$(aws sts get-caller-identity --query "Account" --output text)"
+    STACK="logos-eks"
+    ROLE_ARN="$(aws cloudformation describe-stacks \
+                        --stack-name $STACK \
+                        --query "Stacks[0].Outputs[?starts_with(OutputKey, \`logoseksConfigCommand\`)].OutputValue | [0]" \
+                        --output text \
+                        | cut -d' ' -f 9)"
+
+    echo "Updating kubeconfig for $STACK in $AWS_REGION"
+    aws eks update-kubeconfig \
+                --name logos-eks \
+                --region "$AWS_REGION" \
+                --role-arn "$ROLE_ARN"
+
+    echo "Logging into ECR for $ACCOUNT in $AWS_REGION"
+    aws ecr get-login-password \
+                --region "$AWS_REGION" \
+                | docker login \
+                    --username AWS \
+                    --password-stdin "$ACCOUNT.dkr.ecr.$AWS_REGION.amazonaws.com"
+
+    rds_setup
 }
 
 dev() {
@@ -69,6 +126,10 @@ dev() {
         config)
             shift 1
             dev_config "$@"
+            ;;
+        env)
+            shift 1
+            dev_env "$@"
             ;;
         setup)
             shift 1
@@ -80,12 +141,139 @@ dev() {
     esac
 }
 
+console_pod() {
+    kubectl get pods -l app=console -o jsonpath="{.items[0].metadata.name}"
+}
+
+console() {
+  kubectl exec -it "$(console_pod)" -- sh
+}
+
+rds_tunnel_up() {
+    CONSOLE_POD_NAME="$(console_pod)"
+    kubectl exec "$CONSOLE_POD_NAME" -- pkill -SIGQUIT socat || true
+
+    kubectl exec "$CONSOLE_POD_NAME" -- socat "TCP-LISTEN:$PG_TUNNEL_REMOTE_PORT,fork,reuseaddr" "TCP:db-rw.logos.dev:$PG_TUNNEL_REMOTE_PORT" &
+    PG_TUNNEL_SOCAT_PID="$!"
+
+    kubectl port-forward "$CONSOLE_POD_NAME" "$PG_TUNNEL_LOCAL_PORT:$PG_TUNNEL_REMOTE_PORT" &
+    PG_TUNNEL_PORT_FORWARD_PID="$!"
+
+    sleep 3
+}
+
+rds_tunnel_down() {
+    printf "\nDisconnecting database tunnel.\n"
+    kill -SIGINT "$PG_TUNNEL_PORT_FORWARD_PID" || true
+    kill -SIGINT "$PG_TUNNEL_SOCAT_PID" || true
+    kubectl exec "$CONSOLE_POD_NAME" -- pkill -SIGQUIT socat || true
+}
+
+rds_setup() {
+    PGPASSWORD="$(aws secretsmanager \
+                  get-secret-value \
+                  --secret-id "$(aws secretsmanager list-secrets \
+                                                    --query "SecretList[?starts_with(Name, \`logosrdsdbclusterSecret\`)].Name | [0]" \
+                                                    --output text)" \
+                  --query "SecretString" \
+                  --output text | jq -r ".password")"
+
+    export PGPASSWORD
+    psql --host "$PG_TUNNEL_HOST" \
+         --port "$PG_TUNNEL_PORT" \
+         -U clusteradmin template1 <<SQL
+    do language plpgsql \$\$
+        begin
+            if not exists (
+                select from pg_roles where rolname = '$PG_DB_MIGRATION_USER'
+            ) then
+                execute format('create role $PG_DB_MIGRATION_USER');
+            end if;
+        end;
+    \$\$;
+
+    alter database logos owner to $PG_DB_MIGRATION_USER;
+
+    alter role $PG_DB_MIGRATION_USER login;
+    grant rds_iam to $PG_DB_MIGRATION_USER;
+    grant rds_superuser to $PG_DB_MIGRATION_USER;
+SQL
+
+    unset PGPASSWORD
+}
+
+rds_migrate() {
+    SQITCH_PASSWORD="$(rds_token "$PG_DB_MIGRATION_USER")"
+    export SQITCH_PASSWORD
+
+    pushd "$WORKSPACE_DIR/dev/logos/stack/service/storage/migrations"
+    sqitch deploy --db-name "$PG_DB_NAME" \
+                  --db-user "$PG_DB_MIGRATION_USER" \
+                  --db-host "$PG_TUNNEL_HOST" \
+                  --db-port "$PG_TUNNEL_PORT"
+    popd
+
+    unset SQITCH_PASSWORD
+}
+
+rds_token() {
+    USERNAME=$1; shift 1
+
+    aws rds generate-db-auth-token \
+              --hostname "$STORAGE_PG_BACKEND_HOST" \
+              --port "$PG_AUTH_PORT" \
+              --region "$AWS_REGION" \
+              --username "$USERNAME"
+}
+
+rds() {
+    case "${1:-"help"}" in
+        setup)
+            shift 1
+            rds_setup "$@"
+            ;;
+        migrate)
+            shift 1
+            rds_migrate "$@"
+            ;;
+        *)
+            help
+            ;;
+    esac
+}
+
+deploy() {
+    $BAZEL build --config=remote //dev/logos/infra:cdk_deploy
+    $BAZEL run --config=remote //dev/logos/stack/service/console:console.apply
+
+    dev_env
+
+    rds_tunnel_up
+    rds_migrate
+    $BAZEL run --config=remote //dev/logos/stack/service/backend:backend.apply
+    $BAZEL run --config=remote //dev/logos/stack/service/envoy:envoy.apply
+    $BAZEL run --config=remote //dev/logos/stack/service/client:client.apply
+    $BAZEL run --config=remote //dev/logos/stack/ingress/nginx:nginx.apply
+    rds_tunnel_down
+}
+
 logos() {
     case "${1:-"help"}" in
-
+        console)
+            shift 1
+            console "$@"
+            ;;
         dev)
             shift 1
             dev "$@"
+            ;;
+        deploy)
+            shift 1
+            deploy "$@"
+            ;;
+        rds)
+            shift 1
+            rds "$@"
             ;;
         *)
             help
