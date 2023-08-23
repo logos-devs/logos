@@ -11,8 +11,8 @@ BAZEL="bazelisk"
 
 PG_TUNNEL_HOST="127.0.0.1"
 PG_TUNNEL_PORT=15432
-PG_TUNNEL_SOCAT_PID=""
-PG_TUNNEL_PORT_FORWARD_PID=""
+PG_TUNNEL_SOCAT_PID="/tmp/logos_rds_tunnel_socat_pid"
+PG_TUNNEL_PORT_FORWARD_PID="/tmp/logos_rds_tunnel_port_forward_pid"
 PG_TUNNEL_LOCAL_PORT=15432
 PG_TUNNEL_REMOTE_PORT=5432
 PG_AUTH_PORT=5432
@@ -111,13 +111,6 @@ dev_setup() {
                 --region "$AWS_REGION" \
                 --role-arn "$ROLE_ARN"
 
-    echo "Logging into ECR for $ACCOUNT in $AWS_REGION"
-    aws ecr get-login-password \
-                --region "$AWS_REGION" \
-                | docker login \
-                    --username AWS \
-                    --password-stdin "$ACCOUNT.dkr.ecr.$AWS_REGION.amazonaws.com"
-
     rds_setup
 }
 
@@ -149,45 +142,65 @@ console() {
   kubectl exec -it "$(console_pod)" -- sh
 }
 
-rds_tunnel_up() {
-    CONSOLE_POD_NAME="$(console_pod)"
-    kubectl exec "$CONSOLE_POD_NAME" -- pkill -SIGQUIT socat || true
-
-    kubectl exec "$CONSOLE_POD_NAME" -- socat "TCP-LISTEN:$PG_TUNNEL_REMOTE_PORT,fork,reuseaddr" "TCP:db-rw.logos.dev:$PG_TUNNEL_REMOTE_PORT" &
-    PG_TUNNEL_SOCAT_PID="$!"
-
-    kubectl port-forward "$CONSOLE_POD_NAME" "$PG_TUNNEL_LOCAL_PORT:$PG_TUNNEL_REMOTE_PORT" &
-    PG_TUNNEL_PORT_FORWARD_PID="$!"
-
-    sleep 3
+rds_tunnel() {
+    rds_tunnel_up
+    sleep infinity
 }
 
+rds_tunnel_up() {
+  CONSOLE_POD_NAME="$(console_pod)"
+  kubectl exec "$CONSOLE_POD_NAME" -- killall socat || true
+
+  if ! kill -0 "$(cat "$PG_TUNNEL_SOCAT_PID")"
+  then
+    kubectl exec "$CONSOLE_POD_NAME" -- socat TCP-LISTEN:$PG_TUNNEL_REMOTE_PORT,fork,reuseaddr TCP:$PG_AUTH_HOST:$PG_TUNNEL_REMOTE_PORT &
+    echo "$!" > "$PG_TUNNEL_SOCAT_PID"
+  fi
+
+  if ! kill -0 "$(cat "$PG_TUNNEL_PORT_FORWARD_PID")"
+  then
+    kubectl port-forward "$CONSOLE_POD_NAME" "$PG_TUNNEL_LOCAL_PORT:$PG_TUNNEL_REMOTE_PORT" &
+    echo "$!" > "$PG_TUNNEL_PORT_FORWARD_PID"
+  fi
+
+  echo "Checking for tunnel connectivity."
+
+  PGPASSWORD="$(rds_clusteradmin_password)"
+  export PGPASSWORD
+
+  until _psql --user clusteradmin -c "select 1" logos; do
+    sleep 1
+  done
+
+  unset PGPASSWORD
+}
+
+
 rds_tunnel_down() {
-    printf "\nDisconnecting database tunnel.\n"
-    kill -SIGINT "$PG_TUNNEL_PORT_FORWARD_PID" || true
-    kill -SIGINT "$PG_TUNNEL_SOCAT_PID" || true
-    kubectl exec "$CONSOLE_POD_NAME" -- pkill -SIGQUIT socat || true
+    CONSOLE_POD_NAME="$(console_pod)"
+
+    stderr
+    stderr "Disconnecting kubectl port forward."
+    kill -9 "$(cat $PG_TUNNEL_PORT_FORWARD_PID)" || true
+
+    stderr
+    stderr "Killing kubectl exec socat."
+    kill -9 "$(cat $PG_TUNNEL_SOCAT_PID)" || true
+
+    stderr
+    stderr "Killing socat in console pod."
+    kubectl exec "$CONSOLE_POD_NAME" -- killall socat
 }
 
 rds_setup() {
-    PGPASSWORD="$(aws secretsmanager \
-                  get-secret-value \
-                  --secret-id "$(aws secretsmanager list-secrets \
-                                                    --query "SecretList[?starts_with(Name, \`logosrdsdbclusterSecret\`)].Name | [0]" \
-                                                    --output text)" \
-                  --query "SecretString" \
-                  --output text | jq -r ".password")"
-
-    export PGPASSWORD
-    psql --host "$PG_TUNNEL_HOST" \
-         --port "$PG_TUNNEL_PORT" \
-         -U clusteradmin template1 <<SQL
+    PGPASSWORD="$(rds_clusteradmin_password)" _psql -U clusteradmin template1 \
+<<SQL
     do language plpgsql \$\$
         begin
             if not exists (
                 select from pg_roles where rolname = '$PG_DB_MIGRATION_USER'
             ) then
-                execute format('create role $PG_DB_MIGRATION_USER');
+                execute 'create role $PG_DB_MIGRATION_USER';
             end if;
         end;
     \$\$;
@@ -198,11 +211,11 @@ rds_setup() {
     grant rds_iam to $PG_DB_MIGRATION_USER;
     grant rds_superuser to $PG_DB_MIGRATION_USER;
 SQL
-
-    unset PGPASSWORD
 }
 
 rds_migrate() {
+    rds_tunnel_up
+
     SQITCH_PASSWORD="$(rds_token "$PG_DB_MIGRATION_USER")"
     export SQITCH_PASSWORD
 
@@ -236,25 +249,60 @@ rds() {
             shift 1
             rds_migrate "$@"
             ;;
+        token)
+            shift 1
+            rds_token "$@"
+            ;;
+        tunnel)
+            shift 1
+            rds_tunnel "$@"
+            ;;
         *)
             help
             ;;
     esac
 }
 
+rds_clusteradmin_password() {
+  aws secretsmanager \
+      get-secret-value \
+      --secret-id "$(aws secretsmanager list-secrets \
+                                        --query "SecretList[?starts_with(Name, \`logosrdsdbclusterSecret\`)].Name | [0]" \
+                                        --output text)" \
+      --query "SecretString" \
+      --output text | jq -r ".password"
+}
+
 deploy() {
     $BAZEL build --config=remote //dev/logos/infra:cdk_deploy
+
+    ACCOUNT="$(aws sts get-caller-identity --query "Account" --output text)"
+    echo "Logging into ECR for $ACCOUNT in $AWS_REGION"
+    aws ecr get-login-password \
+                --region "$AWS_REGION" \
+                | docker login \
+                    --username AWS \
+                    --password-stdin "$ACCOUNT.dkr.ecr.$AWS_REGION.amazonaws.com"
+
     $BAZEL run --config=remote //dev/logos/stack/service/console:console.apply
 
     dev_env
 
     rds_tunnel_up
     rds_migrate
+
     $BAZEL run --config=remote //dev/logos/stack/service/backend:backend.apply
     $BAZEL run --config=remote //dev/logos/stack/service/envoy:envoy.apply
     $BAZEL run --config=remote //dev/logos/stack/service/client:client.apply
     $BAZEL run --config=remote //dev/logos/stack/ingress/nginx:nginx.apply
-    rds_tunnel_down
+}
+
+_psql() {
+    PGPASSWORD="${PGPASSWORD:-$(rds_token "$PG_DB_MIGRATION_USER")}" \
+        psql --host "$PG_TUNNEL_HOST" \
+             --port "$PG_TUNNEL_PORT" \
+             -U "$PG_DB_MIGRATION_USER" \
+             "$@"
 }
 
 logos() {
@@ -275,6 +323,11 @@ logos() {
             shift 1
             rds "$@"
             ;;
+        psql)
+            shift 1
+            rds_tunnel_up
+            _psql "$@"
+            ;;
         *)
             help
             ;;
@@ -289,3 +342,4 @@ help() {
 }
 
 logos "$@"
+cleanup
