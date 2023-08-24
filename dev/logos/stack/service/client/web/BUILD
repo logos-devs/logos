@@ -21,6 +21,7 @@ js_library(
         "//app/digits/web",
         "//app/rep/web",
         "//app/review/web",
+        "//app/summer/web",
     ],
 )
 
