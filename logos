@@ -120,18 +120,17 @@ dev_server() {
   dev_env
   rds_tunnel_up
   server_tunnel_up
-  ibazel run --config=remote //dev/logos/stack/service/backend:Server -- --debug
+  ibazel run --config=remote //dev/logos/stack/service/backend:Server -- "$@"
 }
 
 dev_client() {
   dev_env
   rds_tunnel_up
-  client_tunnel_up
-  ibazel run --config=remote //dev/logos/stack/service/client/web:dev_server
+  telepresence intercept client-deployment --port 8080 -- ibazel run --config=remote //dev/logos/stack/service/client/web:dev_server
 }
 
 client_tunnel_up() {
-  _run_with_pid "$CLIENT_TUNNEL_PID" kubectl tunnel inject deployment client-deployment 8080 8080
+  _run_with_pid "$CLIENT_TUNNEL_PID" kubectl tunnel inject deployment client-deployment 8080
 }
 
 client_tunnel_down() {
@@ -139,7 +138,7 @@ client_tunnel_down() {
 }
 
 server_tunnel_up() {
-  _run_with_pid "$SERVER_TUNNEL_PID" kubectl tunnel inject deployment backend-deployment 8081 8081
+  _run_with_pid "$SERVER_TUNNEL_PID" kubectl tunnel inject deployment backend-deployment 8081
 }
 
 server_tunnel_down() {

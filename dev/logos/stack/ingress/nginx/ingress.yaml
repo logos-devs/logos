@@ -4,6 +4,7 @@ metadata:
   name: ingress
   annotations:
     nginx.org/rewrites: "serviceName=envoy-service rewrite=/"
+    nginx.org/websocket-services: "client-service"
 spec:
   ingressClassName: nginx
   defaultBackend:
