@@ -19,12 +19,40 @@ PG_AUTH_PORT=5432
 PG_AUTH_HOST="db-rw.logos.dev"
 PG_DB_NAME="logos"
 PG_DB_MIGRATION_USER="root"
+CLIENT_TUNNEL_PID="/tmp/logos_client_tunnel_pid"
+SERVER_TUNNEL_PID="/tmp/logos_server_tunnel_pid"
 
 trap 'cleanup' INT TERM ERR
+
+_run_with_pid() {
+    PID_FILE="$1"; shift 1
+
+    if ! [ -f "$PID_FILE" ] || ! kill -0 "$(cat "$PID_FILE")"; then
+        "$@" &
+        echo "$!" > "$PID_FILE"
+    fi
+}
+
+_kill_with_pid() {
+    PID_FILE="$1"; shift 1
+    MSG="$1"; shift 1
+
+    if [ -f "$PID_FILE" ]; then
+        PID="$(cat "$PID_FILE")"
+        if kill -0 "$PID" 2> /dev/null; then
+            stderr
+            stderr "$MSG"
+            (kill -SIGINT "$PID" && rm "$PID_FILE") || true
+        fi
+        rm -f "$PID_FILE"
+    fi
+}
 
 cleanup() {
     trap - INT TERM ERR
     rds_tunnel_down
+    client_tunnel_down
+    server_tunnel_down
 }
 
 stderr() {
@@ -88,12 +116,42 @@ dev_env() {
     export STORAGE_PG_BACKEND_USER="storage"
 }
 
+dev_server() {
+  dev_env
+  rds_tunnel_up
+  server_tunnel_up
+  ibazel run --config=remote //dev/logos/stack/service/backend:Server -- --debug
+}
+
+dev_client() {
+  dev_env
+  rds_tunnel_up
+  client_tunnel_up
+  ibazel run --config=remote //dev/logos/stack/service/client/web:dev_server
+}
+
+client_tunnel_up() {
+  _run_with_pid "$CLIENT_TUNNEL_PID" kubectl tunnel inject deployment client-deployment 8080 8080
+}
+
+client_tunnel_down() {
+  _kill_with_pid "$CLIENT_TUNNEL_PID" "Disconnecting client tunnel."
+}
+
+server_tunnel_up() {
+  _run_with_pid "$SERVER_TUNNEL_PID" kubectl tunnel inject deployment backend-deployment 8081 8081
+}
+
+server_tunnel_down() {
+  _kill_with_pid "$SERVER_TUNNEL_PID" "Disconnecting server tunnel."
+}
+
 dev_setup() {
     mkdir -p ~/.aws
     dev_config_aws_profile > ~/.aws/config
 
-    mkdir -p $WORKSPACE_DIR/cfg
-    dev_config_aws_bzl > $WORKSPACE_DIR/cfg/aws.bzl
+    mkdir -p "$WORKSPACE_DIR/cfg"
+    dev_config_aws_bzl > "$WORKSPACE_DIR/cfg/aws.bzl"
 
     aws sso login
 
@@ -112,10 +170,16 @@ dev_setup() {
                 --role-arn "$ROLE_ARN"
 
     rds_setup
+
+    $BAZEL run -- @pnpm//:pnpm --dir "$WORKSPACE_DIR" install
 }
 
 dev() {
     case "${1:-"help"}" in
+        client)
+            shift 1
+            dev_client "$@"
+            ;;
         config)
             shift 1
             dev_config "$@"
@@ -123,6 +187,10 @@ dev() {
         env)
             shift 1
             dev_env "$@"
+            ;;
+        server)
+            shift 1
+            dev_server "$@"
             ;;
         setup)
             shift 1
@@ -147,52 +215,43 @@ rds_tunnel() {
     sleep infinity
 }
 
-rds_tunnel_up() {
-  CONSOLE_POD_NAME="$(console_pod)"
-  kubectl exec "$CONSOLE_POD_NAME" -- killall socat || true
-
-  if ! kill -0 "$(cat "$PG_TUNNEL_SOCAT_PID")"
-  then
-    kubectl exec "$CONSOLE_POD_NAME" -- socat TCP-LISTEN:$PG_TUNNEL_REMOTE_PORT,fork,reuseaddr TCP:$PG_AUTH_HOST:$PG_TUNNEL_REMOTE_PORT &
-    echo "$!" > "$PG_TUNNEL_SOCAT_PID"
-  fi
-
-  if ! kill -0 "$(cat "$PG_TUNNEL_PORT_FORWARD_PID")"
-  then
-    kubectl port-forward "$CONSOLE_POD_NAME" "$PG_TUNNEL_LOCAL_PORT:$PG_TUNNEL_REMOTE_PORT" &
-    echo "$!" > "$PG_TUNNEL_PORT_FORWARD_PID"
-  fi
-
-  echo "Checking for tunnel connectivity."
+_rds_check_connectivity() {
+  stderr "Checking for tunnel connectivity."
 
   PGPASSWORD="$(rds_clusteradmin_password)"
   export PGPASSWORD
 
-  until _psql --user clusteradmin -c "select 1" logos; do
+  until _psql --user clusteradmin -c "select" logos > /dev/null; do
+    stderr "Database tunnel not ready."
     sleep 1
   done
 
   unset PGPASSWORD
 }
 
+rds_tunnel_up() {
+  CONSOLE_POD_NAME="$(console_pod)"
+  kubectl exec "$CONSOLE_POD_NAME" -- sh -c 'killall socat || true'
+
+  _run_with_pid "$PG_TUNNEL_SOCAT_PID" kubectl exec "$CONSOLE_POD_NAME" -- socat TCP-LISTEN:$PG_TUNNEL_REMOTE_PORT,fork,reuseaddr TCP:$PG_AUTH_HOST:$PG_TUNNEL_REMOTE_PORT
+  sleep 3
+
+  _run_with_pid "$PG_TUNNEL_PORT_FORWARD_PID" kubectl port-forward "$CONSOLE_POD_NAME" "$PG_TUNNEL_LOCAL_PORT:$PG_TUNNEL_REMOTE_PORT"
+  _rds_check_connectivity
+}
 
 rds_tunnel_down() {
     CONSOLE_POD_NAME="$(console_pod)"
 
-    stderr
-    stderr "Disconnecting kubectl port forward."
-    kill -9 "$(cat $PG_TUNNEL_PORT_FORWARD_PID)" || true
+    _kill_with_pid "$PG_TUNNEL_PORT_FORWARD_PID" "Disconnecting kubectl port forward."
+    _kill_with_pid "$PG_TUNNEL_SOCAT_PID" "Killing kubectl exec socat."
 
-    stderr
-    stderr "Killing kubectl exec socat."
-    kill -9 "$(cat $PG_TUNNEL_SOCAT_PID)" || true
-
-    stderr
     stderr "Killing socat in console pod."
     kubectl exec "$CONSOLE_POD_NAME" -- killall socat
 }
 
 rds_setup() {
+    rds_tunnel_up
     PGPASSWORD="$(rds_clusteradmin_password)" _psql -U clusteradmin template1 \
 <<SQL
     do language plpgsql \$\$

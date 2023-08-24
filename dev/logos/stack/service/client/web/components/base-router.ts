@@ -38,13 +38,12 @@ export class BaseRouter extends connect(store)(LitElement) {
     `;
 
     render() {
+        // ${when(!this.authenticated, () => html`
+        //     ${until(import("@app/auth/web/components/login").then(() => html`
+        //         <auth-login></auth-login>
+        //     `))}
+        // `)}
         return html`
-            ${when(!this.authenticated, () => html`
-                ${until(import("@app/auth/web/components/login").then(() => html`
-                    <auth-login></auth-login>
-                `))}
-            `)}
-
             ${choose(getRouteHost(window.location.hostname), [
                 ["digits.rip", () => html`${until(import("@app/digits/web/components/frame/Digits").then(() => html`
                     <frame-digits></frame-digits>
@@ -57,7 +56,7 @@ export class BaseRouter extends connect(store)(LitElement) {
                 ["rep.dev", () => html`${until(import("@app/rep/web/components/frame/Browse").then(() => html`
                     <frame-browser></frame-browser>
                 `))}`],
-                ["summer.app", () => html`<h1>Summer</h1>`],
+                ["summer.app", () => html`<h1>Summah</h1>`],
             ])}
         `;
     }

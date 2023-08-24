@@ -50,7 +50,7 @@ module.exports = (env, argv) => ({
   },
   devServer: {
     client: {
-      webSocketURL: 'ws://127.0.0.1:8080/ws'
+      webSocketURL: 'ws://127.0.0.1:8080/ws',
     },
     host: '0.0.0.0',
     port: 8080,
