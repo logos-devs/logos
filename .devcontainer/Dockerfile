@@ -1,8 +1,10 @@
 FROM mcr.microsoft.com/devcontainers/base:ubuntu
 
-RUN apt update && apt upgrade -y
+SHELL ["/bin/bash", "-euc"]
 
-RUN apt install -y \
+RUN apt-get update && apt-get upgrade -y
+
+RUN apt-get install -y \
     command-not-found \
     clang \
     docker.io \
@@ -12,27 +14,6 @@ RUN apt install -y \
     software-properties-common \
     sqitch \
     libdbd-pg-perl
-
-RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
-    unzip awscliv2.zip && \
-    ./aws/install && \
-    rm awscliv2.zip
-
-RUN curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add
-RUN apt-add-repository -y "deb http://apt.kubernetes.io/ kubernetes-xenial main"
-RUN apt install -y kubectl
-
-RUN ( \
-  set -x; cd "$(mktemp -d)" && \
-  OS="$(uname | tr '[:upper:]' '[:lower:]')" && \
-  ARCH="$(uname -m | sed -e 's/x86_64/amd64/' -e 's/\(arm\)\(64\)\?.*/\1\2/' -e 's/aarch64$/arm64/')" && \
-  KREW="krew-${OS}_${ARCH}" && \
-  curl -fsSLO "https://github.com/kubernetes-sigs/krew/releases/latest/download/${KREW}.tar.gz" && \
-  tar zxvf "${KREW}.tar.gz" && \
-  ./"${KREW}" install krew \
-) && echo 'export PATH="$HOME/.krew/bin:$PATH"' >> ~/.bashrc && \
-    PATH="$HOME/.krew/bin:$PATH" kubectl krew update && \
-    PATH="$HOME/.krew/bin:$PATH" kubectl krew install tunnel
 
 RUN wget https://github.com/bazelbuild/bazel/releases/download/6.3.2/bazel-6.3.2-installer-linux-x86_64.sh && \
     sha256sum -c <(echo "f117506267ed148d5f4f9844bcf187c4f111dad7ff4f1a9eb1f4e45331f3f9f0  bazel-6.3.2-installer-linux-x86_64.sh") && \
@@ -55,3 +36,12 @@ RUN wget https://github.com/bazelbuild/bazel-watcher/releases/download/v0.23.7/i
     sha256sum -c <(echo "bb388d71ea7bc6d771156238e4a2c07bc9b5f0aa9f29ffe6d3b56e1fc993e4b6  ibazel_linux_amd64") && \
     mv ibazel_linux_amd64 /usr/local/bin/ibazel && \
     chmod +x /usr/local/bin/ibazel
+
+RUN curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add
+RUN apt-add-repository -y "deb http://apt.kubernetes.io/ kubernetes-xenial main"
+RUN apt install -y kubectl
+
+RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
+    unzip awscliv2.zip && \
+    ./aws/install && \
+    rm awscliv2.zip
