@@ -35,7 +35,7 @@ RUN wget https://github.com/bazelbuild/buildtools/releases/download/v6.3.2/build
 RUN wget https://github.com/bazelbuild/bazel-watcher/releases/download/v0.23.7/ibazel_linux_amd64 && \
     sha256sum -c <(echo "bb388d71ea7bc6d771156238e4a2c07bc9b5f0aa9f29ffe6d3b56e1fc993e4b6  ibazel_linux_amd64") && \
     mv ibazel_linux_amd64 /usr/local/bin/ibazel && \
-    chmod +x /usr/local/bin/ibazel \
+    chmod +x /usr/local/bin/ibazel
 
 RUN wget https://app.getambassador.io/download/tel2oss/releases/download/v2.14.4/telepresence-linux-amd64 && \
     sha256sum -c <(echo "ad41a0a59aad86968a4e39734371e7750a2c6f67930769b0622eb9049af30b3a  telepresence-linux-amd64") && \
