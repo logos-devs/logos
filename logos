@@ -19,7 +19,6 @@ PG_AUTH_PORT=5432
 PG_AUTH_HOST="db-rw.logos.dev"
 PG_DB_NAME="logos"
 PG_DB_MIGRATION_USER="root"
-CLIENT_TUNNEL_PID="/tmp/logos_client_tunnel_pid"
 SERVER_TUNNEL_PID="/tmp/logos_server_tunnel_pid"
 
 trap 'cleanup' INT TERM ERR
@@ -51,7 +50,6 @@ _kill_with_pid() {
 cleanup() {
     trap - INT TERM ERR
     rds_tunnel_down
-    client_tunnel_down
     server_tunnel_down
 }
 
@@ -120,6 +118,7 @@ dev_server() {
   dev_env
   rds_tunnel_up
   server_tunnel_up
+  # TODO switch to using telepresence intercept
   ibazel run --config=remote //dev/logos/stack/service/backend:Server -- "$@"
 }
 
@@ -127,14 +126,6 @@ dev_client() {
   dev_env
   rds_tunnel_up
   telepresence intercept client-deployment --port 8080 -- ibazel run --config=remote //dev/logos/stack/service/client/web:dev_server
-}
-
-client_tunnel_up() {
-  _run_with_pid "$CLIENT_TUNNEL_PID" kubectl tunnel inject deployment client-deployment 8080
-}
-
-client_tunnel_down() {
-  _kill_with_pid "$CLIENT_TUNNEL_PID" "Disconnecting client tunnel."
 }
 
 server_tunnel_up() {
