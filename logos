@@ -7,7 +7,7 @@ AWS_REGION="${AWS_REGION:-"us-east-2"}"
 # TODO create a role with diminished permissions
 AWS_SSO_ROLE="${AWS_SSO_ROLE:-"AWSAdministratorAccess"}"
 AWS_SSO_URL="${AWS_SSO_URL:-"https://logos-dev.awsapps.com/start"}"
-BAZEL="bazelisk"
+BAZEL="bazel"
 
 PG_TUNNEL_HOST="127.0.0.1"
 PG_TUNNEL_PORT=15432

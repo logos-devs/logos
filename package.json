@@ -77,9 +77,6 @@
     "wicg-inert": "3.1.1"
   },
   "devDependencies": {
-    "@bazel/bazelisk": "0.0.0-PLACEHOLDER",
-    "@bazel/buildifier": "^5.1.0",
-    "@bazel/ibazel": "^0.16.2",
     "@open-wc/testing": "3.1.6",
     "@types/reflect-metadata": "^0.1.0",
     "@typescript-eslint/eslint-plugin": "5.38.0",
