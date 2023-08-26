@@ -5,7 +5,7 @@ java_library(
         "//dev/logos/stack:__subpackages__",
     ],
     deps = [
-        "//app/summer/service:feed_service",
+        "//app/summer/service:entry_storage_service",
         "//dev/logos/app",
         "//dev/logos/app:app_module",
         "@io_grpc_grpc_java//api",

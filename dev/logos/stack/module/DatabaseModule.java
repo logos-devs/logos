@@ -15,9 +15,11 @@ import software.amazon.awssdk.regions.providers.DefaultAwsRegionProviderChain;
 import software.amazon.awssdk.services.rds.RdsUtilities;
 import software.amazon.awssdk.services.rds.model.GenerateAuthenticationTokenRequest;
 
+import java.util.Optional;
+
 class RdsIamAuthHikariDataSource extends HikariDataSource {
-    private final String CLUSTER_RW_CNAME = "db-rw.logos.dev";
-    private final int CLUSTER_RW_PORT = 5432;
+    private static final String CLUSTER_RW_CNAME = "db-rw.logos.dev";
+    private static final int CLUSTER_RW_PORT = 5432;
 
     public RdsIamAuthHikariDataSource(HikariConfig config) {
         super(config);
@@ -56,7 +58,7 @@ class RdsIamAuthHikariDataSource extends HikariDataSource {
         }
 
         assert url != null;
-        String token = RdsUtilities.builder()
+        return RdsUtilities.builder()
                 .region(new DefaultAwsRegionProviderChain().getRegion())
                 .build()
                 .generateAuthenticationToken(
@@ -67,19 +69,21 @@ class RdsIamAuthHikariDataSource extends HikariDataSource {
                                 .port(CLUSTER_RW_PORT)
                                 .username(getUsername())
                                 .build());
-        // System.out.println("token: " + token);
-        return token;
     }
 }
 
 public class DatabaseModule extends AbstractModule {
+    static String DB_URL = Optional.ofNullable(System.getenv("STORAGE_PG_BACKEND_JDBC_URL"))
+            .orElse("jdbc:postgresql://localhost:15432/logos");
+    static String DB_USER = Optional.ofNullable(System.getenv("STORAGE_PG_BACKEND_USER"))
+            .orElse("storage");
 
     @Override
     protected void configure() {
         HikariConfig config = new HikariConfig();
 
-        config.setJdbcUrl(System.getenv("STORAGE_PG_BACKEND_JDBC_URL"));
-        config.setUsername(System.getenv("STORAGE_PG_BACKEND_USER"));
+        config.setJdbcUrl(DB_URL);
+        config.setUsername(DB_USER);
         // config.addDataSourceProperty("cachePrepStmts", "true");
         // config.addDataSourceProperty("prepStmtCacheSize", "200");
         // config.addDataSourceProperty("prepStmtCacheSqlLimit", "1024");

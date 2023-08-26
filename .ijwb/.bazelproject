@@ -9,4 +9,9 @@
 directories:
   .
 targets:
-  //...
+  //dev/logos/infra:cdk
+  //dev/logos/stack/ingress/nginx
+  //dev/logos/stack/service/backend
+  //dev/logos/stack/service/client
+  //dev/logos/stack/service/console
+  //dev/logos/stack/service/envoy

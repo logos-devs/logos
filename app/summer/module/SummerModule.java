@@ -1,6 +1,6 @@
 package app.summer.module;
 
-import app.summer.service.FeedService;
+import app.summer.service.EntryStorageService;
 import dev.logos.app.App;
 import dev.logos.app.AppModule;
 
@@ -13,6 +13,6 @@ public class SummerModule extends AppModule {
                .domain("summer.app")
                .build());
 
-        this.addService(FeedService.class);
+        this.addService(EntryStorageService.class);
     }
 }

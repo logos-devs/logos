@@ -8,6 +8,7 @@ AWS_REGION="${AWS_REGION:-"us-east-2"}"
 AWS_SSO_ROLE="${AWS_SSO_ROLE:-"AWSAdministratorAccess"}"
 AWS_SSO_URL="${AWS_SSO_URL:-"https://logos-dev.awsapps.com/start"}"
 BAZEL="bazel"
+SED="$(command -v gsed || command -v sed)"
 
 PG_TUNNEL_HOST="127.0.0.1"
 PG_TUNNEL_PORT=15432
@@ -17,11 +18,27 @@ PG_TUNNEL_LOCAL_PORT=15432
 PG_TUNNEL_REMOTE_PORT=5432
 PG_AUTH_PORT=5432
 PG_AUTH_HOST="db-rw.logos.dev"
+PG_AUTH_RESOLVED_HOST=""
 PG_DB_NAME="logos"
 PG_DB_MIGRATION_USER="root"
 SERVER_TUNNEL_PID="/tmp/logos_server_tunnel_pid"
 
 trap 'cleanup' INT TERM ERR
+
+_update_bazelrc_env() {
+  var_name="$1"; shift 1
+  var_value="$1"; shift 1
+
+  bazelrc_local="$WORKSPACE_DIR/.bazelrc.local"
+  touch "$bazelrc_local"
+  echo -e "\nUpdating $bazelrc_local with env var $var_name=$var_value"
+
+  $SED -i "/action_env=$var_name=/d" "$bazelrc_local" || true
+  $SED -i "/run_under=$var_name=/d" "$bazelrc_local" || true
+
+  echo "build --action_env=$var_name=$var_value" >> "$bazelrc_local"
+  echo "run --run_under=$var_name=$var_value" >> "$bazelrc_local"
+}
 
 _run_with_pid() {
     PID_FILE="$1"; shift 1
@@ -103,15 +120,13 @@ dev_config() {
 }
 
 dev_env() {
-    CONSOLE_POD_NAME="pod/$(kubectl get pods -l app=console -o jsonpath="{.items[0].metadata.name}")"
+    if [ -z "$PG_AUTH_RESOLVED_HOST" ]
+    then
+        CONSOLE_POD_NAME="pod/$(kubectl get pods -l app=console -o jsonpath="{.items[0].metadata.name}")"
+        kubectl wait --for=condition=Ready "$CONSOLE_POD_NAME"
 
-    kubectl wait --for=condition=Ready "$CONSOLE_POD_NAME"
-
-    STORAGE_PG_BACKEND_HOST="$(kubectl exec "$CONSOLE_POD_NAME" -- nslookup -type=cname "$PG_AUTH_HOST" | grep "canonical name = " | cut -d' ' -f4 | sed -e 's/\.$//')"
-
-    export STORAGE_PG_BACKEND_HOST
-    export STORAGE_PG_BACKEND_JDBC_URL="jdbc:postgresql://localhost:15432/logos"
-    export STORAGE_PG_BACKEND_USER="storage"
+        PG_AUTH_RESOLVED_HOST="$(kubectl exec "$CONSOLE_POD_NAME" -- nslookup -type=cname "$PG_AUTH_HOST" | grep "canonical name = " | cut -d' ' -f4 | sed -e 's/\.$//')"
+    fi
 }
 
 dev_server() {
@@ -140,9 +155,6 @@ dev_setup() {
     mkdir -p ~/.aws
     dev_config_aws_profile > ~/.aws/config
 
-    mkdir -p "$WORKSPACE_DIR/cfg"
-    dev_config_aws_bzl > "$WORKSPACE_DIR/cfg/aws.bzl"
-
     aws sso login
 
     ACCOUNT="$(aws sts get-caller-identity --query "Account" --output text)"
@@ -159,7 +171,13 @@ dev_setup() {
                 --region "$AWS_REGION" \
                 --role-arn "$ROLE_ARN"
 
+    mkdir -p "$WORKSPACE_DIR/cfg"
+    dev_config_aws_bzl > "$WORKSPACE_DIR/cfg/aws.bzl"
+
     rds_setup
+
+    dev_env
+    _update_bazelrc_env STORAGE_PG_BACKEND_HOST "$PG_AUTH_RESOLVED_HOST"
 
     $BAZEL run -- @pnpm//:pnpm --dir "$WORKSPACE_DIR" install
 }
@@ -282,7 +300,7 @@ rds_token() {
     USERNAME=$1; shift 1
 
     aws rds generate-db-auth-token \
-              --hostname "$STORAGE_PG_BACKEND_HOST" \
+              --hostname "$PG_AUTH_RESOLVED_HOST" \
               --port "$PG_AUTH_PORT" \
               --region "$AWS_REGION" \
               --username "$USERNAME"
