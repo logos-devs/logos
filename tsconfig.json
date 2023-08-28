@@ -23,6 +23,11 @@
         "./dev/logos/stack/service/client/web/*",
         "./bazel-out/k8-fastbuild/bin/dev/logos/stack/service/client/web/*",
         "./bazel-out/k8-dbg/bin/dev/logos/stack/service/client/web/*"
+      ],
+      "@infra/*": [
+        "./dev/logos/infra/*",
+        "./bazel-out/k8-fastbuild/bin/dev/logos/infra/*",
+        "./bazel-out/k8-dbg/bin/dev/logos/infra/*",
       ]
     },
     // FIXME remove when mwc-drawer works without throwing TS2430
@@ -51,6 +56,8 @@
     "./app/**/*.js",
     "./app/**/*.json",
     "./app/**/*.ts",
+    "./dev/logos/infra/**/*.js",
+    "./dev/logos/infra/**/*.json",
     "./dev/logos/infra/**/*.ts",
     "./dev/logos/stack/service/client/web/**/*.js",
     "./dev/logos/stack/service/client/web/**/*.json",

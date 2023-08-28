@@ -5,6 +5,7 @@ js_library(
     name = "web_library",
     srcs = [
         "index.html",
+        "//dev/logos/infra:cdk_deploy",
     ] + glob(
         [
             "**/*.js",

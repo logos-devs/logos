@@ -49,4 +49,5 @@ js_run_binary(
         "no-sandbox",
     ],
     tool = ":cdk",
+    visibility = ["//dev/logos/stack/service/client/web:__pkg__"],
 )

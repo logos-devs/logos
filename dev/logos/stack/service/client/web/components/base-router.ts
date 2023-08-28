@@ -6,6 +6,7 @@ import {choose} from 'lit/directives/choose.js';
 import {until} from 'lit/directives/until.js';
 import {when} from 'lit/directives/when.js';
 import {connect} from "pwa-helpers";
+import cdk from "@infra/outputs.json";
 
 function getRouteHost(hostname: string) {
     return hostname.split('.').slice(-2).join('.');
@@ -44,6 +45,9 @@ export class BaseRouter extends connect(store)(LitElement) {
         //     `))}
         // `)}
         return html`
+            <a href="https://login.dev.summer.app/oauth2/authorize?response_type=code&client_id=${cdk['logos-cognito'].logosCognitoUserPoolClientIdDevSummerApp}&redirect_uri=${encodeURIComponent("https://dev.summer.app/login/complete")}">
+                Login
+            </a>
             ${choose(getRouteHost(window.location.hostname), [
                 ["digits.rip", () => html`${until(import("@app/digits/web/components/frame/Digits").then(() => html`
                     <frame-digits></frame-digits>

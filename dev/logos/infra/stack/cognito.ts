@@ -54,7 +54,12 @@ export class CognitoStack extends Stack {
             });
 
             const userPoolClient = new UserPoolClient(this, `${id}-user-pool-client-web-${fqdnId}`, {
-                userPool
+                userPool,
+                oAuth: {
+                    callbackUrls: [
+                        `https://${fqdn}/login/complete`
+                    ]
+                }
             });
             const clientIdOutputId = `${id}-user-pool-client-id-${fqdnId}`;
             const clientIdOutput = new CfnOutput(this, clientIdOutputId, {

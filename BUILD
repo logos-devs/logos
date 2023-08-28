@@ -13,21 +13,6 @@ copy_to_bin(
 )
 
 sh_binary(
-    name = "eksctl",
-    srcs = select({
-        "@platforms//os:osx": [
-            "@eksctl_osx//file",
-        ],
-        "@platforms//os:linux": [
-            "@eksctl_linux//:eksctl_linux",
-        ],
-        "//conditions:default": ["@platforms//:incompatible"],
-    }),
-    tags = ["no-sandbox"],
-    visibility = ["//dev/logos/stack:__pkg__"],
-)
-
-sh_binary(
     name = "minikube",
     srcs = select({
         "@platforms//os:osx": [

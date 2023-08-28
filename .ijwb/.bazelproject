@@ -15,3 +15,5 @@ targets:
   //dev/logos/stack/service/client
   //dev/logos/stack/service/console
   //dev/logos/stack/service/envoy
+additional_languages:
+  typescript
