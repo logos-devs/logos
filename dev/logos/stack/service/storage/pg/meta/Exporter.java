@@ -1,36 +1,23 @@
 package dev.logos.stack.service.storage.exporter;
 
-import static dev.logos.stack.service.storage.pg.Identifier.snakeToCamelCase;
-import static javax.lang.model.element.Modifier.FINAL;
-import static javax.lang.model.element.Modifier.PUBLIC;
-import static javax.lang.model.element.Modifier.STATIC;
-
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.protobuf.ByteString;
-import com.google.protobuf.DescriptorProtos.DescriptorProto;
-import com.google.protobuf.DescriptorProtos.FieldDescriptorProto;
+import com.google.protobuf.DescriptorProtos.*;
 import com.google.protobuf.DescriptorProtos.FieldDescriptorProto.Label;
 import com.google.protobuf.DescriptorProtos.FieldDescriptorProto.Type;
-import com.google.protobuf.DescriptorProtos.FileDescriptorProto;
-import com.google.protobuf.DescriptorProtos.FileDescriptorSet;
-import com.google.protobuf.DescriptorProtos.FileOptions;
-import com.google.protobuf.DescriptorProtos.MethodDescriptorProto;
-import com.google.protobuf.DescriptorProtos.ServiceDescriptorProto;
 import com.querydsl.sql.codegen.MetaDataExporter;
-import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.CodeBlock;
-import com.squareup.javapoet.FieldSpec;
-import com.squareup.javapoet.JavaFile;
-import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.TypeSpec;
+import com.squareup.javapoet.*;
 import dev.logos.stack.module.DatabaseModule;
 import dev.logos.stack.service.storage.pg.Column;
 import dev.logos.stack.service.storage.pg.Identifier;
 import dev.logos.stack.service.storage.pg.Relation;
 import dev.logos.stack.service.storage.pg.Schema;
+
+import javax.lang.model.element.Modifier;
+import javax.sql.DataSource;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -40,16 +27,12 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import javax.lang.model.element.Modifier;
-import javax.sql.DataSource;
+
+import static dev.logos.stack.service.storage.pg.Identifier.snakeToCamelCase;
+import static javax.lang.model.element.Modifier.*;
 
 
 record ColumnDescriptor(String name, String type) {
@@ -311,20 +294,21 @@ public class Exporter {
                     .returns(resultProtoClassName)
                     .addStatement(
                         CodeBlock.builder()
-                                 .add("return $T.newBuilder()\n", resultProtoClassName)
+                                 .add("$T.Builder builder = $T.newBuilder();\n", resultProtoClassName, resultProtoClassName)
                                  .add(columnDescriptors
                                           .stream()
                                           .map(columnDescriptor -> {
                                               String columnName = columnDescriptor.name();
-                                              return CodeBlock.of(".$N($L)",
+                                              return CodeBlock.of("if (resultSet.getObject($S) != null) { builder.$N($L); }\n",
+                                                                  columnName,
                                                                   columnDescriptor.getProtobufFieldSetter(),
                                                                   columnDescriptor.convertType(
                                                                       CodeBlock.of(
                                                                           "resultSet.$N($S)",
                                                                           columnDescriptor.getResultSetMethod(),
                                                                           columnName)));
-                                          }).collect(CodeBlock.joining("\n")))
-                                 .add("\n.build()")
+                                          }).collect(CodeBlock.joining(";")))
+                                 .add("return builder.build()")
                                  .build())
                     .build())
             .addField(

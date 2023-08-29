@@ -6,6 +6,7 @@ java_library(
     ],
     deps = [
         "//app/summer/service:entry_storage_service",
+        "//app/summer/storage:entry_storage",
         "//dev/logos/app",
         "//dev/logos/app:app_module",
         "@io_grpc_grpc_java//api",

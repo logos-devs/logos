@@ -22,6 +22,7 @@ java_library(
         "//app/review:review_service",
         "//app/review/grammar:aipname_parser_java",
         "//app/review/grammar:java9_parser_java",
+        "//app/summer/module",
         "//dev/logos/stack/job",
         "//dev/logos/stack/module:database_module",
         "//dev/logos/stack/service/storage:storage_library",

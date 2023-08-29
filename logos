@@ -134,7 +134,7 @@ dev_server() {
   rds_tunnel_up
   server_tunnel_up
   # TODO switch to using telepresence intercept
-  bazel run //dev/logos/stack/service/backend:Server -- --debug
+  ibazel run //dev/logos/stack/service/backend:Server #-- --debug
 }
 
 dev_client() {
@@ -365,6 +365,7 @@ deploy() {
 }
 
 _psql() {
+    dev_env
     PGPASSWORD="${PGPASSWORD:-$(rds_token "$PG_DB_MIGRATION_USER")}" \
         psql --host "$PG_TUNNEL_HOST" \
              --port "$PG_TUNNEL_PORT" \

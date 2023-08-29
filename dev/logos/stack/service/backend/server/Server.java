@@ -8,6 +8,9 @@ import dev.logos.stack.job.JobState;
 import dev.logos.stack.module.DatabaseModule;
 import io.grpc.BindableService;
 import io.grpc.ServerBuilder;
+import org.reflections.Reflections;
+import org.reflections.scanners.Scanners;
+
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
@@ -17,8 +20,6 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
-import org.reflections.Reflections;
-import org.reflections.scanners.Scanners;
 
 
 public class Server implements Job {
@@ -99,11 +100,13 @@ public class Server implements Job {
         modules.add(new DatabaseModule());
         modules.add(new ServerModule());
 
-        String packageName = "app";
-        Reflections reflections = new Reflections(packageName, Scanners.SubTypes);
+        String parentPackageName = "app";
+        Reflections reflections = new Reflections(parentPackageName, Scanners.SubTypes);
 
         for (Class<? extends AbstractModule> clazz : reflections.getSubTypesOf(AbstractModule.class)) {
-            if (clazz.getPackageName().startsWith(packageName) && !Modifier.isAbstract(clazz.getModifiers())) {
+            String packageName = clazz.getPackageName();
+            if (packageName.startsWith(parentPackageName) && !Modifier.isAbstract(clazz.getModifiers())) {
+                logger.info("APP: " + clazz.getCanonicalName());
                 modules.add(clazz.getDeclaredConstructor().newInstance());
             }
         }

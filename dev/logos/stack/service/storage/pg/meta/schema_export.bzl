@@ -114,6 +114,7 @@ def schema_export(name, tables, visibility):
         protoc_grpc_web_plugin = "@grpc_web//javascript/net/grpc/web/generator:protoc-gen-grpc-web",
         protoc_js_plugin = "@protobuf_javascript//generator:protoc-gen-js",
         tags = [
+            "external",
             "no-remote",
             "requires-network",
         ],
