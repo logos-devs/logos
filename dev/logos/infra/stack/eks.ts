@@ -1,4 +1,3 @@
-import {App, Environment} from 'aws-cdk-lib';
 import {
     AsgClusterProvider,
     AwsLoadBalancerControllerAddOn,
@@ -14,11 +13,12 @@ import {
     NginxAddOn,
     VpcCniAddOn
 } from "@aws-quickstart/eks-blueprints";
-import {InstanceType} from 'aws-cdk-lib/aws-ec2';
+import {App, Environment} from 'aws-cdk-lib';
 import {UpdatePolicy} from 'aws-cdk-lib/aws-autoscaling';
+import {InstanceType} from 'aws-cdk-lib/aws-ec2';
 import {KubernetesVersion, MachineImageType} from 'aws-cdk-lib/aws-eks';
-import {R53Stack} from "./r53";
 import {AcmStack} from "./acm";
+import {R53Stack} from "./r53";
 
 export function makeEksStack(
     app: App,
@@ -66,8 +66,12 @@ export function makeEksStack(
                     )
                 }
             }),
-            new ClusterAutoScalerAddOn(),
-            new CoreDnsAddOn("v1.10.1-eksbuild.2"),
+            new ClusterAutoScalerAddOn({
+                version: "9.29.0"
+            }),
+            new CoreDnsAddOn({
+                version: "v1.10.1-eksbuild.2"
+            }),
             new KubeProxyAddOn("v1.27.4-eksbuild.2"),
             new MetricsServerAddOn(),
             new NginxAddOn({

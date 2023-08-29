@@ -5,7 +5,7 @@ js_library(
     name = "web_library",
     srcs = [
         "index.html",
-        "//dev/logos/infra:cdk_deploy",
+        "//dev/logos/infra:cognito_login_urls",
     ] + glob(
         [
             "**/*.js",

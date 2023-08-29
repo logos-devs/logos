@@ -1,12 +1,11 @@
 import "@app/auth/web/components/login";
+import login_urls from "@infra/cognito_login_urls.json";
 import {RootState, store} from "@logos/store/store";
 import {css, html, LitElement} from "lit";
 import {customElement, state} from "lit/decorators.js";
 import {choose} from 'lit/directives/choose.js';
 import {until} from 'lit/directives/until.js';
-import {when} from 'lit/directives/when.js';
 import {connect} from "pwa-helpers";
-import cdk from "@infra/outputs.json";
 
 function getRouteHost(hostname: string) {
     return hostname.split('.').slice(-2).join('.');
@@ -45,9 +44,7 @@ export class BaseRouter extends connect(store)(LitElement) {
         //     `))}
         // `)}
         return html`
-            <a href="${cdk['logos-cognito'].logosCognitoLoginUrlDevSummerApp}">
-                Login
-            </a>
+            <a href="${login_urls["devSummerApp"]}">Login</a>
             ${choose(getRouteHost(window.location.hostname), [
                 ["digits.rip", () => html`${until(import("@app/digits/web/components/frame/Digits").then(() => html`
                     <frame-digits></frame-digits>

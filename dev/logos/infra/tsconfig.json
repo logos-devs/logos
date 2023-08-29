@@ -3,6 +3,7 @@
     "allowJs": false,
     "baseUrl": ".",
     "composite": true,
+    "outDir": "dist",
     "emitDecoratorMetadata": true,
     "esModuleInterop": true,
     "experimentalDecorators": true,
@@ -32,12 +33,6 @@
     "types": [
       "node",
       "reflect-metadata"
-    ],
-    "rootDir": ".",
-    "rootDirs": [
-      ".",
-      "./bazel-out/k8-fastbuild/bin/",
-      "./bazel-out/k8-dbg/bin/"
     ],
     // Enabling this flag breaks decorators as used for dependency injection,
     // and is otherwise automatically enabled by targeting ES2022. Check that

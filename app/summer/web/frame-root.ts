@@ -1,12 +1,9 @@
-import {lazyInject, TYPE} from "@logos/bind";
-import {css, html, LitElement} from 'lit';
 import "@material/web/divider/divider";
-import "@material/web/list/list";
-import "@material/web/list/list-item";
 import "@material/web/fab/fab";
 import "@material/web/icon/icon";
-
-import {property, query} from 'lit/decorators.js'; // https://github.com/lit/lit/issues/1993
+import "@material/web/list/list";
+import "@material/web/list/list-item";
+import {css, html, LitElement} from 'lit';
 
 class FrameRoot extends LitElement {
     // @lazyInject(TYPE.FileServiceClient) private fileServiceClient!: FileServicePromiseClient;
@@ -25,6 +22,7 @@ class FrameRoot extends LitElement {
     static get styles() {
         return css`
             :host {
+                --md-container-color: red;
                 display: flex;
                 flex-direction: column;
                 align-items: center;

@@ -2,8 +2,8 @@ import {App, CfnOutput, Environment, Stack, StackProps} from "aws-cdk-lib";
 import {UserPool, UserPoolClient, UserPoolDomain} from "aws-cdk-lib/aws-cognito";
 import {ARecord, HostedZone, RecordTarget} from "aws-cdk-lib/aws-route53";
 import {UserPoolDomainTarget} from "aws-cdk-lib/aws-route53-targets";
-import {AcmStack} from "./acm";
 import {LogosApp} from "../construct/logos";
+import {AcmStack} from "./acm";
 
 function dashToCamel(s: string): string {
     return s.replace(/(-\w)/g, (match) => match[1].toUpperCase());
@@ -66,7 +66,7 @@ export class CognitoStack extends Stack {
                 value: userPoolDomain.signInUrl(userPoolClient, { redirectUri }),
                 description: "Sign-in URL"
             });
-            clientIdOutput.overrideLogicalId(dashToCamel(clientIdOutputId));
+            clientIdOutput.overrideLogicalId(dashToCamel(fqdnId));
         })
     }
 }

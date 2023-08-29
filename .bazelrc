@@ -1,4 +1,3 @@
-build --strategy=TsProject=worker
 build --incompatible_strict_action_env
 build --shell_executable=/bin/bash
 
