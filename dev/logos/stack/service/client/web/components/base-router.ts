@@ -45,7 +45,7 @@ export class BaseRouter extends connect(store)(LitElement) {
         //     `))}
         // `)}
         return html`
-            <a href="https://login.dev.summer.app/oauth2/authorize?response_type=code&client_id=${cdk['logos-cognito'].logosCognitoUserPoolClientIdDevSummerApp}&redirect_uri=${encodeURIComponent("https://dev.summer.app/login/complete")}">
+            <a href="${cdk['logos-cognito'].logosCognitoLoginUrlDevSummerApp}">
                 Login
             </a>
             ${choose(getRouteHost(window.location.hostname), [

@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "allowJs": false,
-    "baseUrl": ".",
+    "baseUrl": "./",
     "composite": true,
     "emitDecoratorMetadata": true,
     "esModuleInterop": true,
@@ -30,8 +30,6 @@
         "./bazel-out/k8-dbg/bin/dev/logos/infra/*",
       ]
     },
-    // FIXME remove when mwc-drawer works without throwing TS2430
-    "skipLibCheck": true,
     "sourceMap": true,
     // TODO : Re-enable strict after fixing d.ts generation for grpc-web clients
     "strict": false,

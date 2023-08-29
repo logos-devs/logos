@@ -76,16 +76,6 @@ go_register_toolchains(version = "1.20.7")
 
 gazelle_dependencies()
 
-# buildifier
-http_archive(
-    name = "com_github_bazelbuild_buildtools",
-    sha256 = "ae34c344514e08c23e90da0e2d6cb700fcd28e80c02e23e4d5715dddcb42f7b3",
-    strip_prefix = "buildtools-4.2.2",
-    urls = [
-        "https://github.com/bazelbuild/buildtools/archive/refs/tags/4.2.2.tar.gz",
-    ],
-)
-
 # rules_proto
 http_archive(
     name = "com_google_protobuf",
@@ -379,3 +369,8 @@ buildbuddy(
     container_image = UBUNTU20_04_IMAGE,
     llvm = True,
 )
+
+# jq
+load("@aspect_bazel_lib//lib:repositories.bzl", "register_jq_toolchains")
+
+register_jq_toolchains()

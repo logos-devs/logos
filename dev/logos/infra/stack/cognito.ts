@@ -37,34 +37,34 @@ export class CognitoStack extends Stack {
                 }),
                 loginDomain = `login.${fqdn}`;
 
+            const userPoolDomain = new UserPoolDomain(this, `${id}-domain-${loginDomain.replace(/\./g, "-")}`, {
+                userPool,
+                customDomain: {
+                    domainName: loginDomain,
+                    certificate: acmStack.loginCertificates[loginDomain]
+                }
+            })
+
             new ARecord(this, `${id}-custom-login-dns-record-${fqdnId}`, {
                 zone: HostedZone.fromLookup(this, `${id}-zone-lookup-${fqdnId}`, {domainName: fqdn}),
                 recordName: "login",
                 target: RecordTarget.fromAlias(
-                    new UserPoolDomainTarget(
-                        new UserPoolDomain(this, `${id}-domain-${loginDomain.replace(/\./g, "-")}`, {
-                            userPool,
-                            customDomain: {
-                                domainName: loginDomain,
-                                certificate: acmStack.loginCertificates[loginDomain]
-                            }
-                        })
-                    )
+                    new UserPoolDomainTarget(userPoolDomain)
                 )
             });
 
+            const redirectUri = `https://${fqdn}/login/complete`;
             const userPoolClient = new UserPoolClient(this, `${id}-user-pool-client-web-${fqdnId}`, {
                 userPool,
                 oAuth: {
-                    callbackUrls: [
-                        `https://${fqdn}/login/complete`
-                    ]
+                    callbackUrls: [redirectUri]
                 }
             });
-            const clientIdOutputId = `${id}-user-pool-client-id-${fqdnId}`;
+
+            const clientIdOutputId = `${id}-login-url-${fqdnId}`;
             const clientIdOutput = new CfnOutput(this, clientIdOutputId, {
-                value: userPoolClient.userPoolClientId,
-                description: "App client ID to use when linking to the Cognito hosted web login UI"
+                value: userPoolDomain.signInUrl(userPoolClient, { redirectUri }),
+                description: "Sign-in URL"
             });
             clientIdOutput.overrideLogicalId(dashToCamel(clientIdOutputId));
         })

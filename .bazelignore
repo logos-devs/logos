@@ -1,3 +1,8 @@
 node_modules
 third_party
+bazel-bin
+bazel-genfiles
+bazel-out
+bazel-testlogs
 bazel-logos
+.ijwb
