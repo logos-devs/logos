@@ -13,19 +13,20 @@ import dev.logos.stack.service.storage.exceptions.EntityWriteException;
 import dev.logos.stack.service.storage.pg.Filter;
 import dev.logos.stack.service.storage.pg.Relation;
 import dev.logos.stack.service.storage.pg.Select;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Stream;
-import javax.sql.DataSource;
 import org.jdbi.v3.core.Handle;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.mapper.RowMapperFactory;
 import org.jdbi.v3.core.mapper.reflect.FieldMapper;
 import org.jdbi.v3.core.statement.Query;
 import org.jdbi.v3.postgres.PostgresPlugin;
+
+import javax.sql.DataSource;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Stream;
 
 
 public abstract class TableStorage<Entity, StorageIdentifier> implements
@@ -51,7 +52,7 @@ public abstract class TableStorage<Entity, StorageIdentifier> implements
     protected abstract Entity storageToEntity(ResultSet resultSet) throws SQLException;
 
     protected Jdbi getJdbi() throws SQLException {
-        return Jdbi.create(dataSource.getConnection()).installPlugin(new PostgresPlugin());
+        return Jdbi.create(dataSource).installPlugin(new PostgresPlugin());
     }
 
     protected SQLQueryFactory getQueryFactory() {
@@ -149,7 +150,7 @@ public abstract class TableStorage<Entity, StorageIdentifier> implements
                          .stream()
                          .onClose(handle::close);
         } catch (SQLException e) {
-            throw new EntityReadException();
+            throw new EntityReadException("Database error in list query", e);
         }
     }
 

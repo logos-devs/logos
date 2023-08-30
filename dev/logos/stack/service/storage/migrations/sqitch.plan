@@ -13,3 +13,4 @@ table_auth_credential [schema_auth uuid_extension] 2022-12-06T17:17:02Z trinque 
 table_auth_user [table_auth_credential] 2023-01-18T01:42:42Z trinque <trinque@trinquepad> # add table auth.user and foreign key to auth.credential
 schema_summer 2023-08-25T20:56:00Z root <root@7488bf9a150a> # Add schema summer
 table_summer_entry [schema_summer] 2023-08-25T20:57:55Z root <root@7488bf9a150a> # Add table summer.entry
+table_summer_source_rss [schema_summer] 2023-08-30T18:56:26Z trinque <trinque@monolith> # Add table summer.source_rss

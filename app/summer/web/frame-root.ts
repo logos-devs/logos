@@ -61,7 +61,7 @@ class FrameRoot extends LitElement {
 
           .mdc-card {
             width: 90vw;
-            max-width: 300px;
+            max-width: 450px;
             padding-left: 1em;
             padding-right: 1em;
             margin-bottom: 1em;
@@ -96,7 +96,6 @@ class FrameRoot extends LitElement {
                   href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css">
             <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 
-            <!-- Required Material Web JavaScript library -->
             <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
 
             <h1>☀️</h1>
