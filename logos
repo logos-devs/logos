@@ -2,6 +2,7 @@
 
 SELF="$0"
 WORKSPACE_DIR="$(dirname "$(realpath "$0")")"
+DB_MIGRATION_DIR="$WORKSPACE_DIR/dev/logos/stack/service/storage/migrations"
 
 AWS_REGION="${AWS_REGION:-"us-east-2"}"
 # TODO create a role with diminished permissions
@@ -280,21 +281,28 @@ rds_setup() {
 SQL
 }
 
-rds_migrate() {
+rds_deploy() {
+    rds_sqitch deploy "$@"
+}
+
+rds_sqitch() {
     rds_tunnel_up
 
     SQITCH_PASSWORD="$(rds_token "$PG_DB_MIGRATION_USER")"
     export SQITCH_PASSWORD
+    CMD="$1"; shift 1
 
-    pushd "$WORKSPACE_DIR/dev/logos/stack/service/storage/migrations"
-    sqitch deploy --db-name "$PG_DB_NAME" \
+    pushd "$DB_MIGRATION_DIR"
+    sqitch "$CMD" --db-name "$PG_DB_NAME" \
                   --db-user "$PG_DB_MIGRATION_USER" \
                   --db-host "$PG_TUNNEL_HOST" \
-                  --db-port "$PG_TUNNEL_PORT"
+                  --db-port "$PG_TUNNEL_PORT" \
+                  "$@"
     popd
 
     unset SQITCH_PASSWORD
 }
+
 
 rds_token() {
     USERNAME=$1; shift 1
@@ -312,9 +320,13 @@ rds() {
             shift 1
             rds_setup "$@"
             ;;
-        migrate)
+        deploy)
             shift 1
-            rds_migrate "$@"
+            rds_deploy "$@"
+            ;;
+        sqitch)
+            shift 1
+            rds_sqitch "$@"
             ;;
         token)
             shift 1
@@ -356,7 +368,7 @@ deploy() {
     dev_env
 
     rds_tunnel_up
-    rds_migrate
+    rds_deploy
 
     $BAZEL run --config=remote //dev/logos/stack/service/backend:backend.apply
     $BAZEL run --config=remote //dev/logos/stack/service/envoy:envoy.apply

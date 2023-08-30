@@ -120,5 +120,6 @@
     <orderEntry type="library" name="header_metrics-spi-2.20.102_331f5c8" level="project" />
     <orderEntry type="library" name="header_aws-json-protocol-2.20.102_caf3d3bd" level="project" />
     <orderEntry type="library" name="header_jjwt-impl-0.11.2_6ba94ecd" level="project" />
+    <orderEntry type="library" name="material-components-web" level="application" />
   </component>
 </module>

@@ -35,6 +35,15 @@ export class BaseRouter extends connect(store)(LitElement) {
             display: block;
             height: 100vh;
         }
+        a.login {
+            text-decoration: none;
+            position: absolute;
+            top: 0.5em;
+            right: 0.5em;
+            font-size: 10px;
+            color: #999;
+            font-family: sans-serif;
+        }
     `;
 
     render() {
@@ -44,7 +53,7 @@ export class BaseRouter extends connect(store)(LitElement) {
         //     `))}
         // `)}
         return html`
-            <a href="${login_urls["devSummerApp"]}">Login</a>
+            <a class="login" href="${login_urls["devSummerApp"]}">Login</a>
             ${choose(getRouteHost(window.location.hostname), [
                 ["digits.rip", () => html`${until(import("@app/digits/web/components/frame/Digits").then(() => html`
                     <frame-digits></frame-digits>

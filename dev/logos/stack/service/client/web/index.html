@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title><%= htmlWebpackPlugin.options.title %></title>
+    <title>summer.app</title>
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code&family=Roboto+Mono:wght@300;400;500&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Material+Icons&display=block" rel="stylesheet">
@@ -14,8 +14,9 @@
     <meta content="width=device-width, initial-scale=1" name="viewport">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="translucent">
-    <meta name="theme-color" content="#ffffff">
     <meta name="referrer" content="no-referrer">
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#292929" media="(prefers-color-scheme: dark)">
 
     <style>
         @media (prefers-color-scheme: dark) {
@@ -38,7 +39,7 @@
             margin: 0;
             min-height: 100%;
         }
-        body {
+        html, body {
             margin: 0;
             min-height: 100%;
         }
