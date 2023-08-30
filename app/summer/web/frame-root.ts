@@ -27,53 +27,66 @@ class FrameRoot extends LitElement {
 
     static get styles() {
         return css`
+          :host {
+            height: 100vh;
+            width: 100vw;
+            box-sizing: border-box;
+            position: fixed;
+            overflow-y: auto;
+            --md-sys-color-surface: #fcfcfc;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+          }
+
+          md-list {
+          }
+
+          md-list-item {
+            border-radius: 1em !important;
+
+          }
+
+          md-list-item img {
+            max-width: 10vw;
+          }
+
+          h1 {
+            text-align: center;
+          }
+
+          md-fab {
+            margin-top: 1em;
+          }
+
+          .mdc-card {
+            width: 90vw;
+            max-width: 300px;
+            padding-left: 1em;
+            padding-right: 1em;
+            margin-bottom: 1em;
+          }
+
+          .mdc-card__media {
+            width: 100%;
+            background-size: 100% auto;
+          }
+
+          @media (prefers-color-scheme: dark) {
             :host {
-                height: 100vh;
-                width: 100vw;
-                box-sizing: border-box;
-                position: fixed;
-                overflow-y: auto;
-                --md-sys-color-surface: #fcfcfc;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
+              --md-sys-color-surface: #292929;
+              --md-sys-color-on-surface: white;
+              --md-sys-color-on-surface-variant: #ccc;
             }
-            md-list {
-            }
-            md-list-item {
-                border-radius: 1em !important;
-                
-            }
-            md-list-item img {
-              max-width: 10vw;
-            }
+
             h1 {
-                text-align: center;
+              filter: grayscale();
             }
-            md-fab {
-                margin-top: 1em;
-            }
+
             .mdc-card {
-                width: 90vw;
-                max-width: 300px;
-                padding-left: 1em;
-                padding-right: 1em;
-                margin-bottom: 1em;
+              background-color: #444;
             }
-            .mdc-card__media {
-                width: 100%;
-                background-size: 100% auto;
-            }
-            @media (prefers-color-scheme: dark) {
-              :host {
-                --md-sys-color-surface: #292929;
-                --md-sys-color-on-surface: white;
-                --md-sys-color-on-surface-variant: #ccc;
-              }
-              h1 {
-                filter: grayscale();
-              }
-            }
+          }
         `;
     }
 
