@@ -12,7 +12,7 @@ courlan==0.9.3
 dateparser==1.1.6
 favicon==0.7.0
 feedparser==6.0.10
-grpcio==1.51.1
+grpcio==1.53.0
 htmldate==1.5.0
 idna==3.4
 jmespath==1.0.1
