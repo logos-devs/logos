@@ -10,7 +10,6 @@ import com.querydsl.sql.PostgreSQLTemplates;
 import com.querydsl.sql.SQLQueryFactory;
 import dev.logos.stack.service.storage.exceptions.EntityReadException;
 import dev.logos.stack.service.storage.exceptions.EntityWriteException;
-import dev.logos.stack.service.storage.pg.Filter;
 import dev.logos.stack.service.storage.pg.Relation;
 import dev.logos.stack.service.storage.pg.Select;
 import org.jdbi.v3.core.Handle;
@@ -23,7 +22,6 @@ import org.jdbi.v3.postgres.PostgresPlugin;
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -111,50 +109,19 @@ public abstract class TableStorage<Entity, StorageIdentifier> implements
         });
     }
 
-    // FIXME does not respect the argument
-    @Override
-    public Entity get(StorageIdentifier id) throws EntityReadException {
-        try (Query selectQuery = getJdbi().withHandle(handle -> {
-            handle.registerRowMapper(getMapper());
-            return handle.select(
-                Select.builder()
-                      .from(relation)
-                      .where(Collections.singletonList(
-                          Filter.build().column("id").op(Filter.Op.EQ)))
-                      .build()
-                      .toString(),
-                id);
-        })) {
-            return selectQuery.mapTo(entityClass).first();
-        } catch (SQLException e) {
-            throw new EntityReadException();
-        }
-    }
-
-    @Override
-    public Stream<Entity> list() throws EntityReadException {
-        return list(null);
-    }
-
-    @Override
-    public Stream<Entity> list(BooleanTemplate filter) throws EntityReadException {
+    public Stream<Entity> query(Select.Builder selectBuilder) throws EntityReadException {
         try {
             Handle handle = getJdbi().open();
             handle.registerRowMapper(getMapper());
-            return handle.createQuery(
-                             Select.builder()
-                                   .from(relation)
-                                   .build()
-                                   .toString())
-                         .map((rs, ctx) -> storageToEntity(rs))
-                         .stream()
-                         .onClose(handle::close);
+            return handle.createQuery(selectBuilder.build().toString())
+                    .map((rs, ctx) -> storageToEntity(rs))
+                    .stream()
+                    .onClose(handle::close);
         } catch (SQLException e) {
-            throw new EntityReadException("Database error in list query", e);
+            throw new EntityReadException("Database error in query", e);
         }
     }
 
-    @Override
     public StorageIdentifier create(Entity entity) throws EntityWriteException {
         try (Query insertQuery = getJdbi().withHandle(handle -> {
             Map<FieldDescriptor, Object> fields = ((GeneratedMessageV3) entity).getAllFields();

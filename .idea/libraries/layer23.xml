@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="layer23">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/node_modules/.pnpm/@aws-quickstart+eks-blueprints@1.11.3/node_modules/@aws-cdk/lambda-layer-kubectl-v24/lib/layer.zip!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

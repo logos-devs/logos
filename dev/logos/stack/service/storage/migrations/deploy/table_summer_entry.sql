@@ -10,10 +10,12 @@ create table summer.entry (
     link_url text,
     image_url text,
     created_at timestamp with time zone not null default now(),
+    published_at timestamp with time zone not null,
     updated_at timestamp with time zone not null default now(),
-    parent_id uuid references summer.entry(id) on delete cascade
+    parent_id uuid references summer.entry(id) on delete cascade,
+    tags text[] not null default '{}'
 );
 
-grant select, update, delete on summer.entry to storage;
+grant select, insert, update, delete on summer.entry to storage;
 
 COMMIT;

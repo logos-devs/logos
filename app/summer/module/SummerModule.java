@@ -1,6 +1,7 @@
 package app.summer.module;
 
 import app.summer.service.EntryStorageService;
+import app.summer.service.SourceRssStorageService;
 import app.summer.storage.EntryStorage;
 import dev.logos.app.App;
 import dev.logos.app.AppModule;
@@ -16,10 +17,10 @@ public class SummerModule extends AppModule {
                         .domain("summer.app")
                         .build());
 
-
         bind(EntryStorage.class).toInstance(new EntryStorage());
 
         addService(EntryStorageService.class);
+        addService(SourceRssStorageService.class);
         super.configure();
     }
 }

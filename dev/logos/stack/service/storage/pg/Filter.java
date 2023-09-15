@@ -1,6 +1,9 @@
 package dev.logos.stack.service.storage.pg;
 
 public class Filter {
+    Column column;
+    Op operation;
+    String value;
 
     public enum Op {
         EQ("="),
@@ -8,16 +11,14 @@ public class Filter {
         LT("<"),
         GTE(">="),
         LTE("<="),
-        NE("<>");
+        NE("<>"),
+        IS_NULL("is null"),
+        CONTAINS("@>");
 
         private final String operator;
 
         Op(String operator) {
             this.operator = operator;
-        }
-
-        public String getOperator() {
-            return operator;
         }
 
         @Override
@@ -26,24 +27,43 @@ public class Filter {
         }
     }
 
-    public static Filter build() {
-        return new Filter();
+    public static class Builder {
+        private final Filter filter;
+
+        public Builder() {
+            this.filter = new Filter();
+        }
+
+        public Builder column(Column column) {
+            this.filter.column = column;
+            return this;
+        }
+
+        public Builder op(Op operation) {
+            this.filter.operation = operation;
+            return this;
+        }
+
+        public Builder value(String value) {
+            this.filter.value = value;
+            return this;
+        }
+
+        public Filter build() {
+            return this.filter;
+        }
     }
 
-    String column;
-    Op operation;
-
-    public Filter column(String column) {
-        this.column = column;
-        return this;
-    }
-
-    public Filter op(Op operation) {
-        this.operation = operation;
-        return this;
+    public static Builder builder() {
+        return new Builder();
     }
 
     public String toString() {
-        return String.format("%s %s", this.column, this.operation);
+        return String.format(
+                "%s %s%s",
+                this.column,
+                this.operation,
+                this.value == null ? "" : " " + this.value
+        );
     }
 }

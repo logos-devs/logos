@@ -10,6 +10,7 @@ public class Select {
     private final List<Filter> where;
     private final Integer limit;
     private final Integer offset;
+    private final List<OrderBy> orderBy;
 
     public static class Builder {
 
@@ -17,10 +18,12 @@ public class Select {
         private List<Filter> where;
         private Integer limit;
         private Integer offset;
+        private List<OrderBy> orderBy;
 
         public Builder() {
             this.offset = 0;
             this.where = new ArrayList<>();
+            this.orderBy = new ArrayList<>();
         }
 
         public Builder from(Relation relation) {
@@ -54,6 +57,15 @@ public class Select {
             return this;
         }
 
+        public Builder orderBy(OrderBy.Builder orderBy) {
+            return orderBy(orderBy.build());
+        }
+
+        public Builder orderBy(OrderBy orderBy) {
+            this.orderBy.add(orderBy);
+            return this;
+        }
+
         public Select build() {
             return new Select(this);
         }
@@ -68,6 +80,7 @@ public class Select {
         this.where = builder.where;
         this.limit = builder.limit;
         this.offset = builder.offset;
+        this.orderBy = builder.orderBy;
     }
 
     @Override
@@ -76,14 +89,17 @@ public class Select {
         queryParts.add("select");
         queryParts.add("*");
         queryParts.add(String.format("from %s", this.from));
+        if (!this.where.isEmpty()) {
+            queryParts.add("where " + this.where.stream().map(Filter::toString).collect(Collectors.joining(" and ")));
+        }
+        if (!this.orderBy.isEmpty()) {
+            queryParts.add("order by " + this.orderBy.stream().map(OrderBy::toString).collect(Collectors.joining(", ")));
+        }
         if (this.limit != null) {
             queryParts.add(String.format("limit %d", this.limit));
         }
         if (this.offset != null) {
             queryParts.add(String.format("offset %d", this.offset));
-        }
-        if (this.where.size() > 0) {
-            queryParts.add("where " + this.where.stream().map(Filter::toString).collect(Collectors.joining(" and ")));
         }
         return String.join(" ", queryParts);
     }

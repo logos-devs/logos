@@ -1,9 +1,10 @@
 load("//dev/logos/stack/service/storage/pg/meta:schema_export.bzl", "schema_export", "storage_java_proto_library")
 
 java_library(
-    name = "entry_storage",
+    name = "storage",
     srcs = [
         "EntryStorage.java",
+        "SourceRssStorage.java",
     ],
     visibility = ["//app/summer:__subpackages__"],
     deps = [
@@ -19,7 +20,10 @@ java_library(
 schema_export(
     name = "schema_export",
     tables = {
-        "summer": ["entry"],
+        "summer": [
+            "entry",
+            "source_rss",
+        ],
     },
     visibility = ["//app/summer:__subpackages__"],
 )

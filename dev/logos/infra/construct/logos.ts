@@ -1,12 +1,13 @@
 import {App, Environment} from 'aws-cdk-lib';
 import {Construct} from 'constructs';
 import {makeAcmStack} from "../stack/acm";
+import {makeCognitoStack} from "../stack/cognito";
 import {makeEcrStack} from '../stack/ecr';
 import {makeEksStack} from '../stack/eks';
+import {makeIamStack} from "../stack/iam";
 import {makeR53Stack} from '../stack/r53';
 import {makeRdsStack} from '../stack/rds';
-import {makeIamStack} from "../stack/iam";
-import {makeCognitoStack} from "../stack/cognito";
+import {makeS3Stack} from "../stack/s3";
 
 
 export class Deployment {
@@ -69,5 +70,7 @@ export class Logos extends Construct {
 
         makeIamStack(app, `${id}-iam`, eksStack, rdsStack, env);
         makeCognitoStack(app, `${id}-cognito`, acmStack, env, apps);
+
+        makeS3Stack(app, `${id}-s3`, env);
     }
 }

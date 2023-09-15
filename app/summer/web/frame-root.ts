@@ -1,6 +1,10 @@
 import {EntryStorageServicePromiseClient} from "@app/summer/storage/summer/entry_grpc_web_pb.js";
 import {Entry, ListEntryRequest, ListEntryResponse} from "@app/summer/storage/summer/entry_pb.js";
+import {SourceRssStorageServicePromiseClient} from "@app/summer/storage/summer/source_rss_grpc_web_pb.js";
+import {ListSourceRssRequest, ListSourceRssResponse, SourceRss} from "@app/summer/storage/summer/source_rss_pb.js";
 import "@material/web/button/outlined-button";
+import "@material/web/chips/chip-set";
+import "@material/web/chips/filter-chip";
 import "@material/web/divider/divider";
 import "@material/web/fab/fab";
 import "@material/web/icon/icon";
@@ -13,7 +17,18 @@ import {when} from "lit/directives/when.js";
 
 class FrameRoot extends LitElement {
     @lazyInject(TYPE.EntryStorageServiceClient) private entryStorageServiceClient!: EntryStorageServicePromiseClient;
+    @lazyInject(TYPE.SourceRssStorageServiceClient) private sourceRssStorageServiceClient!: SourceRssStorageServicePromiseClient;
     @state() private entryList: Entry[] = [];
+    @state() private sourceRssList: SourceRss[] = [];
+    @state() private selectedTags: String[] = [];
+
+    getSourceIcon(source_id) {
+        for (const source of this.sourceRssList) {
+            if (indexedDB.cmp(source.getId(), source_id) == 0) {
+                return source.getFaviconUrl();
+            }
+        }
+    }
 
     connectedCallback() {
         super.connectedCallback();
@@ -23,20 +38,30 @@ class FrameRoot extends LitElement {
         ).then((listEntryResponse: ListEntryResponse) => {
             this.entryList = listEntryResponse.getResultsList();
         });
+
+        this.sourceRssStorageServiceClient.listSourceRss(
+            new ListSourceRssRequest()
+        ).then((listSourceRssResponse: ListSourceRssResponse) => {
+            this.sourceRssList = listSourceRssResponse.getResultsList();
+        });
     }
 
     static get styles() {
         return css`
           :host {
-            height: 100vh;
-            width: 100vw;
-            box-sizing: border-box;
-            position: fixed;
-            overflow-y: auto;
             --md-sys-color-surface: #fcfcfc;
+            align-items: center;
+            box-sizing: border-box;
             display: flex;
             flex-direction: column;
-            align-items: center;
+            height: 100vh;
+            overflow-y: auto;
+            position: fixed;
+            width: 100vw;
+          }
+          
+          md-chip-set.top {
+            margin-bottom: 1em;
           }
 
           md-list {
@@ -53,6 +78,13 @@ class FrameRoot extends LitElement {
 
           h1 {
             text-align: center;
+            font-size: 3em;
+          }
+          
+          img.source-icon {
+            height: 25px;
+            width: auto;
+            max-width: 50px;
           }
 
           md-fab {
@@ -90,6 +122,22 @@ class FrameRoot extends LitElement {
         `;
     }
 
+    formattedDate(date_str) {
+        return `${new Date(date_str).toLocaleString()}`;
+    }
+
+    toggleTag(tag) {
+        const tag_index = this.selectedTags.indexOf(tag);
+        if (tag_index == -1) {
+            this.selectedTags = this.selectedTags.concat(tag);
+        }
+        else {
+            const newTags = [].concat(this.selectedTags)
+            newTags.splice(tag_index, 1);
+            this.selectedTags = newTags;
+        }
+    }
+
     render() {
         return html`
             <link rel="stylesheet"
@@ -98,58 +146,84 @@ class FrameRoot extends LitElement {
 
             <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
 
+            <link href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" rel="stylesheet">
+            <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-element-bundle.min.js"></script>
+
             <h1>☀️</h1>
-            ${this.entryList.map((entry, index) => html`
-                <div class="mdc-card demo-card">
-                    <div @click=${() => window.location.href = entry.getLinkUrl()} class="mdc-card__primary-action demo-card__primary-action" tabindex="0">
-                        ${when(entry.getImageUrl(), () => html`
-                        <div class="mdc-card__media mdc-card__media--16-9 demo-card__media"
-                             style="background-image: url(&quot;${entry.getImageUrl()}&quot;);"></div>
-                        `)}
-                        <div class="demo-card__primary">
-                            <h2 class="demo-card__title mdc-typography mdc-typography--headline6">${entry.getName()}</h2>
-<!--                            <h3 class="demo-card__subtitle mdc-typography mdc-typography&#45;&#45;subtitle2"></h3>-->
-                        </div>
-                        <div class="demo-card__secondary mdc-typography mdc-typography--body2">
-                            ${entry.getBody()}
-                        </div>
-                    </div>
-                    <div class="mdc-card__actions">
-                        <div class="mdc-card__action-buttons">
-                            <button class="mdc-button mdc-card__action mdc-card__action--button"><span
-                                    class="mdc-button__ripple"></span> Read
-                            </button>
-                        </div>
-                        <div class="mdc-card__action-icons">
-                            <button class="mdc-icon-button mdc-card__action mdc-card__action--icon--unbounded"
-                                    aria-pressed="false" aria-label="Add to favorites" title="Add to favorites">
-                                <i class="material-icons mdc-icon-button__icon mdc-icon-button__icon--on">favorite</i>
-                                <i class="material-icons mdc-icon-button__icon">favorite_border</i>
-                            </button>
-                            <button class="mdc-icon-button material-icons mdc-card__action mdc-card__action--icon--unbounded"
-                                    title="Share" data-mdc-ripple-is-unbounded="true"
-                                    @click=${() => navigator.share({
-                                        title: entry.getName(),
-                                        text: entry.getBody(),
-                                        url: entry.getLinkUrl()
-                                    })}
-                            >share
-                            </button>
-                            <button class="mdc-icon-button material-icons mdc-card__action mdc-card__action--icon--unbounded"
-                                    title="More options" data-mdc-ripple-is-unbounded="true">more_vert
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                
-<!--                <script>-->
-<!--                    const selector = '.mdc-button, .mdc-icon-button, .mdc-card__primary-action';-->
-<!--                    const ripples = [].map.call(document.querySelectorAll(selector), function(el) {-->
-<!--                        return new MDCRipple(el);-->
-<!--                    });-->
-<!--                </script>-->
+
+            ${when(this.selectedTags, () => html`
+                <md-chip-set class="top">
+                    ${this.selectedTags.map(tag => html`
+                    <md-filter-chip label="${tag}"
+                                    selected
+                                    @click=${ev => {
+                        ev.stopPropagation()
+                        this.toggleTag(tag);
+                    }}
+                    >
+                    </md-filter-chip>
+                `)}
+                </md-chip-set>
             `)}
-            </md-list>
+
+            <swiper-container>
+                ${this.entryList.map((entry, index) => html`
+                    <swiper-slide>
+                        <div class="mdc-card entry-card">
+                            <div @click=${() => window.location.href = entry.getLinkUrl()} class="mdc-card__primary-action entry-card__primary-action" tabindex="0">
+                                                                                                                                                                       ${when(entry.getImageUrl(), () => html`
+                                                                                                                                                                       <div class="mdc-card__media mdc-card__media--16-9 entry-card__media"
+                                                                                                                                                                       style="background-image: url(&quot;${entry.getImageUrl()}&quot;);"></div>
+                                                                                                                                                                       `)}
+                                                                                                                                                                       <div class="entry-card__primary">
+                                                                                                                                                                       <h2 class="entry-card__title mdc-typography mdc-typography--headline6">${entry.getName()}</h2>
+                                                                                                                                                                       <h3 class="entry-card__subtitle mdc-typography mdc-typography--subtitle2">
+                                                                                                                                                                       <md-chip-set type="filter">
+                                                                                                                                                                       ${entry.getTagsList().map(
+                                                                                                                                                                       tag => html`
+                                                                                                                                                                       <md-filter-chip label="${tag}"
+                                                                                                                                                                       @click=${ev => {
+                                                                                                                                                                       ev.stopPropagation()
+                                                                                                                                                                       this.toggleTag(tag);
+                                                                                                                                                                       }}
+                                                                                                                                                                       >
+                                                                                                                                                                       </md-filter-chip>
+                                                                                                                                                                       `
+                                                                                                                                                                       )}
+                                                                                                                                                                       </md-chip-set>
+                                                                                                                                                                       ${this.formattedDate(entry.getPublishedAt())}
+                                                                                                                                                                       </h3>
+                                                                                                                                                                       </div>
+                                                                                                                                                                       <div class="entry-card__secondary mdc-typography mdc-typography--body2">
+                                                                                                                                                                       ${entry.getBody()}
+                                                                                                                                                                       </div>
+                                                                                                                                                                       </div>
+                            <div class="mdc-card__actions">
+                                                              <div class="mdc-card__action-buttons">
+                                                              <img class="source-icon" src="${this.getSourceIcon(entry.getSourceRssId())}">
+                                                              </div>
+                                                              <div class="mdc-card__action-icons">
+                                                              <button class="mdc-icon-button material-icons mdc-card__action mdc-card__action--icon--unbounded"
+                                                              title="Share" data-mdc-ripple-is-unbounded="true"
+                                                              @click=${() => navigator.share({
+                                                              title: entry.getName(),
+                                                              text: entry.getBody(),
+                                                              url: entry.getLinkUrl()
+                                                              })}
+                                                              >share
+                                                              </button>
+                                                              </div>
+                                                              </div>
+                        </div>
+                    </swiper-slide>
+                    <!--                <script>-->
+    <!--                    const selector = '.mdc-button, .mdc-icon-button, .mdc-card__primary-action';-->
+    <!--                    const ripples = [].map.call(document.querySelectorAll(selector), function(el) {-->
+    <!--                        return new MDCRipple(el);-->
+    <!--                    });-->
+    <!--                </script>-->
+                `)}
+            </swiper-container>
         `;
     }
 }

@@ -14,3 +14,4 @@ table_auth_user [table_auth_credential] 2023-01-18T01:42:42Z trinque <trinque@tr
 schema_summer 2023-08-25T20:56:00Z root <root@7488bf9a150a> # Add schema summer
 table_summer_entry [schema_summer] 2023-08-25T20:57:55Z root <root@7488bf9a150a> # Add table summer.entry
 table_summer_source_rss [schema_summer] 2023-08-30T18:56:26Z trinque <trinque@monolith> # Add table summer.source_rss
+table_summer_citation [table_summer_entry] 2023-09-01T18:13:06Z trinque <trinque@monolith> # Add table summer.citation

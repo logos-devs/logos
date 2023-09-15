@@ -1,21 +1,26 @@
 package review.service;
 
-import static app.review.proto.project.ProjectServiceGrpc.ProjectServiceImplBase;
-
 import app.review.proto.project.ListProjectsRequest;
 import app.review.proto.project.ListProjectsResponse;
+import app.review.proto.project.Project;
 import dev.logos.stack.service.storage.exceptions.EntityReadException;
+import dev.logos.stack.service.storage.pg.Select;
 import io.grpc.stub.StreamObserver;
-import javax.inject.Inject;
 import review.storage.ProjectStorage;
+
+import javax.inject.Inject;
+import java.util.stream.Stream;
+
+import static app.review.proto.project.ProjectServiceGrpc.ProjectServiceImplBase;
+import static dev.logos.stack.service.storage.pg.meta.Review.Project.project;
 
 public class ProjectService extends ProjectServiceImplBase {
 
-    private final ProjectStorage projectManager;
+    private final ProjectStorage projectStorage;
 
     @Inject
-    ProjectService(ProjectStorage projectManager) {
-        this.projectManager = projectManager;
+    ProjectService(ProjectStorage projectStorage) {
+        this.projectStorage = projectStorage;
     }
 
     @Override
@@ -23,14 +28,15 @@ public class ProjectService extends ProjectServiceImplBase {
         ListProjectsRequest request,
         StreamObserver<ListProjectsResponse> responseObserver
     ) {
-        try {
+        try (Stream<Project> projectListStream = projectStorage.query(
+                Select.builder().from(project)
+        )) {
             responseObserver.onNext(
                 ListProjectsResponse.newBuilder()
-                                    .addAllProjects(projectManager.list().toList())
+                                    .addAllProjects(projectListStream.toList())
                                     .build());
             responseObserver.onCompleted();
         } catch (EntityReadException e) {
-            e.printStackTrace();
             responseObserver.onError(e);
         }
     }

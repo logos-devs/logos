@@ -17,6 +17,7 @@ exclude_target:
 additional_languages:
   javascript
   typescript
-java_language_level: 17
+  python
+java_language_level: JDK_17
 ts_config_rules:
   //:tsconfig

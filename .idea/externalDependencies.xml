@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ExternalDependencies">
+    <plugin id="Pythonid" />
+    <plugin id="aws.toolkit" />
+    <plugin id="com.google.idea.bazel.ijwb" />
+    <plugin id="com.intellij.grpc" />
+    <plugin id="com.intellij.kubernetes" />
+    <plugin id="idea.plugin.protoeditor" />
+    <plugin id="mobi.hsz.idea.gitignore" />
+    <plugin id="org.jetbrains.plugins.docker.gateway" />
+  </component>
+</project>

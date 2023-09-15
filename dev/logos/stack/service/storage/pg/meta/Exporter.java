@@ -48,6 +48,7 @@ record ColumnDescriptor(String name, String type) {
                 "varchar",
                 "character varying",
                 "text",
+                "text[]",
                 "timestamp",
                 "timestamp with time zone",
                 "date" -> Type.TYPE_STRING;
@@ -57,42 +58,65 @@ record ColumnDescriptor(String name, String type) {
         };
     }
 
+    public String getJavaCast() {
+        return switch (this.type) {
+            case "ext[]" -> "(String[])";
+            default -> "";
+        };
+    }
+
+    public Boolean isArray() {
+        return this.type.endsWith("[]");
+    }
+
     public String getResultSetMethod() {
         Type protobufType = getProtobufType();
-        return switch (protobufType) {
-            case TYPE_BOOL -> "getBoolean";
-            case TYPE_BYTES -> "getBytes";
-            case TYPE_DOUBLE,
-                TYPE_FIXED64 -> "getDouble";
-            case TYPE_FLOAT -> "getFloat";
-            case TYPE_SINT32 -> "getInt";
-            case TYPE_SINT64 -> "getLong";
-            case TYPE_STRING -> "getString";
-            default -> throw new RuntimeException("Unknown type: " + protobufType);
-        };
+        if (isArray()) {
+            return "getArray";
+        }
+        else {
+            return switch (protobufType) {
+                case TYPE_BOOL -> "getBoolean";
+                case TYPE_BYTES -> "getBytes";
+                case TYPE_DOUBLE,
+                        TYPE_FIXED64 -> "getDouble";
+                case TYPE_FLOAT -> "getFloat";
+                case TYPE_SINT32 -> "getInt";
+                case TYPE_SINT64 -> "getLong";
+                case TYPE_STRING -> "getString";
+                default -> throw new RuntimeException("Unknown type: " + protobufType);
+            };
+        }
     }
 
     public String getProtobufFieldSetter() {
         String setterName = snakeToCamelCase(this.name);
-        return "set%s%s".formatted(
-            setterName.substring(0, 1).toUpperCase(),
-            setterName.substring(1)
+        String setterPrefix = isArray() ? "addAll" : "set";
+        return "%s%s%s".formatted(
+                setterPrefix,
+                setterName.substring(0, 1).toUpperCase(),
+                setterName.substring(1)
         );
     }
 
     CodeBlock convertType(CodeBlock innerCall) {
         Type protobufType = getProtobufType();
-        return switch (protobufType) {
-            case TYPE_BOOL,
-                TYPE_DOUBLE,
-                TYPE_FIXED64,
-                TYPE_SINT32,
-                TYPE_SINT64,
-                TYPE_STRING -> innerCall;
-            case TYPE_BYTES -> CodeBlock.of("$T.copyFrom($L)", ByteString.class, innerCall);
-            case TYPE_FLOAT -> CodeBlock.of("%L.floatValue()", innerCall);
-            default -> throw new RuntimeException("Unknown type: " + protobufType);
-        };
+        if (isArray()) {
+            return CodeBlock.of("$T.asList((String[])$L.getArray())", Arrays.class, innerCall);
+        }
+        else {
+            return switch (protobufType) {
+                case TYPE_BOOL,
+                        TYPE_DOUBLE,
+                        TYPE_FIXED64,
+                        TYPE_SINT32,
+                        TYPE_SINT64,
+                        TYPE_STRING -> innerCall;
+                case TYPE_BYTES -> CodeBlock.of("$T.copyFrom($L)", ByteString.class, innerCall);
+                case TYPE_FLOAT -> CodeBlock.of("%L.floatValue()", innerCall);
+                default -> throw new RuntimeException("Unknown type: " + protobufType);
+            };
+        }
     }
 }
 
@@ -194,15 +218,20 @@ public class Exporter {
                             DescriptorProto
                                 .newBuilder()
                                 .setName("List" + tableClassName.simpleName() + "Request")
-//                                .addField(
-//                                    FieldDescriptorProto
-//                                        .newBuilder()
-//                                        .setName("results")
-//                                        .setType(Type.TYPE_MESSAGE)
-//                                        .setTypeName(tableClassName.simpleName())
-//                                        .setLabel(Label.LABEL_REPEATED)
-//                                        .setNumber(1)
-//                                        .build())
+                                .addField(
+                                    FieldDescriptorProto
+                                        .newBuilder()
+                                        .setName("limit")
+                                        .setType(Type.TYPE_INT64)
+                                        .setNumber(1)
+                                        .build())
+                                .addField(
+                                        FieldDescriptorProto
+                                                .newBuilder()
+                                                .setName("offset")
+                                                .setType(Type.TYPE_INT64)
+                                                .setNumber(2)
+                                                .build())
                                 .build())
                         .addMessageType(
                             DescriptorProto
@@ -226,12 +255,17 @@ public class Exporter {
                                     IntStream.range(0, columnDescriptors.size())
                                              .mapToObj(i -> {
                                                  ColumnDescriptor columnDescriptor = columnDescriptors.get(i);
-                                                 return FieldDescriptorProto
+                                                 FieldDescriptorProto.Builder fieldDescriptorProto = FieldDescriptorProto
                                                      .newBuilder()
                                                      .setName(columnDescriptor.name())
                                                      .setType(columnDescriptor.getProtobufType())
-                                                     .setNumber(i + 1)
-                                                     .build();
+                                                     .setNumber(i + 1);
+
+                                                 if (columnDescriptor.isArray()) {
+                                                     fieldDescriptorProto.setLabel(Label.LABEL_REPEATED);
+                                                 }
+
+                                                 return fieldDescriptorProto.build();
                                              }).toList())
                                 .build())
                         .addService(
@@ -304,7 +338,7 @@ public class Exporter {
                                                                   columnDescriptor.getProtobufFieldSetter(),
                                                                   columnDescriptor.convertType(
                                                                       CodeBlock.of(
-                                                                          "resultSet.$N($S)",
+                                                                          "%sresultSet.$N($S)".formatted(columnDescriptor.getJavaCast()),
                                                                           columnDescriptor.getResultSetMethod(),
                                                                           columnName)));
                                           }).collect(CodeBlock.joining(";")))
@@ -411,7 +445,7 @@ public class Exporter {
                                                         String tableIdentifier) {
         try {
             PreparedStatement columnQueryStmt = connection.prepareStatement(
-                "select column_name, data_type from information_schema.columns where table_schema = ? and table_name = ?");
+                "select column_name, udt_name::regtype::text as data_type from information_schema.columns where table_schema = ? and table_name = ?");
             columnQueryStmt.setString(1, schemaIdentifier);
             columnQueryStmt.setString(2, tableIdentifier);
             ResultSet columnResultSet = columnQueryStmt.executeQuery();

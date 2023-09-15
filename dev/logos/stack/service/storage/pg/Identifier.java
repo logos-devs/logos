@@ -19,7 +19,7 @@ public abstract class Identifier {
     public static String snakeToCamelCase(String input) {
         StringBuilder sb = new StringBuilder();
         for (String word : input.split("_")) {
-            if (word.length() > 0) {
+            if (!word.isEmpty()) {
                 sb.append(word.substring(0, 1).toUpperCase());
                 sb.append(word.substring(1).toLowerCase());
             }
@@ -27,4 +27,8 @@ public abstract class Identifier {
         return sb.toString();
     }
 
+    @Override
+    public String toString() {
+        return this.quotedIdentifier;
+    }
 }
