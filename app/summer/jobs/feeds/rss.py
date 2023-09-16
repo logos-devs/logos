@@ -1,19 +1,32 @@
 import json
+from _socket import gethostbyname_ex
 from json import JSONDecodeError
 from os import environ
 from pprint import pprint
-from socket import gethostbyname_ex
 from sys import stdout
 
 import boto3
+import botocore.session
 import feedparser
 import openai
 import psycopg
-from psycopg import connection, cursor
+from psycopg import cursor, connection
 from psycopg.rows import namedtuple_row
 from trafilatura import extract, fetch_url
 
-openai.api_key = environ["OPENAI_API_KEY"]
+
+def get_secret(secret_name):
+    return json.loads(
+        boto3.client('secretsmanager').get_secret_value(
+            SecretId="arn:aws:secretsmanager:{}:{}:secret:{}".format(
+                botocore.session.get_session().get_config_variable('region'),
+                boto3.client('sts').get_caller_identity()['Account'],
+                secret_name
+            )
+        )['SecretString'])
+
+
+openai.api_key = get_secret('dev/external/openai')['key']
 
 DB_NAME = "logos"
 DB_URL = (environ.get("STORAGE_PG_BACKEND_JDBC_URL") or "jdbc:postgresql://localhost:15432/logos")[5:]

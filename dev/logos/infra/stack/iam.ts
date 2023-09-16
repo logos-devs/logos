@@ -1,7 +1,7 @@
-import {App, Environment, Stack, StackProps} from "aws-cdk-lib";
 import {EksBlueprint} from "@aws-quickstart/eks-blueprints";
-import {PolicyStatement} from "aws-cdk-lib/aws-iam";
+import {App, Environment, Stack, StackProps} from "aws-cdk-lib";
 import {ServiceAccount} from "aws-cdk-lib/aws-eks";
+import {PolicyStatement} from "aws-cdk-lib/aws-iam";
 import {RdsStack} from "./rds";
 
 export class IamStack extends Stack {
@@ -27,12 +27,15 @@ export class IamStack extends Stack {
                 ]
             })
         )
-        //
-        // serviceAccount.addToPrincipalPolicy(
-        //     new PolicyStatement({
-        //         actions: ["k"]
-        //     })
-        // );
+
+        serviceAccount.addToPrincipalPolicy(
+            new PolicyStatement({
+                actions: ["secretsmanager:GetSecretValue"],
+                resources: [
+                    `arn:aws:secretsmanager:${props.env.region}:${props.env.account}:secret:dev/external/openai-??????`
+                ]
+            })
+        )
     }
 }
 
