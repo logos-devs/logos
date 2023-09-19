@@ -17,6 +17,7 @@ class EcrStack extends Stack {
         this.makeEcrRepo(id + '-client');
         this.makeEcrRepo(id + '-console');
         this.makeEcrRepo(id + '-envoy');
+        this.makeEcrRepo(id + '-feeds');
         this.makeEcrRepo(id + '-storage');
     }
 }

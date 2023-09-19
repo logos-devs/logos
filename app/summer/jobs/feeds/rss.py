@@ -37,9 +37,9 @@ DB_PORT = 5432
 
 SUMMARY_PROMPT = """You are a news summarization system which consumes an article and produces a valid JSON object with the following fields:
 * name : A concise and explanatory title. If the original article's title is a joke or otherwise obscure, replace it with a simple, informative title.
-* body : The shortest possible summary that includes the important factual claims of the article. Aim for two sentences or less.
+* body : The shortest possible summary that includes the important factual claims of the article. Aim for two sentences or fewer.
 * slug : A concise and explanatory URL identifier for the article consisting only of lowercase letters, numbers, and dashes.
-* tags : An array of descriptive single-word tags consisting only of lowercase letters and dashes for the article listed in order from least to most specific. Only give a maximum of three tags. The tags should describe the specific news event being discussed."""
+* tags : An array of descriptive single-word tags consisting only of lowercase letters and dashes for the article listed in order from least to most specific. Include all named entities in the article."""
 
 
 def connect_db() -> connection:

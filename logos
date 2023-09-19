@@ -375,6 +375,7 @@ deploy() {
     $BAZEL run --config=remote //dev/logos/stack/service/envoy:envoy.apply
     $BAZEL run --config=remote //dev/logos/stack/service/client:client.apply
     $BAZEL run --config=remote //dev/logos/stack/ingress/nginx:nginx.apply
+    $BAZEL run --config=remote //app/summer/jobs/feeds:feeds.apply
 }
 
 _psql() {

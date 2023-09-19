@@ -29,9 +29,7 @@ public class SourceRssStorageService extends SourceRssStorageServiceGrpc.SourceR
             ListSourceRssRequest request,
             StreamObserver<ListSourceRssResponse> responseObserver
     ) {
-        try (Stream<SourceRss> sourceRssListStream = sourceRssStorage.query(
-                Select.builder().from(sourceRss)
-        )) {
+        try (Stream<SourceRss> sourceRssListStream = sourceRssStorage.query(Select.builder().from(sourceRss))) {
             responseObserver.onNext(
                     ListSourceRssResponse
                             .newBuilder()

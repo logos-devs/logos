@@ -291,6 +291,14 @@ container_deps()
 load("@io_bazel_rules_docker//container:container.bzl", "container_pull")
 
 container_pull(
+    name = "alpine",
+    digest = "sha256:c5c5fda71656f28e49ac9c5416b3643eaa6a108a8093151d6d1afc9463be8e33",
+    registry = "docker.io",
+    repository = "alpine",
+    tag = "3.18",
+)
+
+container_pull(
     name = "envoy_distroless_container",
     digest = "sha256:5d5619b0d3d4311bfef48783c04df1e5aed71615710b876b951bd70c1e1e18ee",
     registry = "docker.io",
@@ -313,7 +321,6 @@ container_pull(
     tag = "latest",
 )
 
-#
 container_pull(
     name = "nginx_container",
     digest = "sha256:f0219f99a56ec88f02f1d6055e5b4565cb80dba10b2301aa18f47913456accac",
@@ -333,6 +340,13 @@ container_pull(
 load("@io_bazel_rules_docker//java:image.bzl", _java_image_repos = "repositories")
 
 _java_image_repos()
+
+load(
+    "@io_bazel_rules_docker//python3:image.bzl",
+    _py3_image_repos = "repositories",
+)
+
+_py3_image_repos()
 
 # rules_gitops
 
