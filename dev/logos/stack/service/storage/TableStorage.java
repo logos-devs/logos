@@ -4,7 +4,6 @@ import com.google.inject.Inject;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.Descriptors.FieldDescriptor;
 import com.google.protobuf.GeneratedMessageV3;
-import com.querydsl.core.types.dsl.BooleanTemplate;
 import com.querydsl.sql.Configuration;
 import com.querydsl.sql.PostgreSQLTemplates;
 import com.querydsl.sql.SQLQueryFactory;
@@ -27,8 +26,7 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 
-public abstract class TableStorage<Entity, StorageIdentifier> implements
-                                                              EntityStorage<Entity, StorageIdentifier, BooleanTemplate> {
+public abstract class TableStorage<Entity, StorageIdentifier> implements EntityStorage<Entity> {
 
     @Inject
     protected DataSource dataSource;
@@ -139,6 +137,7 @@ public abstract class TableStorage<Entity, StorageIdentifier> implements
 
             bindEntityUpdateFields(fields, stmt);
             return stmt;
+
         })) {
             return insertQuery.mapTo(this.storageIdentifierClass).first();
         } catch (SQLException e) {

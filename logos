@@ -135,8 +135,8 @@ dev_server() {
   rds_tunnel_up
   server_tunnel_up
   # TODO switch to using telepresence intercept
-  ibazel run //dev/logos/stack/service/backend:Server #-- --debug
-  #bazel run //dev/logos/stack/service/backend:Server -- --debug
+  #ibazel run //dev/logos/stack/service/backend:Server #-- --debug
+  bazel run //dev/logos/stack/service/backend:Server -- --debug
 }
 
 dev_client() {
@@ -375,7 +375,7 @@ deploy() {
     $BAZEL run --config=remote //dev/logos/stack/service/envoy:envoy.apply
     $BAZEL run --config=remote //dev/logos/stack/service/client:client.apply
     $BAZEL run --config=remote //dev/logos/stack/ingress/nginx:nginx.apply
-    $BAZEL run --config=remote //app/summer/jobs/feeds:feeds.apply
+    #$BAZEL run --config=remote //app/summer/jobs/feeds:feeds.apply
 }
 
 _psql() {

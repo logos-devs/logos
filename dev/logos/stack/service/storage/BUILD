@@ -5,9 +5,13 @@ load("//:gitops.bzl", "NAMESPACE", "REGISTRY", "USER")
 
 java_library(
     name = "storage_library",
-    srcs = glob([
-        "**/*.java",
-    ]),
+    srcs = [
+        "EntityStorage.java",
+        "EntityStorageService.java",
+        "TableStorage.java",
+        "exceptions/EntityReadException.java",
+        "exceptions/EntityWriteException.java",
+    ],
     visibility = [
         "//app:__subpackages__",
         "//dev/logos/stack/bind:__pkg__",
@@ -17,6 +21,8 @@ java_library(
     deps = [
         "//dev/logos/stack/service/storage/pg",
         "@com_google_protobuf//:protobuf_java",
+        "@io_grpc_grpc_java//api",
+        "@io_grpc_grpc_java//stub",
         "@maven//:com_google_inject_guice",
         "@maven//:com_querydsl_querydsl_core",
         "@maven//:com_querydsl_querydsl_sql",

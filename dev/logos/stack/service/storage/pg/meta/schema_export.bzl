@@ -128,10 +128,12 @@ def storage_java_proto_library(name, srcs, visibility):
         visibility = visibility,
         deps = [
             "//dev/logos/stack/service/storage/pg",
+            "//dev/logos/stack/service/storage:storage_library",
             "@com_google_protobuf//java/core",
             "@io_grpc_grpc_java//api",
             "@io_grpc_grpc_java//stub",
             "@maven//:com_google_guava_guava",
+            "@maven//:com_google_inject_guice",
             "@maven//:com_querydsl_querydsl_core",
             "@maven//:com_querydsl_querydsl_sql",
             "@maven//:io_grpc_grpc_protobuf",

@@ -3,6 +3,7 @@ package dev.logos.stack.service.storage.exporter;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.inject.Guice;
+import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.DescriptorProtos.*;
@@ -11,10 +12,13 @@ import com.google.protobuf.DescriptorProtos.FieldDescriptorProto.Type;
 import com.querydsl.sql.codegen.MetaDataExporter;
 import com.squareup.javapoet.*;
 import dev.logos.stack.module.DatabaseModule;
+import dev.logos.stack.service.storage.EntityStorage;
+import dev.logos.stack.service.storage.EntityStorageService;
 import dev.logos.stack.service.storage.pg.Column;
 import dev.logos.stack.service.storage.pg.Identifier;
 import dev.logos.stack.service.storage.pg.Relation;
 import dev.logos.stack.service.storage.pg.Schema;
+import io.grpc.stub.StreamObserver;
 
 import javax.lang.model.element.Modifier;
 import javax.sql.DataSource;
@@ -30,6 +34,7 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static dev.logos.stack.service.storage.pg.Identifier.snakeToCamelCase;
 import static javax.lang.model.element.Modifier.*;
@@ -45,13 +50,13 @@ record ColumnDescriptor(String name, String type) {
             case "double precision" -> Type.TYPE_DOUBLE;
             case "numeric", "decimal" -> Type.TYPE_FIXED64;
             case "char",
-                "varchar",
-                "character varying",
-                "text",
-                "text[]",
-                "timestamp",
-                "timestamp with time zone",
-                "date" -> Type.TYPE_STRING;
+                    "varchar",
+                    "character varying",
+                    "text",
+                    "text[]",
+                    "timestamp",
+                    "timestamp with time zone",
+                    "date" -> Type.TYPE_STRING;
             case "bytea", "uuid" -> Type.TYPE_BYTES;
             case "boolean" -> Type.TYPE_BOOL;
             default -> throw new IllegalArgumentException("Unsupported type: " + this.type);
@@ -73,8 +78,7 @@ record ColumnDescriptor(String name, String type) {
         Type protobufType = getProtobufType();
         if (isArray()) {
             return "getArray";
-        }
-        else {
+        } else {
             return switch (protobufType) {
                 case TYPE_BOOL -> "getBoolean";
                 case TYPE_BYTES -> "getBytes";
@@ -103,8 +107,7 @@ record ColumnDescriptor(String name, String type) {
         Type protobufType = getProtobufType();
         if (isArray()) {
             return CodeBlock.of("$T.asList((String[])$L.getArray())", Arrays.class, innerCall);
-        }
-        else {
+        } else {
             return switch (protobufType) {
                 case TYPE_BOOL,
                         TYPE_DOUBLE,
@@ -136,10 +139,10 @@ public class Exporter {
     private static final Modifier[] VARIABLE_MODIFIERS = new Modifier[]{PUBLIC, STATIC, FINAL};
     private final String build_dir;
     private static final String[] JAVA_KEYWORDS = {"abstract", "continue", "for", "new", "switch", "assert", "default",
-        "goto", "package", "synchronized", "boolean", "do", "if", "private", "this", "break", "double", "implements",
-        "protected", "throw", "byte", "else", "import", "public", "throws", "case", "enum", "instanceof", "return",
-        "transient", "catch", "extends", "int", "short", "try", "char", "final", "interface", "static", "void", "class",
-        "finally", "long", "strictfp", "volatile", "const", "float", "native", "super", "while"};
+            "goto", "package", "synchronized", "boolean", "do", "if", "private", "this", "break", "double", "implements",
+            "protected", "throw", "byte", "else", "import", "public", "throws", "case", "enum", "instanceof", "return",
+            "transient", "catch", "extends", "int", "short", "try", "char", "final", "interface", "static", "void", "class",
+            "finally", "long", "strictfp", "volatile", "const", "float", "native", "super", "while"};
     private final String build_package;
 
     public void export() throws SQLException, IOException {
@@ -168,22 +171,22 @@ public class Exporter {
         String schemaInstanceVariableName = classNameToInstanceName(schemaClassName.simpleName());
 
         return TypeSpec.classBuilder(schemaClassName)
-                       .addModifiers(PUBLIC)
-                       .superclass(Schema.class)
-                       .addMethod(MethodSpec.constructorBuilder()
-                                            .addParameter(String.class, "identifier")
-                                            .addParameter(String.class, "quotedIdentifier")
-                                            .addStatement("super(identifier, quotedIdentifier)")
-                                            .build())
-                       .addField(
-                           FieldSpec.builder(schemaClassName, schemaInstanceVariableName, VARIABLE_MODIFIERS)
-                                    .initializer("new $T($S, $S)",
-                                                 schemaClassName,
-                                                 schemaIdentifier,
-                                                 Identifier.quoteIdentifier(schemaIdentifier))
-                                    .build())
-                       .addTypes(tableClasses)
-                       .build();
+                .addModifiers(PUBLIC)
+                .superclass(Schema.class)
+                .addMethod(MethodSpec.constructorBuilder()
+                        .addParameter(String.class, "identifier")
+                        .addParameter(String.class, "quotedIdentifier")
+                        .addStatement("super(identifier, quotedIdentifier)")
+                        .build())
+                .addField(
+                        FieldSpec.builder(schemaClassName, schemaInstanceVariableName, VARIABLE_MODIFIERS)
+                                .initializer("new $T($S, $S)",
+                                        schemaClassName,
+                                        schemaIdentifier,
+                                        Identifier.quoteIdentifier(schemaIdentifier))
+                                .build())
+                .addTypes(tableClasses)
+                .build();
     }
 
     private String makeResultProto(String schemaIdentifier,
@@ -202,89 +205,88 @@ public class Exporter {
 
         try (FileOutputStream fileOutputStream = new FileOutputStream(descriptorFilename)) {
             FileDescriptorSet
-                .newBuilder()
-                .addFile(
-                    FileDescriptorProto
-                        .newBuilder()
-                        .setName(tableIdentifier + ".proto")
-                        .setSyntax("proto3")
-                        .setOptions(
-                            FileOptions
-                                .newBuilder()
-                                .setJavaPackage(build_package + "." + schemaIdentifier)
-                                .setJavaMultipleFiles(true)
-                                .build())
-                        .addMessageType(
-                            DescriptorProto
-                                .newBuilder()
-                                .setName("List" + tableClassName.simpleName() + "Request")
-                                .addField(
-                                    FieldDescriptorProto
-                                        .newBuilder()
-                                        .setName("limit")
-                                        .setType(Type.TYPE_INT64)
-                                        .setNumber(1)
-                                        .build())
-                                .addField(
-                                        FieldDescriptorProto
-                                                .newBuilder()
-                                                .setName("offset")
-                                                .setType(Type.TYPE_INT64)
-                                                .setNumber(2)
-                                                .build())
-                                .build())
-                        .addMessageType(
-                            DescriptorProto
-                                .newBuilder()
-                                .setName("List" + tableClassName.simpleName() + "Response")
-                                .addField(
-                                    FieldDescriptorProto
-                                        .newBuilder()
-                                        .setName("results")
-                                        .setType(Type.TYPE_MESSAGE)
-                                        .setTypeName(tableClassName.simpleName())
-                                        .setLabel(Label.LABEL_REPEATED)
-                                        .setNumber(1)
-                                        .build())
-                                .build())
-                        .addMessageType(
-                            DescriptorProto
-                                .newBuilder()
-                                .setName(tableClassName.simpleName())
-                                .addAllField(
-                                    IntStream.range(0, columnDescriptors.size())
-                                             .mapToObj(i -> {
-                                                 ColumnDescriptor columnDescriptor = columnDescriptors.get(i);
-                                                 FieldDescriptorProto.Builder fieldDescriptorProto = FieldDescriptorProto
-                                                     .newBuilder()
-                                                     .setName(columnDescriptor.name())
-                                                     .setType(columnDescriptor.getProtobufType())
-                                                     .setNumber(i + 1);
+                    .newBuilder()
+                    .addFile(
+                            FileDescriptorProto
+                                    .newBuilder()
+                                    .setName(tableIdentifier + ".proto")
+                                    .setSyntax("proto3")
+                                    .setOptions(
+                                            FileOptions
+                                                    .newBuilder()
+                                                    .setJavaPackage(build_package + "." + schemaIdentifier)
+                                                    .setJavaMultipleFiles(true)
+                                                    .build())
+                                    .addMessageType(
+                                            DescriptorProto
+                                                    .newBuilder()
+                                                    .setName("List" + tableClassName.simpleName() + "Request")
+                                                    .addField(
+                                                            FieldDescriptorProto
+                                                                    .newBuilder()
+                                                                    .setName("limit")
+                                                                    .setType(Type.TYPE_INT64)
+                                                                    .setNumber(1)
+                                                                    .build())
+                                                    .addField(
+                                                            FieldDescriptorProto
+                                                                    .newBuilder()
+                                                                    .setName("offset")
+                                                                    .setType(Type.TYPE_INT64)
+                                                                    .setNumber(2)
+                                                                    .build())
+                                                    .build())
+                                    .addMessageType(
+                                            DescriptorProto
+                                                    .newBuilder()
+                                                    .setName("List" + tableClassName.simpleName() + "Response")
+                                                    .addField(
+                                                            FieldDescriptorProto
+                                                                    .newBuilder()
+                                                                    .setName("results")
+                                                                    .setType(Type.TYPE_MESSAGE)
+                                                                    .setTypeName(tableClassName.simpleName())
+                                                                    .setLabel(Label.LABEL_REPEATED)
+                                                                    .setNumber(1)
+                                                                    .build())
+                                                    .build())
+                                    .addMessageType(
+                                            DescriptorProto
+                                                    .newBuilder()
+                                                    .setName(tableClassName.simpleName())
+                                                    .addAllField(
+                                                            IntStream.range(0, columnDescriptors.size())
+                                                                    .mapToObj(i -> {
+                                                                        ColumnDescriptor columnDescriptor = columnDescriptors.get(i);
+                                                                        FieldDescriptorProto.Builder fieldDescriptorProto = FieldDescriptorProto
+                                                                                .newBuilder()
+                                                                                .setName(columnDescriptor.name())
+                                                                                .setType(columnDescriptor.getProtobufType())
+                                                                                .setNumber(i + 1);
 
-                                                 if (columnDescriptor.isArray()) {
-                                                     fieldDescriptorProto.setLabel(Label.LABEL_REPEATED);
-                                                 }
+                                                                        if (columnDescriptor.isArray()) {
+                                                                            fieldDescriptorProto.setLabel(Label.LABEL_REPEATED);
+                                                                        }
 
-                                                 return fieldDescriptorProto.build();
-                                             }).toList())
-                                .build())
-                        .addService(
-                            ServiceDescriptorProto
-                                .newBuilder()
-                                .setName(tableClassName.simpleName() + "StorageService")
-                                .addMethod(
-                                    MethodDescriptorProto
-                                        .newBuilder()
-                                        .setName("List" + tableClassName.simpleName())
-                                        .setInputType("List" + tableClassName.simpleName() + "Request")
-                                        .setOutputType("List" + tableClassName.simpleName() + "Response")
-                                        .build()
-                                )
-                                .build()
-                        )
-                )
-                .build()
-                .writeTo(fileOutputStream);
+                                                                        return fieldDescriptorProto.build();
+                                                                    }).toList())
+                                                    .build())
+                                    .addService(
+                                            ServiceDescriptorProto
+                                                    .newBuilder()
+                                                    .setName(tableClassName.simpleName() + "StorageService")
+                                                    .addMethod(
+                                                            MethodDescriptorProto
+                                                                    .newBuilder()
+                                                                    .setName("List")
+                                                                    .setInputType("List" + tableClassName.simpleName() + "Request")
+                                                                    .setOutputType("List" + tableClassName.simpleName() + "Response")
+                                                                    .build())
+                                                    .build()
+                                    )
+                    )
+                    .build()
+                    .writeTo(fileOutputStream);
 
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -298,64 +300,142 @@ public class Exporter {
                                     ClassName tableClassName,
                                     String tableInstanceVariableName,
                                     Iterable<TypeSpec> columnClasses,
-                                    List<ColumnDescriptor> columnDescriptors) {
+                                    List<ColumnDescriptor> columnDescriptors) throws IOException {
 
         String protoFilename = makeResultProto(
-            schemaIdentifier,
-            tableIdentifier,
-            tableClassName,
-            tableInstanceVariableName,
-            columnDescriptors);
+                schemaIdentifier,
+                tableIdentifier,
+                tableClassName,
+                tableInstanceVariableName,
+                columnDescriptors);
 
         ClassName resultProtoClassName =
-            ClassName.get(build_package + "." + schemaIdentifier, tableClassName.simpleName());
+                ClassName.get(build_package + "." + schemaIdentifier, tableClassName.simpleName());
+
+        makeStorageServiceBaseClass(
+                schemaIdentifier,
+                tableIdentifier,
+                tableClassName,
+                tableInstanceVariableName,
+                columnDescriptors);
 
         return TypeSpec
-            .classBuilder(tableClassName)
-            .addModifiers(INNER_CLASS_MODIFIERS)
-            .superclass(Relation.class)
-            .addMethod(MethodSpec.constructorBuilder()
-                                 .addParameter(String.class, "identifier")
-                                 .addParameter(String.class, "quotedIdentifier")
-                                 .addStatement("super(identifier, quotedIdentifier)")
-                                 .build())
-            .addMethod(
-                MethodSpec
-                    .methodBuilder("toProtobuf")
-                    .addModifiers(PUBLIC, STATIC)
-                    .addException(SQLException.class)
-                    .addParameter(ResultSet.class, "resultSet")
-                    .returns(resultProtoClassName)
-                    .addStatement(
-                        CodeBlock.builder()
-                                 .add("$T.Builder builder = $T.newBuilder();\n", resultProtoClassName, resultProtoClassName)
-                                 .add(columnDescriptors
-                                          .stream()
-                                          .map(columnDescriptor -> {
-                                              String columnName = columnDescriptor.name();
-                                              return CodeBlock.of("if (resultSet.getObject($S) != null) { builder.$N($L); }\n",
-                                                                  columnName,
-                                                                  columnDescriptor.getProtobufFieldSetter(),
-                                                                  columnDescriptor.convertType(
-                                                                      CodeBlock.of(
-                                                                          "%sresultSet.$N($S)".formatted(columnDescriptor.getJavaCast()),
-                                                                          columnDescriptor.getResultSetMethod(),
-                                                                          columnName)));
-                                          }).collect(CodeBlock.joining(";")))
-                                 .add("return builder.build()")
-                                 .build())
-                    .build())
-            .addField(
-                FieldSpec
-                    .builder(tableClassName, tableInstanceVariableName, VARIABLE_MODIFIERS)
-                    .initializer("new $T($S, $S)",
-                                 tableClassName,
-                                 tableIdentifier,
-                                 Identifier.quoteIdentifier(schemaIdentifier) + "."
-                                     + Identifier.quoteIdentifier(tableIdentifier))
-                    .build())
-            .addTypes(columnClasses)
-            .build();
+                .classBuilder(tableClassName)
+                .addModifiers(INNER_CLASS_MODIFIERS)
+                .superclass(Relation.class)
+                .addMethod(MethodSpec.constructorBuilder()
+                        .addParameter(String.class, "identifier")
+                        .addParameter(String.class, "quotedIdentifier")
+                        .addStatement("super(identifier, quotedIdentifier)")
+                        .build())
+                .addMethod(
+                        MethodSpec
+                                .methodBuilder("toProtobuf")
+                                .addModifiers(PUBLIC, STATIC)
+                                .addException(SQLException.class)
+                                .addParameter(ResultSet.class, "resultSet")
+                                .returns(resultProtoClassName)
+                                .addStatement(
+                                        CodeBlock.builder()
+                                                .add("$T.Builder builder = $T.newBuilder();\n", resultProtoClassName, resultProtoClassName)
+                                                .add(columnDescriptors
+                                                        .stream()
+                                                        .map(columnDescriptor -> {
+                                                            String columnName = columnDescriptor.name();
+                                                            return CodeBlock.of("if (resultSet.getObject($S) != null) { builder.$N($L); }\n",
+                                                                    columnName,
+                                                                    columnDescriptor.getProtobufFieldSetter(),
+                                                                    columnDescriptor.convertType(
+                                                                            CodeBlock.of(
+                                                                                    "%sresultSet.$N($S)".formatted(columnDescriptor.getJavaCast()),
+                                                                                    columnDescriptor.getResultSetMethod(),
+                                                                                    columnName)));
+                                                        }).collect(CodeBlock.joining(";")))
+                                                .add("return builder.build()")
+                                                .build())
+                                .build())
+                .addField(
+                        FieldSpec
+                                .builder(tableClassName, tableInstanceVariableName, VARIABLE_MODIFIERS)
+                                .initializer("new $T($S, $S)",
+                                        tableClassName,
+                                        tableIdentifier,
+                                        Identifier.quoteIdentifier(schemaIdentifier) + "."
+                                                + Identifier.quoteIdentifier(tableIdentifier))
+                                .build())
+                .addTypes(columnClasses)
+                .build();
+    }
+
+    private void makeStorageServiceBaseClass(
+            String schemaIdentifier,
+            String tableIdentifier,
+            ClassName tableClassName,
+            String tableInstanceVariableName,
+            List<ColumnDescriptor> columnDescriptors
+    ) throws IOException {
+        String packageName = build_package + "." + schemaIdentifier;
+        ClassName entityClassName = ClassName.bestGuess(String.format("%s.%s", packageName, tableClassName));
+
+        JavaFile.builder(packageName,
+                        TypeSpec.classBuilder(String.format("%sStorageServiceBase", tableClassName))
+                                .addModifiers(PUBLIC, ABSTRACT)
+                                .superclass(ClassName.bestGuess(String.format("%s.%sStorageServiceGrpc.%sStorageServiceImplBase", packageName, tableClassName, tableClassName)))
+                                .addSuperinterface(ParameterizedTypeName.get(
+                                        ClassName.get(EntityStorageService.class),
+                                        ClassName.bestGuess(String.format("%s.List%sRequest", packageName, tableClassName)),
+                                        ClassName.bestGuess(String.format("%s.List%sResponse", packageName, tableClassName)),
+                                        ClassName.bestGuess(String.format("%s.%s", packageName, tableClassName)) // ,
+                                ))
+                                .addField(FieldSpec.builder(
+                                        ParameterizedTypeName.get(
+                                                ClassName.get(EntityStorage.class),
+                                                entityClassName
+                                        ), "storage", PRIVATE)
+                                        .addAnnotation(Inject.class)
+                                        .build())
+                                .addMethod(MethodSpec.methodBuilder("getStorage")
+                                        .addAnnotation(Override.class)
+                                        .addModifiers(Modifier.PUBLIC)
+                                        .returns(ParameterizedTypeName.get(
+                                                ClassName.get(EntityStorage.class),
+                                                entityClassName
+                                        ))
+                                        .addStatement("return this.storage")
+                                        .build())
+
+                                /*
+                                    @Override
+                                    public void list(ListEntryRequest request,
+                                            StreamObserver<ListEntryResponse> responseObserver) {
+                                        listHandler(request, responseObserver);
+                                    }
+                                 */
+                                .addMethod(MethodSpec.methodBuilder("list")
+                                        .addAnnotation(Override.class)
+                                        .addModifiers(PUBLIC)
+                                        .addParameter(ClassName.bestGuess(String.format("%s.List%sRequest", packageName, tableClassName)),
+                                                "request")
+                                        .addParameter(ParameterizedTypeName.get(ClassName.get(StreamObserver.class),
+                                                        ClassName.bestGuess(String.format("%s.List%sResponse", packageName, tableClassName))),
+                                                "responseObserver")
+                                        .addStatement("listHandler(request, responseObserver)")
+                                        .build())
+                                .addMethod(MethodSpec.methodBuilder("result")
+                                        .addAnnotation(Override.class)
+                                        .addModifiers(PUBLIC)
+                                        .addParameter(ParameterizedTypeName.get(ClassName.get(Stream.class),
+                                                        ClassName.bestGuess(String.format("%s.%s", packageName, tableClassName))),
+                                                String.format("%sListStream", tableInstanceVariableName))
+                                        .returns(ClassName.bestGuess(String.format("%s.List%sResponse", packageName, tableClassName)))
+                                        .addStatement(
+                                                String.format("return $T.newBuilder().addAllResults(%sListStream.toList()).build()", tableInstanceVariableName),
+                                                ClassName.bestGuess(String.format("%s.List%sResponse", packageName, tableClassName)))
+                                        .build())
+                                .build()
+                )
+                .build()
+                .writeToPath(Path.of(build_dir));
     }
 
     private TypeSpec makeColumnClass(String tableIdentifier,
@@ -368,35 +448,35 @@ public class Exporter {
             columnPostfix.append("_");
         }
         ClassName columnClassName = ClassName.bestGuess(
-            snakeToCamelCase(columnIdentifier) + columnPostfix);
+                snakeToCamelCase(columnIdentifier) + columnPostfix);
 
         return TypeSpec.classBuilder(columnClassName)
-                       .addModifiers(INNER_CLASS_MODIFIERS)
-                       .superclass(Column.class)
-                       .addMethod(MethodSpec.methodBuilder("toProtobuf")
-                                            .addParameter(String.class, "dbValue")
-                                            .addStatement("System.out.println(\"toProtobufType\")")
-                                            .addStatement("return $S", "test")
-                                            .returns(String.class)
-                                            .build())
-                       .addMethod(MethodSpec.constructorBuilder()
-                                            .addParameter(String.class, "identifier")
-                                            .addParameter(String.class, "quotedIdentifier")
-                                            .addParameter(String.class, "type")
-                                            .addStatement("super(identifier, quotedIdentifier, type)")
-                                            .build())
-                       .addField(
-                           FieldSpec.builder(columnClassName,
-                                             classNameToInstanceName(columnClassName.simpleName()),
-                                             VARIABLE_MODIFIERS)
-                                    .initializer("new $T($S, $S, $S)",
-                                                 columnClassName,
-                                                 columnIdentifier,
-                                                 Identifier.quoteIdentifier(tableIdentifier) + '.'
-                                                     + Identifier.quoteIdentifier(columnIdentifier),
-                                                 columnDescriptor.type())
-                                    .build())
-                       .build();
+                .addModifiers(INNER_CLASS_MODIFIERS)
+                .superclass(Column.class)
+                .addMethod(MethodSpec.methodBuilder("toProtobuf")
+                        .addParameter(String.class, "dbValue")
+                        .addStatement("System.out.println(\"toProtobufType\")")
+                        .addStatement("return $S", "test")
+                        .returns(String.class)
+                        .build())
+                .addMethod(MethodSpec.constructorBuilder()
+                        .addParameter(String.class, "identifier")
+                        .addParameter(String.class, "quotedIdentifier")
+                        .addParameter(String.class, "type")
+                        .addStatement("super(identifier, quotedIdentifier, type)")
+                        .build())
+                .addField(
+                        FieldSpec.builder(columnClassName,
+                                        classNameToInstanceName(columnClassName.simpleName()),
+                                        VARIABLE_MODIFIERS)
+                                .initializer("new $T($S, $S, $S)",
+                                        columnClassName,
+                                        columnIdentifier,
+                                        Identifier.quoteIdentifier(tableIdentifier) + '.'
+                                                + Identifier.quoteIdentifier(columnIdentifier),
+                                        columnDescriptor.type())
+                                .build())
+                .build();
     }
 
     private List<String> getSchemaIdentifiers(Set<String> selectedSchemas) throws SQLException {
@@ -404,9 +484,9 @@ public class Exporter {
 
         for (String schema : selectedSchemas) {
             ResultSet schemaResultSet =
-                connection.createStatement().executeQuery(
-                    "select schema_name from information_schema.schemata where schema_name = '"
-                        + schema + "'");
+                    connection.createStatement().executeQuery(
+                            "select schema_name from information_schema.schemata where schema_name = '"
+                                    + schema + "'");
 
             if (!schemaResultSet.next()) {
                 throw new IllegalArgumentException("Schema " + schema + " does not exist");
@@ -424,7 +504,7 @@ public class Exporter {
         for (String table : selectedTables.get(schemaIdentifier)) {
             try {
                 PreparedStatement tableQueryStmt = connection.prepareStatement(
-                    "select table_name from information_schema.tables where table_schema = ? and table_name = ?");
+                        "select table_name from information_schema.tables where table_schema = ? and table_name = ?");
                 tableQueryStmt.setString(1, schemaIdentifier);
                 tableQueryStmt.setString(2, table);
                 ResultSet tableResultSet = tableQueryStmt.executeQuery();
@@ -445,7 +525,7 @@ public class Exporter {
                                                         String tableIdentifier) {
         try {
             PreparedStatement columnQueryStmt = connection.prepareStatement(
-                "select column_name, udt_name::regtype::text as data_type from information_schema.columns where table_schema = ? and table_name = ?");
+                    "select column_name, udt_name::regtype::text as data_type from information_schema.columns where table_schema = ? and table_name = ?");
             columnQueryStmt.setString(1, schemaIdentifier);
             columnQueryStmt.setString(2, tableIdentifier);
             ResultSet columnResultSet = columnQueryStmt.executeQuery();
@@ -453,10 +533,10 @@ public class Exporter {
             List<ColumnDescriptor> columnDescriptors = new ArrayList<>();
             while (columnResultSet.next()) {
                 columnDescriptors.add(
-                    new ColumnDescriptor(
-                        columnResultSet.getString("column_name"),
-                        columnResultSet.getString("data_type")
-                    ));
+                        new ColumnDescriptor(
+                                columnResultSet.getString("column_name"),
+                                columnResultSet.getString("data_type")
+                        ));
             }
             return columnDescriptors;
         } catch (SQLException e) {
@@ -467,37 +547,40 @@ public class Exporter {
     private void extractSchema(String schemaIdentifier,
                                Map<String, List<String>> selectedTables) throws IOException {
         JavaFile.builder(
-            build_package,
-            makeSchemaClass(schemaIdentifier, getTableIdentifiers(schemaIdentifier, selectedTables)
-                .stream()
-                .map(tableIdentifier -> {
-                    List<ColumnDescriptor> columnDescriptors = getColumnDescriptors(
-                        schemaIdentifier, tableIdentifier);
+                build_package,
+                makeSchemaClass(schemaIdentifier, getTableIdentifiers(schemaIdentifier, selectedTables)
+                        .stream()
+                        .map(tableIdentifier -> {
+                            List<ColumnDescriptor> columnDescriptors = getColumnDescriptors(
+                                    schemaIdentifier, tableIdentifier);
 
-                    /* avoid collision with schema name */
-                    StringBuilder tablePostfix = new StringBuilder();
-                    while (Objects.equals(tableIdentifier + tablePostfix, schemaIdentifier)) {
-                        tablePostfix.append("_");
-                    }
-                    ClassName tableClassName = ClassName.bestGuess(snakeToCamelCase(tableIdentifier) + tablePostfix);
-                    String tableInstanceVariableName = classNameToInstanceName(
-                        tableClassName.simpleName() + tablePostfix);
+                            /* avoid collision with schema name */
+                            StringBuilder tablePostfix = new StringBuilder();
+                            while (Objects.equals(tableIdentifier + tablePostfix, schemaIdentifier)) {
+                                tablePostfix.append("_");
+                            }
+                            ClassName tableClassName = ClassName.bestGuess(snakeToCamelCase(tableIdentifier) + tablePostfix);
+                            String tableInstanceVariableName = classNameToInstanceName(
+                                    tableClassName.simpleName() + tablePostfix);
 
-                    return makeTableClass(
-                        schemaIdentifier,
-                        tableIdentifier,
-                        tableClassName,
-                        tableInstanceVariableName,
-                        getColumnDescriptors(schemaIdentifier, tableIdentifier)
-                            .stream()
-                            .map(columnDescriptor ->
-                                     makeColumnClass(tableIdentifier, columnDescriptor))
-                            .collect(Collectors.toUnmodifiableSet()),
-                        columnDescriptors
-                    );
-
-                })
-                .collect(Collectors.toUnmodifiableSet()))
+                            try {
+                                return makeTableClass(
+                                        schemaIdentifier,
+                                        tableIdentifier,
+                                        tableClassName,
+                                        tableInstanceVariableName,
+                                        getColumnDescriptors(schemaIdentifier, tableIdentifier)
+                                                .stream()
+                                                .map(columnDescriptor ->
+                                                        makeColumnClass(tableIdentifier, columnDescriptor))
+                                                .collect(Collectors.toUnmodifiableSet()),
+                                        columnDescriptors
+                                );
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            }
+                        })
+                        .collect(Collectors.toUnmodifiableSet()))
         ).build().writeToPath(Path.of(build_dir));
     }
 
@@ -517,9 +600,9 @@ public class Exporter {
     public static void main(String[] args) throws SQLException, IOException {
         try (Connection connection = getConnection()) {
             Exporter exporter = new Exporter(
-                connection,
-                args[1],
-                args[2]
+                    connection,
+                    args[1],
+                    args[2]
             );
             exporter.export();
 

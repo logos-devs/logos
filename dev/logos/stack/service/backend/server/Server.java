@@ -6,8 +6,7 @@ import com.google.inject.Inject;
 import dev.logos.stack.job.Job;
 import dev.logos.stack.job.JobState;
 import dev.logos.stack.module.DatabaseModule;
-import io.grpc.BindableService;
-import io.grpc.ServerBuilder;
+import io.grpc.*;
 import org.reflections.Reflections;
 import org.reflections.scanners.Scanners;
 
@@ -22,6 +21,15 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 
+class GlobalServerInterceptor implements ServerInterceptor {
+    @Override
+    public <ReqT, RespT> ServerCall.Listener<ReqT> interceptCall(
+            ServerCall<ReqT, RespT> call, Metadata headers, ServerCallHandler<ReqT, RespT> next) {
+
+        return next.startCall(call, headers);
+    }
+}
+
 public class Server implements Job {
 
     private JobState jobState = JobState.STOPPED;
@@ -33,6 +41,7 @@ public class Server implements Job {
     @Inject
     public Server(Set<BindableService> services) {
         ServerBuilder<?> serverBuilder = ServerBuilder.forPort(DEFAULT_PORT);
+        serverBuilder.intercept(new GlobalServerInterceptor());
         for (BindableService service : services) {
             serverBuilder.addService(service);
         }

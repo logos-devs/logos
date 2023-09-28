@@ -1,5 +1,4 @@
 import "@app/auth/web/components/login";
-import login_urls from "@infra/cognito_login_urls.json";
 import {RootState, store} from "@logos/store/store";
 import {css, html, LitElement} from "lit";
 import {customElement, state} from "lit/decorators.js";
@@ -30,10 +29,7 @@ export class BaseRouter extends connect(store)(LitElement) {
     // language=CSS
     static styles = css`
         :host {
-            --mdc-theme-primary: #002b36;
-            --mdc-theme-on-primary: rgba(255, 255, 255);
             display: block;
-            height: 100vh;
         }
         a.login {
             text-decoration: none;
@@ -53,7 +49,6 @@ export class BaseRouter extends connect(store)(LitElement) {
         //     `))}
         // `)}
         return html`
-            <a class="login" href="${login_urls["devSummerApp"]}">Login</a>
             ${choose(getRouteHost(window.location.hostname), [
                 ["digits.rip", () => html`${until(import("@app/digits/web/components/frame/Digits").then(() => html`
                     <frame-digits></frame-digits>

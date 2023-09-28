@@ -5,6 +5,10 @@ public class Filter {
     Op operation;
     String value;
 
+    public static Filter.Builder filter() {
+        return builder();
+    }
+
     public enum Op {
         EQ("="),
         GT(">"),

@@ -12,6 +12,10 @@ public class Select {
     private final Integer offset;
     private final List<OrderBy> orderBy;
 
+    public static Builder select() {
+        return builder();
+    }
+
     public static class Builder {
 
         private String from;
