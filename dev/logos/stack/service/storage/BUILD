@@ -14,6 +14,7 @@ java_library(
     ],
     visibility = [
         "//app:__subpackages__",
+        "//dev/logos/app:__subpackages__",
         "//dev/logos/stack/bind:__pkg__",
         "//dev/logos/stack/service/backend:__subpackages__",
         "//dev/logos/stack/service/storage:__subpackages__",
