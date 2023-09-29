@@ -8,13 +8,13 @@ import io.grpc.stub.StreamObserver;
 import java.util.stream.Stream;
 
 public interface EntityStorageService<Request, Response, Entity> {
-    Select.Builder listQuery(Request request);
+    Select.Builder query(Request request);
     EntityStorage<Entity> getStorage();
     Response result(Stream<Entity> entityListStream);
 
     default void listHandler(Request request,
                       StreamObserver<Response> responseObserver) {
-        try (Stream<Entity> entryListStream = getStorage().query(listQuery(request))) {
+        try (Stream<Entity> entryListStream = getStorage().query(query(request))) {
             responseObserver.onNext(result(entryListStream));
             responseObserver.onCompleted();
         } catch (EntityReadException e) {

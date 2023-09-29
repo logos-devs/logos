@@ -1,7 +1,6 @@
 package app.auth.storage;
 
 import app.auth.proto.auth.Credential;
-import com.google.protobuf.ByteString;
 import com.querydsl.core.Tuple;
 import com.querydsl.sql.SQLQuery;
 import com.yubico.webauthn.CredentialRepository;
@@ -11,8 +10,6 @@ import com.yubico.webauthn.data.PublicKeyCredentialDescriptor;
 import dev.logos.stack.service.storage.TableStorage;
 import dev.logos.stack.service.storage.pg.meta.Auth;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -25,22 +22,6 @@ public class AuthCredentialStorage extends TableStorage<Credential, UUID> implem
 
     public AuthCredentialStorage() {
         super(Auth.Credential.credential, Credential.class, UUID.class);
-    }
-
-    @Override
-    protected Credential storageToEntity(ResultSet rs) throws SQLException {
-        return Credential.newBuilder()
-                         .setId(ByteString.copyFrom(rs.getBytes("id")))
-                         .setUsername(rs.getString("username"))
-                         .setUserHandle(ByteString.copyFrom(rs.getBytes("user_handle")))
-                         .setDisplayName(rs.getString("display_name"))
-                         .setKeyId(ByteString.copyFrom(rs.getBytes("key_id")))
-                         .setPublicKeyCose(ByteString.copyFrom(rs.getBytes("public_key_cose")))
-                         .setDiscoverable(rs.getBoolean("discoverable"))
-                         .setSignatureCount(rs.getInt("signature_count"))
-                         .setAttestationObject(ByteString.copyFrom(rs.getBytes("attestation_object")))
-                         .setClientDataJson(rs.getString("client_data_json"))
-                         .build();
     }
 
     @Override

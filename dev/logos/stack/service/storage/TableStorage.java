@@ -13,13 +13,11 @@ import dev.logos.stack.service.storage.pg.Relation;
 import dev.logos.stack.service.storage.pg.Select;
 import org.jdbi.v3.core.Handle;
 import org.jdbi.v3.core.Jdbi;
-import org.jdbi.v3.core.mapper.RowMapperFactory;
 import org.jdbi.v3.core.mapper.reflect.FieldMapper;
 import org.jdbi.v3.core.statement.Query;
 import org.jdbi.v3.postgres.PostgresPlugin;
 
 import javax.sql.DataSource;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +29,7 @@ public abstract class TableStorage<Entity, StorageIdentifier> implements EntityS
     @Inject
     protected DataSource dataSource;
 
-    Relation relation;
+    protected Relation relation;
     Class<Entity> entityClass;
     Class<StorageIdentifier> storageIdentifierClass;
 
@@ -45,12 +43,12 @@ public abstract class TableStorage<Entity, StorageIdentifier> implements EntityS
         this.storageIdentifierClass = storageIdentifierClass;
     }
 
-    protected abstract Entity storageToEntity(ResultSet resultSet) throws SQLException;
-
+    @Deprecated
     protected Jdbi getJdbi() throws SQLException {
         return Jdbi.create(dataSource).installPlugin(new PostgresPlugin());
     }
 
+    @Deprecated
     protected SQLQueryFactory getQueryFactory() {
         return new SQLQueryFactory(
             new Configuration(
@@ -61,58 +59,13 @@ public abstract class TableStorage<Entity, StorageIdentifier> implements EntityS
     }
 
     // TODO : write a mapper which uses the proto reflection API. The members
-    // of this class are not the ones which correspond to field names.
-    protected RowMapperFactory getMapper() {
-        return FieldMapper.factory(entityClass);
-    }
-
-    private List<String> getFieldNames(Map<FieldDescriptor, Object> fields) {
-        return fields.keySet().stream().map(FieldDescriptor::getName).toList();
-    }
-
-    private void bindEntityUpdateFields(Map<FieldDescriptor, Object> fields,
-                                        Query updateStmt) {
-        fields.forEach((fieldDescriptor, o) -> {
-            String fieldName = fieldDescriptor.getName();
-            switch (fieldDescriptor.getJavaType()) {
-                case INT -> {
-                    updateStmt.bind(fieldName, (Integer) o);
-                }
-                case LONG -> {
-                    updateStmt.bind(fieldName, (Long) o);
-                }
-                case FLOAT -> {
-                    updateStmt.bind(fieldName, (Float) o);
-                }
-                case DOUBLE -> {
-                    updateStmt.bind(fieldName, (Double) o);
-                }
-                case BOOLEAN -> {
-                    updateStmt.bind(fieldName, (Boolean) o);
-                }
-                case STRING -> {
-                    updateStmt.bind(fieldName, (String) o);
-                }
-                case BYTE_STRING -> {
-                    updateStmt.bind(fieldName, ((ByteString) o).toByteArray());
-                }
-                case ENUM -> {
-                    throw new UnsupportedOperationException("ENUM is not supported yet.");
-                }
-                case MESSAGE -> {
-                    throw new UnsupportedOperationException(
-                        "MESSAGE (sub-message field) is not supported yet.");
-                }
-            }
-        });
-    }
-
+    //  of this class are not the ones which correspond to field names.
     public Stream<Entity> query(Select.Builder selectBuilder) throws EntityReadException {
         try {
             Handle handle = getJdbi().open();
-            handle.registerRowMapper(getMapper());
+            handle.registerRowMapper(FieldMapper.factory(entityClass));
             return handle.createQuery(selectBuilder.build().toString())
-                    .map((rs, ctx) -> storageToEntity(rs))
+                    .map((rs, ctx) -> relation.<Entity>toProtobuf(rs))
                     .stream()
                     .onClose(handle::close);
         } catch (SQLException e) {
@@ -124,20 +77,52 @@ public abstract class TableStorage<Entity, StorageIdentifier> implements EntityS
         try (Query insertQuery = getJdbi().withHandle(handle -> {
             Map<FieldDescriptor, Object> fields = ((GeneratedMessageV3) entity).getAllFields();
 
-            List<String> fieldNames = getFieldNames(fields);
+            List<String> fieldNames = fields.keySet().stream().map(FieldDescriptor::getName).toList();
             String placeholders = String.join(
                 ",",
                 fieldNames.stream().map(s -> ":" + s).toList());
 
-            Query stmt = handle.createQuery(
+            Query updateStmt = handle.createQuery(
                 String.format("insert into %s (%s) values (%s) returning id",
                               relation.quotedIdentifier,
                               String.join(",", fieldNames),
                               placeholders));
 
-            bindEntityUpdateFields(fields, stmt);
-            return stmt;
+            fields.forEach((fieldDescriptor, o) -> {
+                String fieldName = fieldDescriptor.getName();
+                switch (fieldDescriptor.getJavaType()) {
+                    case INT -> {
+                        updateStmt.bind(fieldName, (Integer) o);
+                    }
+                    case LONG -> {
+                        updateStmt.bind(fieldName, (Long) o);
+                    }
+                    case FLOAT -> {
+                        updateStmt.bind(fieldName, (Float) o);
+                    }
+                    case DOUBLE -> {
+                        updateStmt.bind(fieldName, (Double) o);
+                    }
+                    case BOOLEAN -> {
+                        updateStmt.bind(fieldName, (Boolean) o);
+                    }
+                    case STRING -> {
+                        updateStmt.bind(fieldName, (String) o);
+                    }
+                    case BYTE_STRING -> {
+                        updateStmt.bind(fieldName, ((ByteString) o).toByteArray());
+                    }
+                    case ENUM -> {
+                        throw new UnsupportedOperationException("ENUM is not supported yet.");
+                    }
+                    case MESSAGE -> {
+                        throw new UnsupportedOperationException(
+                                "MESSAGE (sub-message field) is not supported yet.");
+                    }
+                }
+            });
 
+            return updateStmt;
         })) {
             return insertQuery.mapTo(this.storageIdentifierClass).first();
         } catch (SQLException e) {

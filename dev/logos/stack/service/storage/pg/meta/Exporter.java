@@ -331,7 +331,7 @@ public class Exporter {
                 .addMethod(
                         MethodSpec
                                 .methodBuilder("toProtobuf")
-                                .addModifiers(PUBLIC, STATIC)
+                                .addModifiers(PUBLIC)
                                 .addException(SQLException.class)
                                 .addParameter(ResultSet.class, "resultSet")
                                 .returns(resultProtoClassName)
@@ -403,14 +403,6 @@ public class Exporter {
                                         ))
                                         .addStatement("return this.storage")
                                         .build())
-
-                                /*
-                                    @Override
-                                    public void list(ListEntryRequest request,
-                                            StreamObserver<ListEntryResponse> responseObserver) {
-                                        listHandler(request, responseObserver);
-                                    }
-                                 */
                                 .addMethod(MethodSpec.methodBuilder("list")
                                         .addAnnotation(Override.class)
                                         .addModifiers(PUBLIC)
