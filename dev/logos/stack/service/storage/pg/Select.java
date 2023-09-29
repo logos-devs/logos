@@ -56,8 +56,8 @@ public class Select {
             return this;
         }
 
-        public Builder where(List<Filter> where) {
-            this.where = where;
+        public Builder where(Filter ... where) {
+            this.where = List.of(where);
             return this;
         }
 

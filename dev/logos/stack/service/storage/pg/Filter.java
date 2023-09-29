@@ -9,6 +9,10 @@ public class Filter {
         return builder();
     }
 
+    public static Filter.Builder filter(Column column) {
+        return builder().column(column);
+    }
+
     public enum Op {
         EQ("="),
         GT(">"),

@@ -1,3 +1,4 @@
+load("//dev/logos/stack/service/storage/pg/meta:schema_export.bzl", "schema_export", "storage_java_proto_library")
 load("@rules_proto_grpc//java:defs.bzl", "java_grpc_library")
 
 java_library(
@@ -11,7 +12,6 @@ java_library(
         "//dev/logos/stack:__subpackages__",
     ],
     deps = [
-        "//app/summer/storage",
         "//app/summer/storage:storage_proto",
         "//dev/logos/stack/service/storage:storage_library",
         "//dev/logos/stack/service/storage/pg",

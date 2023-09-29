@@ -5,8 +5,6 @@ import app.summer.storage.summer.ListEntryRequest;
 import dev.logos.stack.service.storage.pg.OrderBy;
 import dev.logos.stack.service.storage.pg.Select;
 
-import java.util.List;
-
 import static app.summer.storage.Summer.Entry.ParentId.parentId;
 import static app.summer.storage.Summer.Entry.PublishedAt.publishedAt;
 import static app.summer.storage.Summer.Entry.entry;
@@ -21,10 +19,9 @@ public class EntryStorageService extends EntryStorageServiceBase {
     public Select.Builder query(ListEntryRequest request) {
         return select()
                 .from(entry)
-                .where(List.of(filter()
-                                .column(parentId)
-                                .op(IS_NULL)
-                                .build()))
+                .where(filter(parentId)
+                        .op(IS_NULL)
+                        .build())
                 .orderBy(OrderBy.builder()
                         .column(publishedAt)
                         .direction(DESC))

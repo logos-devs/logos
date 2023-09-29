@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 
-public abstract class TableStorage<Entity, StorageIdentifier> implements EntityStorage<Entity> {
+public class TableStorage<Entity, StorageIdentifier> implements EntityStorage<Entity> {
 
     @Inject
     protected DataSource dataSource;

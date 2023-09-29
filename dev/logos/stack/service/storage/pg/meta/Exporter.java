@@ -14,6 +14,7 @@ import com.squareup.javapoet.*;
 import dev.logos.stack.module.DatabaseModule;
 import dev.logos.stack.service.storage.EntityStorage;
 import dev.logos.stack.service.storage.EntityStorageService;
+import dev.logos.stack.service.storage.TableStorage;
 import dev.logos.stack.service.storage.pg.Column;
 import dev.logos.stack.service.storage.pg.Identifier;
 import dev.logos.stack.service.storage.pg.Relation;
@@ -164,10 +165,10 @@ public class Exporter {
         return instanceName;
     }
 
-    private TypeSpec makeSchemaClass(String schemaIdentifier,
+    private TypeSpec makeSchemaClass(ClassName schemaClassName,
+                                     String schemaIdentifier,
                                      Iterable<TypeSpec> tableClasses) {
 
-        ClassName schemaClassName = ClassName.bestGuess(snakeToCamelCase(schemaIdentifier));
         String schemaInstanceVariableName = classNameToInstanceName(schemaClassName.simpleName());
 
         return TypeSpec.classBuilder(schemaClassName)
@@ -295,7 +296,8 @@ public class Exporter {
         return descriptorFilename;
     }
 
-    private TypeSpec makeTableClass(String schemaIdentifier,
+    private TypeSpec makeTableClass(ClassName schemaClassName,
+                                    String schemaIdentifier,
                                     String tableIdentifier,
                                     ClassName tableClassName,
                                     String tableInstanceVariableName,
@@ -313,11 +315,18 @@ public class Exporter {
                 ClassName.get(build_package + "." + schemaIdentifier, tableClassName.simpleName());
 
         makeStorageServiceBaseClass(
+                schemaClassName,
                 schemaIdentifier,
                 tableIdentifier,
                 tableClassName,
                 tableInstanceVariableName,
                 columnDescriptors);
+
+        makeStorageBaseClass(
+                schemaClassName,
+                schemaIdentifier,
+                tableClassName,
+                tableInstanceVariableName);
 
         return TypeSpec
                 .classBuilder(tableClassName)
@@ -367,7 +376,48 @@ public class Exporter {
                 .build();
     }
 
+    private void makeStorageBaseClass(
+            ClassName schemaClassName,
+            String schemaIdentifier,
+            ClassName tableClassName,
+            String tableInstanceVariableName
+    ) throws IOException {
+        String packageName = build_package + "." + schemaIdentifier;
+
+        /*
+public class EntryStorage extends TableStorage<Entry, UUID> {
+
+    public EntryStorage() {
+        super(entry, Entry.class, UUID.class);
+    }
+}
+         */
+
+        JavaFile.builder(packageName,
+                        TypeSpec.classBuilder(String.format("%sStorageBase", tableClassName))
+                                .addModifiers(PUBLIC, ABSTRACT)
+                                .superclass(ParameterizedTypeName.get(
+                                        ClassName.get(TableStorage.class),
+                                        tableClassName,
+                                        ClassName.get(UUID.class) // TODO : derive from table's primary key type
+                                ))
+                                .addMethod(MethodSpec.constructorBuilder()
+                                        .addModifiers(PUBLIC)
+                                        .addStatement(
+                                                String.format("super(%s, $T.class, $T.class)", tableInstanceVariableName),
+                                                tableClassName,
+                                                ClassName.get(UUID.class))
+                                        .build())
+                                .build()
+                )
+                .addStaticImport(ClassName.bestGuess(String.format("%s.%s.%s", build_package, schemaClassName, tableClassName)),
+                                tableInstanceVariableName)
+                .build()
+                .writeToPath(Path.of(build_dir));
+    }
+
     private void makeStorageServiceBaseClass(
+            ClassName schemaClassName,
             String schemaIdentifier,
             String tableIdentifier,
             ClassName tableClassName,
@@ -401,7 +451,19 @@ public class Exporter {
                                                 ClassName.get(EntityStorage.class),
                                                 entityClassName
                                         ))
-                                        .addStatement("return this.storage")
+
+                                        /*
+  public EntryStorageBase() {
+            super(entry, Entry.class, UUID.class);
+        }
+        */
+                                        .addStatement(
+                                                String.format("return new $T<$T, $T>(%s, $T.class, $T.class)", tableInstanceVariableName),
+                                                TableStorage.class,
+                                                ClassName.bestGuess(String.format("%s.%s", packageName, tableClassName)),
+                                                ClassName.get(UUID.class),
+                                                tableClassName,
+                                                ClassName.get(UUID.class))
                                         .build())
                                 .addMethod(MethodSpec.methodBuilder("list")
                                         .addAnnotation(Override.class)
@@ -426,6 +488,8 @@ public class Exporter {
                                         .build())
                                 .build()
                 )
+                .addStaticImport(ClassName.bestGuess(String.format("%s.%s.%s", build_package, schemaClassName, tableClassName)),
+                        tableInstanceVariableName)
                 .build()
                 .writeToPath(Path.of(build_dir));
     }
@@ -538,9 +602,11 @@ public class Exporter {
 
     private void extractSchema(String schemaIdentifier,
                                Map<String, List<String>> selectedTables) throws IOException {
+
+        ClassName schemaClassName = ClassName.bestGuess(snakeToCamelCase(schemaIdentifier));
         JavaFile.builder(
                 build_package,
-                makeSchemaClass(schemaIdentifier, getTableIdentifiers(schemaIdentifier, selectedTables)
+                makeSchemaClass(schemaClassName, schemaIdentifier, getTableIdentifiers(schemaIdentifier, selectedTables)
                         .stream()
                         .map(tableIdentifier -> {
                             List<ColumnDescriptor> columnDescriptors = getColumnDescriptors(
@@ -557,6 +623,7 @@ public class Exporter {
 
                             try {
                                 return makeTableClass(
+                                        schemaClassName,
                                         schemaIdentifier,
                                         tableIdentifier,
                                         tableClassName,
