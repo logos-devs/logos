@@ -1,20 +1,18 @@
 package dev.logos.stack.module;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.Provides;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import javax.sql.DataSource;
 import org.postgresql.Driver;
-import org.xbill.DNS.CNAMERecord;
-import org.xbill.DNS.Lookup;
 import org.xbill.DNS.Record;
-import org.xbill.DNS.TextParseException;
-import org.xbill.DNS.Type;
+import org.xbill.DNS.*;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.regions.providers.DefaultAwsRegionProviderChain;
 import software.amazon.awssdk.services.rds.RdsUtilities;
 import software.amazon.awssdk.services.rds.model.GenerateAuthenticationTokenRequest;
 
+import javax.sql.DataSource;
 import java.util.Optional;
 
 class RdsIamAuthHikariDataSource extends HikariDataSource {
@@ -78,18 +76,14 @@ public class DatabaseModule extends AbstractModule {
     static String DB_USER = Optional.ofNullable(System.getenv("STORAGE_PG_BACKEND_USER"))
             .orElse("storage");
 
-    @Override
-    protected void configure() {
+    @Provides
+    public DataSource provideDataSource() {
         HikariConfig config = new HikariConfig();
-
         config.setJdbcUrl(DB_URL);
         config.setUsername(DB_USER);
         // config.addDataSourceProperty("cachePrepStmts", "true");
         // config.addDataSourceProperty("prepStmtCacheSize", "200");
         // config.addDataSourceProperty("prepStmtCacheSqlLimit", "1024");
-
-        bind(DataSource.class).toInstance(new RdsIamAuthHikariDataSource(config));
-
-        super.configure();
+        return new RdsIamAuthHikariDataSource(config);
     }
 }

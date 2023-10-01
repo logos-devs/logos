@@ -2,9 +2,7 @@ package dev.logos.stack.service.storage.exporter;
 
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
-import com.google.inject.Guice;
-import com.google.inject.Inject;
-import com.google.inject.Injector;
+import com.google.inject.*;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.DescriptorProtos.*;
 import com.google.protobuf.DescriptorProtos.FieldDescriptorProto.Label;
@@ -190,10 +188,9 @@ public class Exporter {
                 .build();
     }
 
-    private String makeResultProto(String schemaIdentifier,
+    private void makeResultProto(String schemaIdentifier,
                                    String tableIdentifier,
                                    ClassName tableClassName,
-                                   String tableInstanceVariableName,
                                    List<ColumnDescriptor> columnDescriptors) {
         String descriptorPath = "%s/%s/%s/".formatted(build_dir, build_package.replace(".", "/"), schemaIdentifier);
         String descriptorFilename = "%s%s.desc".formatted(descriptorPath, tableIdentifier);
@@ -292,8 +289,6 @@ public class Exporter {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
-        return descriptorFilename;
     }
 
     private TypeSpec makeTableClass(ClassName schemaClassName,
@@ -304,11 +299,10 @@ public class Exporter {
                                     Iterable<TypeSpec> columnClasses,
                                     List<ColumnDescriptor> columnDescriptors) throws IOException {
 
-        String protoFilename = makeResultProto(
+        makeResultProto(
                 schemaIdentifier,
                 tableIdentifier,
                 tableClassName,
-                tableInstanceVariableName,
                 columnDescriptors);
 
         ClassName resultProtoClassName =
@@ -317,15 +311,14 @@ public class Exporter {
         makeStorageServiceBaseClass(
                 schemaClassName,
                 schemaIdentifier,
-                tableIdentifier,
                 tableClassName,
-                tableInstanceVariableName,
-                columnDescriptors);
+                tableInstanceVariableName);
 
-        makeStorageBaseClass(
+        makeStorageModule(
                 schemaClassName,
                 schemaIdentifier,
                 tableClassName,
+                tableIdentifier,
                 tableInstanceVariableName);
 
         return TypeSpec
@@ -376,95 +369,53 @@ public class Exporter {
                 .build();
     }
 
-    private void makeStorageBaseClass(
+    private void makeStorageServiceBaseClass(
             ClassName schemaClassName,
             String schemaIdentifier,
             ClassName tableClassName,
             String tableInstanceVariableName
     ) throws IOException {
         String packageName = build_package + "." + schemaIdentifier;
-
-        /*
-public class EntryStorage extends TableStorage<Entry, UUID> {
-
-    public EntryStorage() {
-        super(entry, Entry.class, UUID.class);
-    }
-}
-         */
-
-        JavaFile.builder(packageName,
-                        TypeSpec.classBuilder(String.format("%sStorageBase", tableClassName))
-                                .addModifiers(PUBLIC, ABSTRACT)
-                                .superclass(ParameterizedTypeName.get(
-                                        ClassName.get(TableStorage.class),
-                                        tableClassName,
-                                        ClassName.get(UUID.class) // TODO : derive from table's primary key type
-                                ))
-                                .addMethod(MethodSpec.constructorBuilder()
-                                        .addModifiers(PUBLIC)
-                                        .addStatement(
-                                                String.format("super(%s, $T.class, $T.class)", tableInstanceVariableName),
-                                                tableClassName,
-                                                ClassName.get(UUID.class))
-                                        .build())
-                                .build()
-                )
-                .addStaticImport(ClassName.bestGuess(String.format("%s.%s.%s", build_package, schemaClassName, tableClassName)),
-                                tableInstanceVariableName)
-                .build()
-                .writeToPath(Path.of(build_dir));
-    }
-
-    private void makeStorageServiceBaseClass(
-            ClassName schemaClassName,
-            String schemaIdentifier,
-            String tableIdentifier,
-            ClassName tableClassName,
-            String tableInstanceVariableName,
-            List<ColumnDescriptor> columnDescriptors
-    ) throws IOException {
-        String packageName = build_package + "." + schemaIdentifier;
         ClassName entityClassName = ClassName.bestGuess(String.format("%s.%s", packageName, tableClassName));
+        ParameterizedTypeName entityStorageClass = ParameterizedTypeName.get(
+                ClassName.get(EntityStorage.class),
+                entityClassName
+        );
 
         JavaFile.builder(packageName,
                         TypeSpec.classBuilder(String.format("%sStorageServiceBase", tableClassName))
                                 .addModifiers(PUBLIC, ABSTRACT)
                                 .superclass(ClassName.bestGuess(String.format("%s.%sStorageServiceGrpc.%sStorageServiceImplBase", packageName, tableClassName, tableClassName)))
+                                .addField(FieldSpec.builder(entityStorageClass, "storage", PRIVATE)
+                                        .addAnnotation(Inject.class)
+                                        .build())
                                 .addSuperinterface(ParameterizedTypeName.get(
                                         ClassName.get(EntityStorageService.class),
                                         ClassName.bestGuess(String.format("%s.List%sRequest", packageName, tableClassName)),
                                         ClassName.bestGuess(String.format("%s.List%sResponse", packageName, tableClassName)),
                                         ClassName.bestGuess(String.format("%s.%s", packageName, tableClassName)) // ,
                                 ))
-                                .addField(FieldSpec.builder(
-                                        ParameterizedTypeName.get(
-                                                ClassName.get(EntityStorage.class),
-                                                entityClassName
-                                        ), "storage", PRIVATE)
-                                        .addAnnotation(Inject.class)
-                                        .build())
                                 .addMethod(MethodSpec.methodBuilder("getStorage")
                                         .addAnnotation(Override.class)
-                                        .addModifiers(Modifier.PUBLIC)
-                                        .returns(ParameterizedTypeName.get(
-                                                ClassName.get(EntityStorage.class),
-                                                entityClassName
-                                        ))
-
-                                        /*
-  public EntryStorageBase() {
-            super(entry, Entry.class, UUID.class);
-        }
-        */
-                                        .addStatement(
-                                                String.format("return new $T<$T, $T>(%s, $T.class, $T.class)", tableInstanceVariableName),
-                                                TableStorage.class,
-                                                ClassName.bestGuess(String.format("%s.%s", packageName, tableClassName)),
-                                                ClassName.get(UUID.class),
-                                                tableClassName,
-                                                ClassName.get(UUID.class))
+                                        .addModifiers(PUBLIC)
+                                        .returns(entityStorageClass)
+                                        .addStatement("return this.storage")
                                         .build())
+//                                .addMethod(MethodSpec.methodBuilder("getStorage")
+//                                        .addAnnotation(Override.class)
+//                                        .addModifiers(Modifier.PUBLIC)
+//                                        .returns(ParameterizedTypeName.get(
+//                                                ClassName.get(EntityStorage.class),
+//                                                entityClassName
+//                                        ))
+//                                        .addStatement(
+//                                                String.format("return new $T<$T, $T>(%s, $T.class, $T.class)", tableInstanceVariableName),
+//                                                TableStorage.class,
+//                                                ClassName.bestGuess(String.format("%s.%s", packageName, tableClassName)),
+//                                                ClassName.get(UUID.class),
+//                                                tableClassName,
+//                                                ClassName.get(UUID.class))
+//                                        .build())
                                 .addMethod(MethodSpec.methodBuilder("list")
                                         .addAnnotation(Override.class)
                                         .addModifiers(PUBLIC)
@@ -485,6 +436,49 @@ public class EntryStorage extends TableStorage<Entry, UUID> {
                                         .addStatement(
                                                 String.format("return $T.newBuilder().addAllResults(%sListStream.toList()).build()", tableInstanceVariableName),
                                                 ClassName.bestGuess(String.format("%s.List%sResponse", packageName, tableClassName)))
+                                        .build())
+                                .build()
+                )
+                .addStaticImport(ClassName.bestGuess(String.format("%s.%s.%s", build_package, schemaClassName, tableClassName)),
+                        tableInstanceVariableName)
+                .build()
+                .writeToPath(Path.of(build_dir));
+    }
+
+    private void makeStorageModule(
+            ClassName schemaClassName,
+            String schemaIdentifier,
+            ClassName tableClassName,
+            String tableIdentifier,
+            String tableInstanceVariableName
+    ) throws IOException {
+        String packageName = build_package + "." + schemaIdentifier + "." + tableIdentifier;
+
+        ClassName entityClassName = ClassName.bestGuess(build_package + "." + schemaIdentifier + "." + tableClassName);
+
+        JavaFile.builder(packageName,
+                        TypeSpec.classBuilder("StorageModule")
+                                .addModifiers(PUBLIC)
+                                .superclass(AbstractModule.class)
+                                .addMethod(MethodSpec.methodBuilder("configure")
+                                        .addAnnotation(Override.class)
+                                        .addModifiers(PROTECTED)
+                                        .addStatement(
+                                                String.format("bind(new $T(){}).toInstance(new $T(%s, $T.class, $T.class))", tableInstanceVariableName),
+                                                ParameterizedTypeName.get(
+                                                        ClassName.get(TypeLiteral.class),
+                                                        ParameterizedTypeName.get(
+                                                                ClassName.get(EntityStorage.class),
+                                                                entityClassName)
+                                                ),
+                                                ParameterizedTypeName.get(
+                                                        ClassName.get(TableStorage.class),
+                                                        entityClassName,
+                                                        ClassName.get(UUID.class)
+                                                ),
+                                                entityClassName,
+                                                ClassName.get(UUID.class))
+                                        .addStatement("super.configure()")
                                         .build())
                                 .build()
                 )

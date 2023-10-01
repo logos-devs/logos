@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 
+// TODO : fix injection
 public class TableStorage<Entity, StorageIdentifier> implements EntityStorage<Entity> {
 
     @Inject

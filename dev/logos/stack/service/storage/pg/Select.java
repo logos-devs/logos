@@ -8,8 +8,8 @@ public class Select {
 
     private final String from;
     private final List<Filter> where;
-    private final Integer limit;
-    private final Integer offset;
+    private final Long limit;
+    private final Long offset;
     private final List<OrderBy> orderBy;
 
     public static Builder select() {
@@ -20,12 +20,12 @@ public class Select {
 
         private String from;
         private List<Filter> where;
-        private Integer limit;
-        private Integer offset;
+        private Long limit;
+        private Long offset;
         private List<OrderBy> orderBy;
 
         public Builder() {
-            this.offset = 0;
+            this.offset = 0L;
             this.where = new ArrayList<>();
             this.orderBy = new ArrayList<>();
         }
@@ -46,12 +46,12 @@ public class Select {
             return this;
         }
 
-        public Builder limit(Integer limit) {
+        public Builder limit(Long limit) {
             this.limit = limit;
             return this;
         }
 
-        public Builder offset(Integer offset) {
+        public Builder offset(Long offset) {
             this.offset = offset;
             return this;
         }
@@ -61,12 +61,30 @@ public class Select {
             return this;
         }
 
+        public Builder where(Column column, Filter.Op op) {
+            this.where = List.of(
+                    Filter.builder()
+                            .column(column)
+                            .op(op)
+                            .build());
+            return this;
+        }
+
         public Builder orderBy(OrderBy.Builder orderBy) {
             return orderBy(orderBy.build());
         }
 
         public Builder orderBy(OrderBy orderBy) {
             this.orderBy.add(orderBy);
+            return this;
+        }
+
+        public Builder orderBy(Column column, SortOrder sortOrder) {
+            this.orderBy
+                    .add(OrderBy.builder()
+                            .column(column)
+                            .direction(sortOrder)
+                            .build());
             return this;
         }
 
