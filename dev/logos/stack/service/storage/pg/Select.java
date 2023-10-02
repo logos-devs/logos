@@ -22,12 +22,12 @@ public class Select {
 
     public static class Builder {
 
+        private Column[] columns = new Column[0];
         private String from;
         private List<Filter> where;
         private Long limit;
         private Long offset;
         private List<OrderBy> orderBy;
-        private Column[] columns;
 
         public Builder() {
             this.offset = 0L;

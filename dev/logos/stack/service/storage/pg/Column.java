@@ -2,6 +2,7 @@ package dev.logos.stack.service.storage.pg;
 
 
 public abstract class Column extends Identifier {
+    public static final Column STAR = new Column("*", "*", null){};
 
     String storageType;
 
