@@ -155,7 +155,7 @@ public class Exporter {
         exporter.export(dataSource.getConnection().getMetaData());
     }
 
-    public String classNameToInstanceName(String className) {
+    public static String classNameToInstanceName(String className) {
         String instanceName = className.substring(0, 1).toLowerCase() + className.substring(1);
         if (Arrays.asList(JAVA_KEYWORDS).contains(instanceName)) {
             instanceName = "_" + instanceName;
@@ -167,25 +167,30 @@ public class Exporter {
                                      String schemaIdentifier,
                                      Iterable<TypeSpec> tableClasses) {
 
-        String schemaInstanceVariableName = classNameToInstanceName(schemaClassName.simpleName());
-
-        return TypeSpec.classBuilder(schemaClassName)
+        TypeSpec.Builder schemaClassBuilder = TypeSpec.classBuilder(schemaClassName)
                 .addModifiers(PUBLIC)
                 .superclass(Schema.class)
                 .addMethod(MethodSpec.constructorBuilder()
-                        .addParameter(String.class, "identifier")
-                        .addParameter(String.class, "quotedIdentifier")
-                        .addStatement("super(identifier, quotedIdentifier)")
+                        .addStatement("super($S, $S)", schemaIdentifier, Identifier.quoteIdentifier(schemaIdentifier))
                         .build())
-                .addField(
-                        FieldSpec.builder(schemaClassName, schemaInstanceVariableName, VARIABLE_MODIFIERS)
-                                .initializer("new $T($S, $S)",
-                                        schemaClassName,
-                                        schemaIdentifier,
-                                        Identifier.quoteIdentifier(schemaIdentifier))
-                                .build())
-                .addTypes(tableClasses)
-                .build();
+//                .addField(
+//                        FieldSpec.builder(schemaClassName,
+//                                        classNameToInstanceName(schemaClassName.simpleName()), VARIABLE_MODIFIERS)
+//                                .initializer("new $T()", schemaClassName)
+//                                .build())
+                .addTypes(tableClasses);
+
+        for (TypeSpec tableClass : tableClasses) {
+            ClassName tableClassName = ClassName.bestGuess(tableClass.name);
+            schemaClassBuilder.addField(
+                    FieldSpec.builder(tableClassName,
+                                    classNameToInstanceName(tableClass.name),
+                                    VARIABLE_MODIFIERS)
+                            .initializer("new $T()", tableClassName)
+                            .build());
+        }
+
+        return schemaClassBuilder.build();
     }
 
     private void makeResultProto(String schemaIdentifier,
@@ -321,14 +326,14 @@ public class Exporter {
                 tableIdentifier,
                 tableInstanceVariableName);
 
-        return TypeSpec
+        TypeSpec.Builder tableClassBuilder = TypeSpec
                 .classBuilder(tableClassName)
                 .addModifiers(INNER_CLASS_MODIFIERS)
                 .superclass(Relation.class)
                 .addMethod(MethodSpec.constructorBuilder()
-                        .addParameter(String.class, "identifier")
-                        .addParameter(String.class, "quotedIdentifier")
-                        .addStatement("super(identifier, quotedIdentifier)")
+                        .addStatement("super($S, $S)",
+                                tableIdentifier,
+                                Identifier.quoteIdentifier(schemaIdentifier) + "." + Identifier.quoteIdentifier(tableIdentifier))
                         .build())
                 .addMethod(
                         MethodSpec
@@ -356,17 +361,24 @@ public class Exporter {
                                                 .add("return builder.build()")
                                                 .build())
                                 .build())
-                .addField(
-                        FieldSpec
-                                .builder(tableClassName, tableInstanceVariableName, VARIABLE_MODIFIERS)
-                                .initializer("new $T($S, $S)",
-                                        tableClassName,
-                                        tableIdentifier,
-                                        Identifier.quoteIdentifier(schemaIdentifier) + "."
-                                                + Identifier.quoteIdentifier(tableIdentifier))
-                                .build())
-                .addTypes(columnClasses)
-                .build();
+//                .addField(
+//                        FieldSpec
+//                                .builder(tableClassName, tableInstanceVariableName, VARIABLE_MODIFIERS)
+//                                .initializer("new $T()", tableClassName)
+//                                .build())
+                .addTypes(columnClasses);
+
+        for (TypeSpec columnClass : columnClasses) {
+            ClassName columnClassName = ClassName.bestGuess(columnClass.name);
+            tableClassBuilder.addField(
+                    FieldSpec.builder(columnClassName,
+                                    classNameToInstanceName(columnClass.name),
+                                    VARIABLE_MODIFIERS)
+                            .initializer("new $T()", columnClassName)
+                            .build());
+        }
+
+        return tableClassBuilder.build();
     }
 
     private void makeStorageServiceBaseClass(
@@ -439,7 +451,7 @@ public class Exporter {
                                         .build())
                                 .build()
                 )
-                .addStaticImport(ClassName.bestGuess(String.format("%s.%s.%s", build_package, schemaClassName, tableClassName)),
+                .addStaticImport(ClassName.bestGuess(String.format("%s.%s", build_package, schemaClassName)),
                         tableInstanceVariableName)
                 .build()
                 .writeToPath(Path.of(build_dir));
@@ -482,7 +494,7 @@ public class Exporter {
                                         .build())
                                 .build()
                 )
-                .addStaticImport(ClassName.bestGuess(String.format("%s.%s.%s", build_package, schemaClassName, tableClassName)),
+                .addStaticImport(ClassName.bestGuess(String.format("%s.%s", build_package, schemaClassName)),
                         tableInstanceVariableName)
                 .build()
                 .writeToPath(Path.of(build_dir));
@@ -510,22 +522,12 @@ public class Exporter {
                         .returns(String.class)
                         .build())
                 .addMethod(MethodSpec.constructorBuilder()
-                        .addParameter(String.class, "identifier")
-                        .addParameter(String.class, "quotedIdentifier")
-                        .addParameter(String.class, "type")
-                        .addStatement("super(identifier, quotedIdentifier, type)")
+                        .addStatement("super($S, $S, $S)",
+                                columnIdentifier,
+                                Identifier.quoteIdentifier(tableIdentifier) + '.'
+                                        + Identifier.quoteIdentifier(columnIdentifier),
+                                columnDescriptor.type())
                         .build())
-                .addField(
-                        FieldSpec.builder(columnClassName,
-                                        classNameToInstanceName(columnClassName.simpleName()),
-                                        VARIABLE_MODIFIERS)
-                                .initializer("new $T($S, $S, $S)",
-                                        columnClassName,
-                                        columnIdentifier,
-                                        Identifier.quoteIdentifier(tableIdentifier) + '.'
-                                                + Identifier.quoteIdentifier(columnIdentifier),
-                                        columnDescriptor.type())
-                                .build())
                 .build();
     }
 

@@ -21,7 +21,7 @@ import static java.util.Objects.requireNonNull;
 public class AuthCredentialStorage extends TableStorage<Credential, UUID> implements CredentialRepository {
 
     public AuthCredentialStorage() {
-        super(Auth.Credential.credential, Credential.class, UUID.class);
+        super(Auth.credential, Credential.class, UUID.class);
     }
 
     @Override

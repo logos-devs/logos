@@ -5,7 +5,7 @@ import dev.logos.stack.service.storage.TableStorage;
 
 import java.util.UUID;
 
-import static app.digits.storage.Digits.PhoneNumber.phoneNumber;
+import static app.digits.storage.Digits.phoneNumber;
 
 public class PhoneNumberStorage extends TableStorage<PhoneNumber, UUID> {
 

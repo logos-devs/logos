@@ -3,6 +3,7 @@
 /.bazelrc.local
 /.fasl
 /.ijwb/.idea/libraries
+/.pnpm-store
 /bazel-bin
 /bazel-logos
 /bazel-out

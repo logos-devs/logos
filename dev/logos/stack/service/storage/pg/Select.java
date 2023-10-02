@@ -1,18 +1,22 @@
 package dev.logos.stack.service.storage.pg;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class Select {
 
+    private final Column[] columns;
     private final String from;
     private final List<Filter> where;
     private final Long limit;
     private final Long offset;
     private final List<OrderBy> orderBy;
 
-    public static Builder select() {
+    public static Builder select(Column ... columns) {
+        Builder builder = builder();
+        builder.columns = columns;
         return builder();
     }
 
@@ -23,6 +27,7 @@ public class Select {
         private Long limit;
         private Long offset;
         private List<OrderBy> orderBy;
+        private Column[] columns;
 
         public Builder() {
             this.offset = 0L;
@@ -98,6 +103,7 @@ public class Select {
     }
 
     public Select(Builder builder) {
+        this.columns = builder.columns;
         this.from = builder.from;
         this.where = builder.where;
         this.limit = builder.limit;
@@ -109,7 +115,18 @@ public class Select {
     public String toString() {
         List<String> queryParts = new ArrayList<>();
         queryParts.add("select");
+
+        if (this.columns.length > 0) {
+            queryParts.add(Arrays.stream(this.columns).map(column -> column.quotedIdentifier).collect(Collectors.joining(", ")));
+        }
+
+        // FIXME
+        for (Column column : this.columns) {
+            queryParts.add(column.toString());
+        }
         queryParts.add("*");
+        // FIXME
+
         queryParts.add(String.format("from %s", this.from));
         if (!this.where.isEmpty()) {
             queryParts.add("where " + this.where.stream().map(Filter::toString).collect(Collectors.joining(" and ")));

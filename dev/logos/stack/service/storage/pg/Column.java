@@ -1,5 +1,6 @@
 package dev.logos.stack.service.storage.pg;
 
+
 public abstract class Column extends Identifier {
 
     String storageType;

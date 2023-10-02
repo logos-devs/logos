@@ -71,9 +71,9 @@
     <orderEntry type="library" name="libcore-hjar_2a5d1965" level="project" />
     <orderEntry type="library" name="header_guice-7.0.0_479d93c0" level="project" />
     <orderEntry type="library" name="libvoice_java_library-hjar_26949da6" level="project" />
-    <orderEntry type="library" name="material-components-web" level="application" />
-    <orderEntry type="library" name="swiper" level="application" />
-    <orderEntry type="library" name="hammer.js" level="application" />
     <orderEntry type="library" name="Python 3.11 interpreter library" level="application" />
+    <orderEntry type="library" name="swiper" level="application" />
+    <orderEntry type="library" name="material-components-web" level="application" />
+    <orderEntry type="library" name="hammer.js" level="application" />
   </component>
 </module>

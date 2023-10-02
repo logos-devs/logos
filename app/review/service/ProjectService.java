@@ -12,7 +12,7 @@ import javax.inject.Inject;
 import java.util.stream.Stream;
 
 import static app.review.proto.project.ProjectServiceGrpc.ProjectServiceImplBase;
-import static dev.logos.stack.service.storage.pg.meta.Review.Project.project;
+import static dev.logos.stack.service.storage.pg.meta.Review.project;
 
 public class ProjectService extends ProjectServiceImplBase {
 
