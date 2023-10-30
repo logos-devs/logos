@@ -27,6 +27,8 @@ java_library(
         "//dev/logos/stack/module:database_module",
         "//dev/logos/stack/service/storage:storage_library",
         "@io_grpc_grpc_java//api",
+        "@io_grpc_grpc_java//core:core_maven",
+        "@io_grpc_grpc_java//stub",
         "@maven//:com_fasterxml_jackson_core_jackson_annotations",
         "@maven//:com_fasterxml_jackson_core_jackson_core",
         "@maven//:com_fasterxml_jackson_core_jackson_databind",

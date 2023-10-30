@@ -173,11 +173,6 @@ public class Exporter {
                 .addMethod(MethodSpec.constructorBuilder()
                         .addStatement("super($S, $S)", schemaIdentifier, Identifier.quoteIdentifier(schemaIdentifier))
                         .build())
-//                .addField(
-//                        FieldSpec.builder(schemaClassName,
-//                                        classNameToInstanceName(schemaClassName.simpleName()), VARIABLE_MODIFIERS)
-//                                .initializer("new $T()", schemaClassName)
-//                                .build())
                 .addTypes(tableClasses);
 
         for (TypeSpec tableClass : tableClasses) {
@@ -361,11 +356,6 @@ public class Exporter {
                                                 .add("return builder.build()")
                                                 .build())
                                 .build())
-//                .addField(
-//                        FieldSpec
-//                                .builder(tableClassName, tableInstanceVariableName, VARIABLE_MODIFIERS)
-//                                .initializer("new $T()", tableClassName)
-//                                .build())
                 .addTypes(columnClasses);
 
         for (TypeSpec columnClass : columnClasses) {

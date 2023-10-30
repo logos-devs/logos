@@ -14,6 +14,7 @@ import static dev.logos.stack.service.storage.pg.SortOrder.DESC;
 public class EntryStorageService extends EntryStorageServiceBase {
     @Override
     public Select.Builder query(ListEntryRequest request) {
+
         return select(id, name, body, linkUrl, imageUrl, createdAt, updatedAt, parentId, publishedAt, tags, sourceRssId)
                 .from(entry)
                 .where(parentId, IS_NULL)

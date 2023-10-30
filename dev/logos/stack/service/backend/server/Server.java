@@ -3,10 +3,12 @@ package dev.logos.stack.service.backend.server;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
+import com.google.inject.Injector;
 import dev.logos.stack.job.Job;
 import dev.logos.stack.job.JobState;
 import dev.logos.stack.module.DatabaseModule;
 import io.grpc.*;
+import io.grpc.inprocess.InProcessServerBuilder;
 import org.reflections.Reflections;
 import org.reflections.scanners.Scanners;
 
@@ -36,17 +38,20 @@ public class Server implements Job {
     private static final Logger logger = Logger.getLogger(Server.class.getName());
     private static final int DEFAULT_PORT = 8081;
     private static final int TERMINATION_GRACE_PERIOD_SECONDS = 25;
-    private final io.grpc.Server server;
+    private final io.grpc.Server outerServer;
+    private final io.grpc.Server innerServer;
 
     @Inject
     public Server(Set<BindableService> services) {
+
         ServerBuilder<?> serverBuilder = ServerBuilder.forPort(DEFAULT_PORT);
         serverBuilder.intercept(new GlobalServerInterceptor());
         for (BindableService service : services) {
             serverBuilder.addService(service);
         }
 
-        server = serverBuilder.build();
+        outerServer = serverBuilder.build();
+        innerServer = InProcessServerBuilder.forName("logos-in-process").build();
     }
 
     public CompletableFuture<Job> start() {
@@ -54,9 +59,10 @@ public class Server implements Job {
 
         return CompletableFuture.supplyAsync(() -> {
             try {
-                server.start();
+                outerServer.start();
+                innerServer.start();
                 this.jobState = JobState.RUNNING;
-                logger.info("Server started, listening on " + server.getPort());
+                logger.info("Server started, listening on " + outerServer.getPort());
                 Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                     System.err.println("*** shutting down gRPC server since JVM is shutting down");
                     Server.this.stop().thenApply(job -> {
@@ -76,9 +82,12 @@ public class Server implements Job {
 
         return CompletableFuture.supplyAsync(() -> {
             try {
-                server.shutdown().awaitTermination(
+                outerServer.shutdown().awaitTermination(
                     TERMINATION_GRACE_PERIOD_SECONDS,
                     TimeUnit.SECONDS);
+                innerServer.shutdown().awaitTermination(
+                        TERMINATION_GRACE_PERIOD_SECONDS,
+                        TimeUnit.SECONDS);
                 this.jobState = JobState.STOPPED;
             } catch (InterruptedException e) {
                 this.jobState = JobState.RUNTIME_FAILURE;
@@ -99,7 +108,7 @@ public class Server implements Job {
     }
 
     private void blockUntilShutdown() throws InterruptedException {
-        server.awaitTermination();
+        outerServer.awaitTermination();
     }
 
     public static void main(String[] args)
@@ -120,7 +129,8 @@ public class Server implements Job {
             }
         }
 
-        Server server = Guice.createInjector(modules).getInstance(Server.class);
+        Injector injector = Guice.createInjector(modules);
+        Server server = injector.getInstance(Server.class);
         server.start();
         server.blockUntilShutdown();
     }

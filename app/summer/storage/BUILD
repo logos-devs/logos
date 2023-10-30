@@ -12,7 +12,7 @@ schema_export(
 )
 
 storage_java_proto_library(
-    name = "storage_proto",
+    name = "storage",
     srcs = [":schema_export"],
     visibility = ["//app/summer:__subpackages__"],
 )

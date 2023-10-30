@@ -8,6 +8,6 @@ java_library(
     deps = [
         "//dev/logos/stack/service/storage:storage_library",
         "@maven//:com_google_inject_guice",
-        "@maven//:io_grpc_grpc_api",
+        "@io_grpc_grpc_java//api",
     ],
 )

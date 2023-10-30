@@ -5,6 +5,7 @@ java_library(
     name = "service",
     srcs = [
         "EntryStorageService.java",
+        "FeedService.java",
         "SourceRssStorageService.java",
     ],
     visibility = [
@@ -12,7 +13,8 @@ java_library(
         "//dev/logos/stack:__subpackages__",
     ],
     deps = [
-        "//app/summer/storage:storage_proto",
+        "//app/summer/proto",
+        "//app/summer/storage",
         "//dev/logos/stack/service/storage:storage_library",
         "//dev/logos/stack/service/storage/pg",
         "@com_google_protobuf//:protobuf_java",

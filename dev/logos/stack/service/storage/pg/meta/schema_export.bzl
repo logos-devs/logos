@@ -1,4 +1,5 @@
 load("@aspect_rules_js//js/private:js_info.bzl", "js_info")
+load("@rules_proto//proto:defs.bzl", "ProtoInfo")
 
 def _schema_export_impl(ctx):
     outputs = [
@@ -131,12 +132,12 @@ def storage_java_proto_library(name, srcs, visibility):
             "//dev/logos/stack/service/storage:storage_library",
             "@com_google_protobuf//java/core",
             "@io_grpc_grpc_java//api",
+            "@io_grpc_grpc_java//protobuf",
             "@io_grpc_grpc_java//stub",
             "@maven//:com_google_guava_guava",
             "@maven//:com_google_inject_guice",
             "@maven//:com_querydsl_querydsl_core",
             "@maven//:com_querydsl_querydsl_sql",
-            "@maven//:io_grpc_grpc_protobuf",
             "@maven//:javax_annotation_javax_annotation_api",
             "@maven//:javax_inject_javax_inject",
         ],

@@ -109,8 +109,8 @@ rules_proto_toolchains()
 http_archive(
     name = "rules_proto_grpc",
     #sha256 = "",
-    strip_prefix = "rules_proto_grpc-4.4.0",
-    urls = ["https://github.com/rules-proto-grpc/rules_proto_grpc/archive/4.4.0.tar.gz"],
+    strip_prefix = "rules_proto_grpc-4.5.0",
+    urls = ["https://github.com/rules-proto-grpc/rules_proto_grpc/archive/4.5.0.tar.gz"],
 )
 
 load("@rules_proto_grpc//:repositories.bzl", "rules_proto_grpc_repos", "rules_proto_grpc_toolchains")
@@ -146,9 +146,6 @@ maven_install(
         "com.yubico:webauthn-server-core:2.5.0",
         "com.zaxxer:HikariCP:5.0.1",
         "dnsjava:dnsjava:3.5.2",
-        "io.grpc:grpc-netty-shaded:1.56.1",
-        "io.grpc:grpc-protobuf:1.56.1",
-        "io.grpc:grpc-services:1.56.1",
         "javax.annotation:javax.annotation-api:1.3.2",
         "javax.json:javax.json-api:1.1.4",
         "org.antlr:antlr4-runtime:4.13.0",
