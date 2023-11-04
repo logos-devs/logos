@@ -1,4 +1,4 @@
-load("//dev/logos/stack/service/storage/pg/meta:schema_export.bzl", "schema_export", "storage_java_proto_library")
+load("//dev/logos/stack/service/storage/pg/exporter:schema_export.bzl", "schema_export", "storage_java_proto_library")
 load("@rules_proto_grpc//java:defs.bzl", "java_grpc_library")
 
 java_library(

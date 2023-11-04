@@ -10,7 +10,7 @@ java_library(
         "//app/auth/proto:auth_java_library",
         "//dev/logos/stack/service/storage:storage_library",
         "//dev/logos/stack/service/storage/pg",
-        "//dev/logos/stack/service/storage/pg/meta:schema_export_library",
+        "//dev/logos/stack/service/storage/pg/exporter:schema_export_library",
         "@maven//:com_fasterxml_jackson_core_jackson_annotations",
         "@maven//:com_fasterxml_jackson_core_jackson_core",
         "@maven//:com_google_guava_guava",

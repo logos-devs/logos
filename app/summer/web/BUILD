@@ -7,6 +7,6 @@ js_library(
     ],
     visibility = ["//dev/logos/stack/service/client/web:__pkg__"],
     deps = [
-        "//dev/logos/stack/service/storage/pg/meta:export",
+        "//dev/logos/stack/service/storage/pg/exporter:export",
     ],
 )

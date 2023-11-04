@@ -1,10 +1,12 @@
 load("@aspect_rules_js//js/private:js_info.bzl", "js_info")
-load("@rules_proto//proto:defs.bzl", "ProtoInfo")
 
 def _schema_export_impl(ctx):
+    proto_desc_bundle = ctx.actions.declare_file("bundle.desc")
     outputs = [
         ctx.actions.declare_file("export.srcjar"),
+        proto_desc_bundle,
     ]
+    proto_src_outputs = []
     js_outputs = []
     decl_outputs = []
 
@@ -12,11 +14,13 @@ def _schema_export_impl(ctx):
 
     for schema in ctx.attr.tables.keys():
         for table in ctx.attr.tables[schema]:
+            proto_src = ctx.actions.declare_file("%s/%s.proto" % (schema, table))
             proto_js = ctx.actions.declare_file("%s/%s_pb.js" % (schema, table))
             proto_decl = ctx.actions.declare_file("%s/%s_pb.d.ts" % (schema, table))
             grpc_js = ctx.actions.declare_file("%s/%s_grpc_web_pb.js" % (schema, table))
             grpc_decl = ctx.actions.declare_file("%s/%s_grpc_web_pb.d.ts" % (schema, table))
-            outputs.extend([proto_js, proto_decl, grpc_js, grpc_decl])
+            outputs.extend([proto_src, proto_js, proto_decl, grpc_js, grpc_decl])
+            proto_src_outputs.append(proto_src)
             js_outputs.extend([proto_js, grpc_js])
             decl_outputs.extend([proto_decl, grpc_decl])
 
@@ -35,14 +39,19 @@ def _schema_export_impl(ctx):
         use_default_shell_env = True,
         command = """
 set -e
-shopt -s globstar
+shopt -s globstar extglob
 
 mkdir -p client/java
 
-java -classpath $1 dev.logos.stack.service.storage.exporter.Exporter -- {bin_dir} {output_package} '{tables}'
+java -classpath $1 dev.logos.stack.service.storage.exporter.Exporter -- export {bin_dir} {output_package} '{tables}' {proto_desc_bundle_file}
 
 for desc in **/*.desc
 do
+  if [[ "$(basename $desc)" = "bundle.desc" ]]
+  then
+    continue
+  fi
+
   schema="$(basename "$(dirname "$desc")")"
   $2 --plugin=protoc-gen-grpc-java=$5 \
      --plugin=protoc-gen-js=$3 \
@@ -50,9 +59,9 @@ do
      --descriptor_set_in="$desc" \
      --java_out={bin_dir} \
      --grpc-java_out={bin_dir} \
-     --js_out=import_style=commonjs:{bin_dir}/{output_path}/$schema \
-     --grpc-web_out=import_style=commonjs+dts,mode=grpcwebtext:{bin_dir}/{output_path}/$schema \
-    $(basename "$desc" .desc).proto
+     --js_out=import_style=commonjs:{bin_dir} \
+     --grpc-web_out=import_style=commonjs+dts,mode=grpcwebtext:{bin_dir} \
+  {output_path}/$schema/$(basename "$desc" .desc).proto
 done
 
 cd {bin_dir}
@@ -64,6 +73,7 @@ cd ../../../
             output_path = output_path,
             tables = json.encode(ctx.attr.tables),
             java_output_file = outputs[0].path,
+            proto_desc_bundle_file = proto_desc_bundle.path,
         ),
         arguments = [
             ctx.file.exporter.path,
@@ -82,6 +92,11 @@ cd ../../../
         DefaultInfo(
             files = depset(outputs),
         ),
+        ProtoInfo(
+            srcs = proto_src_outputs,
+            deps = [],
+            descriptor_set = proto_desc_bundle,
+        ),
         js_info(
             sources = depset(js_outputs),
             declarations = depset(decl_outputs),
@@ -92,7 +107,7 @@ schema_export_rule = rule(
     implementation = _schema_export_impl,
     attrs = {
         "exporter": attr.label(
-            default = Label("//dev/logos/stack/service/storage/pg/meta:exporter_deploy.jar"),
+            default = Label("//dev/logos/stack/service/storage/pg/exporter:exporter_deploy.jar"),
             allow_single_file = True,
         ),
         "protoc_js_plugin": attr.label(mandatory = True),

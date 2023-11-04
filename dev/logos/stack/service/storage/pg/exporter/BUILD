@@ -1,9 +1,22 @@
 load(":schema_export.bzl", "schema_export")
+load("@rules_antlr//antlr:antlr4.bzl", "antlr")
+
+antlr(
+    name = "protobuf_grammar",
+    srcs = ["Protobuf3.g4"],
+    package = "dev.logos.stack.service.storage.pg.exporter",
+)
 
 java_binary(
     name = "exporter",
     srcs = [
+        "CodeGenerator.java",
+        "ColumnDescriptor.java",
+        "ExportedIdentifier.java",
         "Exporter.java",
+        "SchemaDescriptor.java",
+        "TableDescriptor.java",
+        ":protobuf_grammar",
     ],
     main_class = "dev.logos.stack.service.storage.exporter.Exporter",
     visibility = ["//app:__subpackages__"],
@@ -11,6 +24,7 @@ java_binary(
         "//dev/logos/stack/module:database_module",
         "//dev/logos/stack/service/storage:storage_library",
         "//dev/logos/stack/service/storage/pg",
+        "@antlr4_runtime//jar",
         "@com_google_protobuf//java/core",
         "@io_grpc_grpc_java//stub",
         "@maven//:aopalliance_aopalliance",

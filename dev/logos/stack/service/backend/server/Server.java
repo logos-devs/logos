@@ -35,14 +35,15 @@ class GlobalServerInterceptor implements ServerInterceptor {
 public class Server implements Job {
 
     private JobState jobState = JobState.STOPPED;
-    private static final Logger logger = Logger.getLogger(Server.class.getName());
     private static final int DEFAULT_PORT = 8081;
     private static final int TERMINATION_GRACE_PERIOD_SECONDS = 25;
-    private final io.grpc.Server outerServer;
+    private final Logger logger;
     private final io.grpc.Server innerServer;
+    private final io.grpc.Server outerServer;
 
     @Inject
-    public Server(Set<BindableService> services) {
+    public Server(Set<BindableService> services, Logger logger) {
+        this.logger = logger;
 
         ServerBuilder<?> serverBuilder = ServerBuilder.forPort(DEFAULT_PORT);
         serverBuilder.intercept(new GlobalServerInterceptor());
@@ -124,7 +125,7 @@ public class Server implements Job {
         for (Class<? extends AbstractModule> clazz : reflections.getSubTypesOf(AbstractModule.class)) {
             String packageName = clazz.getPackageName();
             if (packageName.startsWith(parentPackageName) && !Modifier.isAbstract(clazz.getModifiers())) {
-                logger.info("APP: " + clazz.getCanonicalName());
+                System.err.println("MODULE: " + clazz.getCanonicalName());
                 modules.add(clazz.getDeclaredConstructor().newInstance());
             }
         }

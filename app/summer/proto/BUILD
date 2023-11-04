@@ -7,6 +7,7 @@ proto_library(
     visibility = [
         "//app/summer:__subpackages__",
     ],
+    deps = ["//app/summer/storage:schema_export"],
 )
 
 java_grpc_library(

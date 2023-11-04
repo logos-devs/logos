@@ -71,7 +71,7 @@ java_library(
         "//app/review/grammar:java9_parser_java",
         "//dev/logos/stack/service/storage:storage_library",
         "//dev/logos/stack/service/storage/pg",
-        "//dev/logos/stack/service/storage/pg/meta:schema_export_library",
+        "//dev/logos/stack/service/storage/pg/exporter:schema_export_library",
         "@maven//:com_google_inject_guice",
         "@maven//:javax_inject_javax_inject",
         "@maven//:org_antlr_antlr4_runtime",
