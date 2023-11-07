@@ -1,8 +1,10 @@
 package app.summer.service;
 
+import app.summer.proto.feed.Feed;
 import app.summer.proto.feed.FeedServiceGrpc.FeedServiceImplBase;
 import app.summer.proto.feed.GetFeedRequest;
 import app.summer.proto.feed.GetFeedResponse;
+import app.summer.proto.feed.Source;
 import app.summer.storage.summer.EntryStorageServiceGrpc.EntryStorageServiceFutureStub;
 import app.summer.storage.summer.ListEntryRequest;
 import app.summer.storage.summer.ListEntryResponse;
@@ -33,11 +35,21 @@ public class FeedService extends FeedServiceImplBase {
                 entryStorageService.list(
                         ListEntryRequest.newBuilder().build());
 
-        try {
-            System.out.println(listSourceRssFetch.get().getResultsCount());
-            System.out.println(listEntryFetch.get().getResultsCount());
 
-            responseObserver.onNext(GetFeedResponse.newBuilder().build());
+        try {
+            Feed feed = Feed.newBuilder()
+                            .addAllEntry(listEntryFetch.get().getResultsList())
+                            .addAllSource(
+                                    listSourceRssFetch.get().getResultsList().stream().map(
+                                            sourceRss ->
+                                                    Source.newBuilder()
+                                                          .setId(sourceRss.getId().toString())
+                                                          .setIcon(sourceRss.getFaviconUrl())
+                                                          .build()
+                                    ).toList()
+                            ).build();
+
+            responseObserver.onNext(GetFeedResponse.newBuilder().setFeed(feed).build());
             responseObserver.onCompleted();
 
         } catch (InterruptedException | ExecutionException err) {

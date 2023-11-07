@@ -27,13 +27,25 @@ def _grpc_web_client_impl(ctx):
         ctx.actions.declare_file(f)
         for f in outs
     ]
+
     outdir = ctx.genfiles_dir.path + "/" + ctx.build_file_path[:-6]
+
+    descriptors = [ctx.files.proto[0].path]
+    if ctx.attr.deps:
+        for dep in ctx.attr.deps:
+            descriptors += [dep[ProtoInfo].direct_descriptor_set.path]
+
+    cmd_inputs = [ctx.files.proto[0]]
+    if ctx.attr.deps:
+        for dep in ctx.attr.deps:
+            cmd_inputs += [dep[ProtoInfo].direct_descriptor_set]
+
     ctx.actions.run_shell(
         command = """
     command -v gfind && find_="gfind" || find_="find"
 
     $1 {protos} \
-      --descriptor_set_in={input_proto_descriptor} \
+      --descriptor_set_in=<(cat {descriptors}) \
       --plugin=protoc-gen-js=$2 \
       --plugin=protoc-gen-grpc-web=$3 \
       --js_out=import_style=commonjs:{outdir} \
@@ -47,7 +59,7 @@ def _grpc_web_client_impl(ctx):
                 file.path
                 for file in proto_direct_sources
             ]),
-            input_proto_descriptor = ctx.files.proto[0].path,
+            descriptors = " ".join(descriptors),
             outdir = outdir,
         ),
         arguments = [
@@ -56,7 +68,7 @@ def _grpc_web_client_impl(ctx):
             ctx.attr.protoc_gen_grpc_web.files_to_run.executable.path,
         ],
         progress_message = "Generating grpc-web client.",
-        inputs = ctx.files.proto,
+        inputs = cmd_inputs,
         tools = tool_inputs,
         input_manifests = tool_input_manifests,
         outputs = outputs,
@@ -80,19 +92,21 @@ grpc_web_client_rule = rule(
         "protoc": attr.label(mandatory = True),
         "protoc_gen_grpc_web": attr.label(mandatory = True),
         "protoc_gen_js": attr.label(mandatory = True),
+        "deps": attr.label_list(),
         "grpc": attr.bool(default = True),
         "outs": attr.string_list(),
     },
     output_to_genfiles = True,
 )
 
-def grpc_web_client(name, proto, visibility):
+def grpc_web_client(name, proto, visibility, deps = None):
     grpc_web_client_rule(
         name = "{}_files".format(name),
         proto = proto,
         protoc = "@com_google_protobuf//:protoc",
         protoc_gen_grpc_web = "@grpc_web//javascript/net/grpc/web/generator:protoc-gen-grpc-web",
         protoc_gen_js = "@protobuf_javascript//generator:protoc-gen-js",
+        deps = deps,
         visibility = visibility,
     )
 

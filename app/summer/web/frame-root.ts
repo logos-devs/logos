@@ -1,7 +1,6 @@
-import {EntryStorageServicePromiseClient} from "@app/summer/storage/summer/entry_grpc_web_pb.js";
-import {Entry, ListEntryRequest, ListEntryResponse} from "@app/summer/storage/summer/entry_pb.js";
-import {SourceRssStorageServicePromiseClient} from "@app/summer/storage/summer/source_rss_grpc_web_pb.js";
-import {ListSourceRssRequest, ListSourceRssResponse, SourceRss} from "@app/summer/storage/summer/source_rss_pb.js";
+import {FeedServicePromiseClient} from "@app/summer/proto/feed_grpc_web_pb.js";
+import {GetFeedRequest, GetFeedResponse, Source} from "@app/summer/proto/feed_pb.js";
+import {Entry} from "@app/summer/storage/summer/entry_pb.js";
 import login_urls from "@infra/cognito_login_urls.json";
 import "@material/mwc-drawer";
 import {Drawer} from "@material/mwc-drawer";
@@ -21,19 +20,18 @@ import {query, state} from "lit/decorators.js";
 import {when} from "lit/directives/when.js";
 
 class FrameRoot extends LitElement {
-    @lazyInject(TYPE.EntryStorageServiceClient) private entryStorageServiceClient!: EntryStorageServicePromiseClient;
-    @lazyInject(TYPE.SourceRssStorageServiceClient) private sourceRssStorageServiceClient!: SourceRssStorageServicePromiseClient;
+    @lazyInject(TYPE.FeedServiceClient) private feedServiceClient!: FeedServicePromiseClient;
 
     @state() private entryList: Entry[] = [];
-    @state() private sourceRssList: SourceRss[] = [];
+    @state() private sourceList: Source[] = [];
     @state() private selectedTags: String[] = [];
 
     @query("mwc-drawer") drawer!: Drawer;
 
     getSourceIcon(source_id) {
-        for (const source of this.sourceRssList) {
+        for (const source of this.sourceList) {
             if (indexedDB.cmp(source.getId(), source_id) == 0) {
-                return source.getFaviconUrl();
+                return source.getIcon();
             }
         }
     }
@@ -41,17 +39,13 @@ class FrameRoot extends LitElement {
     connectedCallback() {
         super.connectedCallback();
 
-        this.entryStorageServiceClient.list(
-            new ListEntryRequest()
-        ).then((listEntryResponse: ListEntryResponse) => {
-            this.entryList = listEntryResponse.getResultsList();
-        });
-
-        this.sourceRssStorageServiceClient.list(
-            new ListSourceRssRequest()
-        ).then((listSourceRssResponse: ListSourceRssResponse) => {
-            this.sourceRssList = listSourceRssResponse.getResultsList();
-        });
+        this.feedServiceClient.getFeed(new GetFeedRequest()).then(
+            (getFeedResponse: GetFeedResponse) => {
+                const feed = getFeedResponse.getFeed();
+                this.entryList = feed.getEntryList();
+                this.sourceList = feed.getSourceList();
+            }
+        );
     }
 
     static get styles() {

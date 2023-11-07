@@ -108,7 +108,7 @@ rules_proto_toolchains()
 
 http_archive(
     name = "rules_proto_grpc",
-    #sha256 = "",
+    sha256 = "f87d885ebfd6a1bdf02b4c4ba5bf6fb333f90d54561e4d520a8413c8d1fb7beb",
     strip_prefix = "rules_proto_grpc-4.5.0",
     urls = ["https://github.com/rules-proto-grpc/rules_proto_grpc/archive/4.5.0.tar.gz"],
 )

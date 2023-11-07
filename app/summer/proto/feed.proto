@@ -1,12 +1,19 @@
 syntax = 'proto3';
 
 import "app/summer/storage/summer/entry.proto";
+import "app/summer/storage/summer/source_rss.proto";
 
 option java_package = "app.summer.proto.feed";
 option java_multiple_files = true;
 
+message Source {
+  string id = 1;
+  string icon = 2;
+}
+
 message Feed {
-  Entry entry = 1;
+  repeated Entry entry = 1;
+  repeated Source source = 2;
 }
 
 message GetFeedRequest {

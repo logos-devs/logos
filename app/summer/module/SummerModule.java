@@ -1,6 +1,7 @@
 package app.summer.module;
 
 import app.summer.service.EntryStorageService;
+import app.summer.service.FeedService;
 import app.summer.service.SourceRssStorageService;
 import app.summer.storage.summer.EntryStorageServiceGrpc;
 import app.summer.storage.summer.EntryStorageServiceGrpc.EntryStorageServiceFutureStub;
@@ -23,6 +24,7 @@ public class SummerModule extends AppModule {
 
     @Override
     protected void configure() {
+        addService(FeedService.class);
         addService(EntryStorageService.class);
         addService(SourceRssStorageService.class);
         super.configure();

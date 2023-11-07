@@ -22,11 +22,6 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="header_java-jwt-4.4.0_264f1b71" level="project" />
-    <orderEntry type="library" name="header_rds-2.20.102_cc349dc9" level="project" />
-    <orderEntry type="library" name="libauth_java_grpc-hjar_3a40df75" level="project" />
-    <orderEntry type="library" name="header_dnsjava-3.5.2_1363d1a3" level="project" />
-    <orderEntry type="library" name="header_HikariCP-5.0.1_1a7bba80" level="project" />
     <orderEntry type="library" name="libapi-hjar_ac7a3afb" level="project" />
     <orderEntry type="library" name="header_apache-client-2.20.102_1f09a440" level="project" />
     <orderEntry type="library" name="header_jjwt-impl-0.11.2_6ba94ecd" level="project" />
@@ -38,6 +33,7 @@
     <orderEntry type="library" name="header_jdbi3-core-3.39.1_8dd93e69" level="project" />
     <orderEntry type="library" name="header_jackson-dataformat-cbor-2.15.2_4553ecf" level="project" />
     <orderEntry type="library" name="header_perfmark-api-0.25.0_fd87742c" level="project" />
+    <orderEntry type="library" name="header_dnsjava-3.5.2_1363d1a3" level="project" />
     <orderEntry type="library" name="libinternal-hjar_e2ce0ade" level="project" />
     <orderEntry type="library" name="header_ec2-2.20.102_cca4cc56" level="project" />
     <orderEntry type="library" name="header_eventstream-1.0.1_d5409e16" level="project" />
@@ -50,8 +46,10 @@
     <orderEntry type="library" name="header_httpcore-4.4.13_bfc68730" level="project" />
     <orderEntry type="library" name="header_jackson-annotations-2.15.3_36e0afdc" level="project" />
     <orderEntry type="library" name="header_org.eclipse.jgit-6.6.0.202305301015-r_dfe645ac" level="project" />
+    <orderEntry type="library" name="libauth_java_grpc-hjar_3a40df75" level="project" />
     <orderEntry type="library" name="libstorage_proto-hjar_75ff1eb9" level="project" />
     <orderEntry type="library" name="libproject_java_library-hjar_871086bf" level="project" />
+    <orderEntry type="library" name="header_ssooidc-2.20.102_c1cdc1c2" level="project" />
     <orderEntry type="library" name="header_netty-resolver-4.1.87.Final_c90d91d9" level="project" />
     <orderEntry type="library" name="header_commons-io-2.7_b5a1b28" level="project" />
     <orderEntry type="library" name="header_netty-codec-4.1.87.Final_fc0671a5" level="project" />
@@ -71,6 +69,7 @@
     <orderEntry type="library" name="header_javax.inject-1_2259c8fd" level="project" />
     <orderEntry type="library" name="header_http-client-spi-2.20.102_2c5e74fb" level="project" />
     <orderEntry type="library" name="header_commons-logging-1.2_2ccfec78" level="project" />
+    <orderEntry type="library" name="header_sso-2.20.102_bc26f7fb" level="project" />
     <orderEntry type="library" name="header_j2objc-annotations-1.3_33057498" level="project" />
     <orderEntry type="library" name="header_aws-core-2.20.102_8f974a23" level="project" />
     <orderEntry type="library" name="header_jsr305-3.0.2_80c518c3" level="project" />
@@ -89,6 +88,7 @@
     <orderEntry type="library" name="header_cbor-4.5.2_31f47f1f" level="project" />
     <orderEntry type="library" name="header_netty-handler-4.1.87.Final_fdcfd371" level="project" />
     <orderEntry type="library" name="header_slf4j-api-2.0.7_5a8ff234" level="project" />
+    <orderEntry type="library" name="header_HikariCP-5.0.1_1a7bba80" level="project" />
     <orderEntry type="library" name="libutil-hjar_e2ce0ade" level="project" />
     <orderEntry type="library" name="header_aws-json-protocol-2.20.102_caf3d3bd" level="project" />
     <orderEntry type="library" name="libfile_java_library-hjar_871086bf" level="project" />
@@ -100,6 +100,7 @@
     <orderEntry type="library" name="header_webauthn-server-core-2.5.0_5ef6c3d9" level="project" />
     <orderEntry type="library" name="header_netty-buffer-4.1.87.Final_98632c5f" level="project" />
     <orderEntry type="library" name="processed_annotations-api-6.0.53_32a2655a" level="project" />
+    <orderEntry type="library" name="header_rds-2.20.102_cc349dc9" level="project" />
     <orderEntry type="library" name="header_javapoet-1.13.0_704fc0ca" level="project" />
     <orderEntry type="library" name="libjava9_parser_java-hjar_b44fc57" level="project" />
     <orderEntry type="library" name="header_failureaccess-1.0.1_a6d3158f" level="project" />
@@ -111,6 +112,7 @@
     <orderEntry type="library" name="libcore-hjar_2a5d1965" level="project" />
     <orderEntry type="library" name="libprotobuf-hjar_45fc2f4a" level="project" />
     <orderEntry type="library" name="header_json-utils-2.20.102_381cb2a6" level="project" />
+    <orderEntry type="library" name="header_java-jwt-4.4.0_264f1b71" level="project" />
     <orderEntry type="library" name="header_querydsl-core-5.0.0_1aa0d008" level="project" />
     <orderEntry type="library" name="header_jackson-core-2.15.3_96134da9" level="project" />
     <orderEntry type="library" name="header_eddsa-0.3.0_cb74735a" level="project" />
