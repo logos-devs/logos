@@ -26,13 +26,13 @@ use_repo(pip, "pip")
 oci = use_extension("@rules_oci//oci:extensions.bzl", "oci")
 
 oci.pull(
-    name = "alpine",
+    name = "alpine_image",
     digest = "sha256:c5c5fda71656f28e49ac9c5416b3643eaa6a108a8093151d6d1afc9463be8e33",
-    image = "docker.io/alpine",
+    image = "docker.io/library/alpine",
     # tag = "3.18",
 )
 
-use_repo(oci, "alpine")
+use_repo(oci, "alpine_image")
 
 oci.pull(
     name = "envoy_distroless_container",

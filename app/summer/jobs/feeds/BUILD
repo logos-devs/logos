@@ -25,7 +25,7 @@ pkg_tar(
 
 oci_image(
     name = "image",
-    base = "@envoy_distroless_container",
+    base = "@alpine_image",
     entrypoint = [
         "python3",
         "rss.py",

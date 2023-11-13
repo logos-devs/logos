@@ -1,6 +1,6 @@
 {
   "lockFileVersion": 3,
-  "moduleFileHash": "06b8e1354eb0c11ac9df71b03b247cce2827cb6c5a7d200d3e6b0ec8130dd83a",
+  "moduleFileHash": "4d9ee0052e99cff9eedcda9443713f85526a5df0dc39d5f72c4ae294d3a795cf",
   "flags": {
     "cmdRegistries": [
       "https://bcr.bazel.build/"
@@ -124,7 +124,7 @@
             "column": 20
           },
           "imports": {
-            "alpine": "alpine",
+            "alpine_image": "alpine_image",
             "envoy_distroless_container": "envoy_distroless_container",
             "distroless_java_container": "distroless_java_container",
             "console_container": "console_container",
@@ -136,9 +136,9 @@
             {
               "tagName": "pull",
               "attributeValues": {
-                "name": "alpine",
+                "name": "alpine_image",
                 "digest": "sha256:c5c5fda71656f28e49ac9c5416b3643eaa6a108a8093151d6d1afc9463be8e33",
-                "image": "docker.io/alpine"
+                "image": "docker.io/library/alpine"
               },
               "devDependency": false,
               "location": {
@@ -3000,6 +3000,22 @@
               "version": "1.6"
             }
           },
+          "alpine_image": {
+            "bzlFile": "@@rules_oci~1.4.0//oci/private:pull.bzl",
+            "ruleClassName": "oci_alias",
+            "attributes": {
+              "name": "rules_oci~1.4.0~oci~alpine_image",
+              "target_name": "alpine_image",
+              "scheme": "https",
+              "registry": "index.docker.io",
+              "repository": "library/alpine",
+              "identifier": "sha256:c5c5fda71656f28e49ac9c5416b3643eaa6a108a8093151d6d1afc9463be8e33",
+              "platforms": {},
+              "platform": "@@rules_oci~1.4.0//oci:alpine_image_single",
+              "bzlmod_repository": "alpine_image",
+              "reproducible": true
+            }
+          },
           "nginx_container_single": {
             "bzlFile": "@@rules_oci~1.4.0//oci/private:pull.bzl",
             "ruleClassName": "oci_pull",
@@ -3073,22 +3089,6 @@
               "crane_version": "v0.14.0"
             }
           },
-          "alpine": {
-            "bzlFile": "@@rules_oci~1.4.0//oci/private:pull.bzl",
-            "ruleClassName": "oci_alias",
-            "attributes": {
-              "name": "rules_oci~1.4.0~oci~alpine",
-              "target_name": "alpine",
-              "scheme": "https",
-              "registry": "index.docker.io",
-              "repository": "alpine",
-              "identifier": "sha256:c5c5fda71656f28e49ac9c5416b3643eaa6a108a8093151d6d1afc9463be8e33",
-              "platforms": {},
-              "platform": "@@rules_oci~1.4.0//oci:alpine_single",
-              "bzlmod_repository": "alpine",
-              "reproducible": true
-            }
-          },
           "oci_crane_linux_s390x": {
             "bzlFile": "@@rules_oci~1.4.0//oci:repositories.bzl",
             "ruleClassName": "crane_repositories",
@@ -3108,18 +3108,6 @@
               "repository": "distroless/java17-debian11",
               "identifier": "sha256:c7151ad9a6787379ccf205e14b9ef18e0757e56d789c155269fc7b5f83d2a93e",
               "target_name": "distroless_java_container_single"
-            }
-          },
-          "alpine_single": {
-            "bzlFile": "@@rules_oci~1.4.0//oci/private:pull.bzl",
-            "ruleClassName": "oci_pull",
-            "attributes": {
-              "name": "rules_oci~1.4.0~oci~alpine_single",
-              "scheme": "https",
-              "registry": "index.docker.io",
-              "repository": "alpine",
-              "identifier": "sha256:c5c5fda71656f28e49ac9c5416b3643eaa6a108a8093151d6d1afc9463be8e33",
-              "target_name": "alpine_single"
             }
           },
           "jq": {
@@ -3265,6 +3253,18 @@
               "platform": "@@rules_oci~1.4.0//oci:stolon_container_single",
               "bzlmod_repository": "stolon_container",
               "reproducible": true
+            }
+          },
+          "alpine_image_single": {
+            "bzlFile": "@@rules_oci~1.4.0//oci/private:pull.bzl",
+            "ruleClassName": "oci_pull",
+            "attributes": {
+              "name": "rules_oci~1.4.0~oci~alpine_image_single",
+              "scheme": "https",
+              "registry": "index.docker.io",
+              "repository": "library/alpine",
+              "identifier": "sha256:c5c5fda71656f28e49ac9c5416b3643eaa6a108a8093151d6d1afc9463be8e33",
+              "target_name": "alpine_image_single"
             }
           },
           "jq_windows_amd64": {
