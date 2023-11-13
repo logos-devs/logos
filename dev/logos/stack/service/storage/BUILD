@@ -35,12 +35,14 @@ java_library(
 
 oci_image(
     name = "image",
-    base = "@stolon_container//image",
+    base = "@stolon_container",
 )
 
 oci_push(
     name = "image_push",
     image = ":image",
+    remote_tags = ["latest"],
+    repository = REGISTRY + "/" + "logos-ecr-storage",
 )
 
 kubectl(

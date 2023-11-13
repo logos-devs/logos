@@ -1,7 +1,7 @@
 derive_targets_from_directories: true
 directories:
   .
-# targets:
+#targets:
 #   //dev/logos/infra:cdk
 #   //dev/logos/stack/ingress/nginx
 #   //dev/logos/stack/service/backend
@@ -11,9 +11,9 @@ directories:
 #   //dev/logos/stack/service/console
 #   //dev/logos/stack/service/envoy
 #   //:tsconfig
-exclude_target:
-  //:MODULE.bazel
-  //:WORKSPACE
+# exclude_target:
+#   //:MODULE.bazel
+#   //:WORKSPACE
 additional_languages:
   javascript
   typescript

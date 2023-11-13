@@ -1,6 +1,8 @@
-bazel_dep(name = "rules_pkg", version = "0.9.1")
-bazel_dep(name = "rules_go", version = "0.42.0")
 bazel_dep(name = "gazelle", version = "0.34.0")
+bazel_dep(name = "rules_apko", version = "1.0.0")
+bazel_dep(name = "rules_go", version = "0.42.0")
+bazel_dep(name = "rules_oci", version = "1.4.0")
+bazel_dep(name = "rules_pkg", version = "0.9.1")
 
 go_sdk = use_extension("@rules_go//go:extensions.bzl", "go_sdk")
 go_sdk.download(version = "1.20.3")
@@ -9,13 +11,10 @@ bazel_dep(name = "rules_python", version = "0.25.0")
 
 python = use_extension("@rules_python//python/extensions:python.bzl", "python")
 
-python.toolchain(
-    python_version = "3.11",
-)
+python.toolchain(python_version = "3.11")
 use_repo(python, "python_versions")
 
 pip = use_extension("@rules_python//python/extensions:pip.bzl", "pip")
-
 pip.parse(
     hub_name = "pip",
     python_version = "3.11",
@@ -23,8 +22,6 @@ pip.parse(
 )
 
 use_repo(pip, "pip")
-
-bazel_dep(name = "rules_oci", version = "1.4.0")
 
 oci = use_extension("@rules_oci//oci:extensions.bzl", "oci")
 
@@ -81,5 +78,3 @@ oci.pull(
 )
 
 use_repo(oci, "stolon_container")
-
-bazel_dep(name = "rules_apko", version = "1.0.0")

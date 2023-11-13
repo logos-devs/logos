@@ -1,8 +1,9 @@
 load("@rules_python//python:defs.bzl", "py_binary")
+load("@rules_oci//oci:defs.bzl", "oci_image", "oci_push")
 load("@pip//:requirements.bzl", "requirement")
-load("//:gitops.bzl", "k8s_deploy")
-load("@io_bazel_rules_docker//container:container.bzl", "container", "container_image")
-load("@io_bazel_rules_docker//docker/util:run.bzl", "container_run_and_commit")
+load("@rules_pkg//pkg:pkg.bzl", "pkg_tar")
+load("//:gitops.bzl", "REGISTRY")
+load("//bzl:k8s.bzl", "kubectl")
 
 py_binary(
     name = "rss",
@@ -17,39 +18,33 @@ py_binary(
     ],
 )
 
-container_image(
-    name = "base_image",
-    base = "@alpine//image",
-    files = [
-        ":rss.py",
-        "//:requirements.txt",
-    ],
+pkg_tar(
+    name = "rss_tar",
+    srcs = [":rss"],
 )
 
-container_run_and_commit(
-    name = "image_setup",
-    commands = [
-        "apk update",
-        "apk add libpq-dev python3 py3-pip",
-        "pip3 install -r requirements.txt",
-        "pip install psycopg[binary]",
-    ],
-    image = ":base_image.tar",
-)
-
-container_image(
+oci_image(
     name = "image",
-    base = ":image_setup",
-    cmd = "python3 rss.py",
+    base = "@envoy_distroless_container",
+    entrypoint = [
+        "python3",
+        "rss.py",
+    ],
+    tars = [":rss_tar"],
 )
 
-k8s_deploy(
+oci_push(
+    name = "image_push",
+    image = ":image",
+    remote_tags = ["latest"],
+    repository = REGISTRY + "/" + "logos-ecr-feeds",
+)
+
+kubectl(
     name = "feeds",
-    image_repository = "logos-ecr-feeds",
-    images = {
-        "feeds-image:latest": ":image",
-    },
+    images = {":image_push": "logos-ecr-feeds:latest"},
     manifests = [
         "manifests/cronjob.yaml",
     ],
+    visibility = ["//dev/logos/stack:__subpackages__"],
 )

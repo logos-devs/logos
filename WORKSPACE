@@ -195,9 +195,9 @@ grpc_java_repositories()
 # google_bazel_common (javadoc for server)
 http_archive(
     name = "google_bazel_common",
-    sha256 = "bcb5de5a5b951434828ead94479d3e1ff6501c2c8fc490db6cf3fbf7c188684b",
-    strip_prefix = "bazel-common-aaa4d801588f7744c6f4428e4f133f26b8518f42",
-    urls = ["https://github.com/google/bazel-common/archive/aaa4d801588f7744c6f4428e4f133f26b8518f42.zip"],
+    sha256 = "06b26b6f0239182f39bf879c8668daa8c15c6b58c35c5da694d0df7dfd596fd2",
+    strip_prefix = "bazel-common-a482a3abeaa12b48e78c012ab44407da9c97a400",
+    urls = ["https://github.com/google/bazel-common/archive/a482a3abeaa12b48e78c012ab44407da9c97a400.zip"],
 )
 
 load("@google_bazel_common//:workspace_defs.bzl", "google_common_workspace_rules")
