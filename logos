@@ -304,7 +304,6 @@ rds_sqitch() {
     unset SQITCH_PASSWORD
 }
 
-
 rds_token() {
     USERNAME=$1; shift 1
 
@@ -362,7 +361,8 @@ deploy() {
                 --region "$AWS_REGION" \
                 | docker login \
                     --username AWS \
-                    --password-stdin "$ACCOUNT.dkr.ecr.$AWS_REGION.amazonaws.com"
+                    --password-stdin \
+                    "$ACCOUNT.dkr.ecr.$AWS_REGION.amazonaws.com"
 
     $BAZEL run --config=remote //dev/logos/stack/service/console:console.apply
 

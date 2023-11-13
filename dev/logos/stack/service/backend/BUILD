@@ -1,7 +1,8 @@
-load("@io_bazel_rules_docker//container:container.bzl", "container_image")
-load("@io_bazel_rules_docker//java:image.bzl", "java_image")
 load("@google_bazel_common//tools/javadoc:javadoc.bzl", "javadoc_library")
-load("//:gitops.bzl", "k8s_deploy")
+load("@rules_oci//oci:defs.bzl", "oci_image", "oci_push")
+load("@rules_pkg//pkg:pkg.bzl", "pkg_tar")
+load("//:gitops.bzl", "REGISTRY")
+load("//bzl:k8s.bzl", "kubectl")
 
 filegroup(
     name = "server_srcs",
@@ -125,32 +126,34 @@ java_binary(
     runtime_deps = [":server_library"],
 )
 
-java_image(
-    name = "server_image",
-    main_class = "dev.logos.server.Server",
-    visibility = ["//visibility:public"],
-    runtime_deps = [":server_library"],
+pkg_tar(
+    name = "image_jar",
+    srcs = [":Server_deploy.jar"],
 )
 
-container_image(
+oci_image(
     name = "image",
-    base = "@debian_distroless_container//image",
-    cmd = ["/Server_deploy.jar"],
-    files = [":Server_deploy.jar"],
+    base = "@distroless_java_container",
+    entrypoint = ["/Server_deploy.jar"],
+    tars = [":image_jar"],
 )
 
-k8s_deploy(
+oci_push(
+    name = "image_push",
+    image = ":image",
+    remote_tags = ["latest"],
+    repository = REGISTRY + "/" + "logos-ecr-backend",
+)
+
+kubectl(
     name = "backend",
-    image_repository = "logos-ecr-backend",
-    images = {
-        "backend-image:latest": ":image",
-    },
+    images = {":image_push": "logos-ecr-backend:latest"},
     manifests = [
         "manifests/deployment.yaml",
         "manifests/service.yaml",
     ],
-    objects = [
-        "//dev/logos/stack/service/storage",
-    ],
+    #    objects = [
+    #        "//dev/logos/stack/service/storage",
+    #    ],
     visibility = ["//dev/logos/stack:__subpackages__"],
 )

@@ -1,27 +1,35 @@
-load("@io_bazel_rules_docker//container:container.bzl", "container_image")
-load("@io_bazel_rules_docker//contrib:test.bzl", "container_test")
-load("@com_adobe_rules_gitops//gitops:defs.bzl", "k8s_deploy")
-load("//:gitops.bzl", "k8s_deploy")
+load("//:gitops.bzl", "REGISTRY")
+load("//bzl:k8s.bzl", "kubectl")
+load("@rules_oci//oci:defs.bzl", "oci_image", "oci_push")
+load("@rules_pkg//pkg:pkg.bzl", "pkg_tar")
 
-container_image(
+pkg_tar(
+    name = "image_files",
+    srcs = ["config.yaml"],
+)
+
+oci_image(
     name = "image",
-    base = "@envoy_distroless_container//image",
-    cmd = [
+    base = "@envoy_distroless_container",
+    entrypoint = [
         "--config-path",
         "/config.yaml",
     ],
-    files = [":config.yaml"],
+    tars = [":image_files"],
 )
 
-k8s_deploy(
+oci_push(
+    name = "image_push",
+    image = ":image",
+    remote_tags = ["latest"],
+    repository = REGISTRY + "/" + "logos-ecr-envoy",
+)
+
+kubectl(
     name = "envoy",
-    image_repository = "logos-ecr-envoy",
-    images = {
-        "envoy-image:latest": ":image",
-    },
+    images = {":image_push": "logos-ecr-envoy:latest"},
     manifests = [
         "manifests/deployment.yaml",
         "manifests/service.yaml",
     ],
-    visibility = ["//dev/logos/stack:__subpackages__"],
 )

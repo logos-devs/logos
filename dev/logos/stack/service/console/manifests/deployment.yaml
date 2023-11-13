@@ -13,5 +13,5 @@ spec:
     spec:
       containers:
         - name: console
-          image: console-image:latest
+          image: logos-ecr-console
           imagePullPolicy: Always

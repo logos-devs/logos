@@ -17,7 +17,7 @@ spec:
       serviceAccountName: logos-iam-eks-service-account
       containers:
         - name: backend
-          image: backend-image:latest
+          image: logos-ecr-backend
           imagePullPolicy: Always
           env:
             - name: STORAGE_PG_BACKEND_JDBC_URL

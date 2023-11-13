@@ -1,3 +1,10 @@
+bazel_dep(name = "rules_pkg", version = "0.9.1")
+bazel_dep(name = "rules_go", version = "0.42.0")
+bazel_dep(name = "gazelle", version = "0.34.0")
+
+go_sdk = use_extension("@rules_go//go:extensions.bzl", "go_sdk")
+go_sdk.download(version = "1.20.3")
+
 bazel_dep(name = "rules_python", version = "0.25.0")
 
 python = use_extension("@rules_python//python/extensions:python.bzl", "python")
@@ -16,3 +23,63 @@ pip.parse(
 )
 
 use_repo(pip, "pip")
+
+bazel_dep(name = "rules_oci", version = "1.4.0")
+
+oci = use_extension("@rules_oci//oci:extensions.bzl", "oci")
+
+oci.pull(
+    name = "alpine",
+    digest = "sha256:c5c5fda71656f28e49ac9c5416b3643eaa6a108a8093151d6d1afc9463be8e33",
+    image = "docker.io/alpine",
+    # tag = "3.18",
+)
+
+use_repo(oci, "alpine")
+
+oci.pull(
+    name = "envoy_distroless_container",
+    digest = "sha256:5d5619b0d3d4311bfef48783c04df1e5aed71615710b876b951bd70c1e1e18ee",
+    image = "docker.io/envoyproxy/envoy-distroless",
+    # tag = "v1.21-latest",
+)
+
+use_repo(oci, "envoy_distroless_container")
+
+oci.pull(
+    name = "distroless_java_container",
+    digest = "sha256:c7151ad9a6787379ccf205e14b9ef18e0757e56d789c155269fc7b5f83d2a93e",
+    image = "gcr.io/distroless/java17-debian11",
+    # tag = "latest",
+)
+
+use_repo(oci, "distroless_java_container")
+
+oci.pull(
+    name = "console_container",
+    digest = "sha256:459be81018f0481adcf57ca0ab3e4fba19cfcc48f2280e1d672343d10dccb8a3",
+    image = "docker.io/alpine/socat",
+    # tag = "latest",
+)
+
+use_repo(oci, "console_container")
+
+oci.pull(
+    name = "nginx_container",
+    digest = "sha256:e06ffa63074d69b12c7f7712d7aebc4cc72d25217e55788d54160a2bd77182f4",
+    image = "docker.io/library/nginx",
+    # tag = "stable-alpine",
+)
+
+use_repo(oci, "nginx_container")
+
+oci.pull(
+    name = "stolon_container",
+    digest = "sha256:5d8a8292d9a008ba29cbe0285bd5d4d041a75945e1ffedb14b1bfbee5b2414fa",
+    image = "docker.io/sorintlab/stolon",
+    # tag = "master-pg14",
+)
+
+use_repo(oci, "stolon_container")
+
+bazel_dep(name = "rules_apko", version = "1.0.0")

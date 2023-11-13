@@ -1,6 +1,6 @@
-load("//:gitops.bzl", "k8s_deploy")
+load("//bzl:k8s.bzl", "kubectl")
 
-k8s_deploy(
+kubectl(
     name = "nginx",
     manifests = [":ingress.yaml"],
     visibility = ["//dev/logos/stack:__subpackages__"],

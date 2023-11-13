@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: client
-          image: client-image:latest
+          image: logos-ecr-client
           imagePullPolicy: Always
           ports:
             - containerPort: 8080

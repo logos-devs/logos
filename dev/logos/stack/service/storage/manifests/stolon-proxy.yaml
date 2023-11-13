@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: stolon-proxy
-          image: storage-image:latest
+          image: logos-ecr-storage
           imagePullPolicy: Always
           command:
             - "/bin/bash"

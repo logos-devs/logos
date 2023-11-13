@@ -1,4 +1,5 @@
 common --experimental_enable_bzlmod
+build  --experimental_remote_downloader_local_fallback
 
 build --incompatible_strict_action_env
 build --shell_executable=/bin/bash

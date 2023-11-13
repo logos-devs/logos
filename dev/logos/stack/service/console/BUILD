@@ -1,10 +1,10 @@
-load("@io_bazel_rules_docker//container:container.bzl", "container_image")
-load("@io_bazel_rules_docker//docker/util:run.bzl", "container_run_and_commit")
-load("//:gitops.bzl", "k8s_deploy")
+load("//:gitops.bzl", "REGISTRY")
+load("//bzl:k8s.bzl", "kubectl")
+load("@rules_oci//oci:defs.bzl", "oci_image", "oci_push")
 
-container_image(
+oci_image(
     name = "image",
-    base = "@console_container//image",
+    base = "@console_container",
     entrypoint = [
         "tail",
         "-f",
@@ -12,11 +12,15 @@ container_image(
     ],
 )
 
-k8s_deploy(
+oci_push(
+    name = "image_push",
+    image = ":image",
+    remote_tags = ["latest"],
+    repository = REGISTRY + "/" + "logos-ecr-console",
+)
+
+kubectl(
     name = "console",
-    image_repository = "logos-ecr-console",
-    images = {
-        "console-image:latest": ":image",
-    },
+    images = {":image_push": "logos-ecr-console:latest"},
     manifests = ["manifests/deployment.yaml"],
 )

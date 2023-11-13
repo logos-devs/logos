@@ -40,4 +40,5 @@ sh_binary(
         "//conditions:default": ["@platforms//:incompatible"],
     }),
     tags = ["no-sandbox"],
+    visibility = ["//dev/logos:__subpackages__"],
 )

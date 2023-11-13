@@ -1,12 +1,12 @@
-load("//:gitops.bzl", "k8s_deploy")
+load("//bzl:k8s.bzl", "kubectl")
 
-k8s_deploy(
+kubectl(
     name = "db_ro_service",
     manifests = ["manifests/db_ro_service.yaml"],
     visibility = ["//dev/logos/stack:__subpackages__"],
 )
 
-k8s_deploy(
+kubectl(
     name = "db_rw_service",
     manifests = ["manifests/db_rw_service.yaml"],
     visibility = ["//dev/logos/stack:__subpackages__"],

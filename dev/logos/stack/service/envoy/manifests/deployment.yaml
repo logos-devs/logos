@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: frontend-envoy
-          image: envoy-image:latest
+          image: logos-ecr-envoy
           imagePullPolicy: Always
           ports:
             - containerPort: 8081
