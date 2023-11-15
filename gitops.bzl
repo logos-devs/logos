@@ -1,4 +1,4 @@
-load("//:cfg/aws.bzl", "ACCOUNT", "REGION")
+load("//bzl:aws.bzl", "ACCOUNT", "REGION")
 
 NAMESPACE = "default"
 EKS_STACK = "logos-eks"

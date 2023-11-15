@@ -173,8 +173,7 @@ dev_setup() {
                 --region "$AWS_REGION" \
                 --role-arn "$ROLE_ARN"
 
-    mkdir -p "$WORKSPACE_DIR/cfg"
-    dev_config_aws_bzl > "$WORKSPACE_DIR/cfg/aws.bzl"
+    dev_config_aws_bzl > "$WORKSPACE_DIR/bzl/aws.bzl"
 
     rds_setup
 
