@@ -45,14 +45,19 @@ public class Server implements Job {
     public Server(Set<BindableService> services, Logger logger) {
         this.logger = logger;
 
-        ServerBuilder<?> serverBuilder = ServerBuilder.forPort(DEFAULT_PORT);
-        serverBuilder.intercept(new GlobalServerInterceptor());
+        ServerBuilder<?> innerServerBuilder = InProcessServerBuilder.forName("logos-in-process");
+        ServerBuilder<?> outerServerBuilder = ServerBuilder.forPort(DEFAULT_PORT);
+
+        innerServerBuilder.intercept(new GlobalServerInterceptor());
+        outerServerBuilder.intercept(new GlobalServerInterceptor());
+
         for (BindableService service : services) {
-            serverBuilder.addService(service);
+            innerServerBuilder.addService(service);
+            outerServerBuilder.addService(service);
         }
 
-        outerServer = serverBuilder.build();
-        innerServer = InProcessServerBuilder.forName("logos-in-process").build();
+        innerServer = innerServerBuilder.build();
+        outerServer = outerServerBuilder.build();
     }
 
     public CompletableFuture<Job> start() {

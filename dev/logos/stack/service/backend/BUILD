@@ -134,7 +134,11 @@ pkg_tar(
 oci_image(
     name = "image",
     base = "@distroless_java_container",
-    entrypoint = ["/Server_deploy.jar"],
+    entrypoint = [
+        "java",
+        "-jar",
+        "/Server_deploy.jar",
+    ],
     tars = [":image_jar"],
 )
 
