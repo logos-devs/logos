@@ -36,7 +36,6 @@ js_run_binary(
     args = [
         "deploy",
         "--all",
-        "--no-rollback",
         "--outputs-file",
         "outputs.json",
         "--require-approval",
