@@ -1,7 +1,7 @@
 load("@rules_proto//proto:defs.bzl", "proto_library")
 load("@rules_proto_grpc//java:defs.bzl", "java_grpc_library")
 load("@rules_proto_grpc//js:defs.bzl", "js_grpc_web_compile")
-load("//:grpc_web.bzl", "grpc_web_client")
+load("//bzl:grpc_web.bzl", "grpc_web_client")
 
 proto_library(
     name = "feed_proto",
