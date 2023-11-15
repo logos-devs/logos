@@ -1,7 +1,7 @@
 load("@google_bazel_common//tools/javadoc:javadoc.bzl", "javadoc_library")
 load("@rules_oci//oci:defs.bzl", "oci_image", "oci_push")
 load("@rules_pkg//pkg:pkg.bzl", "pkg_tar")
-load("//:gitops.bzl", "REGISTRY")
+load("//bzl:gitops.bzl", "REGISTRY")
 load("//bzl:k8s.bzl", "kubectl")
 
 filegroup(

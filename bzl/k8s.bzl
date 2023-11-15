@@ -1,4 +1,4 @@
-load("//:gitops.bzl", "CLUSTER", "REGISTRY", "USER")
+load(":gitops.bzl", "CLUSTER", "REGISTRY", "USER")
 
 def _kustomization_tpl(ctx):
     return "resources:\n{manifests}\nimages:\n{images}".format(

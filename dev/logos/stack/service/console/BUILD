@@ -1,4 +1,4 @@
-load("//:gitops.bzl", "REGISTRY")
+load("//bzl:gitops.bzl", "REGISTRY")
 load("//bzl:k8s.bzl", "kubectl")
 load("@rules_oci//oci:defs.bzl", "oci_image", "oci_push")
 

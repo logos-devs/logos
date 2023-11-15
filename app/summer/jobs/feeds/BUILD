@@ -2,7 +2,7 @@ load("@rules_python//python:defs.bzl", "py_binary")
 load("@rules_oci//oci:defs.bzl", "oci_image", "oci_push")
 load("@pip//:requirements.bzl", "requirement")
 load("@rules_pkg//pkg:pkg.bzl", "pkg_tar")
-load("//:gitops.bzl", "REGISTRY")
+load("//bzl:gitops.bzl", "REGISTRY")
 load("//bzl:k8s.bzl", "kubectl")
 
 py_binary(
