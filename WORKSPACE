@@ -174,7 +174,7 @@ maven_install(
     fetch_sources = True,
     generate_compat_repositories = True,
     # bazel run @unpinned_maven//:pin
-    maven_install_json = "//:maven_install.json",
+    maven_install_json = "//vendor/java:maven_install.json",
     override_targets = IO_GRPC_GRPC_JAVA_OVERRIDE_TARGETS,
     repositories = [
         "https://repo.maven.apache.org/maven2/",
