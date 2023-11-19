@@ -12,6 +12,7 @@ oci_image(
     name = "image",
     base = "@envoy_distroless_container",
     entrypoint = [
+        "envoy",
         "--config-path",
         "/config.yaml",
     ],
@@ -27,7 +28,7 @@ oci_push(
 
 kubectl(
     name = "envoy",
-    images = {":image_push": "logos-ecr-envoy:latest"},
+    images = {":image.digest": "logos-ecr-envoy"},
     manifests = [
         "manifests/deployment.yaml",
         "manifests/service.yaml",

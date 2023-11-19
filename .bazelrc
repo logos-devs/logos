@@ -45,4 +45,5 @@ build:remote --remote_cache=grpcs://remote.buildbuddy.io
 build:remote --remote_executor=grpcs://remote.buildbuddy.io
 build:remote --remote_timeout=3600
 
-try-import .bazelrc.local
+try-import %workspace%/.bazelrc.local
+try-import %workspace%/.apko/.bazelrc

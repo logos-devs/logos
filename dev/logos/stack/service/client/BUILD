@@ -3,40 +3,6 @@ load("//bzl:k8s.bzl", "kubectl")
 load("@rules_oci//oci:defs.bzl", "oci_image", "oci_push")
 load("@rules_pkg//pkg:pkg.bzl", "pkg_tar")
 
-#container_image(
-#    name = "image",
-#    base = "@nginx_container//image",
-#    cmd = [
-#        "/usr/sbin/nginx",
-#        "-c",
-#        "/nginx.conf",
-#    ],
-#    directory = "/",
-#    entrypoint = ["/usr/bin/env"],
-#    files = [
-#        "nginx.conf",
-#        "//dev/logos/stack/service/client/web",
-#    ],
-#)
-#
-#k8s_deploy(
-#    name = "client",
-#    image_repository = "logos-ecr-client",
-#    images = {
-#        "client-image:latest": "//dev/logos/stack/service/client:image",
-#    },
-#    manifests = [
-#        "manifests/deployment.yaml",
-#        "manifests/service.yaml",
-#    ],
-#    objects = [
-#        "//dev/logos/stack/service/envoy",
-#        "//dev/logos/stack/ingress/nginx",
-#        "//dev/logos/stack/service/backend",
-#    ],
-#    visibility = ["//dev/logos/stack:__subpackages__"],
-#)
-
 pkg_tar(
     name = "image_files",
     srcs = [
@@ -65,7 +31,7 @@ oci_push(
 
 kubectl(
     name = "client",
-    images = {":image_push": "logos-ecr-client:latest"},
+    images = {":image.digest": "logos-ecr-client"},
     manifests = [
         "manifests/deployment.yaml",
         "manifests/service.yaml",

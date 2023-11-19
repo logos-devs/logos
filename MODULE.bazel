@@ -1,27 +1,16 @@
+bazel_dep(name = "aspect_bazel_lib", version = "2.0.1")
+bazel_dep(name = "container_structure_test", version = "1.16.0")
 bazel_dep(name = "gazelle", version = "0.34.0")
-bazel_dep(name = "rules_apko", version = "1.0.0")
-bazel_dep(name = "rules_go", version = "0.42.0")
-bazel_dep(name = "rules_oci", version = "1.4.0")
 bazel_dep(name = "rules_pkg", version = "0.9.1")
+
+# rules_go
+bazel_dep(name = "rules_go", version = "0.42.0")
 
 go_sdk = use_extension("@rules_go//go:extensions.bzl", "go_sdk")
 go_sdk.download(version = "1.20.3")
 
-bazel_dep(name = "rules_python", version = "0.25.0")
-
-python = use_extension("@rules_python//python/extensions:python.bzl", "python")
-
-python.toolchain(python_version = "3.11")
-use_repo(python, "python_versions")
-
-pip = use_extension("@rules_python//python/extensions:pip.bzl", "pip")
-pip.parse(
-    hub_name = "pip",
-    python_version = "3.11",
-    requirements_lock = "//:requirements_lock.txt",
-)
-
-use_repo(pip, "pip")
+# rules_oci
+bazel_dep(name = "rules_oci", version = "1.4.0")
 
 oci = use_extension("@rules_oci//oci:extensions.bzl", "oci")
 
@@ -31,7 +20,6 @@ oci.pull(
     image = "docker.io/library/alpine",
     # tag = "3.18",
 )
-
 use_repo(oci, "alpine_image")
 
 oci.pull(
@@ -40,7 +28,6 @@ oci.pull(
     image = "docker.io/envoyproxy/envoy-distroless",
     # tag = "v1.21-latest",
 )
-
 use_repo(oci, "envoy_distroless_container")
 
 oci.pull(
@@ -49,7 +36,6 @@ oci.pull(
     image = "gcr.io/distroless/java17-debian11",
     # tag = "latest",
 )
-
 use_repo(oci, "distroless_java_container")
 
 oci.pull(
@@ -58,7 +44,6 @@ oci.pull(
     image = "docker.io/alpine/socat",
     # tag = "latest",
 )
-
 use_repo(oci, "console_container")
 
 oci.pull(
@@ -67,7 +52,6 @@ oci.pull(
     image = "docker.io/library/nginx",
     # tag = "stable-alpine",
 )
-
 use_repo(oci, "nginx_container")
 
 oci.pull(
@@ -76,5 +60,25 @@ oci.pull(
     image = "docker.io/sorintlab/stolon",
     # tag = "master-pg14",
 )
-
 use_repo(oci, "stolon_container")
+
+oci.pull(
+    name = "distroless_python_image",
+    digest = "sha256:baac841d0711ecbb673fa410a04793f876a242a6ca801d148ef867f02745b156",
+    image = "gcr.io/distroless/python3",
+    platforms = [
+        "linux/amd64",
+        "linux/arm64/v8",
+    ],
+)
+use_repo(oci, "distroless_python_image")
+
+# rules_apko
+bazel_dep(name = "rules_apko", version = "1.0.0")
+
+apk = use_extension("@rules_apko//apko:extensions.bzl", "apko")
+apk.translate_lock(
+    name = "base_cronjob_image",
+    lock = "//vendor/apko:base_cronjob.resolved.json",
+)
+use_repo(apk, "base_cronjob_image")

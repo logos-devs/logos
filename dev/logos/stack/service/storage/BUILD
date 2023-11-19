@@ -47,7 +47,7 @@ oci_push(
 
 kubectl(
     name = "storage",
-    images = {":image_push": "logos-ecr-storage:latest"},
+    images = {":image.digest": "logos-ecr-storage"},
     manifests = [
         "manifests/role.yaml",
         "manifests/role-binding.yaml",

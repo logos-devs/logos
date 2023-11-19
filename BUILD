@@ -45,3 +45,7 @@ sh_binary(
         "//dev/logos:__subpackages__",
     ],
 )
+
+load("@rules_apko//apko:defs.bzl", "apko_bazelrc")
+
+apko_bazelrc()

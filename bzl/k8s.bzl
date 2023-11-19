@@ -1,37 +1,52 @@
 load(":gitops.bzl", "CLUSTER", "REGISTRY", "USER")
 
 def _kustomization_tpl(ctx):
-    return "resources:\n{manifests}\nimages:\n{images}".format(
-        manifests = "\n".join(["- " + f.short_path for f in ctx.files.manifests]),
-        images = "\n".join([
-            "  - name: {repository}\n    newName: {image_url}".format(
-                repository = repository.split(":")[0],
-                image_url = REGISTRY + "/" + repository,
-            )
-            for image, repository in ctx.attr.images.items()
-        ]),
-    )
+    tpl = "resources:\n"
+
+    for manifest in ctx.files.manifests:
+        tpl += "- {}\n".format(manifest.short_path)
+
+    tpl += "images:\n"
+
+    for image, repository in ctx.attr.images.items():
+        image_digest = image[DefaultInfo].files.to_list()[0]
+        tpl += "  - name: {}\n".format(repository)
+        tpl += "    newName: {}\n".format(REGISTRY + "/" + repository)  # + ":" + fail(dir(image)))
+
+    return tpl
 
 def _kubectl_impl(ctx):
     executable = ctx.actions.declare_file(ctx.attr.name)
 
-    for image in ctx.files.images:
-        out = ctx.actions.declare_file(image.dirname + "/image_push.txt")
-        ctx.actions.run_shell(
-            inputs = [image],
-            outputs = [out],
-            command = image.short_path,
+    manifests = "".join([
+        "- {}\n".format(manifest.short_path)
+        for manifest in ctx.files.manifests
+    ])
+
+    images = "".join([
+        "  - name: {}\n".format(repository) +
+        "    newName: {}@$(cat {})\n".format(
+            REGISTRY + "/" + repository,
+            image[DefaultInfo].files.to_list()[0].short_path,
         )
+        for image, repository in ctx.attr.images.items()
+    ])
 
     script = """#!/bin/bash -eu
 cat <<EOF > kustomization.yaml
-{kustomization}
+resources:
+{manifests}
+images:
+{images}
 EOF
+
+find . -iname '*.txt'
 
 {kubectl} kustomize --load_restrictor=LoadRestrictionsNone --cluster={cluster} --user={user} |
 {kubectl} --cluster={cluster} --user={user} {action} -f-
 """.format(
-        kustomization = _kustomization_tpl(ctx),
+        manifests = manifests,
+        images = images,
         kubectl = ctx.attr.kubectl.files_to_run.executable.short_path,
         cluster = CLUSTER,
         user = USER,
@@ -46,7 +61,7 @@ EOF
     return [
         DefaultInfo(
             executable = executable,
-            runfiles = ctx.runfiles(files = ctx.files.kubectl + ctx.files.manifests),
+            runfiles = ctx.runfiles(files = ctx.files.kubectl + ctx.files.manifests + ctx.files.images),
             files = depset([executable]),
         ),
     ]

@@ -31,7 +31,9 @@ openai.api_key = get_secret('dev/external/openai')['key']
 DB_NAME = "logos"
 DB_URL = (environ.get("STORAGE_PG_BACKEND_JDBC_URL") or "jdbc:postgresql://localhost:15432/logos")[5:]
 DB_USER = environ.get("STORAGE_PG_BACKEND_USER") or "storage"
-DB_HOST = environ.get("STORAGE_PG_BACKEND_HOST") or gethostbyname_ex("db-rw.logos.dev")[1][0]
+DB_HOST = (environ.get("STORAGE_PG_BACKEND_HOST") or
+           next(h for h in gethostbyname_ex('db-rw.logos.dev')[1]
+                if h.endswith('us-east-2.rds.amazonaws.com')))
 DB_PORT = 5432
 
 

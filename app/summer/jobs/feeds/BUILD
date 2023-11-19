@@ -1,36 +1,42 @@
-load("@rules_python//python:defs.bzl", "py_binary")
+load("@aspect_bazel_lib//lib:tar.bzl", "tar")
+load("@pip_deps//:requirements.bzl", "requirement")
 load("@rules_oci//oci:defs.bzl", "oci_image", "oci_push")
-load("@pip//:requirements.bzl", "requirement")
 load("@rules_pkg//pkg:pkg.bzl", "pkg_tar")
+load("@rules_python//python:defs.bzl", "py_binary")
 load("//bzl:gitops.bzl", "REGISTRY")
 load("//bzl:k8s.bzl", "kubectl")
 
 py_binary(
     name = "rss",
     srcs = ["rss.py"],
+    main = "rss.py",
     deps = [
         requirement("boto3"),
+        requirement("favicon"),
         requirement("feedparser"),
+        requirement("lxml"),
         requirement("openai"),
-        requirement("psycopg"),
         requirement("requests"),
+        requirement("psycopg"),
+        requirement("psycopg-binary"),
+        requirement("pyinstaller"),
         requirement("trafilatura"),
+        requirement("typing_extensions"),
     ],
 )
 
-pkg_tar(
-    name = "rss_tar",
+tar(
+    name = "image_tar",
     srcs = [":rss"],
 )
 
 oci_image(
     name = "image",
-    base = "@alpine_image",
-    entrypoint = [
-        "python3",
-        "rss.py",
+    base = "//vendor/apko:base_cronjob_image",
+    entrypoint = ["/app/summer/jobs/feeds/rss"],
+    tars = [
+        ":image_tar",
     ],
-    tars = [":rss_tar"],
 )
 
 oci_push(
@@ -42,7 +48,7 @@ oci_push(
 
 kubectl(
     name = "feeds",
-    images = {":image_push": "logos-ecr-feeds:latest"},
+    images = {":image.digest": "logos-ecr-feeds"},
     manifests = [
         "manifests/cronjob.yaml",
     ],
