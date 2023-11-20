@@ -12,8 +12,6 @@ copy_to_bin(
     visibility = ["//dev/logos:__subpackages__"],
 )
 
-exports_files(["requirements.txt"])
-
 sh_binary(
     name = "minikube",
     srcs = select({
