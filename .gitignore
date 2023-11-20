@@ -15,5 +15,3 @@
 /gitops_repositories.bzl
 /node_modules/*
 /target
-/dev/logos/infra/dist
-/dist
