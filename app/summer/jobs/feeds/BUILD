@@ -1,4 +1,3 @@
-load("@aspect_bazel_lib//lib:tar.bzl", "tar")
 load("@pip_deps//:requirements.bzl", "requirement")
 load("@rules_oci//oci:defs.bzl", "oci_image", "oci_push")
 load("@rules_pkg//pkg:pkg.bzl", "pkg_tar")
@@ -25,7 +24,7 @@ py_binary(
     ],
 )
 
-tar(
+pkg_tar(
     name = "image_tar",
     srcs = [":rss"],
 )
