@@ -284,7 +284,7 @@ load("@aspect_rules_ts//ts:repositories.bzl", "rules_ts_dependencies")
 
 rules_ts_dependencies(
     ts_integrity = "sha512-mI4WrpHsbCIcwT9cF4FZvr80QUeKvsUsUvKDoR+X/7XHQH98xYD8YHZg7ANtz2GtZt/CBq2QJ0thkGJMHfqc1w==",
-    ts_version_from = "//vendor/js:package.json",
+    ts_version_from = "//:package.json",
 )
 
 # protobuf_javascript
@@ -319,3 +319,8 @@ buildbuddy(
 load("@aspect_bazel_lib//lib:repositories.bzl", "register_jq_toolchains")
 
 register_jq_toolchains()
+
+# yq
+load("@aspect_bazel_lib//lib:repositories.bzl", "register_yq_toolchains")
+
+register_yq_toolchains()

@@ -53,7 +53,7 @@ public record ColumnDescriptor(String name, String type) implements ExportedIden
 
     public String getJavaCast() {
         return switch (this.type) {
-            case "ext[]" -> "(String[])";
+            case "text[]" -> "(String[])";
             default -> "";
         };
     }

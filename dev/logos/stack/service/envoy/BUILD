@@ -28,6 +28,7 @@ oci_push(
 
 kubectl(
     name = "envoy",
+    image_pushes = [":image_push"],
     images = {":image.digest": "logos-ecr-envoy"},
     manifests = [
         "manifests/deployment.yaml",

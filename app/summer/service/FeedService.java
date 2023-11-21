@@ -41,11 +41,10 @@ public class FeedService extends FeedServiceImplBase {
                             .addAllEntry(listEntryFetch.get().getResultsList())
                             .addAllSource(
                                     listSourceRssFetch.get().getResultsList().stream().map(
-                                            sourceRss ->
-                                                    Source.newBuilder()
-                                                          .setId(sourceRss.getId().toString())
-                                                          .setIcon(sourceRss.getFaviconUrl())
-                                                          .build()
+                                            sourceRss -> Source.newBuilder()
+                                                           .setId(sourceRss.getId())
+                                                           .setIcon(sourceRss.getFaviconUrl())
+                                                           .build()
                                     ).toList()
                             ).build();
 
