@@ -21,6 +21,7 @@ oci_push(
 
 kubectl(
     name = "console",
+    image_pushes = [":image_push"],
     images = {":image.digest": "logos-ecr-console"},
     manifests = ["manifests/deployment.yaml"],
 )

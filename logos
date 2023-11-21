@@ -353,17 +353,6 @@ rds_clusteradmin_password() {
 
 deploy() {
     $BAZEL build --config=remote //dev/logos/infra:cdk_deploy
-
-#    ACCOUNT="$(aws sts get-caller-identity --query "Account" --output text)"
-#    echo "Logging into ECR for $ACCOUNT in $AWS_REGION"
-#    aws ecr get-login-password \
-#                --region "$AWS_REGION" \
-#                | docker login \
-#                    --username AWS \
-#                    --password-stdin \
-#                    "$ACCOUNT.dkr.ecr.$AWS_REGION.amazonaws.com"
-
-    $BAZEL run //dev/logos/stack/service/console:image_push
     $BAZEL run --config=remote //dev/logos/stack/service/console:console.apply
 
     dev_env
@@ -371,18 +360,10 @@ deploy() {
     rds_tunnel_up
     rds_deploy
 
-    $BAZEL run //dev/logos/stack/service/backend:image_push
     $BAZEL run --config=remote //dev/logos/stack/service/backend:backend.apply
-
-    $BAZEL run //dev/logos/stack/service/envoy:image_push
     $BAZEL run --config=remote //dev/logos/stack/service/envoy:envoy.apply
-
-    $BAZEL run //dev/logos/stack/service/client:image_push
     $BAZEL run --config=remote //dev/logos/stack/service/client:client.apply
-
     $BAZEL run --config=remote //dev/logos/stack/ingress/nginx:nginx.apply
-
-    $BAZEL run //app/summer/jobs/feeds:image_push
     $BAZEL run --config=remote //app/summer/jobs/feeds:feeds.apply
 }
 

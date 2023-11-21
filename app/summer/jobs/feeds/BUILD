@@ -47,6 +47,7 @@ oci_push(
 
 kubectl(
     name = "feeds",
+    image_pushes = [":image_push"],
     images = {":image.digest": "logos-ecr-feeds"},
     manifests = [
         "manifests/cronjob.yaml",

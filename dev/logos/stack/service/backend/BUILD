@@ -151,6 +151,7 @@ oci_push(
 
 kubectl(
     name = "backend",
+    image_pushes = [":image_push"],
     images = {":image.digest": "logos-ecr-backend"},
     manifests = [
         "manifests/deployment.yaml",

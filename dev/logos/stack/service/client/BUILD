@@ -31,6 +31,7 @@ oci_push(
 
 kubectl(
     name = "client",
+    image_pushes = [":image_push"],
     images = {":image.digest": "logos-ecr-client"},
     manifests = [
         "manifests/deployment.yaml",
