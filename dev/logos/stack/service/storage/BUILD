@@ -1,7 +1,6 @@
 load("//bzl:gitops.bzl", "REGISTRY")
 load("//bzl:k8s.bzl", "kubectl")
 load("@rules_oci//oci:defs.bzl", "oci_image", "oci_push")
-load("@rules_pkg//pkg:pkg.bzl", "pkg_tar")
 
 java_library(
     name = "storage_library",
@@ -56,10 +55,5 @@ kubectl(
         "manifests/stolon-proxy-service.yaml",
         "manifests/stolon-sentinel.yaml",
     ],
-    #    objects = [
-    #        "//dev/logos/stack/service/envoy",
-    #        "//dev/logos/stack/ingress/nginx",
-    #        "//dev/logos/stack/service/backend",
-    #    ],
     visibility = ["//dev/logos/stack:__subpackages__"],
 )

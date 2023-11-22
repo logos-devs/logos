@@ -1,7 +1,6 @@
 load("@aspect_bazel_lib//lib:tar.bzl", "tar")
 load("@pip_deps//:requirements.bzl", "requirement")
 load("@rules_oci//oci:defs.bzl", "oci_image", "oci_push")
-load("@rules_pkg//pkg:pkg.bzl", "pkg_tar")
 load("@rules_python//python:defs.bzl", "py_binary")
 load("//bzl:gitops.bzl", "REGISTRY")
 load("//bzl:k8s.bzl", "kubectl")
