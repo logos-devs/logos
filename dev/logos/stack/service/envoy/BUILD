@@ -34,4 +34,6 @@ kubectl(
         "manifests/deployment.yaml",
         "manifests/service.yaml",
     ],
+    visibility = ["//dev/logos/stack/ingress/nginx:__pkg__"],
+    deps = ["//dev/logos/stack/service/backend"],
 )

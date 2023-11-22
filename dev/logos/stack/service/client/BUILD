@@ -37,10 +37,5 @@ kubectl(
         "manifests/deployment.yaml",
         "manifests/service.yaml",
     ],
-    #    objects = [
-    #        "//dev/logos/stack/service/envoy",
-    #        "//dev/logos/stack/ingress/nginx",
-    #        "//dev/logos/stack/service/backend",
-    #    ],
     visibility = ["//dev/logos/stack:__subpackages__"],
 )

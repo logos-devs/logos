@@ -27,6 +27,11 @@ run --incompatible_strict_action_env
 
 common --incompatible_allow_tags_propagation
 
+# rules_ts
+build --@aspect_rules_ts//ts:skipLibCheck=honor_tsconfig
+fetch --@aspect_rules_ts//ts:skipLibCheck=honor_tsconfig
+query --@aspect_rules_ts//ts:skipLibCheck=honor_tsconfig
+
 # buildbuddy
 build:remote --bes_backend=grpcs://remote.buildbuddy.io
 build:remote --bes_results_url=https://app.buildbuddy.io/invocation/

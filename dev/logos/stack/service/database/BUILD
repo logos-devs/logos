@@ -9,5 +9,9 @@ kubectl(
 kubectl(
     name = "db_rw_service",
     manifests = ["manifests/db_rw_service.yaml"],
-    visibility = ["//dev/logos/stack:__subpackages__"],
+    visibility = [
+        # TODO remove this and instead rewrite the feed job to call RPCs. It shouldn't be calling the database directly.
+        "//app/summer/jobs/feeds:__pkg__",
+        "//dev/logos/stack:__subpackages__",
+    ],
 )

@@ -3,8 +3,6 @@ workspace(name = "logos")
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive", "http_file")
 
 # rules_python
-load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
-
 http_archive(
     name = "rules_python",
     sha256 = "9acc0944c94adb23fba1c9988b48768b1bacc6583b52a2586895c5b7491e2e31",
@@ -40,20 +38,6 @@ http_file(
     executable = True,
     sha256 = "b5938a8772c5565b5d0b795938c367c5190bf65bb51fc55fb2417cb4e1d04ef1",
     url = "https://github.com/kubernetes/minikube/releases/download/v1.30.1/minikube-darwin-amd64",
-)
-
-# eksctl
-http_archive(
-    name = "eksctl_linux",
-    build_file_content = """
-filegroup(
-    name = "eksctl_linux",
-    srcs = ["eksctl"],
-    visibility = ["//visibility:public"]
-)
-    """,
-    sha256 = "b16ba179d476997b236c40aa3c1c94306404b2aa189c64c1fd4631c47c64032c",
-    url = "https://github.com/weaveworks/eksctl/releases/download/v0.132.0/eksctl_Linux_amd64.tar.gz",
 )
 
 #kubectl
@@ -241,52 +225,6 @@ load("@rules_antlr//antlr:repositories.bzl", "rules_antlr_dependencies")
 
 rules_antlr_dependencies("4.8")
 
-# rules_js
-http_archive(
-    name = "aspect_rules_js",
-    sha256 = "d9ceb89e97bb5ad53b278148e01a77a3e9100db272ce4ebdcd59889d26b9076e",
-    strip_prefix = "rules_js-1.34.0",
-    url = "https://github.com/aspect-build/rules_js/releases/download/v1.34.0/rules_js-v1.34.0.tar.gz",
-)
-
-load("@aspect_rules_js//js:repositories.bzl", "rules_js_dependencies")
-
-rules_js_dependencies()
-
-load("@rules_nodejs//nodejs:repositories.bzl", "DEFAULT_NODE_VERSION", "nodejs_register_toolchains")
-
-nodejs_register_toolchains(
-    name = "nodejs",
-    node_version = "18.13.0",
-)
-
-load("@aspect_rules_js//npm:repositories.bzl", "npm_translate_lock")
-
-npm_translate_lock(
-    name = "npm",
-    pnpm_lock = "//:pnpm-lock.yaml",
-    verify_node_modules_ignored = "//:.bazelignore",
-)
-
-load("@npm//:repositories.bzl", "npm_repositories")
-
-npm_repositories()
-
-# rules_ts
-http_archive(
-    name = "aspect_rules_ts",
-    sha256 = "4c3f34fff9f96ffc9c26635d8235a32a23a6797324486c7d23c1dfa477e8b451",
-    strip_prefix = "rules_ts-1.4.5",
-    url = "https://github.com/aspect-build/rules_ts/releases/download/v1.4.5/rules_ts-v1.4.5.tar.gz",
-)
-
-load("@aspect_rules_ts//ts:repositories.bzl", "rules_ts_dependencies")
-
-rules_ts_dependencies(
-    ts_integrity = "sha512-mI4WrpHsbCIcwT9cF4FZvr80QUeKvsUsUvKDoR+X/7XHQH98xYD8YHZg7ANtz2GtZt/CBq2QJ0thkGJMHfqc1w==",
-    ts_version_from = "//:package.json",
-)
-
 # protobuf_javascript
 http_archive(
     name = "protobuf_javascript",
@@ -314,13 +252,3 @@ buildbuddy(
     container_image = UBUNTU20_04_IMAGE,
     llvm = True,
 )
-
-# jq
-load("@aspect_bazel_lib//lib:repositories.bzl", "register_jq_toolchains")
-
-register_jq_toolchains()
-
-# yq
-load("@aspect_bazel_lib//lib:repositories.bzl", "register_yq_toolchains")
-
-register_yq_toolchains()

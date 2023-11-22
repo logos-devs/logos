@@ -160,5 +160,9 @@ kubectl(
     #    objects = [
     #        "//dev/logos/stack/service/storage",
     #    ],
-    visibility = ["//dev/logos/stack:__subpackages__"],
+    visibility = [
+        "//dev/logos/stack:__subpackages__",
+        "//dev/logos/stack/ingress/nginx:__pkg__",
+    ],
+    deps = ["//dev/logos/stack/service/database:db_rw_service"],
 )

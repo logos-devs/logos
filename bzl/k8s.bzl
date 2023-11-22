@@ -40,9 +40,20 @@ def _kubectl_impl(ctx):
         image_pushers.append(image[DefaultInfo].files_to_run.executable.short_path)
         runfiles = runfiles.merge(image[DefaultInfo].default_runfiles)
 
+    deps = []
+    deps_runfiles = []
+
+    if ctx.attr.action == "apply":
+        for dep in ctx.attr.deps:
+            deps.append(dep[DefaultInfo].files_to_run.executable.short_path)
+            runfiles = runfiles.merge(dep[DefaultInfo].default_runfiles)
+
     ctx.actions.write(
         output = executable,
         content = """#!/bin/bash -eu
+{deps}
+{image_pushers}
+
 cat <<EOF > kustomization.yaml
 resources:
 {manifests}
@@ -50,14 +61,13 @@ images:
 {images}
 EOF
 
-{image_pushers}
-
 {kubectl} kustomize --load_restrictor=LoadRestrictionsNone --cluster={cluster} --user={user} |
 {kubectl} --cluster={cluster} --user={user} {action} -f-
 """.format(
             manifests = manifests,
             images = images,
             image_pushers = "\n".join(image_pushers),
+            deps = "\n".join(deps),
             kubectl = ctx.attr.kubectl.files_to_run.executable.short_path,
             cluster = CLUSTER,
             user = USER,
@@ -78,6 +88,7 @@ kubectl_rule = rule(
     attrs = {
         "action": attr.string(mandatory = True),
         "manifests": attr.label_list(allow_files = True),
+        "deps": attr.label_list(allow_files = False),
         "images": attr.label_keyed_string_dict(allow_empty = True),
         "image_pushes": attr.label_list(allow_files = True),
         "kubectl": attr.label(
@@ -89,18 +100,22 @@ kubectl_rule = rule(
     executable = True,
 )
 
-def kubectl(name, manifests, images = None, image_pushes = None, visibility = None):
+def kubectl(name, manifests, deps = None, images = None, image_pushes = None, visibility = None):
     if images == None:
         images = {}
 
     if image_pushes == None:
         image_pushes = []
 
-    for action in ["apply", "delete"]:
+    if deps == None:
+        deps = []
+
+    for action in ["apply", "delete", "diff", "replace"]:
         kubectl_rule(
-            name = "{}.{}".format(name, action),
+            name = name if action == "apply" else "{}.{}".format(name, action),
             action = action,
             manifests = manifests,
+            deps = deps,
             images = images,
             image_pushes = image_pushes,
             tags = [
