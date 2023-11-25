@@ -10,6 +10,7 @@ RUN apt-get install -y \
     docker.io \
     openjdk-17-jdk-headless \
     openjdk-17-jre-headless \
+    openssh-server \
     postgresql-client \
     software-properties-common \
     sqitch \
