@@ -1,5 +1,7 @@
 import json
+import uuid
 from _socket import gethostbyname_ex
+from datetime import date
 from json import JSONDecodeError
 from os import environ
 from pprint import pprint
@@ -44,6 +46,8 @@ SUMMARY_PROMPT = """You are a news summarization system which consumes an articl
 * tags : An array of descriptive single-word tags consisting only of lowercase letters and dashes for the article listed in order from least to most specific. Include all named entities in the article."""
 
 
+AGGREGATION_PROMPT = "Take the following abstract of a news article and use it to revise a running summary of the topic. Return only the updated summary which incorporates any new facts discussed in the article. Make sure to edit the summary to deduplicate facts. Make the running summary as concise and well-written as possible. Your output should resemble an encyclopedia entry on the topic, drawing factual information from each article I provide. Do not editorialize. Merely brief the user on all known facts on the topic in a readable, comprehensible manner."
+
 def connect_db() -> connection:
     rds = boto3.client('rds')
     token = rds.generate_db_auth_token(DB_HOST, DB_PORT, DB_USER)
@@ -67,10 +71,31 @@ def summary_exists(c: psycopg.cursor, article_link: str) -> cursor:
 
 
 def create_entry(c: cursor, summary: dict) -> cursor:
-    print(summary['source_rss_id'])
     c.execute("insert into summer.entry (name, body, link_url, tags, published_at, source_rss_id) "
               "values (%(name)s, %(body)s, %(link_url)s, %(tags)s, %(published_at)s, %(source_rss_id)s)",
               summary)
+
+
+def get_topics(c: cursor) -> cursor:
+    return c.execute("select id, name, summary, tags from summer.topic")
+
+
+def get_unconsumed_entries_for_topic(c: cursor, topic_id: uuid) -> cursor:
+    return c.execute("""
+        select e.*
+        
+        from (select id, name, body, lower(unnest(tags)) as tag, created_at from summer.entry) e,
+             (select id, lower(unnest(tags)) as tag, name, summary from summer.topic) t
+        
+        where e.tag = t.tag
+          and not exists(
+            select
+            from summer.topic_entry
+            where entry_id = e.id
+              and topic_id = %s)
+              
+        order by e.created_at
+    """, (topic_id,))
 
 
 def summarize(c: cursor, source_rss_id, article_link: str, article_text: str, published_at: str):
@@ -110,9 +135,29 @@ def summarize(c: cursor, source_rss_id, article_link: str, article_text: str, pu
         break
 
 
+def aggregate(topic_summary: str, article_date: date, article_text: str):
+    model = "gpt-4-1106-preview"
+    response = openai.ChatCompletion.create(
+        model=model,
+        messages=[
+            {"role": "system", "content": AGGREGATION_PROMPT},
+            {"role": "system", "name": "Topic-Summary", "content": topic_summary},
+            {"role": "system", "name": "New-Article", "content": "{}\n{}".format(article_date, article_text)},
+        ],
+    )
+    return response['choices'][0]["message"]["content"]
+
+
 def main():
     with connect_db() as db:
         with db.cursor() as c:
+            for topic in list(get_topics(c)):
+                topic_summary = topic.summary or ""
+                for entry in list(get_unconsumed_entries_for_topic(c, topic.id)):
+                    topic_summary = aggregate(topic_summary, entry.created_at.date(), entry.body)
+
+                print(topic_summary)
+                return
             for feed in list(query_feeds(c)):
                 for entry in feedparser.parse(feed.url).entries:
                     if summary_exists(c, entry.link): continue
