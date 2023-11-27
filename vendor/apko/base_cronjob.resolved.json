@@ -557,20 +557,20 @@
       },
       {
         "name": "libxml2",
-        "url": "https://packages.wolfi.dev/os/x86_64/libxml2-2.12.0-r0.apk",
-        "version": "2.12.0-r0",
+        "url": "https://packages.wolfi.dev/os/x86_64/libxml2-2.12.1-r0.apk",
+        "version": "2.12.1-r0",
         "architecture": "x86_64",
         "signature": {
-          "range": "bytes=0-701",
-          "checksum": "sha1-cmMub0ohQ3BL2cOiWwARJgPLulQ="
+          "range": "bytes=0-705",
+          "checksum": "sha1-saKguQvdrdL317zQckwW789THxo="
         },
         "control": {
-          "range": "bytes=702-1095",
-          "checksum": "sha1-DdSxjf57kAKaeiqIgDROG53rgUg="
+          "range": "bytes=706-1102",
+          "checksum": "sha1-zMdSfbe18ENSO9petBvIHJzc9rA="
         },
         "data": {
-          "range": "bytes=1096-4694062",
-          "checksum": "sha256-GUFkffLqGHt4EBUMG3FOn+mVOxAr8DVHYw5Qx3D7Mmg="
+          "range": "bytes=1103-4694062",
+          "checksum": "sha256-FqsSwDd7ihXCHzdytP1XSqYqP0PGk1U1YOT46jMLDeg="
         }
       },
       {

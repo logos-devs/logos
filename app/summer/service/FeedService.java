@@ -17,7 +17,6 @@ import io.grpc.stub.StreamObserver;
 
 import java.util.concurrent.ExecutionException;
 
-
 public class FeedService extends FeedServiceImplBase {
     @Inject
     SourceRssStorageServiceFutureStub sourceRssStorageService;
@@ -27,26 +26,23 @@ public class FeedService extends FeedServiceImplBase {
 
     @Override
     public void getFeed(GetFeedRequest request, StreamObserver<GetFeedResponse> responseObserver) {
-        ListenableFuture<ListSourceRssResponse> listSourceRssFetch =
-                sourceRssStorageService.list(
-                        ListSourceRssRequest.newBuilder().build());
+        ListenableFuture<ListSourceRssResponse> listSourceRssFetch = sourceRssStorageService.list(
+                ListSourceRssRequest.newBuilder().build());
 
-        ListenableFuture<ListEntryResponse> listEntryFetch =
-                entryStorageService.list(
-                        ListEntryRequest.newBuilder().build());
-
+        ListenableFuture<ListEntryResponse> listEntryFetch = entryStorageService.list(
+                ListEntryRequest.newBuilder().build());
 
         try {
             Feed feed = Feed.newBuilder()
-                            .addAllEntry(listEntryFetch.get().getResultsList())
-                            .addAllSource(
-                                    listSourceRssFetch.get().getResultsList().stream().map(
-                                            sourceRss -> Source.newBuilder()
-                                                           .setId(sourceRss.getId())
-                                                           .setIcon(sourceRss.getFaviconUrl())
-                                                           .build()
-                                    ).toList()
-                            ).build();
+                    .addAllEntry(listEntryFetch.get().getResultsList())
+                    .addAllSource(
+                            listSourceRssFetch.get().getResultsList().stream().map(
+                                    sourceRss -> Source.newBuilder()
+                                            .setId(sourceRss.getId())
+                                            .setIcon(sourceRss.getFaviconUrl())
+                                            .build())
+                                    .toList())
+                    .build();
 
             responseObserver.onNext(GetFeedResponse.newBuilder().setFeed(feed).build());
             responseObserver.onCompleted();

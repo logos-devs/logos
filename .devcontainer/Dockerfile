@@ -16,6 +16,7 @@ RUN apt-get install -y \
     sqitch \
     libdbd-pg-perl
 
+# TODO pull down bazelisk instead
 RUN wget https://github.com/bazelbuild/bazel/releases/download/6.3.2/bazel-6.3.2-installer-linux-x86_64.sh && \
     sha256sum -c <(echo "f117506267ed148d5f4f9844bcf187c4f111dad7ff4f1a9eb1f4e45331f3f9f0  bazel-6.3.2-installer-linux-x86_64.sh") && \
     chmod +x bazel-6.3.2-installer-linux-x86_64.sh && \
@@ -42,6 +43,12 @@ RUN wget https://app.getambassador.io/download/tel2oss/releases/download/v2.14.4
     sha256sum -c <(echo "ad41a0a59aad86968a4e39734371e7750a2c6f67930769b0622eb9049af30b3a  telepresence-linux-amd64") && \
     mv telepresence-linux-amd64 /usr/local/bin/telepresence && \
     chmod +x /usr/local/bin/telepresence
+
+RUN wget https://github.com/chainguard-dev/apko/releases/download/v0.11.3/apko_0.11.3_linux_amd64.tar.gz \
+    sha256sum -c <(echo "b6396271cf4eefaf6727083bc1e7c231a765715bb7b49f95b15b5611d6fed96e  apko_0.11.3_linux_amd64.tar.gz") \
+    tar xzf apko_0.11.3_linux_amd64.tar.gz \
+    mv apko_0.11.3_linux_amd64/apko /usr/loca/bin/ \
+    rm -rf apko_0.11.3_linux_amd64
 
 RUN curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add
 RUN apt-add-repository -y "deb http://apt.kubernetes.io/ kubernetes-xenial main"

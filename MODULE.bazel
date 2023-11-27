@@ -1,22 +1,51 @@
-bazel_dep(name = "aspect_bazel_lib", version = "2.0.1")
+bazel_dep(
+    name = "aspect_bazel_lib",
+    version = "2.0.1",
+)
 
 aspect_bazel_lib = use_extension("@aspect_bazel_lib//lib:extensions.bzl", "toolchains")
+
 use_repo(aspect_bazel_lib, "coreutils_toolchains")
+
 use_repo(aspect_bazel_lib, "jq_toolchains")
+
 use_repo(aspect_bazel_lib, "yq_toolchains")
 
-bazel_dep(name = "container_structure_test", version = "1.16.0")
-bazel_dep(name = "gazelle", version = "0.34.0")
-bazel_dep(name = "rules_pkg", version = "0.9.1")
+bazel_dep(
+    name = "container_structure_test",
+    version = "1.16.0",
+)
+
+bazel_dep(
+    name = "gazelle",
+    version = "0.34.0",
+)
+
+bazel_dep(
+    name = "rules_pkg",
+    version = "0.9.1",
+)
 
 # rules_js
-bazel_dep(name = "aspect_rules_js", version = "1.34.0")
+bazel_dep(
+    name = "aspect_rules_js",
+    version = "1.34.0",
+)
 
-bazel_dep(name = "rules_nodejs", version = "5.8.2")
+bazel_dep(
+    name = "rules_nodejs",
+    version = "5.8.2",
+)
+
 node = use_extension("@rules_nodejs//nodejs:extensions.bzl", "node")
+
 node.toolchain(node_version = "18.13.0")
 
-npm = use_extension("@aspect_rules_js//npm:extensions.bzl", "npm", dev_dependency = True)
+npm = use_extension(
+    "@aspect_rules_js//npm:extensions.bzl",
+    "npm",
+    dev_dependency = True,
+)
 
 npm.npm_translate_lock(
     name = "npm",
@@ -26,8 +55,19 @@ npm.npm_translate_lock(
 
 use_repo(npm, "npm")
 
+pnpm = use_extension(
+    "@aspect_rules_js//npm:extensions.bzl",
+    "pnpm",
+    dev_dependency = True,
+)
+
+use_repo(pnpm, "pnpm")
+
 # rules_ts
-bazel_dep(name = "aspect_rules_ts", version = "2.1.0")
+bazel_dep(
+    name = "aspect_rules_ts",
+    version = "2.1.0",
+)
 
 rules_ts_ext = use_extension(
     "@aspect_rules_ts//ts:extensions.bzl",
@@ -40,13 +80,20 @@ rules_ts_ext.deps()
 use_repo(rules_ts_ext, "npm_typescript")
 
 # rules_go
-bazel_dep(name = "rules_go", version = "0.42.0")
+bazel_dep(
+    name = "rules_go",
+    version = "0.42.0",
+)
 
 go_sdk = use_extension("@rules_go//go:extensions.bzl", "go_sdk")
+
 go_sdk.download(version = "1.20.3")
 
 # rules_oci
-bazel_dep(name = "rules_oci", version = "1.4.0")
+bazel_dep(
+    name = "rules_oci",
+    version = "1.4.0",
+)
 
 oci = use_extension("@rules_oci//oci:extensions.bzl", "oci")
 
@@ -56,6 +103,7 @@ oci.pull(
     image = "docker.io/library/alpine",
     # tag = "3.18",
 )
+
 use_repo(oci, "alpine_image")
 
 oci.pull(
@@ -64,6 +112,7 @@ oci.pull(
     image = "docker.io/envoyproxy/envoy-distroless",
     # tag = "v1.21-latest",
 )
+
 use_repo(oci, "envoy_distroless_container")
 
 oci.pull(
@@ -72,6 +121,7 @@ oci.pull(
     image = "gcr.io/distroless/java17-debian11",
     # tag = "latest",
 )
+
 use_repo(oci, "distroless_java_container")
 
 oci.pull(
@@ -80,6 +130,7 @@ oci.pull(
     image = "docker.io/alpine/socat",
     # tag = "latest",
 )
+
 use_repo(oci, "console_container")
 
 oci.pull(
@@ -88,6 +139,7 @@ oci.pull(
     image = "docker.io/library/nginx",
     # tag = "stable-alpine",
 )
+
 use_repo(oci, "nginx_container")
 
 oci.pull(
@@ -96,6 +148,7 @@ oci.pull(
     image = "docker.io/sorintlab/stolon",
     # tag = "master-pg14",
 )
+
 use_repo(oci, "stolon_container")
 
 oci.pull(
@@ -107,14 +160,20 @@ oci.pull(
         "linux/arm64/v8",
     ],
 )
+
 use_repo(oci, "distroless_python_image")
 
 # rules_apko
-bazel_dep(name = "rules_apko", version = "1.0.0")
+bazel_dep(
+    name = "rules_apko",
+    version = "1.0.0",
+)
 
 apk = use_extension("@rules_apko//apko:extensions.bzl", "apko")
+
 apk.translate_lock(
     name = "base_cronjob_image",
     lock = "//vendor/apko:base_cronjob.resolved.json",
 )
+
 use_repo(apk, "base_cronjob_image")

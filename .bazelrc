@@ -33,8 +33,8 @@ fetch --@aspect_rules_ts//ts:skipLibCheck=honor_tsconfig
 query --@aspect_rules_ts//ts:skipLibCheck=honor_tsconfig
 
 # buildbuddy
-build:remote --bes_backend=grpcs://remote.buildbuddy.io
-build:remote --bes_results_url=https://app.buildbuddy.io/invocation/
+build:remote --bes_results_url=https://logos-dev.buildbuddy.io/invocation/
+build:remote --bes_backend=grpcs://logos-dev.buildbuddy.io
 build:remote --crosstool_top=@buildbuddy_toolchain//:toolchain
 build:remote --experimental_profile_include_primary_output 
 build:remote --experimental_profile_include_target_label
