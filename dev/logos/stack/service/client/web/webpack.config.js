@@ -30,7 +30,8 @@ module.exports = (env, argv) => ({
   devtool: env.production ? "source-map" : "eval-source-map",
   plugins: [
     new HtmlWebpackPlugin({
-      template: path.resolve(__dirname, 'index.html')
+      template: path.resolve(__dirname, 'index.html'),
+      publicPath: "/"
     }),
   ],
   output: {

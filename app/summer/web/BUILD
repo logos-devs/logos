@@ -7,6 +7,7 @@ js_library(
     ],
     visibility = ["//dev/logos/stack/service/client/web:__pkg__"],
     deps = [
+        "//app/auth/web/client",
         "//app/summer/proto:grpc_web",
         "//dev/logos/stack/service/storage/pg/exporter:export",
     ],

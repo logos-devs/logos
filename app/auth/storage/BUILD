@@ -7,7 +7,7 @@ java_library(
         "//dev/logos/stack/service/backend:__subpackages__",
     ],
     deps = [
-        "//app/auth/proto:auth_java_library",
+        "//app/auth/proto:java",
         "//dev/logos/stack/service/storage:storage_library",
         "//dev/logos/stack/service/storage/pg",
         "//dev/logos/stack/service/storage/pg/exporter:schema_export_library",

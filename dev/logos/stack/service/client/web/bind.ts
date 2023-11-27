@@ -1,4 +1,5 @@
 import {AuthServicePromiseClient} from "@app/auth/web/client/auth_grpc_web_pb.js";
+import {CognitoServicePromiseClient} from "@app/auth/web/client/cognito_grpc_web_pb.js";
 import {PhoneNumberStorageServicePromiseClient} from "@app/digits/storage/digits/phone_number_grpc_web_pb.js";
 import {VoiceServicePromiseClient} from "@app/digits/web/client/voice_grpc_web_pb.js";
 import {FileServicePromiseClient} from "@app/review/web/client/file_grpc_web_pb.js";
@@ -12,6 +13,7 @@ import getDecorators from "inversify-inject-decorators";
 export const TYPE = {
     Endpoint: Symbol.for('Endpoint'),
     AuthServiceClient: Symbol.for('AuthServiceClient'),
+    CognitoServiceClient: Symbol.for('CognitoServiceClient'),
     FileServiceClient: Symbol.for('FileServiceClient'),
     ProjectServiceClient: Symbol.for('ProjectServiceClient'),
     VoiceServiceClient: Symbol.for('VoiceServiceClient'),
@@ -34,6 +36,7 @@ const enableDevTools = window.__GRPCWEB_DEVTOOLS__ || ((_) => {
 
 [
     [TYPE.AuthServiceClient, new AuthServicePromiseClient(endpointUrl)],
+    [TYPE.CognitoServiceClient, new CognitoServicePromiseClient(endpointUrl)],
     [TYPE.FileServiceClient, new FileServicePromiseClient(endpointUrl)],
     [TYPE.ProjectServiceClient, new ProjectServicePromiseClient(endpointUrl)],
     [TYPE.FeedServiceClient, new FeedServicePromiseClient(endpointUrl)]

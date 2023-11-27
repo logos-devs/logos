@@ -2,11 +2,11 @@ load("@rules_proto_grpc//java:defs.bzl", "java_grpc_library")
 
 java_grpc_library(
     name = "auth_java_grpc",
-    protos = ["//app/auth/proto:auth_proto"],
+    protos = ["//app/auth/proto"],
 )
 
 java_library(
-    name = "auth_service",
+    name = "service",
     srcs = glob(["**/*.java"]),
     visibility = [
         "//app/auth/module:__subpackages__",
@@ -14,7 +14,7 @@ java_library(
     ],
     deps = [
         ":auth_java_grpc",
-        "//app/auth/proto:auth_java_library",
+        "//app/auth/proto:java",
         "//app/auth/storage:auth_storage",
         "//dev/logos/stack/service/storage:storage_library",
         "@maven//:com_auth0_java_jwt",

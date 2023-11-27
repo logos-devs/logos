@@ -17,7 +17,7 @@ java_library(
     visibility = ["//visibility:public"],
     deps = [
         "//app/auth/module",
-        "//app/auth/service:auth_service",
+        "//app/auth/service",
         "//app/auth/storage:auth_storage",
         "//app/digits/module",
         "//app/review:review_service",

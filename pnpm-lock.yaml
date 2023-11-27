@@ -69,8 +69,8 @@ dependencies:
     specifier: 0.27.0
     version: 0.27.0
   '@material/web':
-    specifier: 1.0.0-pre.16
-    version: 1.0.0-pre.16
+    specifier: 1.0.1
+    version: 1.0.1
   '@metamask/detect-provider':
     specifier: 1.2.0
     version: 1.2.0
@@ -2974,8 +2974,8 @@ packages:
       tslib: 2.6.2
     dev: false
 
-  /@material/web@1.0.0-pre.16:
-    resolution: {integrity: sha512-BDrwtY7WkbGhh2jxupbRdh1/wEiy69h6XzjgCxISJNNQVyn6rbOv1U57+d9J24Z5DvSTKv8NHrNyXT6iwmG2KQ==}
+  /@material/web@1.0.1:
+    resolution: {integrity: sha512-AilQTWdp+lgPzoUGNj/CyrMsULLdzhHiiYs6XXSIpX/t/eGQkiPP4CAwvjqANuV+YZC0hLIo+s64BIgZo8Ghkw==}
     dependencies:
       lit: 2.8.0
       tslib: 2.6.2
