@@ -67,7 +67,7 @@ _kill_with_pid() {
 
 cleanup() {
     trap - INT TERM ERR
-    rds_tunnel_down
+    #rds_tunnel_down
     server_tunnel_down
 }
 
@@ -132,7 +132,7 @@ dev_env() {
 
 dev_server() {
   dev_env
-  rds_tunnel_up
+  #rds_tunnel_up
   server_tunnel_up
   # TODO switch to using telepresence intercept
   ibazel run //dev/logos/stack/service/backend:Server
@@ -141,7 +141,7 @@ dev_server() {
 
 dev_client() {
   dev_env
-  rds_tunnel_up
+  #rds_tunnel_up
   telepresence intercept client-deployment --port 8080 -- ibazel run --config=remote //dev/logos/stack/service/client/web:dev_server
 }
 

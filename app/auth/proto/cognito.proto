@@ -9,7 +9,10 @@ message ProcessAuthCodeRequest {
 }
 
 message ProcessAuthCodeResponse {
-  // TODO return auth token
+    string access_token = 1;
+    string id_token = 2;
+    string refresh_token = 3;
+    int64 expires_in = 4;
 }
 
 service CognitoService {

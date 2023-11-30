@@ -215,56 +215,56 @@
       },
       {
         "name": "openssl-config",
-        "url": "https://packages.wolfi.dev/os/x86_64/openssl-config-3.1.4-r1.apk",
-        "version": "3.1.4-r1",
+        "url": "https://packages.wolfi.dev/os/x86_64/openssl-config-3.2.0-r0.apk",
+        "version": "3.2.0-r0",
         "architecture": "x86_64",
         "signature": {
-          "range": "bytes=0-703",
-          "checksum": "sha1-/T2lI1AsuGMWIgKS2LnMFM3VtlU="
+          "range": "bytes=0-697",
+          "checksum": "sha1-VccH1xt76d4q4NqO2DesP8w1rqU="
         },
         "control": {
-          "range": "bytes=704-1041",
-          "checksum": "sha1-ZZJYUo8AAkKyRtvpn3B4lW3u+9Q="
+          "range": "bytes=698-1035",
+          "checksum": "sha1-e+hwE3mYrW9g8yHQu6oqmBRBwOw="
         },
         "data": {
-          "range": "bytes=1042-87924",
-          "checksum": "sha256-1kPfNxgSfVfy4qQ7gVsyQA2sb9n7JLAtAk9d9f+gzHo="
+          "range": "bytes=1036-87933",
+          "checksum": "sha256-XRYVqaGoS9WbL4PiDbIf77Wb/9P09hfh0e79oIpsioM="
         }
       },
       {
         "name": "libcrypto3",
-        "url": "https://packages.wolfi.dev/os/x86_64/libcrypto3-3.1.4-r1.apk",
-        "version": "3.1.4-r1",
+        "url": "https://packages.wolfi.dev/os/x86_64/libcrypto3-3.2.0-r0.apk",
+        "version": "3.2.0-r0",
         "architecture": "x86_64",
         "signature": {
-          "range": "bytes=0-708",
-          "checksum": "sha1-AWOTa3MYJyGzHe7kwp3Q43ckCWw="
+          "range": "bytes=0-704",
+          "checksum": "sha1-9kQPC2FvQx/v+vSG2DOXwoZEz+M="
         },
         "control": {
-          "range": "bytes=709-1082",
-          "checksum": "sha1-cMmuf4sCR89oRO9ioiyAfENtwLE="
+          "range": "bytes=705-1076",
+          "checksum": "sha1-PssMPijjO5cb/9HPMy2kIIsMeRg="
         },
         "data": {
-          "range": "bytes=1083-5696310",
-          "checksum": "sha256-IR44KZDAir4nDHxvFH03w268JC6nlE2aqfMncAan84c="
+          "range": "bytes=1077-5890781",
+          "checksum": "sha256-xOCbEaNh4HPDITw5MTCS41dcqiEwkFhDqrTbkxmVqio="
         }
       },
       {
         "name": "libssl3",
-        "url": "https://packages.wolfi.dev/os/x86_64/libssl3-3.1.4-r1.apk",
-        "version": "3.1.4-r1",
+        "url": "https://packages.wolfi.dev/os/x86_64/libssl3-3.2.0-r0.apk",
+        "version": "3.2.0-r0",
         "architecture": "x86_64",
         "signature": {
-          "range": "bytes=0-697",
-          "checksum": "sha1-Xug53GN19xrs8zL8t/DuS66rXuQ="
+          "range": "bytes=0-703",
+          "checksum": "sha1-Ke9S2HaFpS7a4YuWfI8Vdfw9bAE="
         },
         "control": {
-          "range": "bytes=698-1070",
-          "checksum": "sha1-U0a4yD5Y5R1CZJAFSpgNlOZrIos="
+          "range": "bytes=704-1076",
+          "checksum": "sha1-ZxNrny0+ZDgPHFBxhfDrZvjYKx8="
         },
         "data": {
-          "range": "bytes=1071-802542",
-          "checksum": "sha256-TsGX/9m1EPr8kFJITdoWd1MkD/apOIQkXMSV1wXsegs="
+          "range": "bytes=1077-1135349",
+          "checksum": "sha256-NmZhgcI0Nlkvnl9wtPZsdYZpKC3bOzN2J4g2ZCEocs8="
         }
       },
       {

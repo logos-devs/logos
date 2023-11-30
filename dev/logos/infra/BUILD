@@ -2,6 +2,7 @@ load("@aspect_rules_ts//ts:defs.bzl", "ts_project")
 load("@aspect_rules_js//js:defs.bzl", "js_run_binary")
 load("@npm//:aws-cdk/package_json.bzl", cdk = "bin")
 load("@aspect_bazel_lib//lib:jq.bzl", "jq")
+load("//bzl:cdk.bzl", "cdk_output_jq_filter")
 
 ts_project(
     name = "app",
@@ -54,10 +55,19 @@ js_run_binary(
 )
 
 jq(
-    name = "cognito_login_urls",
+    name = "cognito_public_host_map",
     srcs = [":cdk_deploy"],
-    out = "cognito_login_urls.json",
-    #args = ["--slurp"],
-    filter = '."logos-cognito"',
+    out = "cognito_public_host_map.json",
+    args = ["--raw-output"],
+    filter = '."logos-cognito"."logosCognitoPublicHostMap"',
     visibility = ["//dev/logos/stack/service/client/web:__pkg__"],
+)
+
+jq(
+    name = "cognito_secret_host_map",
+    srcs = [":cdk_deploy"],
+    out = "cognito_secret_host_map.json",
+    args = ["--raw-output"],
+    filter = '."logos-cognito"."logosCognitoSecretHostMap"',
+    visibility = ["//app/auth/service:__pkg__"],
 )

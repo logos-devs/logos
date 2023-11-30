@@ -1,7 +1,7 @@
 import {FeedServicePromiseClient} from "@app/summer/proto/feed_grpc_web_pb.js";
 import {GetFeedRequest, GetFeedResponse, Source} from "@app/summer/proto/feed_pb.js";
 import {Entry} from "@app/summer/storage/summer/entry_pb.js";
-import login_urls from "@infra/cognito_login_urls.json";
+import cognitoPublicHostMap from "@infra/cognito_public_host_map.json";
 import "@material/mwc-drawer";
 import {Drawer} from "@material/mwc-drawer";
 import "@material/mwc-icon-button";
@@ -181,7 +181,7 @@ class ViewFeed extends LitElement {
                     <mwc-top-app-bar dense centerTitle>
                         <mwc-icon-button @click=${(ev) => this.drawer.open = !this.drawer.open} icon="menu"
                                          slot="navigationIcon"></mwc-icon-button>
-                        <mwc-icon-button @click=${(ev) => window.location.href = login_urls["devSummerApp"]}
+                        <mwc-icon-button @click=${(ev) => window.location.href = cognitoPublicHostMap[location.host].loginUrl}
                                          icon="account_circle" slot="actionItems"></mwc-icon-button>
 
                         <div slot="title">☀️</div>
