@@ -5,11 +5,13 @@ import {PolicyStatement} from "aws-cdk-lib/aws-iam";
 import {RdsStack} from "./rds";
 
 export class IamStack extends Stack {
+    readonly serviceAccount: ServiceAccount;
+
     constructor(scope: App, id: string, eksStack: EksBlueprint, rdsStack: RdsStack, props?: StackProps) {
         super(scope, id, props);
 
         const serviceAccountName = id + '-eks-service-account';
-        const serviceAccount = new ServiceAccount(
+        this.serviceAccount = new ServiceAccount(
             this,
             serviceAccountName,
             {
@@ -19,7 +21,7 @@ export class IamStack extends Stack {
             }
         );
 
-        serviceAccount.addToPrincipalPolicy(
+        this.serviceAccount.addToPrincipalPolicy(
             new PolicyStatement({
                 actions: ["rds-db:connect"],
                 resources: [
@@ -28,7 +30,8 @@ export class IamStack extends Stack {
             })
         )
 
-        serviceAccount.addToPrincipalPolicy(
+        // TODO this has no business being done here, rather than as a consequence of an app declaring a dependency on this API
+        this.serviceAccount.addToPrincipalPolicy(
             new PolicyStatement({
                 actions: ["secretsmanager:GetSecretValue"],
                 resources: [

@@ -163,6 +163,7 @@ maven_install(
         "org.eclipse.jgit:org.eclipse.jgit:6.6.0.202305301015-r",
         "org.jdbi:jdbi3-core:3.39.1",
         "com.squareup:javapoet:1.13.0",
+        "com.google.code.gson:gson:2.10.1",
         "org.jdbi:jdbi3-postgres:3.35.0",
         "org.junit.jupiter:junit-jupiter-api:5.9.3",
         "org.postgresql:postgresql:42.6.0",
@@ -190,7 +191,7 @@ maven_install(
     repositories = [
         "https://repo.maven.apache.org/maven2/",
     ],
-    version_conflict_policy = "pinned",
+    #version_conflict_policy = "pinned",
 )
 
 load("@maven//:defs.bzl", "pinned_maven_install")

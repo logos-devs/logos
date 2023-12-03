@@ -8,15 +8,13 @@ java_grpc_library(
 java_library(
     name = "service",
     srcs = glob(["**/*.java"]),
-    data = [
-        "//dev/logos/infra:cognito_secret_host_map",
-    ],
     visibility = [
         "//app/auth/module:__subpackages__",
         "//dev/logos/stack:__subpackages__",
     ],
     deps = [
         ":auth_java_grpc",
+        "//app/auth/module/data",
         "//app/auth/proto:java",
         "//app/auth/storage:auth_storage",
         "//dev/logos/stack/service/storage:storage_library",
@@ -33,6 +31,7 @@ java_library(
         "@maven//:org_apache_httpcomponents_httpclient",
         "@maven//:org_apache_httpcomponents_httpcore",
         "@maven//:software_amazon_awssdk_cognitoidentityprovider",
+        "@maven//:software_amazon_awssdk_http_client_spi",
         "@maven//:software_amazon_awssdk_secretsmanager",
     ],
 )

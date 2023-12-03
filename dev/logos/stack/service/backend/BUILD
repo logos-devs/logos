@@ -1,6 +1,7 @@
 load("@google_bazel_common//tools/javadoc:javadoc.bzl", "javadoc_library")
 load("@rules_oci//oci:defs.bzl", "oci_image", "oci_push")
 load("@rules_pkg//pkg:pkg.bzl", "pkg_tar")
+load("@aspect_bazel_lib//lib:tar.bzl", "tar")
 load("//bzl:gitops.bzl", "REGISTRY")
 load("//bzl:k8s.bzl", "kubectl")
 
@@ -14,6 +15,7 @@ filegroup(
 java_library(
     name = "server_library",
     srcs = [":server_srcs"],
+    resources = [],
     visibility = ["//visibility:public"],
     deps = [
         "//app/auth/module",
@@ -157,9 +159,6 @@ kubectl(
         "manifests/deployment.yaml",
         "manifests/service.yaml",
     ],
-    #    objects = [
-    #        "//dev/logos/stack/service/storage",
-    #    ],
     visibility = [
         "//dev/logos/stack:__subpackages__",
         "//dev/logos/stack/ingress/nginx:__pkg__",

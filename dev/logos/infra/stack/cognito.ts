@@ -1,9 +1,11 @@
 import {App, CfnOutput, Environment, SecretValue, Stack, StackProps} from "aws-cdk-lib";
 import {UserPool, UserPoolClient, UserPoolDomain} from "aws-cdk-lib/aws-cognito";
+import {PolicyStatement} from "aws-cdk-lib/aws-iam";
 import {ARecord, HostedZone, RecordTarget} from "aws-cdk-lib/aws-route53";
 import {UserPoolDomainTarget} from "aws-cdk-lib/aws-route53-targets";
 import {Secret} from "aws-cdk-lib/aws-secretsmanager";
 import {LogosApp} from "../construct/logos";
+import {IamStack} from "../stack/iam";
 import {AcmStack} from "./acm";
 
 
@@ -12,11 +14,13 @@ function dashToCamel(s: string): string {
 }
 
 export class CognitoStack extends Stack {
-    constructor(scope: App, id: string, acmStack: AcmStack, props: StackProps, apps: LogosApp[]) {
+    constructor(scope: App, id: string, acmStack: AcmStack, iamStack: IamStack, props: StackProps, apps: LogosApp[]) {
         super(scope, id, props);
 
-        const cognitoPublicHostMapOutput = {};
-        const cognitoSecretHostMapOutput = {};
+        const
+            cognitoPublicHostMapOutput = {},
+            cognitoSecretHostMapOutput = {},
+            cognitoHostsOutput = [];
 
         apps.map(app => {
             const
@@ -69,11 +73,11 @@ export class CognitoStack extends Stack {
 
             cognitoPublicHostMapOutput[fqdn] = {
                 baseUrl: userPoolDomain.baseUrl(),
-                loginUrl: userPoolDomain.signInUrl(userPoolClient, { redirectUri }),
+                loginUrl: userPoolDomain.signInUrl(userPoolClient, {redirectUri}),
                 redirectUrl: redirectUri
             };
 
-            const clientCredentialsSecret = new Secret(this, `${id}-client-credentials-${fqdnId}`, {
+            const clientCredentialsSecret: Secret = new Secret(this, `${id}-client-credentials-${fqdnId}`, {
                 secretObjectValue: {
                     clientId: SecretValue.unsafePlainText(userPoolClient.userPoolClientId),
                     clientSecret: userPoolClient.userPoolClientSecret,
@@ -84,6 +88,15 @@ export class CognitoStack extends Stack {
                 ...cognitoPublicHostMapOutput[fqdn],
                 clientCredentialsSecretArn: clientCredentialsSecret.secretArn
             }
+
+            iamStack.serviceAccount.addToPrincipalPolicy(
+                new PolicyStatement({
+                    actions: ["secretsmanager:GetSecretValue"],
+                    resources: [clientCredentialsSecret.secretArn]
+                })
+            )
+
+            cognitoHostsOutput.push(fqdn);
         });
 
         const publicHostMapOutputId = `${id}-public-host-map`;
@@ -91,13 +104,18 @@ export class CognitoStack extends Stack {
             value: JSON.stringify(cognitoPublicHostMapOutput),
         }).overrideLogicalId(dashToCamel(publicHostMapOutputId));
 
-        const secretHostMapOutputId = `${id}-secret-host-map`;
+        const secretHostMapOutputId = `${id}-server-config`;
         new CfnOutput(this, secretHostMapOutputId, {
             value: JSON.stringify(cognitoSecretHostMapOutput),
         }).overrideLogicalId(dashToCamel(secretHostMapOutputId));
+
+        const hostsOutputId = `${id}-hosts`;
+        new CfnOutput(this, hostsOutputId, {
+            value: JSON.stringify(cognitoHostsOutput),
+        }).overrideLogicalId(dashToCamel(hostsOutputId));
     }
 }
 
-export function makeCognitoStack(app: App, id: string, acmStack: AcmStack, env: Environment, apps: LogosApp[]): CognitoStack {
-    return new CognitoStack(app, id, acmStack, { env }, apps);
+export function makeCognitoStack(app: App, id: string, acmStack: AcmStack, iamStack: IamStack, env: Environment, apps: LogosApp[]): CognitoStack {
+    return new CognitoStack(app, id, acmStack, iamStack, {env}, apps);
 }

@@ -66,10 +66,10 @@ export class Logos extends Construct {
 
         const
             eksStack = makeEksStack(app, `${id}-eks`, acmStack, r53Stack, env),
-            rdsStack = makeRdsStack(app, `${id}-rds`, eksStack, env);
+            rdsStack = makeRdsStack(app, `${id}-rds`, eksStack, env),
+            iamStack = makeIamStack(app, `${id}-iam`, eksStack, rdsStack, env);
 
-        makeIamStack(app, `${id}-iam`, eksStack, rdsStack, env);
-        makeCognitoStack(app, `${id}-cognito`, acmStack, env, apps);
+        makeCognitoStack(app, `${id}-cognito`, acmStack, iamStack, env, apps);
 
         makeS3Stack(app, `${id}-s3`, env);
     }

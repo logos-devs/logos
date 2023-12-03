@@ -64,10 +64,19 @@ jq(
 )
 
 jq(
-    name = "cognito_secret_host_map",
+    name = "cognito_server_config",
     srcs = [":cdk_deploy"],
-    out = "cognito_secret_host_map.json",
+    out = "cognito_server_config.json",
     args = ["--raw-output"],
-    filter = '."logos-cognito"."logosCognitoSecretHostMap"',
-    visibility = ["//app/auth/service:__pkg__"],
+    filter = '."logos-cognito"."logosCognitoServerConfig"',
+    visibility = ["//app/auth/module:__pkg__"],
+)
+
+jq(
+    name = "cognito_hosts",
+    srcs = [":cdk_deploy"],
+    out = "cognito_hosts.json",
+    args = ["--raw-output"],
+    filter = '."logos-cognito"."logosCognitoHosts"',
+    visibility = ["//app/auth/module:__pkg__"],
 )
