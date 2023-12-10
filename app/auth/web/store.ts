@@ -1,5 +1,5 @@
 import * as webauthnJson from "@github/webauthn-json";
-import {container, TYPE} from "@logos/bind";
+import {container} from "@logos/bind";
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 import {AuthServicePromiseClient} from "./client/auth_grpc_web_pb";
 import {
@@ -14,14 +14,13 @@ import {
 } from "./client/auth_pb";
 
 
-const authServiceClient = container.get<AuthServicePromiseClient>(TYPE.AuthServiceClient);
-
 export const startRegistration = createAsyncThunk(
     "auth/startRegistration",
     async (
         startRegistrationRequest: StartRegistrationRequest,
         {dispatch}
     ) => {
+        const authServiceClient = container.get(AuthServicePromiseClient);
         const startRegistrationResponse: StartRegistrationResponse =
             await authServiceClient.startRegistration(startRegistrationRequest);
 
@@ -42,7 +41,7 @@ export const validatePublicKeyCredential = createAsyncThunk(
         validatePublicKeyCredentialRequest: ValidatePublicKeyCredentialRequest
     ) => {
         const validatePublicKeyCredentialResponse: ValidatePublicKeyCredentialResponse =
-            await authServiceClient.validatePublicKeyCredential(validatePublicKeyCredentialRequest);
+            await container.get(AuthServicePromiseClient).validatePublicKeyCredential(validatePublicKeyCredentialRequest);
 
         console.debug(validatePublicKeyCredentialResponse);
     }
@@ -52,7 +51,7 @@ export const startAssertion = createAsyncThunk(
     "auth/startAssertion",
     async (_, {dispatch}) => {
         const startAssertionResponse: StartAssertionResponse =
-            await authServiceClient.startAssertion(new StartAssertionRequest());
+            await container.get(AuthServicePromiseClient).startAssertion(new StartAssertionRequest());
 
         dispatch(finishAssertion(
             new FinishAssertionRequest()
@@ -69,7 +68,7 @@ export const finishAssertion = createAsyncThunk(
     "auth/startAssertion",
     async (finishAssertionRequest: FinishAssertionRequest) => {
         const finishAssertionResponse: FinishAssertionResponse =
-            await authServiceClient.finishAssertion(finishAssertionRequest);
+            await container.get(AuthServicePromiseClient).finishAssertion(finishAssertionRequest);
 
         return finishAssertionResponse.getToken();
     }

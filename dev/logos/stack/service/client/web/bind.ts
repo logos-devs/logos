@@ -6,6 +6,7 @@ import {FileServicePromiseClient} from "@app/review/web/client/file_grpc_web_pb.
 import {ProjectServicePromiseClient} from "@app/review/web/client/project_grpc_web_pb.js";
 import {FeedServicePromiseClient} from "@app/summer/proto/feed_grpc_web_pb.js";
 import {DevEndpoint} from "@logos/endpoint";
+import {user} from "app/auth/web/state";
 import {store} from "dev/logos/stack/service/client/web/store/store";
 import {Container} from "inversify";
 import getDecorators from "inversify-inject-decorators";
@@ -36,7 +37,6 @@ const enableDevTools = window.__GRPCWEB_DEVTOOLS__ || ((_) => {
 
 [
     [TYPE.AuthServiceClient, new AuthServicePromiseClient(endpointUrl)],
-    [TYPE.CognitoServiceClient, new CognitoServicePromiseClient(endpointUrl)],
     [TYPE.FileServiceClient, new FileServicePromiseClient(endpointUrl)],
     [TYPE.ProjectServiceClient, new ProjectServicePromiseClient(endpointUrl)],
     [TYPE.FeedServiceClient, new FeedServicePromiseClient(endpointUrl)]
@@ -60,11 +60,14 @@ class AuthInterceptor {
 }
 
 function makeClient<Client>(clientClass: new (endpoint: string, credentials: any, options: any) => Client): Client {
+    // DEPRECATED, use mobx state instead
     const state = store.getState(),
         interceptors = [];
 
     if (state.auth.authenticated) {
-        interceptors.push(new AuthInterceptor(state.auth.token))
+        interceptors.push(new AuthInterceptor(state.auth.token));
+    } else if (user.isAuthenticated) {
+        interceptors.push(new AuthInterceptor(user.accessToken));
     }
 
     const client: Client = new clientClass(endpointUrl, null, {
@@ -83,5 +86,11 @@ container.bind<VoiceServicePromiseClient>(TYPE.VoiceServiceClient).toDynamicValu
 container.bind<PhoneNumberStorageServicePromiseClient>(TYPE.PhoneNumberStorageServiceClient).toDynamicValue(
     () => makeClient(PhoneNumberStorageServicePromiseClient));
 
+function addClient<T>(clientClass) {
+    container.bind<T>(clientClass).toDynamicValue(() => makeClient(clientClass));
+
+}
+
+addClient(CognitoServicePromiseClient);
 
 export const {lazyInject} = getDecorators(container);

@@ -70,7 +70,6 @@ export class Logos extends Construct {
             iamStack = makeIamStack(app, `${id}-iam`, eksStack, rdsStack, env);
 
         makeCognitoStack(app, `${id}-cognito`, acmStack, iamStack, env, apps);
-
         makeS3Stack(app, `${id}-s3`, env);
     }
 }

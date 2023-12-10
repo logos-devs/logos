@@ -1,21 +1,30 @@
 import {CognitoServicePromiseClient} from "@app/auth/web/client/cognito_grpc_web_pb.js";
-import {ProcessAuthCodeRequest} from "@app/auth/web/client/cognito_pb.js";
+import {ProcessAuthCodeRequest, ProcessAuthCodeResponse} from "@app/auth/web/client/cognito_pb.js";
 
 import "@material/web/progress/circular-progress";
-import {lazyInject, TYPE} from "dev/logos/stack/service/client/web/bind";
+import {user} from "app/auth/web/state";
+import {lazyInject} from "dev/logos/stack/service/client/web/bind";
 import {css, html, LitElement} from 'lit';
 import {customElement} from "lit/decorators.js";
 
 @customElement('login-complete')
-class LoginComplete extends LitElement {
-    @lazyInject(TYPE.CognitoServiceClient) private cognitoServiceClient!: CognitoServicePromiseClient;
+export class LoginComplete extends LitElement {
+    @lazyInject(CognitoServicePromiseClient) private cognitoServiceClient!: CognitoServicePromiseClient;
 
     connectedCallback() {
         super.connectedCallback();
         const params = new URLSearchParams(window.location.search);
+
         this.cognitoServiceClient.processAuthCode(
             new ProcessAuthCodeRequest().setAuthCode(params.get("code"))
-        );
+        ).then((processAuthCodeResponse: ProcessAuthCodeResponse) => {
+            user.accessToken = processAuthCodeResponse.getAccessToken();
+            user.idToken = processAuthCodeResponse.getIdToken();
+            user.refreshToken = processAuthCodeResponse.getRefreshToken();
+            user.isAuthenticated = true;
+            window.history.pushState(null, "", "/")
+            window.dispatchEvent(new PopStateEvent('popstate'));
+        });
     }
 
     static get styles() {

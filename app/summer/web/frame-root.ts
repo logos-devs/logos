@@ -1,5 +1,6 @@
-import {css, html, LitElement} from 'lit';
+import {css, LitElement} from 'lit';
 import {customElement} from "lit/decorators.js";
+import {router} from "./router";
 
 @customElement('frame-root')
 class FrameRoot extends LitElement {
@@ -13,14 +14,11 @@ class FrameRoot extends LitElement {
         `;
     }
 
-    render() {
-        return html`
-            <lit-route path="/"
-                       .resolve="${() => import("./view-feed")}"
-                       component="view-feed"></lit-route>
-            <lit-route path="/login/complete"
-                       .resolve="${() => import("./login-complete")}"
-                       component="login-complete"></lit-route>
-        `;
+    firstUpdated(changedProperties) {
+        router.setOutlet(this.shadowRoot);
+        router.setRoutes([
+            { path: "/", component: "view-feed", action: () => { import("./view-feed"); }},
+            { path: "/login/complete", component: "login-complete", action: () => { import("./login-complete"); }}
+        ]);
     }
 }

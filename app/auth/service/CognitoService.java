@@ -127,7 +127,5 @@ public class CognitoService extends CognitoServiceGrpc.CognitoServiceImplBase {
                         .setRefreshToken(tokens.refresh_token)
                         .setExpiresIn(tokens.expires_in)
                         .build());
-
-        responseObserver.onCompleted();
     }
 }

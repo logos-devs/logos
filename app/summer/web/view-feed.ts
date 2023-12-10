@@ -14,6 +14,7 @@ import "@material/web/fab/fab";
 import "@material/web/icon/icon";
 import "@material/web/list/list";
 import "@material/web/list/list-item";
+import {user} from "app/auth/web/state";
 import {lazyInject, TYPE} from "dev/logos/stack/service/client/web/bind";
 import {css, html, LitElement} from 'lit';
 import {customElement, query, state} from "lit/decorators.js";
@@ -182,7 +183,7 @@ class ViewFeed extends LitElement {
                         <mwc-icon-button @click=${(ev) => this.drawer.open = !this.drawer.open} icon="menu"
                                          slot="navigationIcon"></mwc-icon-button>
                         <mwc-icon-button @click=${(ev) => window.location.href = cognitoPublicHostMap[location.host].loginUrl}
-                                         icon="account_circle" slot="actionItems"></mwc-icon-button>
+                                         icon="${user.isAuthenticated ? "account_circle": "login"}" slot="actionItems"></mwc-icon-button>
 
                         <div slot="title">☀️</div>
                         <div>

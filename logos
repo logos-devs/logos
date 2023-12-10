@@ -370,7 +370,7 @@ _psql() {
         psql --host "$PG_TUNNEL_HOST" \
              --port "$PG_TUNNEL_PORT" \
              -U "$PG_DB_MIGRATION_USER" \
-             "$@"
+             "${@:-"logos"}"
 }
 
 logos() {

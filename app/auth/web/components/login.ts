@@ -1,9 +1,8 @@
-import {RootState, store} from "@logos/store/store";
+import {store} from "@logos/store/store";
 import {startAssertion} from "app/auth/web/store";
 import {css, html, LitElement} from 'lit';
 import {customElement, query, state} from "lit/decorators.js";
 import {choose} from "lit/directives/choose.js";
-import {connect} from "pwa-helpers";
 import "./register";
 
 enum Tab {
