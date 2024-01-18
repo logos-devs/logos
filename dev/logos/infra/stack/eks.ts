@@ -40,7 +40,7 @@ export function makeEksStack(
                    instanceType: new InstanceType('t3.medium'),
                    machineImageType: MachineImageType.BOTTLEROCKET,
                    updatePolicy: UpdatePolicy.rollingUpdate(),
-                   version: KubernetesVersion.V1_27,
+                   version: KubernetesVersion.V1_28,
                })
             );
 

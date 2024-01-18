@@ -28,7 +28,9 @@ def _grpc_web_client_impl(ctx):
         for f in outs
     ]
 
-    outdir = ctx.genfiles_dir.path + "/" + ctx.build_file_path[:-6]
+    #outdir = ctx.genfiles_dir.path + "/" + ctx.build_file_path[:-6]
+    outdir = ctx.bin_dir.path + "/" + ctx.build_file_path[:-6]
+    #outdir = ctx.bin_dir.path + "/" + ctx.label.name
 
     descriptors = [ctx.files.proto[0].path]
     if ctx.attr.deps:

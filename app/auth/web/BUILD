@@ -4,5 +4,7 @@ js_library(
     name = "web",
     srcs = glob(["**/*.ts"]),
     visibility = ["//dev/logos/stack/service/client/web:__pkg__"],
-    deps = ["//app/auth/web/client"],
+    deps = [
+        "//app/auth/proto:web",
+    ],
 )

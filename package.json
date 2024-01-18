@@ -8,7 +8,8 @@
   },
   "dependencies": {
     "@adobe/lit-mobx": "2.2.1",
-    "@aws-quickstart/eks-blueprints": "1.12.0",
+    "@aws-quickstart/eks-blueprints": "1.13.1",
+    "@bazel/ibazel": "0.24.0",
     "@github/webauthn-json": "2.0.1",
     "@grpc/grpc-js": "1.7.3",
     "@material/dialog": "=14.0.0-canary.53b3cad2f.0",
@@ -38,12 +39,13 @@
     "@types/node": "18.7.18",
     "@vaadin/router": "1.7.5",
     "@webcomponents/webcomponentsjs": "2.6.0",
-    "aws-cdk": "2.111.0",
-    "aws-cdk-lib": "2.111.0",
+    "aws-cdk": "2.121.1",
+    "aws-cdk-lib": "2.121.1",
     "aws-sdk": "2.1435.0",
     "bignumber.js": "9.1.0",
     "blocking-elements": "^0.1.0",
     "bn.js": "5.2.1",
+    "cdk-fck-nat": "1.0.93",
     "constructs": "10.3.0",
     "cytoscape": "3.23.0",
     "cytoscape-avsdf": "1.0.0",
@@ -99,8 +101,8 @@
   },
   "pnpm": {
     "overrides": {
-      "aws-cdk": "2.111.0",
-      "aws-cdk-lib": "2.111.0",
+      "aws-cdk": "2.121.1",
+      "aws-cdk-lib": "2.121.1",
       "constructs": "10.3.0"
     }
   }

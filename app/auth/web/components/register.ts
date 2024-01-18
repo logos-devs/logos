@@ -1,8 +1,8 @@
+import {Credential, StartRegistrationRequest} from "@app/auth/proto/auth_pb.js";
 import {store} from "@logos/store/store";
 import "@material/mwc-button";
 import "@material/mwc-textfield";
 import {TextField} from "@material/mwc-textfield";
-import {Credential, StartRegistrationRequest} from "../client/auth_pb";
 import {css, html, LitElement} from 'lit';
 import {customElement, query} from "lit/decorators.js";
 import {startRegistration} from "../store";

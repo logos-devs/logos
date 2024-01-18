@@ -1,5 +1,5 @@
-import {CognitoServicePromiseClient} from "@app/auth/web/client/cognito_grpc_web_pb.js";
-import {ProcessAuthCodeRequest, ProcessAuthCodeResponse} from "@app/auth/web/client/cognito_pb.js";
+import {CognitoServicePromiseClient} from "@app/auth/proto/cognito_grpc_web_pb.js";
+import {ProcessAuthCodeRequest, ProcessAuthCodeResponse} from "@app/auth/proto/cognito_pb.js";
 
 import "@material/web/progress/circular-progress";
 import {user} from "app/auth/web/state";

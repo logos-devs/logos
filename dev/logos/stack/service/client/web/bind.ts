@@ -1,5 +1,5 @@
-import {AuthServicePromiseClient} from "@app/auth/web/client/auth_grpc_web_pb.js";
-import {CognitoServicePromiseClient} from "@app/auth/web/client/cognito_grpc_web_pb.js";
+import {AuthServicePromiseClient} from "@app/auth/proto/auth_grpc_web_pb.js";
+import {CognitoServicePromiseClient} from "@app/auth/proto/cognito_grpc_web_pb.js";
 import {PhoneNumberStorageServicePromiseClient} from "@app/digits/storage/digits/phone_number_grpc_web_pb.js";
 import {VoiceServicePromiseClient} from "@app/digits/web/client/voice_grpc_web_pb.js";
 import {FileServicePromiseClient} from "@app/review/web/client/file_grpc_web_pb.js";

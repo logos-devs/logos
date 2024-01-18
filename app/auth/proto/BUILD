@@ -1,5 +1,6 @@
 load("@rules_proto//proto:defs.bzl", "proto_library")
 load("@rules_proto_grpc//java:defs.bzl", "java_proto_library")
+load("//bzl:grpc_web.bzl", "grpc_web_client")
 
 proto_library(
     name = "proto",
@@ -21,4 +22,11 @@ java_proto_library(
         # TODO make a way for app storage classes to register their enumerated types
         "//dev/logos/stack/storage:__subpackages__",
     ],
+)
+
+grpc_web_client(
+    name = "web",
+    proto = ":proto",
+    visibility = ["//app:__subpackages__"],
+    #deps = ["//app/summer/storage:schema_export"],
 )
