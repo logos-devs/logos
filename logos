@@ -2,7 +2,7 @@
 
 SELF="$0"
 WORKSPACE_DIR="$(dirname "$(realpath "$0")")"
-DB_MIGRATION_DIR="$WORKSPACE_DIR/dev/logos/stack/service/storage/migrations"
+DB_MIGRATION_DIR="$WORKSPACE_DIR/dev/logos/service/storage/migrations"
 
 AWS_REGION="${AWS_REGION:-"us-east-2"}"
 # TODO create a role with diminished permissions
@@ -135,14 +135,14 @@ dev_server() {
   #rds_tunnel_up
   server_tunnel_up
   # TODO switch to using telepresence intercept
-  ibazel run //dev/logos/stack/service/backend:Server
-  #bazelisk run //dev/logos/stack/service/backend:Server -- --debug
+  ibazel run //dev/logos/service/backend:Server
+  #bazelisk run //dev/logos/service/backend:Server -- --debug
 }
 
 dev_client() {
   dev_env
   #rds_tunnel_up
-  telepresence intercept client-deployment --port 8080 -- ibazel run --config=remote //dev/logos/stack/service/client/web:dev_server
+  telepresence intercept client-deployment --port 8080 -- ibazel run --config=remote //dev/logos/service/client/web:dev_server
 }
 
 server_tunnel_up() {
@@ -353,14 +353,14 @@ rds_clusteradmin_password() {
 
 deploy() {
     $BAZEL build --config=remote //dev/logos/infra:cdk_deploy
-    $BAZEL run --config=remote //dev/logos/stack/service/console
+    $BAZEL run --config=remote //dev/logos/service/console
 
     dev_env
 
     rds_tunnel_up
     rds_deploy
 
-    $BAZEL run --config=remote //dev/logos/stack/ingress/nginx
+    $BAZEL run --config=remote //dev/logos/ingress/nginx
     $BAZEL run --config=remote //app/summer/jobs/feeds
 }
 
