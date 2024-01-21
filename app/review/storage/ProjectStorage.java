@@ -1,13 +1,13 @@
 package review.storage;
 
 import app.review.proto.project.Project;
-import dev.logos.stack.service.storage.TableStorage;
+import dev.logos.service.storage.TableStorage;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
 
-import static dev.logos.stack.service.storage.pg.exporter.Review.project;
+import static dev.logos.service.storage.pg.exporter.Review.project;
 
 
 public class ProjectStorage extends TableStorage<Project, UUID> {

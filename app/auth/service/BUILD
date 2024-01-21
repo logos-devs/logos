@@ -10,14 +10,14 @@ java_library(
     srcs = glob(["**/*.java"]),
     visibility = [
         "//app/auth/module:__subpackages__",
-        "//dev/logos/stack:__subpackages__",
+        "//dev/logos/service:__subpackages__",
     ],
     deps = [
         ":auth_java_grpc",
         "//app/auth/module/data",
         "//app/auth/proto:java",
         "//app/auth/storage:auth_storage",
-        "//dev/logos/stack/service/storage:storage_library",
+        "//dev/logos/service/storage:storage_library",
         "@maven//:com_auth0_java_jwt",
         "@maven//:com_fasterxml_jackson_core_jackson_annotations",
         "@maven//:com_fasterxml_jackson_core_jackson_core",

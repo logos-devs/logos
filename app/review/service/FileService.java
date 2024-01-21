@@ -1,14 +1,14 @@
 package review.service;
 
-import static app.review.proto.file.FileServiceGrpc.FileServiceImplBase;
-
 import app.review.proto.file.File;
 import app.review.proto.file.GetFileRequest;
 import app.review.proto.file.ListFilesRequest;
 import app.review.proto.file.ListFilesResponse;
-import dev.logos.stack.service.storage.exceptions.EntityReadException;
+import dev.logos.service.storage.exceptions.EntityReadException;
 import io.grpc.stub.StreamObserver;
 import review.storage.FileStorage;
+
+import static app.review.proto.file.FileServiceGrpc.FileServiceImplBase;
 
 public class FileService extends FileServiceImplBase {
 

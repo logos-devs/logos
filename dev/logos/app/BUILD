@@ -6,8 +6,8 @@ java_library(
     ],
     visibility = ["//app:__subpackages__"],
     deps = [
-        "//dev/logos/stack/service/storage:storage_library",
-        "@maven//:com_google_inject_guice",
+        "//dev/logos/service/storage:storage_library",
         "@io_grpc_grpc_java//api",
+        "@maven//:com_google_inject_guice",
     ],
 )

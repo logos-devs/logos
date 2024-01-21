@@ -3,5 +3,21 @@
   <component name="JavaScriptLibraryMappings">
     <file url="file://$PROJECT_DIR$/.." libraries="{Node.js Core}" />
     <file url="file://$PROJECT_DIR$" libraries="{Node.js Core}" />
+    <excludedPredefinedLibrary name="logos/bazel-logos/external/aspect_rules_js~1.34.0~npm~npm__app-module-path__2.2.0/package/test/node_modules" />
+    <excludedPredefinedLibrary name="logos/bazel-logos/external/aspect_rules_js~1.34.0~npm~npm__aws-cdk-lib__2.122.0__constructs_10.3.0/package/node_modules" />
+    <excludedPredefinedLibrary name="logos/bazel-logos/external/aspect_rules_js~1.34.0~npm~npm__ganache__7.4.0/package/node_modules" />
+    <excludedPredefinedLibrary name="logos/bazel-logos/external/aspect_rules_js~1.34.0~npm~npm__ganache__7.9.0/package/node_modules" />
+    <excludedPredefinedLibrary name="logos/bazel-logos/external/aspect_rules_js~1.34.0~npm~npm__resolve__1.22.2/package/test/resolver/symlinked/_/node_modules" />
+    <excludedPredefinedLibrary name="logos/bazel-logos/external/aspect_rules_js~1.34.0~npm~npm__resolve__1.22.2/package/test/shadowed_core/node_modules" />
+    <excludedPredefinedLibrary name="logos/bazel-logos/external/aspect_rules_js~1.34.0~npm~npm__truffle__5.11.2/package/test/sources/monorepo/node_modules" />
+    <excludedPredefinedLibrary name="logos/bazel-logos/external/aspect_rules_js~1.34.0~npm~npm__truffle__5.11.2/package/test/sources/monorepo/truffleproject/node_modules" />
+    <excludedPredefinedLibrary name="logos/bazel-logos/external/aspect_rules_js~1.34.0~npm~npm__truffle__5.11.2/package/test/sources/preserve/mockProjectWithAbsolutePath/node_modules" />
+    <excludedPredefinedLibrary name="logos/bazel-logos/external/aspect_rules_js~1.34.0~npm~npm__truffle__5.11.2/package/test/sources/preserve/mockProjectWithWorkingPlugin/node_modules" />
+    <excludedPredefinedLibrary name="logos/bazel-logos/external/aspect_rules_js~1.34.0~npm~npm__truffle__5.11.2/package/test/sources/run/mockProjectWithAbsolutePath/node_modules" />
+    <excludedPredefinedLibrary name="logos/bazel-logos/external/aspect_rules_js~1.34.0~npm~npm__truffle__5.11.2/package/test/sources/run/mockProjectWithMissingPluginConfig/node_modules" />
+    <excludedPredefinedLibrary name="logos/bazel-logos/external/aspect_rules_js~1.34.0~npm~npm__truffle__5.11.2/package/test/sources/run/mockProjectWithPlugin/node_modules" />
+    <excludedPredefinedLibrary name="logos/bazel-logos/external/aspect_rules_js~1.34.0~npm~npm__truffle__5.11.2/package/test/sources/run/mockProjectWithWorkingPlugin/node_modules" />
+    <excludedPredefinedLibrary name="logos/bazel-logos/external/aspect_rules_js~1.34.0~npm~npm__yaml__2.3.4/package/browser/dist/node_modules" />
+    <excludedPredefinedLibrary name="logos/bazel-logos/external/rules_nodejs~5.8.2~node~nodejs_linux_amd64/bin/nodejs/lib/node_modules" />
   </component>
 </project>

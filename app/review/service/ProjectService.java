@@ -3,8 +3,8 @@ package review.service;
 import app.review.proto.project.ListProjectsRequest;
 import app.review.proto.project.ListProjectsResponse;
 import app.review.proto.project.Project;
-import dev.logos.stack.service.storage.exceptions.EntityReadException;
-import dev.logos.stack.service.storage.pg.Select;
+import dev.logos.service.storage.pg.Select;
+import dev.logos.service.storage.exceptions.EntityReadException;
 import io.grpc.stub.StreamObserver;
 import review.storage.ProjectStorage;
 
@@ -12,7 +12,7 @@ import javax.inject.Inject;
 import java.util.stream.Stream;
 
 import static app.review.proto.project.ProjectServiceGrpc.ProjectServiceImplBase;
-import static dev.logos.stack.service.storage.pg.exporter.Review.project;
+import static dev.logos.service.storage.pg.exporter.Review.project;
 
 public class ProjectService extends ProjectServiceImplBase {
 

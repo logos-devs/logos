@@ -1,4 +1,4 @@
-load("//dev/logos/stack/service/storage/pg/exporter:schema_export.bzl", "schema_export", "storage_java_proto_library")
+load("//dev/logos/service/storage/pg/exporter:schema_export.bzl", "schema_export", "storage_java_proto_library")
 
 schema_export(
     name = "schema_export",

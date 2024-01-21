@@ -5,7 +5,7 @@ java_library(
         "//dev/logos/infra:cognito_hosts",
         "//dev/logos/infra:cognito_server_config",
     ],
-    visibility = ["//dev/logos/stack:__subpackages__"],
+    visibility = ["//dev/logos/service:__subpackages__"],
     deps = [
         "//app/auth/module/data",
         "//app/auth/service",

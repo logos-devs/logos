@@ -15,7 +15,7 @@ import "@material/web/icon/icon";
 import "@material/web/list/list";
 import "@material/web/list/list-item";
 import {user} from "app/auth/web/state";
-import {lazyInject, TYPE} from "dev/logos/stack/service/client/web/bind";
+import {lazyInject, TYPE} from "dev/logos/service/client/web/bind";
 import {css, html, LitElement} from 'lit';
 import {customElement, query, state} from "lit/decorators.js";
 import {when} from "lit/directives/when.js";

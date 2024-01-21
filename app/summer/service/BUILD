@@ -7,13 +7,13 @@ java_library(
     ],
     visibility = [
         "//app/summer/module:__subpackages__",
-        "//dev/logos/stack:__subpackages__",
+        "//dev/logos/service:__subpackages__",
     ],
     deps = [
         "//app/summer/proto",
         "//app/summer/storage",
-        "//dev/logos/stack/service/storage:storage_library",
-        "//dev/logos/stack/service/storage/pg",
+        "//dev/logos/service/storage:storage_library",
+        "//dev/logos/service/storage/pg",
         "@com_google_protobuf//:protobuf_java",
         "@io_grpc_grpc_java//api",
         "@io_grpc_grpc_java//stub",

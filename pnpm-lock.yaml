@@ -5,8 +5,8 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
-  aws-cdk: 2.121.1
-  aws-cdk-lib: 2.121.1
+  aws-cdk: 2.122.0
+  aws-cdk-lib: 2.122.0
   constructs: 10.3.0
 
 dependencies:
@@ -107,11 +107,11 @@ dependencies:
     specifier: 2.6.0
     version: 2.6.0
   aws-cdk:
-    specifier: 2.121.1
-    version: 2.121.1
+    specifier: 2.122.0
+    version: 2.122.0
   aws-cdk-lib:
-    specifier: 2.121.1
-    version: 2.121.1(constructs@10.3.0)
+    specifier: 2.122.0
+    version: 2.122.0(constructs@10.3.0)
   aws-sdk:
     specifier: 2.1435.0
     version: 2.1435.0
@@ -126,7 +126,7 @@ dependencies:
     version: 5.2.1
   cdk-fck-nat:
     specifier: 1.0.93
-    version: 1.0.93(aws-cdk-lib@2.121.1)(constructs@10.3.0)
+    version: 1.0.93(aws-cdk-lib@2.122.0)(constructs@10.3.0)
   constructs:
     specifier: 10.3.0
     version: 10.3.0
@@ -466,69 +466,69 @@ packages:
     resolution: {integrity: sha512-DDt4SLdLOwWCjGtltH4VCST7hpOI5DzieuhGZsBpZ+AgJdSI2GCjklCXm0GCTwJG/SolkL5dtQXyUKgg9luBDg==}
     dev: false
 
-  /@aws-cdk/lambda-layer-kubectl-v23@2.0.8(aws-cdk-lib@2.121.1)(constructs@10.3.0):
+  /@aws-cdk/lambda-layer-kubectl-v23@2.0.8(aws-cdk-lib@2.122.0)(constructs@10.3.0):
     resolution: {integrity: sha512-egSftvjCVB9JHxNAtGLs8g1vMS2JYd+2NX51K9EqrjF2ew9FcsQFy9KGJVGpfMuyIe2GQBY6hX+VeeFw5R2JDQ==}
     requiresBuild: true
     peerDependencies:
       aws-cdk-lib: ^2.28.0
       constructs: ^10.0.5
     dependencies:
-      aws-cdk-lib: 2.121.1(constructs@10.3.0)
+      aws-cdk-lib: 2.122.0(constructs@10.3.0)
       constructs: 10.3.0
     dev: false
     optional: true
 
-  /@aws-cdk/lambda-layer-kubectl-v24@2.0.242(aws-cdk-lib@2.121.1)(constructs@10.3.0):
+  /@aws-cdk/lambda-layer-kubectl-v24@2.0.242(aws-cdk-lib@2.122.0)(constructs@10.3.0):
     resolution: {integrity: sha512-7/wIOo685tmrEe4hh6zqDELhBZh5OQGf3Hd2FU2Vnwy2ZubW8qTmEw5gqJCsCrGKeYDoa1BcVhDRZ/nzjkaqyA==}
     requiresBuild: true
     peerDependencies:
       aws-cdk-lib: ^2.28.0
       constructs: ^10.0.5
     dependencies:
-      aws-cdk-lib: 2.121.1(constructs@10.3.0)
+      aws-cdk-lib: 2.122.0(constructs@10.3.0)
       constructs: 10.3.0
     dev: false
     optional: true
 
-  /@aws-cdk/lambda-layer-kubectl-v25@2.0.4(aws-cdk-lib@2.121.1)(constructs@10.3.0):
+  /@aws-cdk/lambda-layer-kubectl-v25@2.0.4(aws-cdk-lib@2.122.0)(constructs@10.3.0):
     resolution: {integrity: sha512-q7pI3B+djl0L5QPMcQzBWnif9/3yCCVmW8xJhgk5G9ydD59ioZRHw/g5mrcRVYvq8m5KETqnLkSR520w8WJwVg==}
     requiresBuild: true
     peerDependencies:
       aws-cdk-lib: ^2.28.0
       constructs: ^10.0.5
     dependencies:
-      aws-cdk-lib: 2.121.1(constructs@10.3.0)
+      aws-cdk-lib: 2.122.0(constructs@10.3.0)
       constructs: 10.3.0
     dev: false
     optional: true
 
-  /@aws-cdk/lambda-layer-kubectl-v26@2.0.1(aws-cdk-lib@2.121.1)(constructs@10.3.0):
+  /@aws-cdk/lambda-layer-kubectl-v26@2.0.1(aws-cdk-lib@2.122.0)(constructs@10.3.0):
     resolution: {integrity: sha512-xnrCzYgIKEL+Ad1QqTpN4Wsly8mVVvVGsgu1+xKcOCS6IL3Rz1AMUUtpJoEjVjq/UdJl2oJ/KmD3am+hV86scQ==}
     peerDependencies:
       aws-cdk-lib: ^2.28.0
       constructs: ^10.0.5
     dependencies:
-      aws-cdk-lib: 2.121.1(constructs@10.3.0)
+      aws-cdk-lib: 2.122.0(constructs@10.3.0)
       constructs: 10.3.0
     dev: false
 
-  /@aws-cdk/lambda-layer-kubectl-v27@2.0.0(aws-cdk-lib@2.121.1)(constructs@10.3.0):
+  /@aws-cdk/lambda-layer-kubectl-v27@2.0.0(aws-cdk-lib@2.122.0)(constructs@10.3.0):
     resolution: {integrity: sha512-BBh4ScPHaD82e7Z3PYXqyLjqfk/3/PRDTJW3x2j4l5f6sHXU041TaXKcFAGBHb1m4aq2UK+fwkIq95mgs3c0dg==}
     peerDependencies:
       aws-cdk-lib: ^2.28.0
       constructs: ^10.0.5
     dependencies:
-      aws-cdk-lib: 2.121.1(constructs@10.3.0)
+      aws-cdk-lib: 2.122.0(constructs@10.3.0)
       constructs: 10.3.0
     dev: false
 
-  /@aws-cdk/lambda-layer-kubectl-v28@2.1.0(aws-cdk-lib@2.121.1)(constructs@10.3.0):
+  /@aws-cdk/lambda-layer-kubectl-v28@2.1.0(aws-cdk-lib@2.122.0)(constructs@10.3.0):
     resolution: {integrity: sha512-u806k9M9W1JQJ3e/kO4vQLn2PiKHO+ks2/fPlOchohS/HPcpNylL9hcRWYO8GO+rKMiwEW2EcqDci+6KEYrufQ==}
     peerDependencies:
       aws-cdk-lib: ^2.28.0
       constructs: ^10.0.5
     dependencies:
-      aws-cdk-lib: 2.121.1(constructs@10.3.0)
+      aws-cdk-lib: 2.122.0(constructs@10.3.0)
       constructs: 10.3.0
     dev: false
 
@@ -584,16 +584,16 @@ packages:
   /@aws-quickstart/eks-blueprints@1.13.1:
     resolution: {integrity: sha512-IlW9dAGCCJbroSfFrauqpj3hOWmN/8ia+Wu1bcBd7nOeBawW02bntBAl4VvwIcsgeMvtbIcqakhu+SJI/DiS1g==}
     dependencies:
-      '@aws-cdk/lambda-layer-kubectl-v26': 2.0.1(aws-cdk-lib@2.121.1)(constructs@10.3.0)
-      '@aws-cdk/lambda-layer-kubectl-v27': 2.0.0(aws-cdk-lib@2.121.1)(constructs@10.3.0)
-      '@aws-cdk/lambda-layer-kubectl-v28': 2.1.0(aws-cdk-lib@2.121.1)(constructs@10.3.0)
+      '@aws-cdk/lambda-layer-kubectl-v26': 2.0.1(aws-cdk-lib@2.122.0)(constructs@10.3.0)
+      '@aws-cdk/lambda-layer-kubectl-v27': 2.0.0(aws-cdk-lib@2.122.0)(constructs@10.3.0)
+      '@aws-cdk/lambda-layer-kubectl-v28': 2.1.0(aws-cdk-lib@2.122.0)(constructs@10.3.0)
       '@aws-sdk/client-eks': 3.490.0
       '@aws-sdk/client-secrets-manager': 3.491.0
       '@types/assert': 1.5.10
       '@types/bcrypt': 5.0.2
       '@types/lodash.clonedeep': 4.5.9
       '@types/uuid': 9.0.7
-      aws-cdk-lib: 2.121.1(constructs@10.3.0)
+      aws-cdk-lib: 2.122.0(constructs@10.3.0)
       bcrypt: 5.1.1
       constructs: 10.3.0
       dot-object: 2.1.4
@@ -610,9 +610,9 @@ packages:
       yaml: 2.3.4
       zod: 3.22.4
     optionalDependencies:
-      '@aws-cdk/lambda-layer-kubectl-v23': 2.0.8(aws-cdk-lib@2.121.1)(constructs@10.3.0)
-      '@aws-cdk/lambda-layer-kubectl-v24': 2.0.242(aws-cdk-lib@2.121.1)(constructs@10.3.0)
-      '@aws-cdk/lambda-layer-kubectl-v25': 2.0.4(aws-cdk-lib@2.121.1)(constructs@10.3.0)
+      '@aws-cdk/lambda-layer-kubectl-v23': 2.0.8(aws-cdk-lib@2.122.0)(constructs@10.3.0)
+      '@aws-cdk/lambda-layer-kubectl-v24': 2.0.242(aws-cdk-lib@2.122.0)(constructs@10.3.0)
+      '@aws-cdk/lambda-layer-kubectl-v25': 2.0.4(aws-cdk-lib@2.122.0)(constructs@10.3.0)
     transitivePeerDependencies:
       - aws-crt
       - encoding
@@ -5259,8 +5259,8 @@ packages:
       layout-base: 1.0.2
     dev: false
 
-  /aws-cdk-lib@2.121.1(constructs@10.3.0):
-    resolution: {integrity: sha512-wrOHDDQqVuH2tRTH7p2LaMPVI3V2bqr8X//Qrhy+hOFA04u2MVetQYev+NgMXPjNzU9IGX2wy1Fs9Y/ntq2sQA==}
+  /aws-cdk-lib@2.122.0(constructs@10.3.0):
+    resolution: {integrity: sha512-NBUfYk/SialvKFsvBG/Ucd7lM+BID3Uy3EEOnIBbioDpnMotm5SDaU/RUm4APS4sxzQZX1DjduD5ZUFNHnEWhQ==}
     engines: {node: '>= 14.15.0'}
     peerDependencies:
       constructs: ^10.0.0
@@ -5282,8 +5282,8 @@ packages:
       - table
       - yaml
 
-  /aws-cdk@2.121.1:
-    resolution: {integrity: sha512-T8UFuNGDnXNmcHagCGeQ8xQA3zU/o2ENuyGXO/ho+U3KyYs7tnWIr++ovrp2FvhiBpmBv6SuKiueBA6OW7utBw==}
+  /aws-cdk@2.122.0:
+    resolution: {integrity: sha512-WqiVTedcuW4LjH4WqtQncliUdeDa9j9xgu3II8Qd1HmCZotbzBorYIHDvOJ+m3ovIzd9DL+hNq9PPUqxtBe0VQ==}
     engines: {node: '>= 14.15.0'}
     hasBin: true
     optionalDependencies:
@@ -5709,13 +5709,13 @@ packages:
       nofilter: 1.0.4
     dev: false
 
-  /cdk-fck-nat@1.0.93(aws-cdk-lib@2.121.1)(constructs@10.3.0):
+  /cdk-fck-nat@1.0.93(aws-cdk-lib@2.122.0)(constructs@10.3.0):
     resolution: {integrity: sha512-eC2mqvJgFdAm0Zs/HqYIGKuHvTbo9W6C6vv9iZfr9wgJgk5JBGkxUuypYMyIlEEQ33lLQGY4yPPX0uYAghAhDg==}
     peerDependencies:
       aws-cdk-lib: ^2.33.0
       constructs: ^10.0.5
     dependencies:
-      aws-cdk-lib: 2.121.1(constructs@10.3.0)
+      aws-cdk-lib: 2.122.0(constructs@10.3.0)
       constructs: 10.3.0
     dev: false
 

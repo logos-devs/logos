@@ -2,10 +2,10 @@ package app.digits.service;
 
 import app.digits.storage.digits.ListPhoneNumberRequest;
 import app.digits.storage.digits.PhoneNumberStorageServiceBase;
-import dev.logos.stack.service.storage.pg.Select;
+import dev.logos.service.storage.pg.Select;
 
 import static app.digits.storage.Digits.phoneNumber;
-import static dev.logos.stack.service.storage.pg.Select.select;
+import static dev.logos.service.storage.pg.Select.select;
 
 public class PhoneNumberStorageService extends PhoneNumberStorageServiceBase {
     @Override

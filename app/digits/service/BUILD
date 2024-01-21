@@ -13,7 +13,7 @@ java_library(
     ],
     visibility = [
         "//app/digits/module:__pkg__",
-        "//dev/logos/stack:__subpackages__",
+        "//dev/logos/service:__subpackages__",
     ],
     deps = [
         ":voice_java_grpc",
@@ -21,9 +21,9 @@ java_library(
         "//app/digits/storage:phone_number_storage",
         "//app/digits/storage:storage_proto",
         "//dev/logos/client/twilio",
-        "//dev/logos/stack/service/storage:storage_library",
-        "//dev/logos/stack/service/storage/pg",
-        "//dev/logos/stack/service/storage/pg/exporter:schema_export_library",
+        "//dev/logos/service/storage:storage_library",
+        "//dev/logos/service/storage/pg",
+        "//dev/logos/service/storage/pg/exporter:schema_export_library",
         "@maven//:com_google_inject_guice",
         "@maven//:com_twilio_sdk_twilio",
         "@maven//:javax_inject_javax_inject",

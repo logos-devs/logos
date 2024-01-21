@@ -21,14 +21,14 @@
         "./bazel-out/k8-dbg/bin/app/*"
       ],
       "@logos/*": [
-        "./dev/logos/stack/service/client/web/*",
-        "./bazel-out/k8-fastbuild/bin/dev/logos/stack/service/client/web/*",
-        "./bazel-out/k8-dbg/bin/dev/logos/stack/service/client/web/*"
+        "./dev/logos/service/client/web/*",
+        "./bazel-out/k8-fastbuild/bin/dev/logos/service/client/web/*",
+        "./bazel-out/k8-dbg/bin/dev/logos/service/client/web/*"
       ],
       "@infra/*": [
         "./dev/logos/infra/*",
         "./bazel-out/k8-fastbuild/bin/dev/logos/infra/*",
-        "./bazel-out/k8-dbg/bin/dev/logos/infra/*",
+        "./bazel-out/k8-dbg/bin/dev/logos/infra/*"
       ]
     },
     "sourceMap": true,
@@ -59,11 +59,11 @@
     "./dev/logos/infra/**/*.json",
     "./dev/logos/infra/**/*.ts",
     "./bazel-out/k8-fastbuild/bin/dev/logos/infra/cognito_login_urls.json",
-    "./dev/logos/stack/service/client/web/**/*.js",
-    "./dev/logos/stack/service/client/web/**/*.json",
-    "./dev/logos/stack/service/client/web/**/*.ts",
-    "./dev/logos/stack/service/storage/**/*.js",
-    "./dev/logos/stack/service/storage/**/*.json",
-    "./dev/logos/stack/service/storage/**/*.ts",
+    "./dev/logos/service/client/web/**/*.js",
+    "./dev/logos/service/client/web/**/*.json",
+    "./dev/logos/service/client/web/**/*.ts",
+    "./dev/logos/storage/**/*.js",
+    "./dev/logos/storage/**/*.json",
+    "./dev/logos/storage/**/*.ts"
   ]
 }

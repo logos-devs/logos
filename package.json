@@ -39,8 +39,8 @@
     "@types/node": "18.7.18",
     "@vaadin/router": "1.7.5",
     "@webcomponents/webcomponentsjs": "2.6.0",
-    "aws-cdk": "2.121.1",
-    "aws-cdk-lib": "2.121.1",
+    "aws-cdk": "2.122.0",
+    "aws-cdk-lib": "2.122.0",
     "aws-sdk": "2.1435.0",
     "bignumber.js": "9.1.0",
     "blocking-elements": "^0.1.0",
@@ -101,8 +101,8 @@
   },
   "pnpm": {
     "overrides": {
-      "aws-cdk": "2.121.1",
-      "aws-cdk-lib": "2.121.1",
+      "aws-cdk": "2.122.0",
+      "aws-cdk-lib": "2.122.0",
       "constructs": "10.3.0"
     }
   }

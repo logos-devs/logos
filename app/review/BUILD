@@ -59,7 +59,7 @@ java_grpc_library(
 java_library(
     name = "review_service",
     srcs = glob(["**/*.java"]),
-    visibility = ["//dev/logos/stack:__subpackages__"],
+    visibility = ["//dev/logos/service:__subpackages__"],
     deps = [
         ":annotation_java_grpc",
         ":annotation_java_library",
@@ -69,9 +69,9 @@ java_library(
         ":project_java_library",
         "//app/review/grammar:aipname_parser_java",
         "//app/review/grammar:java9_parser_java",
-        "//dev/logos/stack/service/storage:storage_library",
-        "//dev/logos/stack/service/storage/pg",
-        "//dev/logos/stack/service/storage/pg/exporter:schema_export_library",
+        "//dev/logos/service/storage:storage_library",
+        "//dev/logos/service/storage/pg",
+        "//dev/logos/service/storage/pg/exporter:schema_export_library",
         "@maven//:com_google_inject_guice",
         "@maven//:javax_inject_javax_inject",
         "@maven//:org_antlr_antlr4_runtime",

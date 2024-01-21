@@ -5,9 +5,9 @@ js_library(
     srcs = glob(["**/*.ts"]) + [
         "//app/digits/storage:schema_export",
     ],
-    visibility = ["//dev/logos/stack/service/client/web:__pkg__"],
+    visibility = ["//dev/logos/service/client/web:__pkg__"],
     deps = [
         "//app/digits/web/client:voice_grpc_web_client",
-        "//dev/logos/stack/service/storage/pg/exporter:export",
+        "//dev/logos/service/storage/pg/exporter:export",
     ],
 )

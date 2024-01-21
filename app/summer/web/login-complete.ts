@@ -3,7 +3,7 @@ import {ProcessAuthCodeRequest, ProcessAuthCodeResponse} from "@app/auth/proto/c
 
 import "@material/web/progress/circular-progress";
 import {user} from "app/auth/web/state";
-import {lazyInject} from "dev/logos/stack/service/client/web/bind";
+import {lazyInject} from "dev/logos/service/client/web/bind";
 import {css, html, LitElement} from 'lit';
 import {customElement} from "lit/decorators.js";
 

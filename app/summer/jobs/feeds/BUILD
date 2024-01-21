@@ -52,6 +52,6 @@ kubectl(
     manifests = [
         "manifests/cronjob.yaml",
     ],
-    visibility = ["//dev/logos/stack:__subpackages__"],
-    deps = ["//dev/logos/stack/service/database:db_rw_service"],
+    visibility = ["//dev/logos/service:__subpackages__"],
+    deps = ["//dev/logos/service/database:db_rw_service"],
 )

@@ -1,7 +1,7 @@
 package app.digits.storage;
 
 import app.digits.storage.digits.PhoneNumber;
-import dev.logos.stack.service.storage.TableStorage;
+import dev.logos.service.storage.TableStorage;
 
 import java.util.UUID;
 

@@ -5,10 +5,10 @@ js_library(
     srcs = glob(["**/*.ts"]) + [
         "//app/summer/storage:schema_export",
     ],
-    visibility = ["//dev/logos/stack/service/client/web:__pkg__"],
+    visibility = ["//dev/logos/service/client/web:__pkg__"],
     deps = [
         "//app/auth/proto:web",
         "//app/summer/proto:grpc_web",
-        "//dev/logos/stack/service/storage/pg/exporter:export",
+        "//dev/logos/service/storage/pg/exporter:export",
     ],
 )

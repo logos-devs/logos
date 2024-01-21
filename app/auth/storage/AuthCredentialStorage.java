@@ -7,15 +7,15 @@ import com.yubico.webauthn.CredentialRepository;
 import com.yubico.webauthn.RegisteredCredential;
 import com.yubico.webauthn.data.ByteArray;
 import com.yubico.webauthn.data.PublicKeyCredentialDescriptor;
-import dev.logos.stack.service.storage.TableStorage;
-import dev.logos.stack.service.storage.pg.exporter.Auth;
+import dev.logos.service.storage.pg.exporter.Auth;
+import dev.logos.service.storage.TableStorage;
 
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static dev.logos.stack.service.storage.pg.exporter.auth.QCredential.credential;
+import static dev.logos.service.storage.pg.exporter.auth.QCredential.credential;
 import static java.util.Objects.requireNonNull;
 
 public class AuthCredentialStorage extends TableStorage<Credential, UUID> implements CredentialRepository {

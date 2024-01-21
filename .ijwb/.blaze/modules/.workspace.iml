@@ -10,7 +10,6 @@
     <content url="file://$MODULE_DIR$/../../..">
       <sourceFolder url="file://$MODULE_DIR$/../../.." isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/../../../app/review" isTestSource="false" packagePrefix="review" />
-      <sourceFolder url="file://$MODULE_DIR$/../../../dev/logos/stack/service/storage/pg/exporter" isTestSource="false" packagePrefix="dev.logos.stack.service.storage.exporter" />
       <excludeFolder url="file://$MODULE_DIR$/../.." />
       <excludeFolder url="file://$MODULE_DIR$/../../../bazel-bin" />
       <excludeFolder url="file://$MODULE_DIR$/../../../bazel-genfiles" />
@@ -22,6 +21,10 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="libpg-hjar_94e2531f" level="project" />
+    <orderEntry type="library" name="libjob-hjar_661f2131" level="project" />
+    <orderEntry type="library" name="libstorage_library-hjar_c1884de7" level="project" />
+    <orderEntry type="library" name="libschema_export_library-hjar_f3b32451" level="project" />
     <orderEntry type="library" name="libapi-hjar_ac7a3afb" level="project" />
     <orderEntry type="library" name="header_apache-client-2.20.102_1f09a440" level="project" />
     <orderEntry type="library" name="header_jjwt-impl-0.11.2_6ba94ecd" level="project" />
@@ -72,6 +75,7 @@
     <orderEntry type="library" name="header_sso-2.20.102_bc26f7fb" level="project" />
     <orderEntry type="library" name="header_j2objc-annotations-1.3_33057498" level="project" />
     <orderEntry type="library" name="header_aws-core-2.20.102_8f974a23" level="project" />
+    <orderEntry type="library" name="libjavax_annotation_e2d563ed" level="project" />
     <orderEntry type="library" name="header_jsr305-3.0.2_80c518c3" level="project" />
     <orderEntry type="library" name="header_netty-transport-4.1.94.Final_da45e58e" level="project" />
     <orderEntry type="library" name="header_s3-2.20.102_9fef5292" level="project" />
@@ -105,6 +109,7 @@
     <orderEntry type="library" name="header_rds-2.20.102_cc349dc9" level="project" />
     <orderEntry type="library" name="header_javapoet-1.13.0_704fc0ca" level="project" />
     <orderEntry type="library" name="libjava9_parser_java-hjar_b44fc57" level="project" />
+    <orderEntry type="library" name="libcore_maven_e2ce0ade" level="project" />
     <orderEntry type="library" name="header_failureaccess-1.0.1_a6d3158f" level="project" />
     <orderEntry type="library" name="header_netty-transport-native-unix-common-4.1.94.Final_a24fc0bd" level="project" />
     <orderEntry type="library" name="header_junit-platform-commons-1.9.3_56bf7ffc" level="project" />
