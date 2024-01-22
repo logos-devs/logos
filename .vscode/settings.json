@@ -43,4 +43,5 @@
     "java.configuration.updateBuildConfiguration": "automatic",
     "typescript.tsdk": "node_modules/typescript/lib",
     "java.project.explorer.showNonJavaResources": true,
+    "bazel.projectview.open": false,
 }

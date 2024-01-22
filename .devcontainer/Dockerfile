@@ -16,12 +16,11 @@ RUN apt-get install -y \
     sqitch \
     libdbd-pg-perl
 
-# TODO pull down bazelisk instead
-RUN wget https://github.com/bazelbuild/bazel/releases/download/6.3.2/bazel-6.3.2-installer-linux-x86_64.sh && \
-    sha256sum -c <(echo "f117506267ed148d5f4f9844bcf187c4f111dad7ff4f1a9eb1f4e45331f3f9f0  bazel-6.3.2-installer-linux-x86_64.sh") && \
-    chmod +x bazel-6.3.2-installer-linux-x86_64.sh && \
-    ./bazel-6.3.2-installer-linux-x86_64.sh && \
-    rm bazel-6.3.2-installer-linux-x86_64.sh && \
+RUN wget https://github.com/bazelbuild/bazel/releases/download/7.0.1/bazel-7.0.1-installer-linux-x86_64.sh && \
+    sha256sum -c <(echo "7abc509b7dfad887abb0edc9f9d529426d26768c7cce56d09252e2b0482b4135  bazel-7.0.1-installer-linux-x86_64.sh") && \
+    chmod +x bazel-7.0.1-installer-linux-x86_64.sh && \
+    ./bazel-7.0.1-installer-linux-x86_64.sh && \
+    rm bazel-7.0.1-installer-linux-x86_64.sh && \
     echo "source /usr/local/lib/bazel/bin/bazel-complete.bash" >> ~/.bashrc
 
 RUN wget https://github.com/bazelbuild/buildtools/releases/download/v6.3.2/buildifier-linux-amd64 && \
@@ -44,11 +43,11 @@ RUN wget https://app.getambassador.io/download/tel2oss/releases/download/v2.14.4
     mv telepresence-linux-amd64 /usr/local/bin/telepresence && \
     chmod +x /usr/local/bin/telepresence
 
-RUN wget https://github.com/chainguard-dev/apko/releases/download/v0.11.3/apko_0.11.3_linux_amd64.tar.gz \
-    sha256sum -c <(echo "b6396271cf4eefaf6727083bc1e7c231a765715bb7b49f95b15b5611d6fed96e  apko_0.11.3_linux_amd64.tar.gz") \
-    tar xzf apko_0.11.3_linux_amd64.tar.gz \
-    mv apko_0.11.3_linux_amd64/apko /usr/loca/bin/ \
-    rm -rf apko_0.11.3_linux_amd64
+RUN wget https://github.com/chainguard-dev/apko/releases/download/v0.13.2/apko_0.13.2_linux_amd64.tar.gz && \
+    sha256sum -c <(echo "95e3f21e01538de4438d67d3c3c841bdcc24fa2eb7b4b1c95265c6d7bfd4dc9d  apko_0.13.2_linux_amd64.tar.gz") && \
+    tar xzf apko_0.13.2_linux_amd64.tar.gz && \
+    mv apko_0.13.2_linux_amd64/apko /usr/local/bin/ && \
+    rm -rf apko_0.13.2_linux_amd64
 
 RUN curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add
 RUN apt-add-repository -y "deb http://apt.kubernetes.io/ kubernetes-xenial main"

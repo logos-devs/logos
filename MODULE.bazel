@@ -166,14 +166,14 @@ use_repo(oci, "distroless_python_image")
 # rules_apko
 bazel_dep(
     name = "rules_apko",
-    version = "1.0.0",
+    version = "1.2.1",
 )
 
 apk = use_extension("@rules_apko//apko:extensions.bzl", "apko")
 
 apk.translate_lock(
     name = "base_cronjob_image",
-    lock = "//vendor/apko:base_cronjob.resolved.json",
+    lock = "//vendor/apko:base_cronjob.lock.json",
 )
 
 use_repo(apk, "base_cronjob_image")
