@@ -123,7 +123,7 @@ javadoc_library(
 
 java_binary(
     name = "Server",
-    main_class = "dev.logos.service.service.backend.server.Server",
+    main_class = "dev.logos.service.backend.server.Server",
     visibility = ["//visibility:public"],
     runtime_deps = [":server_library"],
 )
