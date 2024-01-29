@@ -1,13 +1,14 @@
-package dev.logos.stack.backend.server;
+package dev.logos.service.backend.server;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
-import dev.logos.job.job.Job;
-import dev.logos.job.job.JobState;
-import dev.logos.module.module.DatabaseModule;
-import io.grpc.*;
+import dev.logos.job.Job;
+import dev.logos.job.JobState;
+import dev.logos.module.DatabaseModule;
+import io.grpc.BindableService;
+import io.grpc.ServerBuilder;
 import io.grpc.inprocess.InProcessServerBuilder;
 import org.reflections.Reflections;
 import org.reflections.scanners.Scanners;
@@ -22,15 +23,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
-
-class GlobalServerInterceptor implements ServerInterceptor {
-    @Override
-    public <ReqT, RespT> ServerCall.Listener<ReqT> interceptCall(
-            ServerCall<ReqT, RespT> call, Metadata headers, ServerCallHandler<ReqT, RespT> next) {
-
-        return next.startCall(call, headers);
-    }
-}
 
 public class Server implements Job {
 
@@ -48,8 +40,8 @@ public class Server implements Job {
         ServerBuilder<?> innerServerBuilder = InProcessServerBuilder.forName("logos-in-process");
         ServerBuilder<?> outerServerBuilder = ServerBuilder.forPort(DEFAULT_PORT);
 
-        innerServerBuilder.intercept(new GlobalServerInterceptor());
-        outerServerBuilder.intercept(new GlobalServerInterceptor());
+        innerServerBuilder.intercept(new CookieServerInterceptor());
+        outerServerBuilder.intercept(new CookieServerInterceptor());
 
         for (BindableService service : services) {
             innerServerBuilder.addService(service);

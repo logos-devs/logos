@@ -1,4 +1,4 @@
-package dev.logos.stack.backend.server;
+package dev.logos.service.backend.server;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;

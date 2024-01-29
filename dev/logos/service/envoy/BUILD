@@ -10,11 +10,12 @@ pkg_tar(
 
 oci_image(
     name = "image",
-    base = "@envoy_distroless_container",
+    base = "@envoy_image_old",
     entrypoint = [
-        "envoy",
-        "--config-path",
-        "/config.yaml",
+        # TODO hack! remove when we can build our own envoy in bazel
+        "/bin/bash",
+        "-c",
+        "apt-get update && apt-get install -y lua-cjson && envoy --config-path /config.yaml",
     ],
     tars = [":image_files"],
 )

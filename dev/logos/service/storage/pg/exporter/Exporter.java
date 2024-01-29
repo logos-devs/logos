@@ -9,7 +9,7 @@ import com.google.protobuf.DescriptorProtos.FileDescriptorSet;
 import com.querydsl.sql.codegen.MetaDataExporter;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
-import dev.logos.module.module.DatabaseModule;
+import dev.logos.module.DatabaseModule;
 
 import javax.sql.DataSource;
 import java.io.File;

@@ -119,13 +119,12 @@ public class CognitoService extends CognitoServiceGrpc.CognitoServiceImplBase {
 
         Tokens tokens = new Gson().fromJson(json, Tokens.class);
 
-        responseObserver.onNext(
-                ProcessAuthCodeResponse
-                        .newBuilder()
-                        .setAccessToken(tokens.access_token)
-                        .setIdToken(tokens.id_token)
-                        .setRefreshToken(tokens.refresh_token)
-                        .setExpiresIn(tokens.expires_in)
-                        .build());
+        responseObserver.onNext(ProcessAuthCodeResponse.newBuilder()
+                                                       .setAccessToken(tokens.access_token)
+                                                       .setRefreshToken(tokens.refresh_token)
+                                                       .setIdToken(tokens.id_token)
+                                                       .setExpiresIn(tokens.expires_in)
+                                                       .build());
+        responseObserver.onCompleted();
     }
 }

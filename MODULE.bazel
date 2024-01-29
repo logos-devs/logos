@@ -107,13 +107,14 @@ oci.pull(
 use_repo(oci, "alpine_image")
 
 oci.pull(
-    name = "envoy_distroless_container",
-    digest = "sha256:5d5619b0d3d4311bfef48783c04df1e5aed71615710b876b951bd70c1e1e18ee",
-    image = "docker.io/envoyproxy/envoy-distroless",
-    # tag = "v1.21-latest",
+    name = "envoy_image_old",
+    #digest = "sha256:5d5619b0d3d4311bfef48783c04df1e5aed71615710b876b951bd70c1e1e18ee",
+    image = "docker.io/envoyproxy/envoy",
+    tag = "tools-v1.29-latest",
+    platforms = ["linux/amd64"]
 )
 
-use_repo(oci, "envoy_distroless_container")
+use_repo(oci, "envoy_image_old")
 
 oci.pull(
     name = "distroless_java_container",
@@ -171,9 +172,18 @@ bazel_dep(
 
 apk = use_extension("@rules_apko//apko:extensions.bzl", "apko")
 
+# cronjob image
 apk.translate_lock(
     name = "base_cronjob_image",
     lock = "//vendor/apko:base_cronjob.lock.json",
 )
 
 use_repo(apk, "base_cronjob_image")
+
+# envoy image
+apk.translate_lock(
+    name = "envoy_image",
+    lock = "//vendor/apko:envoy.lock.json",
+)
+
+use_repo(apk, "envoy_image")

@@ -5,19 +5,29 @@ load("@aspect_bazel_lib//lib:tar.bzl", "tar")
 load("//bzl:gitops.bzl", "REGISTRY")
 load("//bzl:k8s.bzl", "kubectl")
 
-filegroup(
-    name = "server_srcs",
-    srcs = glob([
-        "**/*.java",
-    ]),
+java_library(
+    name = "cookie_server_interceptor_library",
+    srcs = [
+        "server/CookieServerInterceptor.java",
+    ],
+    visibility = ["//app:__subpackages__"],
+    deps = [
+        "@io_grpc_grpc_java//api",
+        "@io_grpc_grpc_java//context",
+        "@maven//:com_google_code_gson_gson",
+    ],
 )
 
 java_library(
     name = "server_library",
-    srcs = [":server_srcs"],
+    srcs = [
+        "server/Server.java",
+        "server/ServerModule.java",
+    ],
     resources = [],
     visibility = ["//visibility:public"],
     deps = [
+        ":cookie_server_interceptor_library",
         "//app/auth/module",
         "//app/auth/service",
         "//app/auth/storage:auth_storage",
@@ -26,10 +36,11 @@ java_library(
         "//app/review/grammar:aipname_parser_java",
         "//app/review/grammar:java9_parser_java",
         "//app/summer/module",
-        "//dev/logos/job/job",
-        "//dev/logos/module/module:database_module",
+        "//dev/logos/job",
+        "//dev/logos/module:database_module",
         "//dev/logos/service/storage:storage_library",
         "@io_grpc_grpc_java//api",
+        "@io_grpc_grpc_java//context",
         "@io_grpc_grpc_java//core:core_maven",
         "@io_grpc_grpc_java//stub",
         "@maven//:com_fasterxml_jackson_core_jackson_annotations",
@@ -108,16 +119,6 @@ java_library(
         "@maven//:software_amazon_awssdk_sts",
         "@maven//:software_amazon_awssdk_utils",
         "@maven//:software_amazon_eventstream_eventstream",
-    ],
-)
-
-javadoc_library(
-    name = "docs",
-    srcs = [
-        ":server_srcs",
-    ],
-    deps = [
-        ":server_library",
     ],
 )
 

@@ -10,7 +10,6 @@
     <content url="file://$MODULE_DIR$/../../..">
       <sourceFolder url="file://$MODULE_DIR$/../../.." isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/../../../app/review" isTestSource="false" packagePrefix="review" />
-      <sourceFolder url="file://$MODULE_DIR$/../../../dev/logos/service/backend" isTestSource="false" packagePrefix="dev.logos.stack.backend" />
       <excludeFolder url="file://$MODULE_DIR$/../.." />
       <excludeFolder url="file://$MODULE_DIR$/../../../bazel-bin" />
       <excludeFolder url="file://$MODULE_DIR$/../../../bazel-genfiles" />
@@ -37,16 +36,16 @@
     <orderEntry type="library" name="libinternal-hjar_e2ce0ade" level="project" />
     <orderEntry type="library" name="header_ec2-2.20.102_cca4cc56" level="project" />
     <orderEntry type="library" name="header_eventstream-1.0.1_d5409e16" level="project" />
-    <orderEntry type="library" name="header_numbers-1.8.2_c4243a25" level="project" />
     <orderEntry type="library" name="header_jdbi3-postgres-3.35.0_d5729fca" level="project" />
+    <orderEntry type="library" name="header_numbers-1.8.2_c4243a25" level="project" />
     <orderEntry type="library" name="header_utils-2.20.102_84be4c99" level="project" />
     <orderEntry type="library" name="header_arns-2.20.102_5d1046bc" level="project" />
     <orderEntry type="library" name="header_guava-31.0.1-jre_744e8eca" level="project" />
     <orderEntry type="library" name="header_sdk-core-2.20.102_aeda1ca0" level="project" />
     <orderEntry type="library" name="header_httpcore-4.4.13_bfc68730" level="project" />
     <orderEntry type="library" name="header_jackson-annotations-2.16.0_36e0b39a" level="project" />
-    <orderEntry type="library" name="header_org.eclipse.jgit-6.6.0.202305301015-r_dfe645ac" level="project" />
     <orderEntry type="library" name="libstorage_proto-hjar_75ff1eb9" level="project" />
+    <orderEntry type="library" name="header_org.eclipse.jgit-6.6.0.202305301015-r_dfe645ac" level="project" />
     <orderEntry type="library" name="libauth_java_grpc-hjar_3a40df75" level="project" />
     <orderEntry type="library" name="libproject_java_library-hjar_871086bf" level="project" />
     <orderEntry type="library" name="header_ssooidc-2.20.102_c1cdc1c2" level="project" />
@@ -65,9 +64,9 @@
     <orderEntry type="library" name="header_netty-common-4.1.94.Final_ee8ddfb0" level="project" />
     <orderEntry type="library" name="libschema_export_library-hjar_f3b32451" level="project" />
     <orderEntry type="library" name="libannotation_java_grpc-hjar_871086bf" level="project" />
+    <orderEntry type="library" name="header_javax.inject-1_2259c8fd" level="project" />
     <orderEntry type="library" name="libaipname_parser_java-hjar_b44fc57" level="project" />
     <orderEntry type="library" name="header_aws-query-protocol-2.20.102_e8f13885" level="project" />
-    <orderEntry type="library" name="header_javax.inject-1_2259c8fd" level="project" />
     <orderEntry type="library" name="header_http-client-spi-2.20.102_2c5e74fb" level="project" />
     <orderEntry type="library" name="header_commons-logging-1.2_2ccfec78" level="project" />
     <orderEntry type="library" name="header_sso-2.20.102_bc26f7fb" level="project" />
@@ -83,12 +82,13 @@
     <orderEntry type="library" name="libfile_java_grpc-hjar_871086bf" level="project" />
     <orderEntry type="library" name="header_netty-codec-http2-4.1.94.Final_29d0ad44" level="project" />
     <orderEntry type="library" name="header_regions-2.20.102_93eb8e0b" level="project" />
-    <orderEntry type="library" name="header_jackson-datatype-jdk8-2.16.0_b58c5ae9" level="project" />
     <orderEntry type="library" name="header_querydsl-sql-5.0.0_73696f99" level="project" />
+    <orderEntry type="library" name="header_jackson-datatype-jdk8-2.16.0_b58c5ae9" level="project" />
     <orderEntry type="library" name="header_querydsl-sql-codegen-5.0.0_ee43418f" level="project" />
     <orderEntry type="library" name="header_metrics-spi-2.20.102_331f5c8" level="project" />
     <orderEntry type="library" name="header_jackson-datatype-jsr310-2.14.0_d30df0e5" level="project" />
     <orderEntry type="library" name="header_cbor-4.5.2_31f47f1f" level="project" />
+    <orderEntry type="library" name="libcontext-hjar_87329e10" level="project" />
     <orderEntry type="library" name="header_netty-handler-4.1.94.Final_c6fe4e8d" level="project" />
     <orderEntry type="library" name="header_slf4j-api-2.0.7_5a8ff234" level="project" />
     <orderEntry type="library" name="header_HikariCP-5.0.1_1a7bba80" level="project" />

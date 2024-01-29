@@ -1,13 +1,10 @@
+import {PhoneNumberStorageServicePromiseClient} from "@app/digits/storage/digits/phone_number_grpc_web_pb.js";
+import {ListPhoneNumberRequest, PhoneNumber} from "@app/digits/storage/digits/phone_number_pb.js";
 import {VoiceServicePromiseClient} from "@app/digits/web/client/voice_grpc_web_pb.js";
 import {CallRequest} from "@app/digits/web/client/voice_pb.js";
-import {ListPhoneNumberRequest, PhoneNumber} from "@app/digits/storage/digits/phone_number_pb.js";
-import {
-    PhoneNumberStorageServicePromiseClient
-} from "@app/digits/storage/digits/phone_number_grpc_web_pb.js";
 import {DialerKeypad} from "@app/digits/web/components/dialer/Keypad";
 import "@app/digits/web/components/dialer/Keypad";
-import {lazyInject, TYPE} from "@logos/bind";
-import {store} from "@logos/store/store";
+import {lazyInject} from "@logos/bind";
 import "@material/mwc-button";
 import {Button} from "@material/mwc-button";
 import "@material/mwc-dialog";
@@ -34,8 +31,8 @@ enum Tabs {
 
 @customElement("frame-digits")
 export class FrameDigits extends LitElement {
-    @lazyInject(TYPE.VoiceServiceClient) private voiceServiceClient!: VoiceServicePromiseClient;
-    @lazyInject(TYPE.PhoneNumberStorageServiceClient) private phoneNumberStorageServiceClient!: PhoneNumberStorageServicePromiseClient;
+    @lazyInject(VoiceServicePromiseClient) private voiceServiceClient!: VoiceServicePromiseClient;
+    @lazyInject(PhoneNumberStorageServicePromiseClient) private phoneNumberStorageServiceClient!: PhoneNumberStorageServicePromiseClient;
     @property({type: String}) name!: string;
     @state() private selectedNumber!: PhoneNumber;
     @state() private ownedNumbers: PhoneNumber[] = [];

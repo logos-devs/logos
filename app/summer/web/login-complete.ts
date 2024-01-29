@@ -18,6 +18,7 @@ export class LoginComplete extends LitElement {
         this.cognitoServiceClient.processAuthCode(
             new ProcessAuthCodeRequest().setAuthCode(params.get("code"))
         ).then((processAuthCodeResponse: ProcessAuthCodeResponse) => {
+            // TODO : cookie should be set by server as HttpOnly, Secure
             user.accessToken = processAuthCodeResponse.getAccessToken();
             user.idToken = processAuthCodeResponse.getIdToken();
             user.refreshToken = processAuthCodeResponse.getRefreshToken();

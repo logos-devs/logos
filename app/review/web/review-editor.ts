@@ -3,7 +3,7 @@ import {FileServicePromiseClient} from "@app/review/web/client/file_grpc_web_pb.
 import {File, FileType, ListFilesRequest, ListFilesResponse} from "@app/review/web/client/file_pb.js";
 import {ProjectServicePromiseClient} from "@app/review/web/client/project_grpc_web_pb.js";
 import {ListProjectsRequest, ListProjectsResponse, Project} from "@app/review/web/client/project_pb.js";
-import {lazyInject, TYPE} from "@logos/bind";
+import {lazyInject} from "@logos/bind";
 import '@material/mwc-button';
 import {Dialog} from "@material/mwc-dialog";
 import '@material/mwc-drawer';
@@ -17,7 +17,7 @@ import '@material/mwc-list/mwc-list-item';
 import '@material/mwc-textfield';
 import '@material/mwc-top-app-bar-fixed';
 import {css, html, LitElement} from 'lit';
-import {property, query} from 'lit/decorators.js'; // https://github.com/lit/lit/issues/1993
+import {property, query} from 'lit/decorators.js';
 
 const FILE_TYPE_ICONS: { [key: string]: string } = {
     [FileType.DIRECTORY]: 'folder',
@@ -25,8 +25,8 @@ const FILE_TYPE_ICONS: { [key: string]: string } = {
 };
 
 class ReviewEditor extends LitElement {
-    @lazyInject(TYPE.FileServiceClient) private fileServiceClient!: FileServicePromiseClient;
-    @lazyInject(TYPE.ProjectServiceClient) private projectServiceClient!: ProjectServicePromiseClient;
+    @lazyInject(FileServicePromiseClient) private fileServiceClient!: FileServicePromiseClient;
+    @lazyInject(ProjectServicePromiseClient) private projectServiceClient!: ProjectServicePromiseClient;
 
     @property({type: Array}) projects: Array<Project> = [];
     @property({type: Object}) selectedProject?: Project;

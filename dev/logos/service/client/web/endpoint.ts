@@ -31,7 +31,7 @@ export abstract class Endpoint {
 @injectable()
 export class DevEndpoint extends Endpoint {
     protocol = Protocol.HTTPS;
-    hostname = 'dev.digits.rip';
+    hostname = 'dev.summer.app';
     path = 'services';
     port = 443;
 }
@@ -39,7 +39,7 @@ export class DevEndpoint extends Endpoint {
 @injectable()
 export class ProdEndpoint extends Endpoint {
     protocol = Protocol.HTTPS;
-    hostname = 'digits.rip';
+    hostname = 'summer.app';
     path = 'services';
     port = 443;
 }
