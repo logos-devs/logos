@@ -9,6 +9,7 @@ import dev.logos.job.JobState;
 import dev.logos.module.DatabaseModule;
 import io.grpc.BindableService;
 import io.grpc.ServerBuilder;
+import io.grpc.ServerInterceptor;
 import io.grpc.inprocess.InProcessServerBuilder;
 import org.reflections.Reflections;
 import org.reflections.scanners.Scanners;
@@ -40,8 +41,13 @@ public class Server implements Job {
         ServerBuilder<?> innerServerBuilder = InProcessServerBuilder.forName("logos-in-process");
         ServerBuilder<?> outerServerBuilder = ServerBuilder.forPort(DEFAULT_PORT);
 
-        innerServerBuilder.intercept(new CookieServerInterceptor());
-        outerServerBuilder.intercept(new CookieServerInterceptor());
+        for (ServerInterceptor interceptor : List.of(
+            new CookieServerInterceptor(),
+            new AuthorizationServerInterceptor())
+        ) {
+            innerServerBuilder.intercept(interceptor);
+            outerServerBuilder.intercept(interceptor);
+        }
 
         for (BindableService service : services) {
             innerServerBuilder.addService(service);

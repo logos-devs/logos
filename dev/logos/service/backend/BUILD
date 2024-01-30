@@ -21,6 +21,7 @@ java_library(
 java_library(
     name = "server_library",
     srcs = [
+        "server/AuthorizationServerInterceptor.java",
         "server/Server.java",
         "server/ServerModule.java",
     ],

@@ -42,7 +42,9 @@ webpack.webpack_cli_binary(
         ":web_library",
         "//:tsconfig",
     ],
-    tags = ["ibazel_notify_changes"],
+    tags = [
+        "ibazel_notify_changes",
+    ],
     visibility = ["//visibility:private"],
 )
 

@@ -6,9 +6,7 @@ import {getAccounts, walletReducer} from "dev/logos/service/client/web/store/wal
 import {connectRouter} from "lit-redux-router";
 import {lazyReducerEnhancer} from "pwa-helpers";
 import {LazyStore} from "pwa-helpers/lazy-reducer-enhancer";
-import Web3 from "web3";
 // import {provider} from "web3-core";
-import {Contract} from "web3-eth-contract";
 
 // const provider = await detectEthereumProvider({timeout: 1000}),
 //     web3 = new Web3(<provider>provider),
@@ -18,10 +16,10 @@ import {Contract} from "web3-eth-contract";
 //         CONTRACT_ADDRESS);
 
 
-export interface ThunkArgs {
-    web3: Web3,
-    wot: Contract
-}
+// export interface ThunkArgs {
+//     web3: Web3,
+//     wot: Contract<Web>
+// }
 
 const _store = configureStore(
     {

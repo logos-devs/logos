@@ -63,7 +63,8 @@ function makeClient<Client>(clientClass: new (endpoint: string, credentials: any
     PhoneNumberStorageServicePromiseClient,
     CognitoServicePromiseClient
 ].map((clientClass: ClientClass) => {
-    container.bind(clientClass).toDynamicValue(() => makeClient(clientClass));
+    container.bind(clientClass).toDynamicValue(
+        () => makeClient(clientClass));
 });
 
 export const {lazyInject} = getDecorators(container);

@@ -61,9 +61,6 @@ module.exports = (env, argv) => ({
       disableDotRule: true,
     }
   },
-  stats: {
-    errorDetails: false
-  },
   watchOptions: {
     followSymlinks: true,
     // TODO is this necessary?

@@ -136,7 +136,7 @@ dev_server() {
   server_tunnel_up
   # TODO switch to using telepresence intercept
   ibazel run //dev/logos/service/backend:Server
-  #bazelisk run //dev/logos/service/backend:Server -- --debug
+  #bazelisk run --config=remote //dev/logos/service/backend:Server -- --debug
 }
 
 dev_client() {

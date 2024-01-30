@@ -155,6 +155,7 @@ maven_install(
         "com.yubico:webauthn-server-core:2.5.0",
         "com.zaxxer:HikariCP:5.0.1",
         "dnsjava:dnsjava:3.5.2",
+        "io.jsonwebtoken:jjwt:0.12.3",
         "javax.annotation:javax.annotation-api:1.3.2",
         "javax.json:javax.json-api:1.1.4",
         "org.antlr:antlr4-runtime:4.13.0",
