@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="processed_protocol-core-2.20.10211">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-bin/dev/logos/service/backend/Server.runfiles/_main/external/maven/v1/https/repo.maven.apache.org/maven2/software/amazon/awssdk/protocol-core/2.20.102/processed_protocol-core-2.20.102.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

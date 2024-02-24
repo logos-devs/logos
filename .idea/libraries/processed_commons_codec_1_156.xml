@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="processed_commons-codec-1.156">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-out/k8-fastbuild/bin/dev/logos/service/backend/Server.runfiles/_main/external/maven/v1/https/repo.maven.apache.org/maven2/commons-codec/commons-codec/1.15/processed_commons-codec-1.15.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

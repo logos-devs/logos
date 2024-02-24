@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="core8">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-out/k8-fastbuild/bin/dev/logos/service/backend/Server.runfiles/_main/external/com_google_protobuf/java/core/liblite_runtime_only.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-out/k8-fastbuild/bin/dev/logos/service/backend/Server.runfiles/_main/external/com_google_protobuf/java/core/libcore.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

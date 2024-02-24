@@ -35,16 +35,13 @@ public class Server implements Job {
     private final io.grpc.Server outerServer;
 
     @Inject
-    public Server(Set<BindableService> services, Logger logger) {
+    public Server(Set<BindableService> services, Set<ServerInterceptor> interceptors, Logger logger) {
         this.logger = logger;
 
         ServerBuilder<?> innerServerBuilder = InProcessServerBuilder.forName("logos-in-process");
         ServerBuilder<?> outerServerBuilder = ServerBuilder.forPort(DEFAULT_PORT);
 
-        for (ServerInterceptor interceptor : List.of(
-            new CookieServerInterceptor(),
-            new AuthorizationServerInterceptor())
-        ) {
+        for (ServerInterceptor interceptor : interceptors) {
             innerServerBuilder.intercept(interceptor);
             outerServerBuilder.intercept(interceptor);
         }

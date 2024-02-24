@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="processed_jackson-databind-2.16.14">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-logos/bazel-out/k8-fastbuild/bin/dev/logos/service/backend/Server.runfiles/maven/v1/https/repo.maven.apache.org/maven2/com/fasterxml/jackson/core/jackson-databind/2.16.1/processed_jackson-databind-2.16.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="channel">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-bin/dev/logos/channel/libchannel_library-hjar.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-bin/dev/logos/channel/libchannel_library-src.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-bin/dev/logos/channel/libchannel_library.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

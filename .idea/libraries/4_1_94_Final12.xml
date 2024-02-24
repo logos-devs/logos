@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="4.1.94.Final12">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-bin/external/maven/v1/https/repo.maven.apache.org/maven2/io/netty/netty-codec-http/4.1.94.Final/header_netty-codec-http-4.1.94.Final.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-bin/external/maven/v1/https/repo.maven.apache.org/maven2/io/netty/netty-codec-http/4.1.94.Final/processed_netty-codec-http-4.1.94.Final.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-bin/external/maven/v1/https/repo.maven.apache.org/maven2/io/netty/netty-codec-http/4.1.94.Final/netty-codec-http-4.1.94.Final-sources.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

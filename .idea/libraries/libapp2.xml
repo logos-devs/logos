@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="libapp2">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-bin/dev/logos/service/backend/Server.runfiles/_main/dev/logos/app/libapp.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

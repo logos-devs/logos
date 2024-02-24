@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="user1">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-logos/bazel-out/k8-fastbuild/bin/app/auth/user/libuser.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-logos/bazel-out/k8-fastbuild/bin/app/auth/user/libuser-hjar.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-logos/bazel-out/k8-fastbuild/bin/app/auth/user/libuser-src.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

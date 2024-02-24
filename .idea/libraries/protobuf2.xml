@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="protobuf2">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-logos/bazel-out/k8-fastbuild/bin/external/io_grpc_grpc_java/protobuf/libprotobuf.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-logos/bazel-out/k8-fastbuild/bin/external/io_grpc_grpc_java/protobuf/libprotobuf-hjar.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-logos/bazel-out/k8-fastbuild/bin/external/io_grpc_grpc_java/protobuf/libprotobuf-src.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

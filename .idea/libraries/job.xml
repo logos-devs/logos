@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="job">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-bin/dev/logos/job/libjob-src.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-bin/dev/logos/job/libjob.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-bin/dev/logos/job/libjob-hjar.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

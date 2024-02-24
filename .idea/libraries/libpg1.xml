@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="libpg1">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-bin/dev/logos/service/backend/Server.runfiles/_main/dev/logos/service/storage/pg/libpg.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

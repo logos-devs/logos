@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="core1">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-out/k8-fastbuild/bin/dev/logos/service/backend/Server.runfiles/_main/external/io_grpc_grpc_java/core/libinternal.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-out/k8-fastbuild/bin/dev/logos/service/backend/Server.runfiles/_main/external/io_grpc_grpc_java/core/libutil.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-out/k8-fastbuild/bin/dev/logos/service/backend/Server.runfiles/_main/external/io_grpc_grpc_java/core/libinprocess.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

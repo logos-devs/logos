@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="processed_javassist-3.28.0-GA1">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-bin/dev/logos/service/backend/Server.runfiles/maven/v1/https/repo.maven.apache.org/maven2/org/javassist/javassist/3.28.0-GA/processed_javassist-3.28.0-GA.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="processed_dnsjava-3.5.28">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-logos/bazel-out/k8-fastbuild/bin/dev/logos/service/storage/pg/exporter/exporter.runfiles/maven/v1/https/repo.maven.apache.org/maven2/dnsjava/dnsjava/3.5.2/processed_dnsjava-3.5.2.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="stub">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-bin/external/io_grpc_grpc_java/stub/libstub-src.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-bin/external/io_grpc_grpc_java/stub/libjavax_annotation-src.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-bin/external/io_grpc_grpc_java/stub/libjavax_annotation.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-bin/external/io_grpc_grpc_java/stub/libstub-hjar.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-bin/external/io_grpc_grpc_java/stub/libstub.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

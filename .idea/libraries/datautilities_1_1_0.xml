@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="datautilities-1.1.0">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-logos/external/com_github_peteroupc_datautilities_1_1_0/file/v1/https/repo.maven.apache.org/maven2/com/github/peteroupc/datautilities/1.1.0/datautilities-1.1.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

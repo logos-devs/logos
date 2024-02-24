@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="6.4.02">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-out/k8-fastbuild/bin/external/maven/v1/https/repo.maven.apache.org/maven2/com/fasterxml/woodstox/woodstox-core/6.4.0/woodstox-core-6.4.0-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-out/k8-fastbuild/bin/external/maven/v1/https/repo.maven.apache.org/maven2/com/fasterxml/woodstox/woodstox-core/6.4.0/processed_woodstox-core-6.4.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-out/k8-fastbuild/bin/external/maven/v1/https/repo.maven.apache.org/maven2/com/fasterxml/woodstox/woodstox-core/6.4.0/header_woodstox-core-6.4.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

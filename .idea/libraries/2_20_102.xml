@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="2.20.102">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-bin/external/maven/v1/https/repo.maven.apache.org/maven2/software/amazon/awssdk/aws-xml-protocol/2.20.102/processed_aws-xml-protocol-2.20.102.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-bin/external/maven/v1/https/repo.maven.apache.org/maven2/software/amazon/awssdk/aws-xml-protocol/2.20.102/aws-xml-protocol-2.20.102-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-bin/external/maven/v1/https/repo.maven.apache.org/maven2/software/amazon/awssdk/aws-xml-protocol/2.20.102/header_aws-xml-protocol-2.20.102.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

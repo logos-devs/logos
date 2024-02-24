@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="lib22">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-logos/bazel-out/k8-opt-exec-ST-74b705998179/bin/external/intellij_aspect/JarFilter_bin.runfiles/rules_java~7.1.0~toolchains~remotejdk17_linux/lib/src.zip!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-logos/bazel-out/k8-opt-exec-ST-74b705998179/bin/external/intellij_aspect/JarFilter_bin.runfiles/rules_java~7.1.0~toolchains~remotejdk17_linux/lib/jrt-fs.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

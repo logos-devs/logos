@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="1.1.02">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-logos/bazel-out/k8-fastbuild/bin/external/maven/v1/https/repo.maven.apache.org/maven2/com/augustcellars/cose/cose-java/1.1.0/header_cose-java-1.1.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-logos/bazel-out/k8-fastbuild/bin/external/maven/v1/https/repo.maven.apache.org/maven2/com/augustcellars/cose/cose-java/1.1.0/processed_cose-java-1.1.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-logos/bazel-out/k8-fastbuild/bin/external/maven/v1/https/repo.maven.apache.org/maven2/com/augustcellars/cose/cose-java/1.1.0/cose-java-1.1.0-sources.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

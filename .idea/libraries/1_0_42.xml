@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="1.0.42">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-logos/bazel-out/k8-fastbuild/bin/external/maven/v1/https/repo.maven.apache.org/maven2/org/reactivestreams/reactive-streams/1.0.4/processed_reactive-streams-1.0.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-logos/bazel-out/k8-fastbuild/bin/external/maven/v1/https/repo.maven.apache.org/maven2/org/reactivestreams/reactive-streams/1.0.4/header_reactive-streams-1.0.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-logos/bazel-out/k8-fastbuild/bin/external/maven/v1/https/repo.maven.apache.org/maven2/org/reactivestreams/reactive-streams/1.0.4/reactive-streams-1.0.4-sources.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

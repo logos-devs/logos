@@ -38,7 +38,7 @@ build:remote --bes_backend=grpcs://logos-dev.buildbuddy.io
 build:remote --crosstool_top=@buildbuddy_toolchain//:toolchain
 build:remote --experimental_profile_include_primary_output 
 build:remote --experimental_profile_include_target_label
-build:remote --experimental_remote_build_event_upload=minimal
+build:remote --remote_build_event_upload=minimal
 build:remote --experimental_remote_cache_compression
 build:remote --extra_execution_platforms=@buildbuddy_toolchain//:platform
 build:remote --extra_toolchains=@buildbuddy_toolchain//:cc_toolchain

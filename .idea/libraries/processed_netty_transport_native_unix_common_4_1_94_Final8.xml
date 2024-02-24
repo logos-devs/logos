@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="processed_netty-transport-native-unix-common-4.1.94.Final8">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-bin/dev/logos/service/backend/Server.runfiles/_main/external/maven/v1/https/repo.maven.apache.org/maven2/io/netty/netty-transport-native-unix-common/4.1.94.Final/processed_netty-transport-native-unix-common-4.1.94.Final.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

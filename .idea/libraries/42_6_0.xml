@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="42.6.0">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-bin/external/maven/v1/https/repo.maven.apache.org/maven2/org/postgresql/postgresql/42.6.0/processed_postgresql-42.6.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-bin/external/maven/v1/https/repo.maven.apache.org/maven2/org/postgresql/postgresql/42.6.0/postgresql-42.6.0-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-bin/external/maven/v1/https/repo.maven.apache.org/maven2/org/postgresql/postgresql/42.6.0/header_postgresql-42.6.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

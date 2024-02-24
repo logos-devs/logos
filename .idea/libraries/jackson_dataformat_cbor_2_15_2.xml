@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="jackson-dataformat-cbor-2.15.2">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-logos/external/com_fasterxml_jackson_dataformat_jackson_dataformat_cbor_2_15_2/file/v1/https/repo.maven.apache.org/maven2/com/fasterxml/jackson/dataformat/jackson-dataformat-cbor/2.15.2/jackson-dataformat-cbor-2.15.2.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

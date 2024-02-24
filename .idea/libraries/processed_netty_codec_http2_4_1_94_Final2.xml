@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="processed_netty-codec-http2-4.1.94.Final2">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-logos/bazel-out/k8-fastbuild/bin/dev/logos/service/backend/Server.runfiles/_main/external/maven/v1/https/repo.maven.apache.org/maven2/io/netty/netty-codec-http2/4.1.94.Final/processed_netty-codec-http2-4.1.94.Final.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

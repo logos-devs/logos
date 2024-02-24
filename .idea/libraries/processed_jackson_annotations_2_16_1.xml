@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="processed_jackson-annotations-2.16.1">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-bin/dev/logos/service/backend/Server.runfiles/_main/external/maven/v1/https/repo.maven.apache.org/maven2/com/fasterxml/jackson/core/jackson-annotations/2.16.1/processed_jackson-annotations-2.16.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

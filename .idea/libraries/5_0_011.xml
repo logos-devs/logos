@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="5.0.011">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-out/k8-fastbuild/bin/external/maven/v1/https/repo.maven.apache.org/maven2/com/querydsl/codegen-utils/5.0.0/processed_codegen-utils-5.0.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-out/k8-fastbuild/bin/external/maven/v1/https/repo.maven.apache.org/maven2/com/querydsl/codegen-utils/5.0.0/header_codegen-utils-5.0.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-out/k8-fastbuild/bin/external/maven/v1/https/repo.maven.apache.org/maven2/com/querydsl/codegen-utils/5.0.0/codegen-utils-5.0.0-sources.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

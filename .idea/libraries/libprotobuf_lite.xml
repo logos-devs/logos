@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="libprotobuf-lite">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-logos/bazel-out/k8-fastbuild/bin/dev/logos/service/backend/Server.runfiles/_main/external/io_grpc_grpc_java/protobuf-lite/libprotobuf-lite.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

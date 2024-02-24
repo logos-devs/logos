@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="processed_cbor-5.0.0-alpha15">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-logos/bazel-out/k8-fastbuild/bin/dev/logos/service/backend/Server.runfiles/maven/v1/https/repo.maven.apache.org/maven2/com/upokecenter/cbor/5.0.0-alpha1/processed_cbor-5.0.0-alpha1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

@@ -11,20 +11,23 @@ import static dev.logos.service.storage.pg.Identifier.snakeToCamelCase;
 public record ColumnDescriptor(String name, String type) implements ExportedIdentifier {
     public String getProtobufTypeName() {
         return switch (this.type) {
-            case "smallint", "integer" -> "int32";
+            case "smallint",
+                 "integer" -> "int32";
             case "bigint" -> "int64";
             case "real" -> "float";
             case "double precision" -> "double";
-            case "numeric", "decimal" -> "fixed64";
+            case "numeric",
+                 "decimal" -> "fixed64";
             case "char",
-                    "varchar",
-                    "character varying",
-                    "text",
-                    "text[]",
-                    "timestamp",
-                    "timestamp with time zone",
-                    "date" -> "string";
-            case "bytea", "uuid" -> "bytes";
+                 "varchar",
+                 "character varying",
+                 "text",
+                 "text[]",
+                 "timestamp",
+                 "timestamp with time zone",
+                 "date" -> "string";
+            case "bytea",
+                 "uuid" -> "bytes";
             case "boolean" -> "bool";
             default -> throw new IllegalArgumentException("Unsupported type: " + this.type);
         };
@@ -38,13 +41,13 @@ public record ColumnDescriptor(String name, String type) implements ExportedIden
             case "double precision" -> DescriptorProtos.FieldDescriptorProto.Type.TYPE_DOUBLE;
             case "numeric", "decimal" -> DescriptorProtos.FieldDescriptorProto.Type.TYPE_FIXED64;
             case "char",
-                    "varchar",
-                    "character varying",
-                    "text",
-                    "text[]",
-                    "timestamp",
-                    "timestamp with time zone",
-                    "date" -> DescriptorProtos.FieldDescriptorProto.Type.TYPE_STRING;
+                 "varchar",
+                 "character varying",
+                 "text",
+                 "text[]",
+                 "timestamp",
+                 "timestamp with time zone",
+                 "date" -> DescriptorProtos.FieldDescriptorProto.Type.TYPE_STRING;
             case "bytea", "uuid" -> DescriptorProtos.FieldDescriptorProto.Type.TYPE_BYTES;
             case "boolean" -> DescriptorProtos.FieldDescriptorProto.Type.TYPE_BOOL;
             default -> throw new IllegalArgumentException("Unsupported type: " + this.type);
@@ -71,7 +74,7 @@ public record ColumnDescriptor(String name, String type) implements ExportedIden
                 case TYPE_BOOL -> "getBoolean";
                 case TYPE_BYTES -> "getBytes";
                 case TYPE_DOUBLE,
-                        TYPE_FIXED64 -> "getDouble";
+                     TYPE_FIXED64 -> "getDouble";
                 case TYPE_FLOAT -> "getFloat";
                 case TYPE_SINT32 -> "getInt";
                 case TYPE_SINT64 -> "getLong";

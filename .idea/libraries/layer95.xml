@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="layer95">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-logos/bazel-out/k8-fastbuild/bin/dev/logos/service/client/web/dev_server.sh.runfiles/_main/node_modules/.aspect_rules_js/@aws-cdk+asset-kubectl-v20@2.1.2/node_modules/@aws-cdk/asset-kubectl-v20/lib/layer.zip!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="api2">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-out/k8-fastbuild/bin/external/io_grpc_grpc_java/api/libapi.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-out/k8-fastbuild/bin/external/io_grpc_grpc_java/api/libapi-src.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-out/k8-fastbuild/bin/external/io_grpc_grpc_java/api/libapi-hjar.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

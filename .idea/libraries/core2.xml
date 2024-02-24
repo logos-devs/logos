@@ -1,0 +1,16 @@
+<component name="libraryTable">
+  <library name="core2">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-out/k8-fastbuild/bin/external/com_google_protobuf/java/core/liblite_runtime_only-hjar.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-out/k8-fastbuild/bin/external/com_google_protobuf/java/core/libcore-hjar.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-out/k8-fastbuild/bin/external/com_google_protobuf/java/core/core-filtered-gen-src.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-out/k8-fastbuild/bin/external/com_google_protobuf/java/core/libcore-src.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-out/k8-fastbuild/bin/external/com_google_protobuf/java/core/liblite_runtime_only.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-out/k8-fastbuild/bin/external/com_google_protobuf/java/core/core-filtered-gen.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-out/k8-fastbuild/bin/external/com_google_protobuf/java/core/liblite_runtime_only-src.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-out/k8-fastbuild/bin/external/com_google_protobuf/java/core/libcore.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="processed_annotations-4.1.1.45">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-out/k8-fastbuild/bin/dev/logos/service/backend/Server.runfiles/maven/v1/https/repo.maven.apache.org/maven2/com/google/android/annotations/4.1.1.4/processed_annotations-4.1.1.4.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

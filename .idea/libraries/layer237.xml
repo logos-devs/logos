@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="layer237">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-bin/dev/logos/infra/cdk.sh.runfiles/_main/node_modules/.aspect_rules_js/aws-cdk-lib@2.122.0_constructs_10.3.0/node_modules/@aws-cdk/asset-node-proxy-agent-v6/lib/layer.zip!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

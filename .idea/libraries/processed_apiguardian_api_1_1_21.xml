@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="processed_apiguardian-api-1.1.21">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-logos/bazel-out/k8-fastbuild/bin/dev/logos/service/backend/Server.runfiles/maven/v1/https/repo.maven.apache.org/maven2/org/apiguardian/apiguardian-api/1.1.2/processed_apiguardian-api-1.1.2.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

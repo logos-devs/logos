@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="2.15.22">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-bin/external/maven/v1/https/repo.maven.apache.org/maven2/com/fasterxml/jackson/dataformat/jackson-dataformat-cbor/2.15.2/processed_jackson-dataformat-cbor-2.15.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-bin/external/maven/v1/https/repo.maven.apache.org/maven2/com/fasterxml/jackson/dataformat/jackson-dataformat-cbor/2.15.2/jackson-dataformat-cbor-2.15.2-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-bin/external/maven/v1/https/repo.maven.apache.org/maven2/com/fasterxml/jackson/dataformat/jackson-dataformat-cbor/2.15.2/header_jackson-dataformat-cbor-2.15.2.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

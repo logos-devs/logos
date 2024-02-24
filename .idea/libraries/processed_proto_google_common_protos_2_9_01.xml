@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="processed_proto-google-common-protos-2.9.01">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-bin/dev/logos/service/backend/Server.runfiles/_main/external/maven/v1/https/repo.maven.apache.org/maven2/com/google/api/grpc/proto-google-common-protos/2.9.0/processed_proto-google-common-protos-2.9.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

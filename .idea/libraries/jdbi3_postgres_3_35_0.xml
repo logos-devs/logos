@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="jdbi3-postgres-3.35.0">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-logos/external/org_jdbi_jdbi3_postgres_3_35_0/file/v1/https/repo.maven.apache.org/maven2/org/jdbi/jdbi3-postgres/3.35.0/jdbi3-postgres-3.35.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

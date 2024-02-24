@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="gradle-wrapper1">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-logos/external/io_grpc_grpc_java/gradle/wrapper/gradle-wrapper.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

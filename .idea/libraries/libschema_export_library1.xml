@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="libschema_export_library1">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-bin/dev/logos/service/backend/Server.runfiles/_main/dev/logos/service/storage/pg/exporter/libschema_export_library.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

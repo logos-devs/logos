@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="downloaded2">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-logos/external/antlr3_runtime/jar/downloaded.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="cognito2">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-bin/app/auth/interceptor/cognito/libcognito.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-bin/app/auth/interceptor/cognito/libcognito-src.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-bin/app/auth/interceptor/cognito/libcognito-hjar.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

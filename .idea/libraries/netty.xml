@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="netty">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-out/k8-fastbuild/bin/external/io_grpc_grpc_java/netty/libnetty.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-out/k8-fastbuild/bin/external/io_grpc_grpc_java/netty/libnetty-hjar.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-out/k8-fastbuild/bin/external/io_grpc_grpc_java/netty/libnetty-src.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

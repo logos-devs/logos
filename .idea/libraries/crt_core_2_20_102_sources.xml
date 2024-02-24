@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="crt-core-2.20.102-sources">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-logos/external/software_amazon_awssdk_crt_core_jar_sources_2_20_102/file/v1/https/repo.maven.apache.org/maven2/software/amazon/awssdk/crt-core/2.20.102/crt-core-2.20.102-sources.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

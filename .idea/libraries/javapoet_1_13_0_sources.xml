@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="javapoet-1.13.0-sources">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-logos/external/com_squareup_javapoet_jar_sources_1_13_0/file/v1/https/repo.maven.apache.org/maven2/com/squareup/javapoet/1.13.0/javapoet-1.13.0-sources.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="reflections-0.10.2-sources">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-logos/external/org_reflections_reflections_jar_sources_0_10_2/file/v1/https/repo.maven.apache.org/maven2/org/reflections/reflections/0.10.2/reflections-0.10.2-sources.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

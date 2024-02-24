@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="1">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-bin/external/maven/v1/https/repo.maven.apache.org/maven2/javax/inject/javax.inject/1/javax.inject-1-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-bin/external/maven/v1/https/repo.maven.apache.org/maven2/javax/inject/javax.inject/1/header_javax.inject-1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-bin/external/maven/v1/https/repo.maven.apache.org/maven2/javax/inject/javax.inject/1/processed_javax.inject-1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

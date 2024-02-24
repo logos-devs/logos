@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="processed_http-client-spi-2.20.1024">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-out/k8-fastbuild/bin/dev/logos/service/storage/pg/exporter/exporter.runfiles/maven/v1/https/repo.maven.apache.org/maven2/software/amazon/awssdk/http-client-spi/2.20.102/processed_http-client-spi-2.20.102.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

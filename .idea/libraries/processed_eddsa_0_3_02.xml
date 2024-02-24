@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="processed_eddsa-0.3.02">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-logos/bazel-out/k8-fastbuild/bin/dev/logos/service/backend/Server.runfiles/_main/external/maven/v1/https/repo.maven.apache.org/maven2/net/i2p/crypto/eddsa/0.3.0/processed_eddsa-0.3.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

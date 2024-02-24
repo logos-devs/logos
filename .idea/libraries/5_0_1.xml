@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="5.0.1">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-out/k8-fastbuild/bin/external/maven/v1/https/repo.maven.apache.org/maven2/com/zaxxer/HikariCP/5.0.1/header_HikariCP-5.0.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-out/k8-fastbuild/bin/external/maven/v1/https/repo.maven.apache.org/maven2/com/zaxxer/HikariCP/5.0.1/HikariCP-5.0.1-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-out/k8-fastbuild/bin/external/maven/v1/https/repo.maven.apache.org/maven2/com/zaxxer/HikariCP/5.0.1/processed_HikariCP-5.0.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

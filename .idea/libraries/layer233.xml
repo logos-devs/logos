@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="layer233">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-bin/dev/logos/service/client/web/dev_server.sh.runfiles/_main/node_modules/.aspect_rules_js/@aws-cdk+lambda-layer-kubectl-v24@2.0.242_-1949964481/node_modules/@aws-cdk/lambda-layer-kubectl-v24/lib/layer.zip!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

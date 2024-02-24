@@ -18,6 +18,8 @@ java_library(
     ],
     deps = [
         "//dev/logos/service/storage/pg",
+        "//dev/logos/service/storage/validator",
+        "//dev/logos/user",
         "@com_google_protobuf//:protobuf_java",
         "@io_grpc_grpc_java//api",
         "@io_grpc_grpc_java//stub",

@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="4.4.02">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-out/k8-fastbuild/bin/external/maven/v1/https/repo.maven.apache.org/maven2/com/auth0/java-jwt/4.4.0/header_java-jwt-4.4.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-out/k8-fastbuild/bin/external/maven/v1/https/repo.maven.apache.org/maven2/com/auth0/java-jwt/4.4.0/java-jwt-4.4.0-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-out/k8-fastbuild/bin/external/maven/v1/https/repo.maven.apache.org/maven2/com/auth0/java-jwt/4.4.0/processed_java-jwt-4.4.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

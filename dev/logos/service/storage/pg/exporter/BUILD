@@ -1,4 +1,4 @@
-load(":schema_export.bzl", "schema_export")
+load(":schema_export.bzl", "schema_export", "storage_java_proto_library")
 load("@rules_antlr//antlr:antlr4.bzl", "antlr")
 
 antlr(
@@ -24,6 +24,8 @@ java_binary(
         "//dev/logos/module:database_module",
         "//dev/logos/service/storage:storage_library",
         "//dev/logos/service/storage/pg",
+        "//dev/logos/service/storage/validator",
+        "//dev/logos/user",
         "@antlr4_runtime//jar",
         "@com_google_protobuf//java/core",
         "@io_grpc_grpc_java//stub",
@@ -61,6 +63,8 @@ java_library(
     deps = [
         "//dev/logos/service/storage:storage_library",
         "//dev/logos/service/storage/pg",
+        "//dev/logos/service/storage/validator",
+        "//dev/logos/user",
         "@com_google_protobuf//java/core",
         "@io_grpc_grpc_java//api",
         "@io_grpc_grpc_java//protobuf",

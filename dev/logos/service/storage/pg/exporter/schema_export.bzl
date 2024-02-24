@@ -143,8 +143,10 @@ def storage_java_proto_library(name, srcs, visibility):
         srcs = srcs,
         visibility = visibility,
         deps = [
-            "//dev/logos/service/storage/pg:pg",
+            "//dev/logos/service/storage/pg",
+            "//dev/logos/service/storage/validator",
             "//dev/logos/service/storage:storage_library",
+            "//dev/logos/user",
             "@com_google_protobuf//java/core",
             "@io_grpc_grpc_java//api",
             "@io_grpc_grpc_java//protobuf",

@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="0.12.33">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-logos/bazel-out/k8-fastbuild/bin/external/maven/v1/https/repo.maven.apache.org/maven2/io/jsonwebtoken/jjwt-jackson/0.12.3/processed_jjwt-jackson-0.12.3.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-logos/bazel-out/k8-fastbuild/bin/external/maven/v1/https/repo.maven.apache.org/maven2/io/jsonwebtoken/jjwt-jackson/0.12.3/header_jjwt-jackson-0.12.3.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-logos/bazel-out/k8-fastbuild/bin/external/maven/v1/https/repo.maven.apache.org/maven2/io/jsonwebtoken/jjwt-jackson/0.12.3/jjwt-jackson-0.12.3-sources.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

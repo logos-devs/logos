@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="dnsjava-3.5.2-sources">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-logos/external/dnsjava_dnsjava_jar_sources_3_5_2/file/v1/https/repo.maven.apache.org/maven2/dnsjava/dnsjava/3.5.2/dnsjava-3.5.2-sources.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

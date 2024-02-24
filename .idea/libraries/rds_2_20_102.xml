@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="rds-2.20.102">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-logos/external/software_amazon_awssdk_rds_2_20_102/file/v1/https/repo.maven.apache.org/maven2/software/amazon/awssdk/rds/2.20.102/rds-2.20.102.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

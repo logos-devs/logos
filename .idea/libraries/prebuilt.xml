@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="prebuilt">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-logos/external/rules_jvm_external/private/tools/prebuilt/hasher_deploy.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-logos/external/rules_jvm_external/private/tools/prebuilt/list_packages_deploy.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-logos/external/rules_jvm_external/private/tools/prebuilt/outdated_deploy.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

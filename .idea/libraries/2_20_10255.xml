@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="2.20.10255">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-out/k8-fastbuild/bin/external/maven/v1/https/repo.maven.apache.org/maven2/software/amazon/awssdk/utils/2.20.102/utils-2.20.102-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-out/k8-fastbuild/bin/external/maven/v1/https/repo.maven.apache.org/maven2/software/amazon/awssdk/utils/2.20.102/processed_utils-2.20.102.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-out/k8-fastbuild/bin/external/maven/v1/https/repo.maven.apache.org/maven2/software/amazon/awssdk/utils/2.20.102/header_utils-2.20.102.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

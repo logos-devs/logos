@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="processed_httpcore-4.4.136">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-bin/dev/logos/service/backend/Server.runfiles/maven/v1/https/repo.maven.apache.org/maven2/org/apache/httpcomponents/httpcore/4.4.13/processed_httpcore-4.4.13.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

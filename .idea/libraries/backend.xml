@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="backend">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-bin/dev/logos/service/backend/Server-src.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-bin/dev/logos/service/backend/libserver_library.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-bin/dev/logos/service/backend/libserver_library-src.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-bin/dev/logos/service/backend/libserver_library-hjar.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-bin/dev/logos/service/backend/Server.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

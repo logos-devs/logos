@@ -7,9 +7,12 @@ java_library(
     ],
     visibility = ["//dev/logos/service:__subpackages__"],
     deps = [
+        "//app/auth/interceptor/cognito",
         "//app/auth/module/data",
         "//app/auth/service",
         "//app/auth/storage:auth_storage",
+        "//app/auth/user",
+        "//dev/logos/app",
         "@io_grpc_grpc_java//api",
         "@maven//:com_google_code_gson_gson",
         "@maven//:com_google_guava_guava",

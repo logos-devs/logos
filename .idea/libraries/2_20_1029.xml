@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="2.20.1029">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-out/k8-fastbuild/bin/external/maven/v1/https/repo.maven.apache.org/maven2/software/amazon/awssdk/third-party-jackson-core/2.20.102/third-party-jackson-core-2.20.102-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-out/k8-fastbuild/bin/external/maven/v1/https/repo.maven.apache.org/maven2/software/amazon/awssdk/third-party-jackson-core/2.20.102/header_third-party-jackson-core-2.20.102.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-out/k8-fastbuild/bin/external/maven/v1/https/repo.maven.apache.org/maven2/software/amazon/awssdk/third-party-jackson-core/2.20.102/processed_third-party-jackson-core-2.20.102.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

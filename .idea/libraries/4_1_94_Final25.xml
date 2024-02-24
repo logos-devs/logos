@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="4.1.94.Final25">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-logos/bazel-out/k8-fastbuild/bin/external/maven/v1/https/repo.maven.apache.org/maven2/io/netty/netty-common/4.1.94.Final/header_netty-common-4.1.94.Final.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-logos/bazel-out/k8-fastbuild/bin/external/maven/v1/https/repo.maven.apache.org/maven2/io/netty/netty-common/4.1.94.Final/processed_netty-common-4.1.94.Final.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-logos/bazel-out/k8-fastbuild/bin/external/maven/v1/https/repo.maven.apache.org/maven2/io/netty/netty-common/4.1.94.Final/netty-common-4.1.94.Final-sources.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

@@ -1,23 +1,13 @@
-derive_targets_from_directories: true
+derive_targets_from_directories: false
 directories:
   .
-#targets:
-#   //dev/logos/infra:cdk
-#   //dev/logos/stack/ingress/nginx
-#   //dev/logos/stack/service/backend
-#   //dev/logos/stack/service/backend:Server
-#   //dev/logos/stack/service/client
-#   //dev/logos/stack/service/client/web
-#   //dev/logos/stack/service/console
-#   //dev/logos/stack/service/envoy
-#   //:tsconfig
-# exclude_target:
-#   //:MODULE.bazel
-#   //:WORKSPACE
+targets:
+  //dev/...
 additional_languages:
+  java
   javascript
-  typescript
   python
+  typescript
 java_language_level: JDK_17
 ts_config_rules:
   //:tsconfig

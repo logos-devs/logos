@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="processed_commons-io-2.75">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-bin/dev/logos/service/backend/Server.runfiles/_main/external/maven/v1/https/repo.maven.apache.org/maven2/commons-io/commons-io/2.7/processed_commons-io-2.7.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

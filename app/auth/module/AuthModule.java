@@ -1,16 +1,15 @@
 package app.auth.module;
 
+import app.auth.interceptor.cognito.CognitoServerInterceptor;
 import app.auth.module.data.CognitoHostConfig;
 import app.auth.module.data.CognitoHostSecret;
 import app.auth.service.AuthService;
 import app.auth.service.CognitoService;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
-import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
-import com.google.inject.multibindings.Multibinder;
 import com.google.inject.name.Named;
-import io.grpc.BindableService;
+import dev.logos.app.AppModule;
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient;
 import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRequest;
 import software.amazon.awssdk.services.secretsmanager.model.SecretsManagerException;
@@ -22,16 +21,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public class AuthModule extends AbstractModule {
+public class AuthModule extends AppModule {
 
     @Override
     protected void configure() {
-        Multibinder.newSetBinder(binder(), BindableService.class)
-                   .addBinding().to(AuthService.class);
-
-        Multibinder.newSetBinder(binder(), BindableService.class)
-                   .addBinding().to(CognitoService.class);
-
+        addService(AuthService.class);
+        addService(CognitoService.class);
+        addInterceptor(CognitoServerInterceptor.class);
         super.configure();
     }
 
@@ -46,6 +42,19 @@ public class AuthModule extends AbstractModule {
         return Objects.requireNonNull(
                 getClass().getResourceAsStream(
                         "/dev/logos/infra/cognito_hosts.json"));
+    }
+
+    @Provides
+    @Named("CognitoUserPoolId")
+    String getCognitoUserPoolId() {
+        // TODO - get from cdk output
+        return "us-east-2_0tayqImgc";
+    }
+
+    @Provides
+    @Named("CognitoRegion")
+    String getCognitoRegion() {
+        return "us-east-2";
     }
 
     @Provides

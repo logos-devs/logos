@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="2.20.1028">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-logos/bazel-out/k8-fastbuild/bin/external/maven/v1/https/repo.maven.apache.org/maven2/software/amazon/awssdk/sts/2.20.102/header_sts-2.20.102.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-logos/bazel-out/k8-fastbuild/bin/external/maven/v1/https/repo.maven.apache.org/maven2/software/amazon/awssdk/sts/2.20.102/sts-2.20.102-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-logos/bazel-out/k8-fastbuild/bin/external/maven/v1/https/repo.maven.apache.org/maven2/software/amazon/awssdk/sts/2.20.102/processed_sts-2.20.102.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

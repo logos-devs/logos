@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="twilio2">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-bin/dev/logos/client/twilio/libtwilio-hjar.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-bin/dev/logos/client/twilio/libtwilio.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-bin/dev/logos/client/twilio/libtwilio-src.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

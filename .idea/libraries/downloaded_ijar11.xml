@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="downloaded-ijar11">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-out/k8-fastbuild/bin/external/javax_json/jar/_ijar/jar/javax_json/jar/downloaded-ijar.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

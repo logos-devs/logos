@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="5.0.03">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-out/k8-fastbuild/bin/external/maven/v1/https/repo.maven.apache.org/maven2/com/querydsl/querydsl-sql-codegen/5.0.0/querydsl-sql-codegen-5.0.0-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-out/k8-fastbuild/bin/external/maven/v1/https/repo.maven.apache.org/maven2/com/querydsl/querydsl-sql-codegen/5.0.0/header_querydsl-sql-codegen-5.0.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-out/k8-fastbuild/bin/external/maven/v1/https/repo.maven.apache.org/maven2/com/querydsl/querydsl-sql-codegen/5.0.0/processed_querydsl-sql-codegen-5.0.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

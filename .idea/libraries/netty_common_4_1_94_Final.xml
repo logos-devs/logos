@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="netty-common-4.1.94.Final">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-logos/external/io_netty_netty_common_4_1_94_Final/file/v1/https/repo.maven.apache.org/maven2/io/netty/netty-common/4.1.94.Final/netty-common-4.1.94.Final.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

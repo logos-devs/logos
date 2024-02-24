@@ -30,14 +30,6 @@ public class SummerModule extends AppModule {
         super.configure();
     }
 
-//    private <T extends AbstractFutureStub<T>> void addClient(Class<T> clazz) {
-//        try {
-//            bind(clazz).toInstance(clazz);
-//        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
-
     @Provides
     public EntryStorageServiceFutureStub provideEntryStorageServiceStub(ManagedChannel managedChannel) {
         return EntryStorageServiceFutureStub.newStub(

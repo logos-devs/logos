@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="processed_slf4j-api-2.0.79">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-out/k8-fastbuild/bin/dev/logos/service/storage/pg/exporter/exporter.runfiles/_main/external/maven/v1/https/repo.maven.apache.org/maven2/org/slf4j/slf4j-api/2.0.7/processed_slf4j-api-2.0.7.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

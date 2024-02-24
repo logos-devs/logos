@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="3.5.22">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-logos/bazel-out/k8-fastbuild/bin/external/maven/v1/https/repo.maven.apache.org/maven2/dnsjava/dnsjava/3.5.2/dnsjava-3.5.2-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-logos/bazel-out/k8-fastbuild/bin/external/maven/v1/https/repo.maven.apache.org/maven2/dnsjava/dnsjava/3.5.2/processed_dnsjava-3.5.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-logos/bazel-out/k8-fastbuild/bin/external/maven/v1/https/repo.maven.apache.org/maven2/dnsjava/dnsjava/3.5.2/header_dnsjava-3.5.2.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

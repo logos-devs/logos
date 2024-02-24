@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="module11">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-bin/app/digits/module/libmodule-hjar.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-bin/app/digits/module/libmodule.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-bin/app/digits/module/libmodule-src.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

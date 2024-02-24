@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="guice-7.0.0-sources">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-logos/external/com_google_inject_guice_jar_sources_7_0_0/file/v1/https/repo.maven.apache.org/maven2/com/google/inject/guice/7.0.0/guice-7.0.0-sources.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

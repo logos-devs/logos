@@ -1,0 +1,29 @@
+<component name="libraryTable">
+  <library name="review3">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-bin/app/review/libproject_java_library.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-bin/app/review/libannotation_java_grpc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-bin/app/review/libreview_service-src.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-bin/app/review/libproject_java_grpc-src.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-bin/app/review/libproject_java_library-hjar.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-bin/app/review/libfile_java_grpc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-bin/app/review/libfile_java_library.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-bin/app/review/libfile_java_library-hjar.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-bin/app/review/libannotation_java_library-hjar.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-bin/app/review/libproject_java_library-src.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-bin/app/review/libproject_java_grpc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-bin/app/review/libfile_java_grpc-hjar.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-bin/app/review/libannotation_java_library-src.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-bin/app/review/libfile_java_grpc-src.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-bin/app/review/libproject_java_grpc-hjar.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-bin/app/review/libreview_service.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-bin/app/review/libfile_java_library-src.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-bin/app/review/libannotation_java_library.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-bin/app/review/libannotation_java_grpc-src.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-bin/app/review/libreview_service-hjar.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-bin/app/review/libannotation_java_grpc-hjar.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

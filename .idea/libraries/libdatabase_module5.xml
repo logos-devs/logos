@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="libdatabase_module5">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-bin/dev/logos/service/storage/pg/exporter/exporter.runfiles/_main/dev/logos/module/libdatabase_module.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

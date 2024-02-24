@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="Notepad1">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-logos/external/rules_java~7.1.0~toolchains~remotejdk17_linux/demo/jfc/Notepad/src.zip!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-logos/external/rules_java~7.1.0~toolchains~remotejdk17_linux/demo/jfc/Notepad/Notepad.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

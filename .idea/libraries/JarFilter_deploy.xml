@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="JarFilter_deploy">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-out/k8-opt-exec-ST-74b705998179/bin/external/intellij_aspect/JarFilter_bin.runfiles/_main/external/intellij_aspect/tools/JarFilter_deploy.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

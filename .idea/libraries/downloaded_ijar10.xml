@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="downloaded-ijar10">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-logos/bazel-out/k8-fastbuild/bin/external/antlr4_tool/jar/_ijar/jar/antlr4_tool/jar/downloaded-ijar.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

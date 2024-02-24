@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="processed_arns-2.20.1022">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-bin/dev/logos/service/backend/Server.runfiles/maven/v1/https/repo.maven.apache.org/maven2/software/amazon/awssdk/arns/2.20.102/processed_arns-2.20.102.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

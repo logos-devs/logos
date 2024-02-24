@@ -1,0 +1,25 @@
+java_library(
+    name = "cognito",
+    srcs = [
+        "CognitoServerInterceptor.java",
+    ],
+    visibility = ["//app:__subpackages__"],
+    deps = [
+        "//app/auth/user",
+        "//dev/logos/user",
+        "@io_grpc_grpc_java//api",
+        "@io_grpc_grpc_java//context",
+        "@maven//:com_fasterxml_jackson_core_jackson_annotations",
+        "@maven//:com_fasterxml_jackson_core_jackson_core",
+        "@maven//:com_fasterxml_jackson_core_jackson_databind",
+        "@maven//:com_fasterxml_jackson_dataformat_jackson_dataformat_cbor",
+        "@maven//:com_fasterxml_jackson_dataformat_jackson_dataformat_xml",
+        "@maven//:com_fasterxml_jackson_datatype_jackson_datatype_jdk8",
+        "@maven//:com_fasterxml_jackson_datatype_jackson_datatype_jsr310",
+        "@maven//:com_google_code_gson_gson",
+        "@maven//:com_google_inject_guice",
+        "@maven//:io_jsonwebtoken_jjwt_api",
+        "@maven//:io_jsonwebtoken_jjwt_impl",
+        "@maven//:io_jsonwebtoken_jjwt_jackson",
+    ],
+)

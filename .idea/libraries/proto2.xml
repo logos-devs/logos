@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="proto2">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-bin/app/digits/proto/libvoice_java_library-hjar.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-bin/app/digits/proto/libvoice_java_library.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bazel-bin/app/digits/proto/libvoice_java_library-src.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

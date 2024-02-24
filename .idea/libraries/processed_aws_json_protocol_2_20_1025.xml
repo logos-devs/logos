@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="processed_aws-json-protocol-2.20.1025">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-logos/bazel-out/k8-fastbuild/bin/dev/logos/service/storage/pg/exporter/exporter.runfiles/_main/external/maven/v1/https/repo.maven.apache.org/maven2/software/amazon/awssdk/aws-json-protocol/2.20.102/processed_aws-json-protocol-2.20.102.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

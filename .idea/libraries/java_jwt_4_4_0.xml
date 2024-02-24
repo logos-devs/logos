@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="java-jwt-4.4.0">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bazel-logos/external/com_auth0_java_jwt_4_4_0/file/v1/https/repo.maven.apache.org/maven2/com/auth0/java-jwt/4.4.0/java-jwt-4.4.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
