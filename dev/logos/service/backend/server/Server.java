@@ -24,6 +24,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
+import static java.lang.System.err;
+
 
 public class Server implements Job {
 
@@ -65,9 +67,9 @@ public class Server implements Job {
                 this.jobState = JobState.RUNNING;
                 logger.info("Server started, listening on " + outerServer.getPort());
                 Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-                    System.err.println("*** shutting down gRPC server since JVM is shutting down");
+                    err.println("*** shutting down gRPC server since JVM is shutting down");
                     Server.this.stop().thenApply(job -> {
-                        System.err.println("*** server shut down");
+                        err.println("*** server shut down");
                         return job;
                     });
                 }));
@@ -125,7 +127,7 @@ public class Server implements Job {
         for (Class<? extends AbstractModule> clazz : reflections.getSubTypesOf(AbstractModule.class)) {
             String packageName = clazz.getPackageName();
             if (packageName.startsWith(parentPackageName) && !Modifier.isAbstract(clazz.getModifiers())) {
-                System.err.println("MODULE: " + clazz.getCanonicalName());
+                err.println("MODULE: " + clazz.getCanonicalName());
                 modules.add(clazz.getDeclaredConstructor().newInstance());
             }
         }

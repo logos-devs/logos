@@ -23,8 +23,8 @@ public class FeedService extends FeedServiceImplBase {
 
     @Inject
     public FeedService(
-        SourceRssStorageServiceFutureStub sourceRssStorageService,
-        EntryStorageServiceFutureStub entryStorageService
+            SourceRssStorageServiceFutureStub sourceRssStorageService,
+            EntryStorageServiceFutureStub entryStorageService
     ) {
         this.sourceRssStorageService = sourceRssStorageService;
         this.entryStorageService = entryStorageService;
@@ -35,11 +35,11 @@ public class FeedService extends FeedServiceImplBase {
             GetFeedRequest request,
             StreamObserver<GetFeedResponse> responseObserver
     ) {
-        ListenableFuture<ListSourceRssResponse> listSourceRssFetch = sourceRssStorageService.list(
-                ListSourceRssRequest.newBuilder().build());
+        ListenableFuture<ListSourceRssResponse> listSourceRssFetch =
+                sourceRssStorageService.list(ListSourceRssRequest.newBuilder().build());
 
-        ListenableFuture<ListEntryResponse> listEntryFetch = entryStorageService.list(
-                ListEntryRequest.newBuilder().build());
+        ListenableFuture<ListEntryResponse> listEntryFetch =
+                entryStorageService.list(ListEntryRequest.newBuilder().build());
 
         try {
             Feed feed = Feed.newBuilder()

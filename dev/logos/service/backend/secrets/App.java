@@ -1,4 +1,4 @@
-package dev.logos.stack.backend.secrets;
+package dev.logos.service.backend.secrets;
 
 public enum App {
     Digits("digits"),

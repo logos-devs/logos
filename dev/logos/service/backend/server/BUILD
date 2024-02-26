@@ -1,10 +1,10 @@
-java_library(
-    name = "server_library",
+java_binary(
+    name = "server",
     srcs = [
         "Server.java",
         "ServerModule.java",
     ],
-    resources = [],
+    main_class = "dev.logos.service.backend.server.Server",
     visibility = ["//visibility:public"],
     deps = [
         "//app/auth/module",
@@ -17,6 +17,7 @@ java_library(
         "//app/summer/module",
         "//dev/logos/job",
         "//dev/logos/module:database_module",
+        "//dev/logos/service",
         "//dev/logos/service/storage:storage_library",
         "@io_grpc_grpc_java//api",
         "@io_grpc_grpc_java//context",
@@ -89,11 +90,4 @@ java_library(
         "@maven//:software_amazon_awssdk_utils",
         "@maven//:software_amazon_eventstream_eventstream",
     ],
-)
-
-java_binary(
-    name = "server",
-    main_class = "dev.logos.service.backend.server.Server",
-    visibility = ["//visibility:public"],
-    runtime_deps = [":server_library"],
 )
