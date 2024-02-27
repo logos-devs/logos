@@ -17,6 +17,7 @@ java_library(
         "//dev/logos/service:__subpackages__",
     ],
     deps = [
+        "//dev/logos/service",
         "//dev/logos/service/storage/pg",
         "//dev/logos/service/storage/validator",
         "//dev/logos/user",

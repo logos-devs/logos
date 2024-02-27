@@ -17,10 +17,10 @@ import static dev.logos.service.storage.pg.SortOrder.DESC;
 
 public class EntryStorageService extends EntryStorageServiceBase {
     @Override
-    public boolean allow(User user, ListEntryRequest request) { return user.isAuthenticated(); }
+    public boolean allow(ListEntryRequest request, User user) { return user.isAuthenticated(); }
 
     @Override
-    public boolean allow(User user, CreateEntryRequest request) { return user.isAuthenticated(); }
+    public boolean allow(CreateEntryRequest request, User user) { return user.isAuthenticated(); }
 
     @Override
     public void validate(CreateEntryRequest request, Validator validator) {

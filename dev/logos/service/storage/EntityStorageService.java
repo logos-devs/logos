@@ -2,50 +2,16 @@ package dev.logos.service.storage;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.GeneratedMessageV3;
+import dev.logos.service.Service;
 import dev.logos.service.storage.exceptions.EntityReadException;
 import dev.logos.service.storage.exceptions.EntityWriteException;
 import dev.logos.service.storage.pg.Select;
-import dev.logos.service.storage.validator.Validator;
-import dev.logos.user.User;
-import dev.logos.user.UserContext;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 
 import java.nio.ByteBuffer;
 import java.util.UUID;
 import java.util.stream.Stream;
-
-interface SecureService {
-    default boolean allow(User user, Object request) {
-        return false;
-    }
-
-    default boolean validate(Object request, Validator validator) {
-        return true;
-    }
-
-    default <T> void error(StreamObserver<T> responseObserver, String description) {
-        responseObserver.onError(
-                Status.INVALID_ARGUMENT
-                        .withDescription(description)
-                        .asException());
-    }
-
-    default <Req, Resp> boolean guard(Req request, StreamObserver<Resp> responseObserver) {
-        if (!allow(UserContext.getCurrentUser(), request)) {
-            error(responseObserver, "Access denied.");
-            return true;
-        }
-
-        Validator validator = new Validator();
-        if (!validate(request, validator)) {
-            error(responseObserver, "Invalid request.");
-            return true;
-        }
-
-        return false;
-    }
-}
 
 public interface EntityStorageService<
     ListRequest extends GeneratedMessageV3,
@@ -58,23 +24,18 @@ public interface EntityStorageService<
     DeleteResponse extends GeneratedMessageV3,
     Entity extends GeneratedMessageV3,
     StorageIdentifier
-> extends SecureService {
+> extends Service {
 
     EntityStorage<Entity, StorageIdentifier> getStorage();
     Select.Builder query(ListRequest listRequest);
 
-    default Entity entity(Object request) {
-        throw new UnsupportedOperationException("Not implemented.");
-    };
-
-    default StorageIdentifier id(Object request) {
+    default <Request extends GeneratedMessageV3> Entity entity(Request ignoredRequest) {
         throw new UnsupportedOperationException("Not implemented.");
     }
 
-    ListResponse listResponse(Stream<Entity> entityStream, ListRequest listRequest);
-    CreateResponse createResponse(StorageIdentifier id, CreateRequest createRequest);
-    UpdateResponse updateResponse(StorageIdentifier id, UpdateRequest updateRequest);
-    DeleteResponse deleteResponse(StorageIdentifier id, DeleteRequest deleteRequest);
+    default <Request> StorageIdentifier id(Request ignoredRequest) {
+        throw new UnsupportedOperationException("Not implemented.");
+    }
 
     // TODO move this shameful code to its proper place in the pg<->protobuf converter
     default UUID bytestringToUuid(ByteString byteString) {
@@ -101,7 +62,15 @@ public interface EntityStorageService<
         Response handle() throws EntityReadException, EntityWriteException;
     }
 
-    default <Request, Response> void handleRequest(Request request, StreamObserver<Response> responseObserver, RequestHandler<Response> handler) {
+    default ListResponse response(Stream<Entity> ignoredEntityStream, ListRequest ignoredRequest) {
+        throw new UnsupportedOperationException("Not implemented.");
+    }
+
+    default <Req, Resp> Resp response(StorageIdentifier ignoredId, Req ignoredRequest) {
+        throw new UnsupportedOperationException("Not implemented.");
+    }
+
+    default <Request, Response> void request(Request request, StreamObserver<Response> responseObserver, RequestHandler<Response> handler) {
         if (guard(request, responseObserver)) { return; }
 
         try {
@@ -113,30 +82,26 @@ public interface EntityStorageService<
         }
     }
 
-    default void list(ListRequest listRequest,
-                      StreamObserver<ListResponse> responseObserver) {
-        handleRequest(listRequest, responseObserver, () -> {
+    default void list(ListRequest listRequest, StreamObserver<ListResponse> responseObserver) {
+        request(listRequest, responseObserver, () -> {
             try (Stream<Entity> entryListStream = getStorage().query(query(listRequest))) {
-                return listResponse(entryListStream, listRequest);
+                return response(entryListStream, listRequest);
             }
         });
     }
 
-    default void create(CreateRequest createRequest,
-                        StreamObserver<CreateResponse> responseObserver) {
-        handleRequest(createRequest, responseObserver, () ->
-            createResponse(getStorage().create(entity(createRequest)), createRequest));
+    default void create(CreateRequest createRequest, StreamObserver<CreateResponse> responseObserver) {
+        request(createRequest, responseObserver, () ->
+            response(getStorage().create(entity(createRequest)), createRequest));
     }
 
-    default void update(UpdateRequest updateRequest,
-                        StreamObserver<UpdateResponse> responseObserver) {
-        handleRequest(updateRequest, responseObserver, () ->
-                updateResponse(getStorage().update(id(updateRequest), entity(updateRequest)), updateRequest));
+    default void update(UpdateRequest updateRequest, StreamObserver<UpdateResponse> responseObserver) {
+        request(updateRequest, responseObserver, () ->
+                response(getStorage().update(id(updateRequest), entity(updateRequest)), updateRequest));
     }
 
-    default void delete(DeleteRequest deleteRequest,
-                        StreamObserver<DeleteResponse> responseObserver) {
-        handleRequest(deleteRequest, responseObserver, () ->
-                deleteResponse(getStorage().delete(id(deleteRequest)), deleteRequest));
+    default void delete(DeleteRequest deleteRequest, StreamObserver<DeleteResponse> responseObserver) {
+        request(deleteRequest, responseObserver, () ->
+                response(getStorage().delete(id(deleteRequest)), deleteRequest));
     }
 }

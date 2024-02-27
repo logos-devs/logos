@@ -488,8 +488,8 @@ public class CodeGenerator {
     private static MethodSpec makeAllowMethod(ClassName requestMessage) {
         return MethodSpec.methodBuilder("allow")
                          .addModifiers(PROTECTED)
-                         .addParameter(ClassName.get(User.class), "user")
                          .addParameter(requestMessage, "request")
+                         .addParameter(ClassName.get(User.class), "user")
                          .returns(boolean.class)
                          .addStatement("return false")
                          .build();
@@ -561,7 +561,7 @@ public class CodeGenerator {
                         .addMethod(makeEntityGetter("entity", updateRequestMessage, entityMessage))
                         .addMethod(makeIdGetter("id", deleteRequestMessage, storageIdentifier))
                         .addMethod(makeIdGetter("id", updateRequestMessage, storageIdentifier))
-                        .addMethod(MethodSpec.methodBuilder("listResponse")
+                        .addMethod(MethodSpec.methodBuilder("response")
                                              .addModifiers(PUBLIC)
                                              .addParameter(
                                                      ParameterizedTypeName.get(ClassName.get(Stream.class),
@@ -575,7 +575,7 @@ public class CodeGenerator {
                                                      listResponseMessage,
                                                      tableDescriptor.getInstanceVariableName())
                                              .build())
-                        .addMethod(MethodSpec.methodBuilder("createResponse")
+                        .addMethod(MethodSpec.methodBuilder("response")
                                              .addModifiers(PUBLIC)
                                              .addParameter(ClassName.get(UUID.class), "id")
                                              .addParameter(createRequestMessage, "request")
@@ -583,7 +583,7 @@ public class CodeGenerator {
                                              .addStatement("return $T.newBuilder().setId(uuidToByteString(id)).build()",
                                                            createResponseMessage)
                                              .build())
-                        .addMethod(MethodSpec.methodBuilder("updateResponse")
+                        .addMethod(MethodSpec.methodBuilder("response")
                                              .addModifiers(PUBLIC)
                                              .addParameter(ClassName.get(UUID.class), "id")
                                              .addParameter(updateRequestMessage, "request")
@@ -591,7 +591,7 @@ public class CodeGenerator {
                                              .addStatement("return $T.newBuilder().setId(uuidToByteString(id)).build()",
                                                            updateResponseMessage)
                                              .build())
-                        .addMethod(MethodSpec.methodBuilder("deleteResponse")
+                        .addMethod(MethodSpec.methodBuilder("response")
                                              .addModifiers(PUBLIC)
                                              .addParameter(ClassName.get(UUID.class), "id")
                                              .addParameter(deleteRequestMessage, "request")

@@ -21,15 +21,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
+import static dev.logos.job.JobState.*;
 import static java.lang.System.err;
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 
 public class Server implements Job {
 
-    private JobState jobState = JobState.STOPPED;
+    private JobState jobState = STOPPED;
     private static final int DEFAULT_PORT = 8081;
     private static final int TERMINATION_GRACE_PERIOD_SECONDS = 25;
     private final Logger logger;
@@ -58,13 +59,13 @@ public class Server implements Job {
     }
 
     public CompletableFuture<Job> start() {
-        this.jobState = JobState.STARTING;
+        this.jobState = STARTING;
 
         return CompletableFuture.supplyAsync(() -> {
             try {
                 outerServer.start();
                 innerServer.start();
-                this.jobState = JobState.RUNNING;
+                this.jobState = RUNNING;
                 logger.info("Server started, listening on " + outerServer.getPort());
                 Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                     err.println("*** shutting down gRPC server since JVM is shutting down");
@@ -81,19 +82,19 @@ public class Server implements Job {
     }
 
     public CompletableFuture<Job> stop() {
-        this.jobState = JobState.STOPPING;
+        this.jobState = STOPPING;
 
         return CompletableFuture.supplyAsync(() -> {
             try {
                 outerServer.shutdown().awaitTermination(
                     TERMINATION_GRACE_PERIOD_SECONDS,
-                    TimeUnit.SECONDS);
+                    SECONDS);
                 innerServer.shutdown().awaitTermination(
                         TERMINATION_GRACE_PERIOD_SECONDS,
-                        TimeUnit.SECONDS);
-                this.jobState = JobState.STOPPED;
+                        SECONDS);
+                this.jobState = STOPPED;
             } catch (InterruptedException e) {
-                this.jobState = JobState.RUNTIME_FAILURE;
+                this.jobState = RUNTIME_FAILURE;
                 throw new RuntimeException(e);
             }
             return Server.this;
@@ -112,6 +113,7 @@ public class Server implements Job {
 
     private void blockUntilShutdown() throws InterruptedException {
         outerServer.awaitTermination();
+        innerServer.awaitTermination();
     }
 
     public static void main(String[] args)

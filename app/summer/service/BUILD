@@ -13,6 +13,7 @@ java_library(
         "//app/auth/user",
         "//app/summer/proto",
         "//app/summer/storage",
+        "//dev/logos/service",
         "//dev/logos/service/storage:storage_library",
         "//dev/logos/service/storage/pg",
         "//dev/logos/service/storage/validator",
