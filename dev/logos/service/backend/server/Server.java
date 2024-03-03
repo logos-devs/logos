@@ -7,7 +7,7 @@ import com.google.inject.Injector;
 import dev.logos.job.Job;
 import dev.logos.job.JobState;
 import dev.logos.module.DatabaseModule;
-import io.grpc.BindableService;
+import dev.logos.service.Service;
 import io.grpc.ServerBuilder;
 import io.grpc.ServerInterceptor;
 import io.grpc.inprocess.InProcessServerBuilder;
@@ -38,7 +38,7 @@ public class Server implements Job {
     private final io.grpc.Server outerServer;
 
     @Inject
-    public Server(Set<BindableService> services, Set<ServerInterceptor> interceptors, Logger logger) {
+    public Server(Set<Service> services, Set<ServerInterceptor> interceptors, Logger logger) {
         this.logger = logger;
 
         ServerBuilder<?> innerServerBuilder = InProcessServerBuilder.forName("logos-in-process");
@@ -49,7 +49,7 @@ public class Server implements Job {
             outerServerBuilder.intercept(interceptor);
         }
 
-        for (BindableService service : services) {
+        for (Service service : services) {
             innerServerBuilder.addService(service);
             outerServerBuilder.addService(service);
         }

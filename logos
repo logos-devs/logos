@@ -135,8 +135,8 @@ dev_server() {
   #rds_tunnel_up
   server_tunnel_up
   # TODO switch to using telepresence intercept
-  ibazel run //dev/logos/service/backend:Server
-  #bazelisk run --config=remote //dev/logos/service/backend:Server -- --debug
+  #ibazel run //dev/logos/service/backend/server
+  $BAZEL run --config=remote //dev/logos/service/backend/server -- --debug
 }
 
 dev_client() {

@@ -7,6 +7,8 @@ import app.auth.proto.cognito.ProcessAuthCodeRequest;
 import app.auth.proto.cognito.ProcessAuthCodeResponse;
 import com.google.gson.Gson;
 import com.google.inject.Inject;
+import dev.logos.service.Service;
+import dev.logos.user.User;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -29,7 +31,7 @@ import java.util.logging.Logger;
 import static java.util.Objects.requireNonNull;
 import static java.util.logging.Level.SEVERE;
 
-public class CognitoService extends CognitoServiceGrpc.CognitoServiceImplBase {
+public class CognitoService extends CognitoServiceGrpc.CognitoServiceImplBase implements Service {
     private final Logger logger;
 
     private static final String TOKEN_REQUEST_FAILURE_MSG = "Failed to retrieve a token.";
@@ -74,6 +76,11 @@ public class CognitoService extends CognitoServiceGrpc.CognitoServiceImplBase {
             requireNonNull(refresh_token);
             requireNonNull(token_type);
         }
+    }
+
+    @Override
+    public <Req> boolean allow(Req request, User ignoredUser) {
+        return request instanceof ProcessAuthCodeRequest;
     }
 
     @Override

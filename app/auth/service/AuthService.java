@@ -1,57 +1,26 @@
 package app.auth.service;
 
-import app.auth.proto.auth.AuthServiceGrpc;
-import app.auth.proto.auth.Credential;
-import app.auth.proto.auth.CredentialsCreateOptions;
-import app.auth.proto.auth.CredentialsGetOptions;
-import app.auth.proto.auth.FinishAssertionRequest;
-import app.auth.proto.auth.FinishAssertionResponse;
-import app.auth.proto.auth.StartAssertionRequest;
-import app.auth.proto.auth.StartAssertionResponse;
-import app.auth.proto.auth.StartRegistrationRequest;
-import app.auth.proto.auth.StartRegistrationResponse;
-import app.auth.proto.auth.ValidatePublicKeyCredentialRequest;
-import app.auth.proto.auth.ValidatePublicKeyCredentialResponse;
+import app.auth.proto.auth.*;
 import app.auth.storage.AuthCredentialStorage;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.inject.Inject;
 import com.google.protobuf.ByteString;
-import com.yubico.webauthn.AssertionRequest;
-import com.yubico.webauthn.AssertionResult;
-import com.yubico.webauthn.FinishAssertionOptions;
-import com.yubico.webauthn.FinishRegistrationOptions;
-import com.yubico.webauthn.RegistrationResult;
-import com.yubico.webauthn.RelyingParty;
-import com.yubico.webauthn.StartAssertionOptions;
-import com.yubico.webauthn.StartRegistrationOptions;
-import com.yubico.webauthn.data.AuthenticatorAssertionResponse;
-import com.yubico.webauthn.data.AuthenticatorAttestationResponse;
-import com.yubico.webauthn.data.AuthenticatorSelectionCriteria;
-import com.yubico.webauthn.data.ByteArray;
-import com.yubico.webauthn.data.ClientAssertionExtensionOutputs;
-import com.yubico.webauthn.data.ClientRegistrationExtensionOutputs;
-import com.yubico.webauthn.data.PublicKeyCredential;
-import com.yubico.webauthn.data.PublicKeyCredentialCreationOptions;
-import com.yubico.webauthn.data.PublicKeyCredentialDescriptor;
-import com.yubico.webauthn.data.RelyingPartyIdentity;
-import com.yubico.webauthn.data.ResidentKeyRequirement;
-import com.yubico.webauthn.data.UserIdentity;
+import com.yubico.webauthn.*;
+import com.yubico.webauthn.data.*;
 import com.yubico.webauthn.exception.AssertionFailedException;
 import com.yubico.webauthn.exception.RegistrationFailedException;
+import dev.logos.service.Service;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
+
+import javax.json.Json;
+import javax.json.JsonObject;
 import java.io.IOException;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
-import java.security.InvalidKeyException;
-import java.security.KeyFactory;
-import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
-import java.security.PublicKey;
-import java.security.Signature;
-import java.security.SignatureException;
+import java.security.*;
 import java.security.interfaces.RSAPrivateCrtKey;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
@@ -62,8 +31,6 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Base64;
 import java.util.Random;
-import javax.json.Json;
-import javax.json.JsonObject;
 
 enum Cipher {
     RSA("RSA");
@@ -85,7 +52,7 @@ enum SignatureScheme {
     }
 }
 
-public class AuthService extends AuthServiceGrpc.AuthServiceImplBase {
+public class AuthService extends AuthServiceGrpc.AuthServiceImplBase implements Service {
 
     private static final String RELYING_PARTY_ID = "dev.digits.rip";
     private static final Cipher cipher = Cipher.RSA;

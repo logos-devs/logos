@@ -17,16 +17,17 @@ import static dev.logos.service.storage.pg.SortOrder.DESC;
 
 public class EntryStorageService extends EntryStorageServiceBase {
     @Override
-    public boolean allow(ListEntryRequest request, User user) { return user.isAuthenticated(); }
+    public <Req> boolean allow(Req request, User user) {
+        return request instanceof ListEntryRequest || user.isAuthenticated();
+    }
 
     @Override
-    public boolean allow(CreateEntryRequest request, User user) { return user.isAuthenticated(); }
-
-    @Override
-    public void validate(CreateEntryRequest request, Validator validator) {
-        Entry entry = request.getEntity();
-        validator.require(!entry.getName().isBlank(), "name is required")
-                 .require(!entry.getBody().isBlank(), "body is required");
+    public <Req> void validate(Req request, Validator validator) {
+        if (request instanceof CreateEntryRequest) {
+            Entry entry = ((CreateEntryRequest)request).getEntity();
+            validator.require(!entry.getName().isBlank(), "name is required")
+                     .require(!entry.getBody().isBlank(), "body is required");
+        }
     }
 
     @Override

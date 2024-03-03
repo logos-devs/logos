@@ -7,17 +7,16 @@ import app.summer.proto.feed.GetFeedResponse;
 import app.summer.proto.feed.Source;
 import app.summer.storage.summer.EntryStorageServiceGrpc.EntryStorageServiceFutureStub;
 import app.summer.storage.summer.ListEntryRequest;
-import app.summer.storage.summer.ListEntryResponse;
 import app.summer.storage.summer.ListSourceRssRequest;
-import app.summer.storage.summer.ListSourceRssResponse;
 import app.summer.storage.summer.SourceRssStorageServiceGrpc.SourceRssStorageServiceFutureStub;
-import com.google.common.util.concurrent.ListenableFuture;
 import com.google.inject.Inject;
+import dev.logos.service.Service;
+import dev.logos.user.User;
 import io.grpc.stub.StreamObserver;
 
 import java.util.concurrent.ExecutionException;
 
-public class FeedService extends FeedServiceImplBase {
+public class FeedService extends FeedServiceImplBase implements Service {
     private final SourceRssStorageServiceFutureStub sourceRssStorageService;
     private final EntryStorageServiceFutureStub entryStorageService;
 
@@ -31,29 +30,33 @@ public class FeedService extends FeedServiceImplBase {
     }
 
     @Override
+    public <Req> boolean allow(Req request, User user) {
+        return request instanceof GetFeedRequest;
+    }
+
+    @Override
     public void getFeed(
             GetFeedRequest request,
             StreamObserver<GetFeedResponse> responseObserver
     ) {
-        ListenableFuture<ListSourceRssResponse> listSourceRssFetch =
-                sourceRssStorageService.list(ListSourceRssRequest.newBuilder().build());
-
-        ListenableFuture<ListEntryResponse> listEntryFetch =
-                entryStorageService.list(ListEntryRequest.newBuilder().build());
-
         try {
-            Feed feed = Feed.newBuilder()
-                            .addAllEntry(listEntryFetch.get().getResultsList())
-                            .addAllSource(
-                                    listSourceRssFetch.get().getResultsList().stream().map(
-                                                              sourceRss -> Source.newBuilder()
-                                                                                 .setId(sourceRss.getId())
-                                                                                 .setIcon(sourceRss.getFaviconUrl())
-                                                                                 .build())
-                                                      .toList())
-                            .build();
-
-            responseObserver.onNext(GetFeedResponse.newBuilder().setFeed(feed).build());
+            responseObserver.onNext(
+                    GetFeedResponse.newBuilder().setFeed(
+                            Feed.newBuilder()
+                                .addAllEntry(
+                                        entryStorageService.list(ListEntryRequest.newBuilder().build())
+                                                           .get()
+                                                           .getResultsList())
+                                .addAllSource(
+                                        sourceRssStorageService.list(ListSourceRssRequest.newBuilder().build())
+                                                               .get()
+                                                               .getResultsList().stream().map(
+                                                                       sourceRss -> Source.newBuilder()
+                                                                                          .setId(sourceRss.getId())
+                                                                                          .setIcon(sourceRss.getFaviconUrl())
+                                                                                          .build())
+                                                               .toList())
+                                .build()).build());
             responseObserver.onCompleted();
 
         } catch (InterruptedException | ExecutionException err) {

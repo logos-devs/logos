@@ -5,36 +5,27 @@ import dev.logos.user.User;
 import dev.logos.user.UserContext;
 import io.grpc.BindableService;
 import io.grpc.Status;
-import io.grpc.stub.StreamObserver;
+
+import java.util.Optional;
 
 public interface Service extends BindableService {
-    default boolean allow(Object request, User user) {
-        return false;
-    }
+    default <Req> boolean allow(Req request, User user) { return false; }
 
-    default boolean validate(Object request, Validator validator) {
-        return true;
-    }
+    default <Req> void validate(Req request, Validator validator) { }
 
-    default <T> void error(StreamObserver<T> responseObserver, String description) {
-        responseObserver.onError(
-                Status.INVALID_ARGUMENT
-                        .withDescription(description)
-                        .asException());
-    }
-
-    default <Req, Resp> boolean guard(Req request, StreamObserver<Resp> responseObserver) {
+    default <Req> Optional<Status> guard(Req request) {
         if (!allow(request, UserContext.getCurrentUser())) {
-            error(responseObserver, "Access denied.");
-            return true;
+            return Optional.of(Status.PERMISSION_DENIED.withDescription("x"));
         }
 
         Validator validator = new Validator();
-        if (!validate(request, validator)) {
-            error(responseObserver, "Invalid request.");
-            return true;
+        validate(request, validator);
+
+        if (!validator.isValid()) {
+            // TODO attach validation failures to status
+            return Optional.of(Status.INVALID_ARGUMENT);
         }
 
-        return false;
+        return Optional.empty();
     }
 }

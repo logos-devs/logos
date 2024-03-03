@@ -71,8 +71,6 @@ public interface EntityStorageService<
     }
 
     default <Request, Response> void request(Request request, StreamObserver<Response> responseObserver, RequestHandler<Response> handler) {
-        if (guard(request, responseObserver)) { return; }
-
         try {
             responseObserver.onNext(handler.handle());
             responseObserver.onCompleted();

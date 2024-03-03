@@ -3,6 +3,7 @@ java_library(
     srcs = ["Service.java"],
     visibility = [
         "//app:__subpackages__",
+        "//dev/logos/app:__pkg__",
         "//dev/logos/service/backend:__subpackages__",
         "//dev/logos/service/storage:__subpackages__",
     ],

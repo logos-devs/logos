@@ -27,7 +27,6 @@ public class SummerModule extends AppModule {
         addService(FeedService.class);
         addService(EntryStorageService.class);
         addService(SourceRssStorageService.class);
-        super.configure();
     }
 
     @Provides
