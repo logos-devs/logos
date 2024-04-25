@@ -8,6 +8,8 @@ java_library(
         "@maven//:com_zaxxer_HikariCP",
         "@maven//:dnsjava_dnsjava",
         "@maven//:javax_inject_javax_inject",
+        "@maven//:org_jdbi_jdbi3_core",
+        "@maven//:org_jdbi_jdbi3_postgres",
         "@maven//:org_postgresql_postgresql",
         "@maven//:software_amazon_awssdk_auth",
         "@maven//:software_amazon_awssdk_rds",

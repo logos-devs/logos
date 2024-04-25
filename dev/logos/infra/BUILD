@@ -41,7 +41,7 @@ js_run_binary(
         "--all",
         "--outputs-file",
         "outputs.json",
-        "--hotswap", # TODO this should only be done in dev environments! 
+        #"--hotswap", # TODO this should only be done in dev environments!
         "--require-approval",
         "never",
     ],

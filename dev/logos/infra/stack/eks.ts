@@ -4,8 +4,10 @@ import {
     BlueprintBuilder,
     ClusterAutoScalerAddOn,
     CoreDnsAddOn,
+    DirectVpcProvider,
     EksBlueprint,
     ExternalDnsAddOn,
+    GlobalResources,
     ImportCertificateProvider,
     ImportHostedZoneProvider,
     KubeProxyAddOn,
@@ -19,10 +21,13 @@ import {InstanceType} from 'aws-cdk-lib/aws-ec2';
 import {KubernetesVersion, MachineImageType} from 'aws-cdk-lib/aws-eks';
 import {AcmStack} from "./acm";
 import {R53Stack} from "./r53";
+import {VpcStack} from "./vpc";
+
 
 export function makeEksStack(
     app: App,
     id: string,
+    vpcStack: VpcStack,
     acmStack: AcmStack,
     r53Stack: R53Stack,
     env: Environment
@@ -32,6 +37,7 @@ export function makeEksStack(
         EksBlueprint.builder()
             .account(env.account)
             .region(env.region)
+            .resourceProvider(GlobalResources.Vpc, new DirectVpcProvider(vpcStack.vpc))
             .clusterProvider(
                new AsgClusterProvider({
                    id: id + '-auto-scaling-group',
@@ -40,7 +46,7 @@ export function makeEksStack(
                    instanceType: new InstanceType('t3.medium'),
                    machineImageType: MachineImageType.BOTTLEROCKET,
                    updatePolicy: UpdatePolicy.rollingUpdate(),
-                   version: KubernetesVersion.V1_28,
+                   version: KubernetesVersion.V1_29,
                })
             );
 
@@ -67,19 +73,17 @@ export function makeEksStack(
                 }
             }),
             new ClusterAutoScalerAddOn({
-                version: "9.29.0"
+                version: "auto"
             }),
-            new CoreDnsAddOn({
-                version: "v1.10.1-eksbuild.2"
-            }),
-            new KubeProxyAddOn("v1.27.4-eksbuild.2"),
+            new CoreDnsAddOn("auto"),
+            new KubeProxyAddOn("auto"),
             new MetricsServerAddOn(),
             new NginxAddOn({
                 internetFacing: true,
                 certificateResourceName: `${id}-ingress-cert`,
             }),
             new VpcCniAddOn({
-                version: "v1.13.4-eksbuild.1",
+                version: "auto",
             }),
         )
         .useDefaultSecretEncryption(true)

@@ -15,10 +15,8 @@ import org.jdbi.v3.core.Handle;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.mapper.reflect.FieldMapper;
 import org.jdbi.v3.core.statement.Query;
-import org.jdbi.v3.postgres.PostgresPlugin;
 
 import javax.sql.DataSource;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -26,13 +24,14 @@ import java.util.stream.Stream;
 
 public class TableStorage<Entity, StorageIdentifier> implements EntityStorage<Entity, StorageIdentifier> {
 
-    @Inject
-    protected DataSource dataSource;
+    @Inject private DataSource dataSource;
+    @Inject private Jdbi jdbi;
 
     protected Relation relation;
     Class<Entity> entityClass;
     Class<StorageIdentifier> storageIdentifierClass;
 
+    @Inject
     public TableStorage(
             Relation relation,
             Class<Entity> entityClass1,
@@ -41,11 +40,6 @@ public class TableStorage<Entity, StorageIdentifier> implements EntityStorage<En
         this.relation = relation;
         this.entityClass = entityClass1;
         this.storageIdentifierClass = storageIdentifierClass;
-    }
-
-    @Deprecated
-    protected Jdbi getJdbi() throws SQLException {
-        return Jdbi.create(dataSource).installPlugin(new PostgresPlugin());
     }
 
     @Deprecated
@@ -61,20 +55,16 @@ public class TableStorage<Entity, StorageIdentifier> implements EntityStorage<En
     // TODO : write a mapper which uses the proto reflection API. The members
     //  of this class are not the ones which correspond to field names.
     public Stream<Entity> query(Select.Builder selectBuilder) throws EntityReadException {
-        try {
-            Handle handle = getJdbi().open();
-            handle.registerRowMapper(FieldMapper.factory(entityClass));
-            return handle.createQuery(selectBuilder.build().toString())
-                         .map((rs, ctx) -> relation.<Entity>toProtobuf(rs))
-                         .stream()
-                         .onClose(handle::close);
-        } catch (SQLException e) {
-            throw new EntityReadException("Database error in query", e);
-        }
+        Handle handle = jdbi.open();
+        handle.registerRowMapper(FieldMapper.factory(entityClass));
+        return handle.createQuery(selectBuilder.build().toString())
+                     .map((rs, ctx) -> relation.<Entity>toProtobuf(rs))
+                     .stream()
+                     .onClose(handle::close);
     }
 
     public StorageIdentifier create(Entity entity) throws EntityWriteException {
-        try (Query insertQuery = getJdbi().withHandle(handle -> {
+        try (Query insertQuery = jdbi.withHandle(handle -> {
             Map<FieldDescriptor, Object> fields = ((GeneratedMessageV3) entity).getAllFields();
             List<String> fieldNames = fields.keySet().stream().map(FieldDescriptor::getName).toList();
 
@@ -89,13 +79,11 @@ public class TableStorage<Entity, StorageIdentifier> implements EntityStorage<En
             return query;
         })) {
             return insertQuery.mapTo(this.storageIdentifierClass).first();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
         }
     }
 
     public StorageIdentifier update(StorageIdentifier id, Entity entity) throws EntityWriteException {
-        try (Query updateQuery = getJdbi().withHandle(handle -> {
+        try (Query updateQuery = jdbi.withHandle(handle -> {
             Map<FieldDescriptor, Object> fields = ((GeneratedMessageV3) entity).getAllFields();
             List<String> fieldNames = fields.keySet().stream().map(FieldDescriptor::getName).toList();
 
@@ -110,19 +98,15 @@ public class TableStorage<Entity, StorageIdentifier> implements EntityStorage<En
             return query;
         })) {
             return updateQuery.mapTo(this.storageIdentifierClass).first();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
         }
     }
 
     public StorageIdentifier delete(StorageIdentifier id) {
-        try (Query deleteQuery = getJdbi().withHandle(
+        try (Query deleteQuery = jdbi.withHandle(
                 handle -> handle.createQuery(
                                         String.format("delete from %s where id = :id returning id", relation.quotedIdentifier))
                                 .bind("id", id))) {
             return deleteQuery.mapTo(this.storageIdentifierClass).first();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
         }
     }
 
@@ -136,9 +120,7 @@ public class TableStorage<Entity, StorageIdentifier> implements EntityStorage<En
                 case DOUBLE -> query.bind(fieldName, (Double) o);
                 case BOOLEAN -> query.bind(fieldName, (Boolean) o);
                 case STRING -> query.bind(fieldName, (String) o);
-                case BYTE_STRING -> {
-                    query.bind(fieldName, ((ByteString) o).toByteArray());
-                }
+                case BYTE_STRING -> query.bind(fieldName, ((ByteString) o).toByteArray());
                 case ENUM -> throw new UnsupportedOperationException("ENUM is not supported yet.");
                 case MESSAGE -> throw new UnsupportedOperationException(
                         "MESSAGE (sub-message field) is not supported yet.");

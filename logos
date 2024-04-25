@@ -157,7 +157,7 @@ dev_setup() {
     mkdir -p ~/.aws
     dev_config_aws_profile > ~/.aws/config
 
-    aws sso login
+    aws sso login --no-browser
 
     ACCOUNT="$(aws sts get-caller-identity --query "Account" --output text)"
     STACK="logos-eks"

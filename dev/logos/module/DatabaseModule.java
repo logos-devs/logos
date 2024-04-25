@@ -4,6 +4,8 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import org.jdbi.v3.core.Jdbi;
+import org.jdbi.v3.postgres.PostgresPlugin;
 import org.postgresql.Driver;
 import org.xbill.DNS.Record;
 import org.xbill.DNS.*;
@@ -85,5 +87,10 @@ public class DatabaseModule extends AbstractModule {
         // config.addDataSourceProperty("prepStmtCacheSize", "200");
         // config.addDataSourceProperty("prepStmtCacheSqlLimit", "1024");
         return new RdsIamAuthHikariDataSource(config);
+    }
+
+    @Provides
+    Jdbi provideJdbi(DataSource dataSource) {
+        return Jdbi.create(dataSource).installPlugin(new PostgresPlugin());
     }
 }

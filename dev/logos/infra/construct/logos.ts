@@ -8,6 +8,7 @@ import {makeIamStack} from "../stack/iam";
 import {makeR53Stack} from '../stack/r53';
 import {makeRdsStack} from '../stack/rds';
 import {makeS3Stack} from "../stack/s3";
+import {makeVpcStack} from "../stack/vpc";
 
 
 export class Deployment {
@@ -65,7 +66,8 @@ export class Logos extends Construct {
         makeEcrStack(app, `${id}-ecr`, env);
 
         const
-            eksStack = makeEksStack(app, `${id}-eks`, acmStack, r53Stack, env),
+            vpcStack = makeVpcStack(app, `${id}-vpc`, env),
+            eksStack = makeEksStack(app, `${id}-eks`, vpcStack, acmStack, r53Stack, env),
             rdsStack = makeRdsStack(app, `${id}-rds`, eksStack, env),
             iamStack = makeIamStack(app, `${id}-iam`, eksStack, rdsStack, env);
 

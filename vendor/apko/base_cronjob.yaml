@@ -8,7 +8,7 @@ contents:
     - ca-certificates-bundle
     - coreutils
     - glibc
-    - libpq-15
+    - libpq-16
     - python-3.11
     - wolfi-base
     - wolfi-baselayout
