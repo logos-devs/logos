@@ -114,6 +114,7 @@ schema_export_rule = rule(
         "protoc_grpc_web_plugin": attr.label(mandatory = True),
         "protoc_grpc_java_plugin": attr.label(mandatory = True),
         "protoc": attr.label(mandatory = True),
+        "deps": attr.label_list(allow_files = True),
         "tables": attr.string_list_dict(mandatory = True),
     },
     toolchains = [
@@ -121,7 +122,7 @@ schema_export_rule = rule(
     ],
 )
 
-def schema_export(name, tables, visibility):
+def schema_export(name, tables, visibility, deps = None):
     schema_export_rule(
         name = name,
         tables = tables,
@@ -134,6 +135,7 @@ def schema_export(name, tables, visibility):
             "no-remote",
             "requires-network",
         ],
+        deps = deps,
         visibility = visibility,
     )
 

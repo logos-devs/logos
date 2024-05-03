@@ -172,6 +172,8 @@ dev_setup() {
                 --name logos-eks \
                 --region "$AWS_REGION" \
                 --role-arn "$ROLE_ARN"
+    # pg_migrate bzl rule needs the absolute path to aws cli
+    sed -i 's|command: aws|command: /usr/local/bin/aws|' ~/.kube/config
 
     dev_config_aws_bzl > "$WORKSPACE_DIR/bzl/aws.bzl"
 
@@ -224,7 +226,15 @@ rds_tunnel() {
     sleep infinity
 }
 
-_rds_check_connectivity() {
+rds_tunnel_up() {
+  CONSOLE_POD_NAME="$(console_pod)"
+  kubectl exec "$CONSOLE_POD_NAME" -- sh -c 'killall socat || true'
+
+  _run_with_pid "$PG_TUNNEL_SOCAT_PID" kubectl exec "$CONSOLE_POD_NAME" -- socat TCP-LISTEN:$PG_TUNNEL_REMOTE_PORT,fork,reuseaddr TCP:$PG_AUTH_HOST:$PG_TUNNEL_REMOTE_PORT
+  sleep 3
+
+  _run_with_pid "$PG_TUNNEL_PORT_FORWARD_PID" kubectl port-forward "$CONSOLE_POD_NAME" "$PG_TUNNEL_LOCAL_PORT:$PG_TUNNEL_REMOTE_PORT"
+
   stderr "Checking for tunnel connectivity."
 
   PGPASSWORD="$(rds_clusteradmin_password)"
@@ -236,17 +246,6 @@ _rds_check_connectivity() {
   done
 
   unset PGPASSWORD
-}
-
-rds_tunnel_up() {
-  CONSOLE_POD_NAME="$(console_pod)"
-  kubectl exec "$CONSOLE_POD_NAME" -- sh -c 'killall socat || true'
-
-  _run_with_pid "$PG_TUNNEL_SOCAT_PID" kubectl exec "$CONSOLE_POD_NAME" -- socat TCP-LISTEN:$PG_TUNNEL_REMOTE_PORT,fork,reuseaddr TCP:$PG_AUTH_HOST:$PG_TUNNEL_REMOTE_PORT
-  sleep 3
-
-  _run_with_pid "$PG_TUNNEL_PORT_FORWARD_PID" kubectl port-forward "$CONSOLE_POD_NAME" "$PG_TUNNEL_LOCAL_PORT:$PG_TUNNEL_REMOTE_PORT"
-  _rds_check_connectivity
 }
 
 rds_tunnel_down() {

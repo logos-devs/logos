@@ -1,0 +1,22 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: feeds
+spec:
+  schedule: "*/5 * * * *"
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: logos-iam-eks-service-account
+          containers:
+            - name: imap
+              env:
+                - name: STORAGE_PG_BACKEND_JDBC_URL
+                  value: jdbc:postgresql://db-rw.logos.dev/logos
+                - name: STORAGE_PG_BACKEND_USER
+                  value: storage
+              image: logos-ecr-feeds
+              imagePullPolicy: Always
+          restartPolicy: OnFailure

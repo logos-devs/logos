@@ -48,6 +48,9 @@ def _kubectl_impl(ctx):
             deps.append(dep[DefaultInfo].files_to_run.executable.short_path)
             runfiles = runfiles.merge(dep[DefaultInfo].default_runfiles)
 
+        for migration in ctx.attr.migrations:
+            runfiles = runfiles.merge(ctx.runfiles(files=migration[DefaultInfo].files.to_list()))
+
     ctx.actions.write(
         output = executable,
         content = """#!/bin/bash -eu
@@ -88,6 +91,7 @@ kubectl_rule = rule(
     attrs = {
         "action": attr.string(mandatory = True),
         "manifests": attr.label_list(allow_files = True),
+        "migrations": attr.label_list(allow_files = False),
         "deps": attr.label_list(allow_files = False),
         "images": attr.label_keyed_string_dict(allow_empty = True),
         "image_pushes": attr.label_list(allow_files = True),
@@ -100,7 +104,7 @@ kubectl_rule = rule(
     executable = True,
 )
 
-def kubectl(name, manifests, deps = None, images = None, image_pushes = None, visibility = None):
+def kubectl(name, manifests, migrations = None, deps = None, images = None, image_pushes = None, visibility = None):
     if images == None:
         images = {}
 
@@ -110,11 +114,15 @@ def kubectl(name, manifests, deps = None, images = None, image_pushes = None, vi
     if deps == None:
         deps = []
 
+    if migrations == None:
+        migrations = []
+
     for action in ["apply", "delete", "diff", "replace"]:
         kubectl_rule(
             name = name if action == "apply" else "{}.{}".format(name, action),
             action = action,
             manifests = manifests,
+            migrations = migrations,
             deps = deps,
             images = images,
             image_pushes = image_pushes,
