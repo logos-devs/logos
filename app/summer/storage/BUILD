@@ -8,6 +8,7 @@ schema_export(
             "source_rss",
         ],
     },
+    migrations = ["//app/summer/storage/migrations"],
     visibility = ["//app/summer:__subpackages__"],
 )
 

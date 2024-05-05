@@ -328,6 +328,7 @@ rds() {
             ;;
         token)
             shift 1
+            dev_env
             rds_token "$@"
             ;;
         tunnel)

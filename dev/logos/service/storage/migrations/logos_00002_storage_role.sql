@@ -1,4 +1,4 @@
-create or replace function migrations.apply_00002_role_storage() returns void as
+create or replace function migrations.apply_logos_00002_role_storage() returns void as
 $mig$
 begin
     create or replace function create_role_if_not_exists(role_name text) returns void as $$
@@ -37,7 +37,7 @@ end ;
 $mig$ language plpgsql;
 
 
-create or replace function migrations.revert_00002_role_storage() returns void as
+create or replace function migrations.revert_logos_00002_role_storage() returns void as
 $rev$
 begin
     drop function if exists tests.role_storage_can_login();

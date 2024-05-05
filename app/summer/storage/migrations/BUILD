@@ -3,8 +3,6 @@ load("//bzl:pg_migrate.bzl", "pg_migrate")
 pg_migrate(
     name = "migrations",
     migrations = glob(["*.sql"]),
-    head = "logos_00002_storage_role.sql",
-    visibility = [
-        "//dev/logos/service/database:__pkg__"
-    ]
+    head = "00004_table_summer_topic.sql",
+    visibility = ["//app/summer/storage:__pkg__"],
 )

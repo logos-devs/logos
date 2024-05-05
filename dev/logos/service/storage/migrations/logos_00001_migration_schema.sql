@@ -2,7 +2,7 @@ begin;
 
 create schema if not exists migrations;
 
-create or replace function migrations.apply_00001_migration_schema() returns void as
+create or replace function migrations.apply_logos_00001_migration_schema() returns void as
 $mig$
 begin
     create schema assert;
@@ -32,8 +32,8 @@ begin
 
     create table migrations.project
     (
-        id          uuid primary key default gen_random_uuid(),
-        name        text not null unique check (name ~ '^[a-z][a-z0-9_]*$'),
+        id uuid primary key default gen_random_uuid(),
+        name text not null unique check (name ~ '^[a-z][a-z0-9_]*$'),
         description text not null
     );
 
@@ -41,19 +41,21 @@ begin
     $$
     insert into migrations.project (name, description)
     values (_name, _description)
-    returning id
-    $$ language sql security definer;
+    on conflict (name) do update set description = excluded.description
+    returning id;
+    $$ language sql;
 
     perform migrations.project('logos', 'Framework-level schemata.');
 
 
     create table migrations.migration
     (
-        id              int     primary key,
-        project_id      uuid    not null references migrations.project (id),
-        name            text    not null unique check (name ~ '^[a-z][a-z0-9_]*$'),
-        description     text    not null check (length(description) > 10),
-        apply_function  regproc not null,
+        id uuid primary key default gen_random_uuid(),
+        migration_number int not null,
+        project_id uuid not null references migrations.project (id),
+        name text not null unique check (name ~ '^[a-z][a-z0-9_]*$'),
+        description text not null check (length(description) > 10),
+        apply_function regproc not null,
         revert_function regproc not null
     );
 
@@ -67,14 +69,14 @@ begin
                             from information_schema.schemata
                             where schema_name = 'migrations') = 1),
                    'The migrations schema should exist.');
-    $$ language sql security definer;
+    $$ language sql;
 
 
     create or replace function tests.run()
         returns table
                 (
                     test_name varchar,
-                    passed    boolean
+                    passed boolean
                 )
     as
     $$
@@ -106,20 +108,23 @@ begin
                         raise notice 'tests.% failed', func.routine_name;
                         return next;
                 end;
+
+                reset role;
             end loop;
         return;
     end;
-    $$ language plpgsql security definer;
+    $$ language plpgsql;
 
 
-    create function migrations.head(_project_name varchar) returns integer as
+    create function migrations.head(_project_name varchar) returns int as
     $$
-    select max(id)
+
+    select max(migration_number)
     from migrations.migration
     where project_id = (select id
                         from migrations.project
                         where name = _project_name);
-    $$ language sql security definer;
+    $$ language sql;
 
 
     create or replace function migrations.apply(
@@ -130,25 +135,43 @@ begin
     ) returns integer as
     $$
     declare
-        migration_id integer;
+        _existing_migration_number integer;
+        _created_migration_number integer;
+        _project_id uuid;
         apply_func_schema text;
-        apply_func_name   text;
+        apply_func_name text;
     begin
-        select id into migration_id from migrations.migration where id = _migration_number;
-        if migration_id is not null then
-            raise notice 'Migration % already exists.', _migration_number;
-            return migration_id;
+        select id
+        into _project_id
+        from migrations.project
+        where name = _project_name;
+
+        select migration_number
+        into _existing_migration_number
+        from migrations.migration
+        where project_id = _project_id
+          and migration_number = _migration_number;
+
+        if _existing_migration_number is not null then
+            raise notice 'Migration % already exists.', _existing_migration_number;
+            return _existing_migration_number;
         end if;
 
-        insert into migrations.migration (id, project_id, name, description, apply_function, revert_function)
-        values ((select max(id) + 1 from migrations.migration),
-                (select id from migrations.project where name = _project_name),
+        insert into migrations.migration (migration_number, project_id, name, description, apply_function,
+                                          revert_function)
+        values (coalesce((select max(migration_number) + 1 from migrations.migration where project_id = _project_id),
+                         1),
+                _project_id,
                 _migration_name,
                 _description,
-                ('migrations.apply_' || lpad(_migration_number::text, 5, '0') || '_' || _migration_name)::regproc,
-                ('migrations.revert_' || lpad(_migration_number::text, 5, '0') || '_' || _migration_name)::regproc)
-        returning id
-            into migration_id;
+                ('migrations.apply_' || _project_name || '_' || lpad(_migration_number::text, 5, '0') || '_' ||
+                 _migration_name)::regproc,
+                ('migrations.revert_' || _project_name || '_' || lpad(_migration_number::text, 5, '0') || '_' ||
+                 _migration_name)::regproc)
+        returning migration_number
+            into _created_migration_number;
+
+        perform assert.true(_created_migration_number = _migration_number, 'Migration number should match the id.');
 
         select n.nspname, p.proname
         into apply_func_schema, apply_func_name
@@ -156,20 +179,17 @@ begin
                  join pg_namespace n on p.pronamespace = n.oid
         where p.oid = (select apply_function
                        from migrations.migration
-                       where id = _migration_number
-                         and project_id = (select id
-                                           from migrations.project
-                                           where name = _project_name));
+                       where migration_number = _migration_number
+                         and project_id = _project_id);
 
         execute format('select %I.%I();', apply_func_schema, apply_func_name);
 
-        perform assert.true(migration_id = _migration_number, 'Migration number should match the id.');
-        perform assert.true(migration_id = migrations.head(_project_name), 'The migration should be the head.');
+        perform assert.true(_migration_number = migrations.head(_project_name), 'The migration should be the head.');
         perform assert.true((select bool_and(passed) from tests.run()), 'All tests should pass.');
 
-        return migration_id;
+        return _created_migration_number;
     end;
-    $$ language plpgsql security definer;
+    $$ language plpgsql;
 
 
     create or replace function migrations.revert(
@@ -178,35 +198,44 @@ begin
     ) returns void as
     $$
     declare
+        _project_id uuid;
         func_schema text;
-        func_name   text;
+        func_name text;
     begin
+        select id
+        into _project_id
+        from migration.project
+        where name = _project_name;
+
         select n.nspname, p.proname
         into func_schema, func_name
         from pg_proc p
                  join pg_namespace n on p.pronamespace = n.oid
         where p.oid = (select revert_function
                        from migrations.migration
-                       where id = _migration_number
-                         and project_id = (select id
-                                           from migrations.project
-                                           where name = _project_name));
+                       where migration_number = _migration_number
+                         and project_id = _project_id);
 
         if func_schema is null then
             raise exception 'Migration % does not exist.', _migration_number;
         end if;
 
-        delete from migrations.migration where id = _migration_number;
+        delete
+        from migrations.migration
+        where project_id = _project_id
+          and migration_number = _migration_number;
+
         execute format('select %I.%I();', func_schema, func_name);
 
         perform assert.true((select bool_and(passed) from tests.run()), 'All tests should pass.');
     end;
     $$ language plpgsql;
+
 end ;
 $mig$ language plpgsql;
 
 
-create or replace function migrations.revert_00001_migration_schema() returns void as
+create or replace function migrations.revert_logos_00001_migration_schema() returns void as
 $$
 begin
     drop schema migrations cascade;
@@ -217,22 +246,27 @@ $$ language plpgsql;
 
 
 -- migrations.apply does not exist yet, so we need to insert the first migration manually.
-do $$
-begin
-    if not exists (select from information_schema.tables where table_schema = 'migrations' and table_name = 'migration') then
-        perform migrations.apply_00001_migration_schema();
+do
+$$
+    begin
+        if not exists (select
+                       from information_schema.tables
+                       where table_schema = 'migrations'
+                         and table_name = 'migration') then
+            perform migrations.apply_logos_00001_migration_schema();
 
-        insert into migrations.migration (id, project_id, name, description, apply_function, revert_function)
-        values (1,
-                (select id from migrations.project where name = 'logos'),
-                'create_schema_migrations',
-                'Create the migrations schema.',
-                'migrations.apply_00001_migration_schema',
-                'migrations.revert_00001_migration_schema');
+            insert into migrations.migration (migration_number, project_id, name, description, apply_function,
+                                              revert_function)
+            values (1,
+                    (select id from migrations.project where name = 'logos'),
+                    'create_schema_migrations',
+                    'Create the migrations schema.',
+                    'migrations.apply_logos_00001_migration_schema',
+                    'migrations.revert_logos_00001_migration_schema');
 
-        perform assert.true((select bool_and(passed) from tests.run()), 'all tests should pass.');
-    end if;
-end;
+            perform assert.true((select bool_and(passed) from tests.run()), 'all tests should pass.');
+        end if;
+    end;
 $$ language plpgsql;
 
 commit;

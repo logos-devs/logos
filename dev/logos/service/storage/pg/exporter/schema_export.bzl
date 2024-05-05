@@ -31,6 +31,9 @@ def _schema_export_impl(ctx):
         ctx.attr.protoc_grpc_web_plugin,  # $4
         ctx.attr.protoc_grpc_java_plugin,  # $5
     ])
+
+    cmd_inputs = depset(transitive=[tool_inputs] + [migration[DefaultInfo].files for migration in ctx.attr.migrations])
+
     output_path = ctx.build_file_path.replace("/BUILD", "")
     output_package = output_path.replace("/", ".")
 
@@ -82,7 +85,7 @@ cd ../../../
             ctx.attr.protoc_grpc_web_plugin.files_to_run.executable.path,
             ctx.attr.protoc_grpc_java_plugin.files_to_run.executable.path,
         ],
-        inputs = tool_inputs,
+        inputs = cmd_inputs,
         input_manifests = tool_input_manifests,
         progress_message = "Exporting database schema",
         outputs = outputs,
@@ -114,6 +117,7 @@ schema_export_rule = rule(
         "protoc_grpc_web_plugin": attr.label(mandatory = True),
         "protoc_grpc_java_plugin": attr.label(mandatory = True),
         "protoc": attr.label(mandatory = True),
+        "migrations": attr.label_list(allow_files = False),
         "deps": attr.label_list(allow_files = True),
         "tables": attr.string_list_dict(mandatory = True),
     },
@@ -122,7 +126,7 @@ schema_export_rule = rule(
     ],
 )
 
-def schema_export(name, tables, visibility, deps = None):
+def schema_export(name, tables, visibility, deps = None, migrations = None):
     schema_export_rule(
         name = name,
         tables = tables,
@@ -136,6 +140,7 @@ def schema_export(name, tables, visibility, deps = None):
             "requires-network",
         ],
         deps = deps,
+        migrations = migrations,
         visibility = visibility,
     )
 
