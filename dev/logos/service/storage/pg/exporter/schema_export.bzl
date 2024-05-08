@@ -32,7 +32,7 @@ def _schema_export_impl(ctx):
         ctx.attr.protoc_grpc_java_plugin,  # $5
     ])
 
-    cmd_inputs = depset(transitive=[tool_inputs] + [migration[DefaultInfo].files for migration in ctx.attr.migrations])
+    cmd_inputs = depset(transitive = [tool_inputs] + [migration[DefaultInfo].files for migration in ctx.attr.migrations])
 
     output_path = ctx.build_file_path.replace("/BUILD", "")
     output_package = output_path.replace("/", ".")

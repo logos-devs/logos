@@ -1,4 +1,5 @@
-import {TextField} from "@material/mwc-textfield";
+import {MdOutlinedTextField} from "@material/web/textfield/outlined-text-field";
+import "@material/web/textfield/outlined-text-field";
 import {PhoneNumberFormat, PhoneNumberUtil} from "google-libphonenumber";
 import {css, html, LitElement} from "lit";
 import {customElement, query, queryAll, state} from "lit/decorators.js";
@@ -7,7 +8,7 @@ import "./Key";
 
 @customElement("dialer-keypad")
 export class DialerKeypad extends LitElement {
-    @query("mwc-textfield") input!: TextField;
+    @query("mwc-textfield") input!: MdOutlinedTextField;
     @queryAll("dialer-key") keys!: DialerKey[];
 
     private formatter = new PhoneNumberUtil();
@@ -22,8 +23,8 @@ export class DialerKeypad extends LitElement {
             gap: 1px;
             flex-grow: 1;
         }
-        
-        mwc-textfield {
+
+        md-outlined-text-field {
             flex: 100%;
             margin-bottom: 1vh;
             text-align: center;
@@ -32,12 +33,15 @@ export class DialerKeypad extends LitElement {
         dialer-key[number="1"] {
             border-top-left-radius: 1vh;
         }
+
         dialer-key[number="3"] {
             border-top-right-radius: 1vh;
         }
+
         dialer-key[number="*"] {
             border-bottom-left-radius: 1vh;
         }
+
         dialer-key[number="#"] {
             border-bottom-right-radius: 1vh;
         }
@@ -62,7 +66,7 @@ export class DialerKeypad extends LitElement {
             };
 
         return html`
-            <mwc-textfield @keyup=${keyHandler} outlined type="tel"></mwc-textfield>
+            <md-outlined-text-field type="tel" @keyup=${keyHandler}></md-outlined-text-field>
             <dialer-key number="1" @click=${digitHandler}></dialer-key>
             <dialer-key number="2" letters="A B C" @click=${digitHandler}></dialer-key>
             <dialer-key number="3" letters="D E F" @click=${digitHandler}></dialer-key>

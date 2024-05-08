@@ -2,6 +2,7 @@ package app.summer.module;
 
 import app.summer.service.EntryStorageService;
 import app.summer.service.FeedService;
+import app.summer.service.SourceImapStorageService;
 import app.summer.service.SourceRssStorageService;
 import app.summer.storage.summer.EntryStorageServiceGrpc;
 import app.summer.storage.summer.EntryStorageServiceGrpc.EntryStorageServiceFutureStub;
@@ -17,15 +18,16 @@ public class SummerModule extends AppModule {
     @Provides
     public App provideApp() {
         return App.builder()
-                .name("Summer")
-                .domain("summer.app")
-                .build();
+                  .name("Summer")
+                  .domain("summer.app")
+                  .build();
     }
 
     @Override
     protected void configure() {
         addService(FeedService.class);
         addService(EntryStorageService.class);
+        addService(SourceImapStorageService.class);
         addService(SourceRssStorageService.class);
     }
 

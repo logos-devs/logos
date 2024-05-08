@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static dev.logos.user.UserContext.USER_CONTEXT_KEY;
@@ -37,17 +38,19 @@ public class CognitoServerInterceptor implements ServerInterceptor {
                                                                                           ASCII_STRING_MARSHALLER);
     private static final String COGNITO_IDENTITY_POOL_URL_TEMPLATE = "https://cognito-idp.{region}.amazonaws.com/{userPoolId}/.well-known/jwks.json";
     private static final Map<String, PublicKey> keyCache = new ConcurrentHashMap<>();
-    private static final Logger logger = Logger.getLogger(CognitoServerInterceptor.class.getName());
     public static final String BEARER_TYPE = "Bearer";
 
     private final String userPoolId;
     private final String region;
+    private final Logger logger;
 
     @Inject
     public CognitoServerInterceptor(@Named("CognitoUserPoolId") String userPoolId,
-                                    @Named("CognitoRegion") String region) {
+                                    @Named("CognitoRegion") String region,
+                                    Logger logger) {
         this.userPoolId = userPoolId;
         this.region = region;
+        this.logger = logger;
     }
 
     public <ReqT, RespT> ServerCall.Listener<ReqT> interceptCall(
@@ -61,8 +64,8 @@ public class CognitoServerInterceptor implements ServerInterceptor {
         if (value != null && value.startsWith(BEARER_TYPE)) {
             User user = authenticateUser(value.substring(BEARER_TYPE.length()).trim());
             ctx = ctx.withValue(
-                USER_CONTEXT_KEY,
-                Optional.ofNullable(user).orElse(new AnonymousUser())
+                    USER_CONTEXT_KEY,
+                    Optional.ofNullable(user).orElse(new AnonymousUser())
             );
         }
 
@@ -82,11 +85,11 @@ public class CognitoServerInterceptor implements ServerInterceptor {
                                      .build()
                                      .parseSignedClaims(token);
 
-            claims.getPayload().forEach((key, value) -> logger.info(key + ": " + value));
+            claims.getPayload().forEach((key, value) -> logger.log(Level.FINEST, key + ": " + value));
 
-            return new AuthenticatedUser(claims.getPayload());
-        } catch (Exception e) {
-            logger.warning("Failed to authenticate: " + e.getMessage());
+            return new AuthenticatedUser(token, claims.getPayload());
+        } catch (IOException | NoSuchAlgorithmException | InvalidKeySpecException e) {
+            logger.log(Level.SEVERE, "Failed to authenticate", e);
             return null;
         }
     }

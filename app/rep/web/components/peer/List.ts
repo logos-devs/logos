@@ -1,5 +1,5 @@
 import {RootState, store} from "@logos/store/store";
-import "@material/mwc-list";
+// import "@material/mwc-list";
 import {toSvg} from "jdenticon";
 import {css, html, LitElement} from "lit";
 import {customElement, property, state} from "lit/decorators.js";

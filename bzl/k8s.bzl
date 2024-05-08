@@ -49,7 +49,7 @@ def _kubectl_impl(ctx):
             runfiles = runfiles.merge(dep[DefaultInfo].default_runfiles)
 
         for migration in ctx.attr.migrations:
-            runfiles = runfiles.merge(ctx.runfiles(files=migration[DefaultInfo].files.to_list()))
+            runfiles = runfiles.merge(ctx.runfiles(files = migration[DefaultInfo].files.to_list()))
 
     ctx.actions.write(
         output = executable,

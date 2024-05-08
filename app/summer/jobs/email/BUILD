@@ -12,7 +12,7 @@ py_binary(
     deps = [
         requirement("chromadb"),
         requirement("ollama"),
-        requirement("trafilatura")
+        requirement("trafilatura"),
     ],
 )
 

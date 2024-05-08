@@ -55,7 +55,7 @@ echo $2
             head = ctx.attr.head,
         ),
         outputs = [result],
-        arguments = [REGION, result.path]
+        arguments = [REGION, result.path],
     )
     return [
         DefaultInfo(files = depset([result])),
@@ -65,7 +65,7 @@ pg_migrate_rule = rule(
     implementation = _pg_migrate_impl,
     attrs = {
         "migrations": attr.label_list(mandatory = True, allow_files = True),
-        "head": attr.string(),
+        "head": attr.string(mandatory = True),
         "deps": attr.label_list(),
         "kubectl": attr.label(
             cfg = "exec",
@@ -84,7 +84,7 @@ psql -A -t -c "select name from migrations.migration order by id" > $1
             kubectl = ctx.attr.kubectl.files_to_run.executable.short_path,
         ),
         outputs = [result],
-        arguments = [result.path]
+        arguments = [result.path],
     )
     return [
         DefaultInfo(files = depset([result])),
@@ -100,7 +100,6 @@ pg_check_rule = rule(
         ),
     },
 )
-
 
 def pg_migrate(name, migrations, head = None, deps = None, visibility = None):
     pg_migrate_rule(

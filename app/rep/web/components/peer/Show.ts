@@ -2,8 +2,8 @@
 // import profileBg from "../../space.jpg";
 import {RootState, store} from "@logos/store/store";
 import {getIdentityByName} from "@logos/store/wallet";
-import "@material/mwc-dialog";
-import "@material/mwc-slider";
+// import "@material/mwc-dialog";
+// import "@material/mwc-slider";
 import {toSvg} from "jdenticon";
 import {css, html, LitElement} from "lit";
 import {customElement, property, state} from "lit/decorators.js";

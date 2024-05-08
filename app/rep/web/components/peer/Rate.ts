@@ -1,8 +1,8 @@
 import {RootState, store} from "@logos/store/store";
 import {rate} from "@logos/store/wallet";
-import {Dialog} from "@material/mwc-dialog";
-import {Slider} from "@material/mwc-slider";
-import {TextField} from "@material/mwc-textfield";
+// import {Dialog} from "@material/mwc-dialog";
+// import {Slider} from "@material/mwc-slider";
+// import {TextField} from "@material/mwc-textfield";
 import {css, html, LitElement} from "lit";
 import {customElement, property, query, state} from "lit/decorators.js";
 import {when} from "lit/directives/when.js";
@@ -31,9 +31,9 @@ export class PeerRate extends connect(store)(LitElement) {
     @property({type: String}) name: string = '';
     @state() currentRating: Number = 0;
     @state() newRating?: Number = 0;
-    @query("mwc-dialog") dialog: Dialog | undefined;
-    @query("#name") nameField: TextField | undefined;
-    @query("#rating") ratingField: Slider | undefined;
+    @query("mwc-dialog") dialog;
+    @query("#name") nameField;
+    @query("#rating") ratingField;
 
     stateChanged(state: RootState) {
         const wallet = state.wallet;

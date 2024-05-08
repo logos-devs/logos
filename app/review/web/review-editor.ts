@@ -4,18 +4,18 @@ import {File, FileType, ListFilesRequest, ListFilesResponse} from "@app/review/w
 import {ProjectServicePromiseClient} from "@app/review/web/client/project_grpc_web_pb.js";
 import {ListProjectsRequest, ListProjectsResponse, Project} from "@app/review/web/client/project_pb.js";
 import {lazyInject} from "@logos/bind";
-import '@material/mwc-button';
-import {Dialog} from "@material/mwc-dialog";
-import '@material/mwc-drawer';
-import {Drawer} from "@material/mwc-drawer";
-import '@material/mwc-icon';
-import '@material/mwc-icon-button';
-import {List} from "@material/mwc-list";
-import '@material/mwc-list/mwc-list';
-import {SingleSelectedEvent} from "@material/mwc-list/mwc-list-foundation";
-import '@material/mwc-list/mwc-list-item';
-import '@material/mwc-textfield';
-import '@material/mwc-top-app-bar-fixed';
+// import '@material/mwc-button';
+// import {Dialog} from "@material/mwc-dialog";
+// import '@material/mwc-drawer';
+// import {Drawer} from "@material/mwc-drawer";
+// import '@material/mwc-icon';
+// import '@material/mwc-icon-button';
+// import {List} from "@material/mwc-list";
+// import '@material/mwc-list/mwc-list';
+// import {SingleSelectedEvent} from "@material/mwc-list/mwc-list-foundation";
+// import '@material/mwc-list/mwc-list-item';
+// import '@material/mwc-textfield';
+// import '@material/mwc-top-app-bar-fixed';
 import {css, html, LitElement} from 'lit';
 import {property, query} from 'lit/decorators.js';
 
@@ -34,9 +34,9 @@ class ReviewEditor extends LitElement {
     @property({type: File}) file: File = new File();
     @property({type: Array}) files: Array<File> = [];
 
-    @query("mwc-dialog") dialog!: Dialog;
-    @query("mwc-drawer") drawer!: Drawer;
-    @query("mwc-list") list!: List;
+    @query("mwc-dialog") dialog;
+    @query("mwc-drawer") drawer;
+    @query("mwc-list") list;
     @query(".editor") editor!: HTMLPreElement;
 
     static get styles() {
@@ -67,7 +67,7 @@ class ReviewEditor extends LitElement {
                 --method: var(--magenta);
                 --comment: var(--base01);
                 --input: var(--base3);
-                
+
                 background: var(--base3);
                 color: var(--base0);
                 --mdc-theme-primary: var(--base2);
@@ -78,13 +78,14 @@ class ReviewEditor extends LitElement {
                 --mdc-theme-on-surface: var(--base03);
                 --mdc-theme-text-primary-on-background: var(--base01);
                 --mdc-theme-text-icon-on-background: var(--yellow);
-                
+
                 height: 100%;
                 left: 0;
                 position: absolute;
                 top: 0;
                 width: 100%;
             }
+
             @media (prefers-color-scheme: dark) {
                 :host {
                     background: var(--base03);
@@ -109,12 +110,12 @@ class ReviewEditor extends LitElement {
                 margin: 0;
                 padding: 0.5rem;
             }
-            
+
             span.hover {
                 border-bottom: 1px solid var(--magenta);
                 cursor: pointer
             }
-            
+
             .CATCH,
             .CLASS,
             .EXTENDS,
@@ -142,6 +143,7 @@ class ReviewEditor extends LitElement {
             .packageDeclaration .SEMI {
                 display: none;
             }
+
             .packageDeclaration::after {
                 content: '...';
 
@@ -150,14 +152,15 @@ class ReviewEditor extends LitElement {
             .importDeclaration {
                 display: none;
             }
-            
+
             /*.typeName,*/
+
             .importDeclaration,
             .packageName,
             .unannClassOrInterfaceType {
                 color: var(--identifier);
             }
-            
+
             .constructorDeclarator > .simpleTypeName,
             .methodDeclarator > .identifier > .Identifier {
                 color: var(--method);
@@ -166,33 +169,39 @@ class ReviewEditor extends LitElement {
             .fieldDeclaration .variableDeclaratorId {
                 color: var(--member);
             }
+
             .annotation {
                 color: var(--orange);
             }
-            
+
             .StringLiteral {
                 color: var(--string);
             }
-            
+
             .IntegerLiteral {
                 color: var(--number);
             }
+
             .whitespace {
                 color: var(--comment);
             }
+
             .singleTypeImportDeclaration > .typeName > .packageOrTypeName {
                 display: none;
             }
+
             .singleTypeImportDeclaration > .typeName::before {
                 content: " ..";
             }
+
             .methodModifier .annotation {
                 display: none;
             }
+
             .methodBody > .block {
                 display: none;
             }
-            
+
             .methodBody::before {
                 display: inline-block;
                 width: 1rem;
@@ -202,9 +211,9 @@ class ReviewEditor extends LitElement {
                 content: "{...}";
                 text-align: center;
             }
-            
+
             mwc-dialog textarea {
-                background: rgba(0,0,0,0.2);
+                background: rgba(0, 0, 0, 0.2);
                 box-sizing: border-box;
                 color: var(--input);
                 font-size: 120%;
@@ -270,7 +279,7 @@ class ReviewEditor extends LitElement {
         ).catch(console.error);
     }
 
-    fileSelectionChanged(evt: SingleSelectedEvent) {
+    fileSelectionChanged(evt) {
         if (evt.detail.index == -1) return;
 
         const selectedFile = this.files[evt.detail.index];

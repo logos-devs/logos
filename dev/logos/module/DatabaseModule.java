@@ -2,6 +2,7 @@ package dev.logos.module;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
+import com.google.inject.Singleton;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.jdbi.v3.core.Jdbi;
@@ -59,30 +60,33 @@ class RdsIamAuthHikariDataSource extends HikariDataSource {
 
         assert url != null;
         return RdsUtilities.builder()
-                .region(new DefaultAwsRegionProviderChain().getRegion())
-                .build()
-                .generateAuthenticationToken(
-                        GenerateAuthenticationTokenRequest
-                                .builder()
-                                .credentialsProvider(DefaultCredentialsProvider.create())
-                                .hostname(hostname)
-                                .port(CLUSTER_RW_PORT)
-                                .username(getUsername())
-                                .build());
+                           .region(new DefaultAwsRegionProviderChain().getRegion())
+                           .build()
+                           .generateAuthenticationToken(
+                                   GenerateAuthenticationTokenRequest
+                                           .builder()
+                                           .credentialsProvider(DefaultCredentialsProvider.create())
+                                           .hostname(hostname)
+                                           .port(CLUSTER_RW_PORT)
+                                           .username(getUsername())
+                                           .build());
     }
 }
 
 public class DatabaseModule extends AbstractModule {
     static String DB_URL = Optional.ofNullable(System.getenv("STORAGE_PG_BACKEND_JDBC_URL"))
-            .orElse("jdbc:postgresql://localhost:15432/logos");
+                                   .orElse("jdbc:postgresql://localhost:15432/logos");
     static String DB_USER = Optional.ofNullable(System.getenv("STORAGE_PG_BACKEND_USER"))
-            .orElse("storage");
+                                    .orElse("storage");
 
     @Provides
+    @Singleton // otherwise a new DataSource is created for each injection which results in a huge number of connections
     public DataSource provideDataSource() {
         HikariConfig config = new HikariConfig();
         config.setJdbcUrl(DB_URL);
         config.setUsername(DB_USER);
+        config.addDataSourceProperty("minimumIdle", 5);
+        config.addDataSourceProperty("maximumPoolSize", 5);
         // config.addDataSourceProperty("cachePrepStmts", "true");
         // config.addDataSourceProperty("prepStmtCacheSize", "200");
         // config.addDataSourceProperty("prepStmtCacheSqlLimit", "1024");

@@ -3,6 +3,7 @@ java_library(
     srcs = [
         "EntryStorageService.java",
         "FeedService.java",
+        "SourceImapStorageService.java",
         "SourceRssStorageService.java",
     ],
     visibility = [

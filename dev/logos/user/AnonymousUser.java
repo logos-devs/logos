@@ -13,4 +13,9 @@ public class AnonymousUser extends User {
     public boolean isAuthenticated() {
         return false;
     }
+
+    @Override
+    public String getToken() throws NotAuthenticated {
+        throw new NotAuthenticated("Anonymous user does not have a token");
+    }
 }

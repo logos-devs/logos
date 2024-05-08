@@ -1,6 +1,5 @@
 package app.summer.service;
 
-import app.summer.storage.summer.CreateSourceRssRequest;
 import app.summer.storage.summer.ListSourceRssRequest;
 import app.summer.storage.summer.SourceRssStorageServiceBase;
 import dev.logos.service.storage.pg.Select;
@@ -14,9 +13,7 @@ import static dev.logos.service.storage.pg.Select.select;
 public class SourceRssStorageService extends SourceRssStorageServiceBase {
     @Override
     public <Req> boolean allow(Req request, User user) {
-        if (request instanceof ListSourceRssRequest) { return true; }
-        else if (request instanceof CreateSourceRssRequest) { return user.isAuthenticated(); }
-        return false;
+        return user.isAuthenticated();
     }
 
     @Override

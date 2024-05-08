@@ -40,6 +40,6 @@ kubectl(
         "//dev/logos/service/ingress/nginx:__pkg__",
     ],
     deps = [
-        "//dev/logos/service/database:db_rw_service"
+        "//dev/logos/service/database:db_rw_service",
     ],
 )

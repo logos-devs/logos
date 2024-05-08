@@ -1,8 +1,6 @@
-import {store} from "@logos/store/store";
-import {register} from "@logos/store/wallet";
-import "@material/mwc-button";
-import "@material/mwc-dialog";
-import {TextField} from "@material/mwc-textfield";
+// import "@material/mwc-button";
+// import "@material/mwc-dialog";
+// import {TextField} from "@material/mwc-textfield";
 import {css, html, LitElement} from "lit";
 import {customElement} from "lit/decorators.js";
 
@@ -49,10 +47,10 @@ export class Register extends LitElement {
                 <mwc-button
                         slot="primaryAction"
                         @click="${() => {
-                            const nameInput = <TextField>this.shadowRoot!.getElementById("registerNameInput");
-                            if (nameInput.checkValidity()) {
-                                store.dispatch(register(nameInput.value));
-                            }
+                            // const nameInput = <TextField>this.shadowRoot!.getElementById("registerNameInput");
+                            // if (nameInput.checkValidity()) {
+                            //     store.dispatch(register(nameInput.value));
+                            // }
                         }}">
                     Register
                 </mwc-button>

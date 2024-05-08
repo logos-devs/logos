@@ -9,11 +9,11 @@ kubectl(
 kubectl(
     name = "db_rw_service",
     manifests = ["manifests/db_rw_service.yaml"],
+    migrations = [
+        "//dev/logos/service/storage/migrations",
+    ],
     visibility = [
         "//app/summer/jobs:__subpackages__",
         "//dev/logos/service:__subpackages__",
     ],
-    migrations = [
-        "//dev/logos/service/storage/migrations",
-    ]
 )

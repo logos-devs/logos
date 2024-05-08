@@ -20,6 +20,7 @@ java_binary(
         "//dev/logos/service",
         "//dev/logos/service/backend/interceptor",
         "//dev/logos/service/storage:storage_library",
+        "//dev/logos/user",
         "@io_grpc_grpc_java//api",
         "@io_grpc_grpc_java//context",
         "@io_grpc_grpc_java//core:core_maven",

@@ -2,13 +2,14 @@ load("//dev/logos/service/storage/pg/exporter:schema_export.bzl", "schema_export
 
 schema_export(
     name = "schema_export",
+    migrations = ["//app/summer/storage/migrations"],
     tables = {
         "summer": [
             "entry",
+            "source_imap",
             "source_rss",
         ],
     },
-    migrations = ["//app/summer/storage/migrations"],
     visibility = ["//app/summer:__subpackages__"],
 )
 

@@ -23,6 +23,22 @@ begin
     grant select, insert, update, delete on summer.topic to storage;
     grant select, insert, update, delete on summer.topic_entry to storage;
 
+    create or replace function tests.role_storage_can_select_from_summer_topic() returns void as
+    $$
+    begin
+        set role to storage;
+        perform from summer.topic limit 0;
+    end;
+    $$ language plpgsql;
+
+    create or replace function tests.role_storage_can_select_from_summer_topic_entry() returns void as
+    $$
+    begin
+        set role to storage;
+        perform from summer.topic_entry limit 0;
+    end;
+    $$ language plpgsql;
+
 end;
 $mig$ language plpgsql;
 
