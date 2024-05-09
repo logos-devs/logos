@@ -9,6 +9,7 @@ py_binary(
     name = "imap",
     srcs = ["imap.py"],
     main = "imap.py",
+    tags = ["no-remote"],
     deps = [
         requirement("chromadb"),
         requirement("ollama"),

@@ -9,11 +9,11 @@ from chromadb import EmbeddingFunction, Documents, Embeddings
 from ollama import Client
 from trafilatura import extract as extract_from_html
 
-OLLAMA_URL = "http://10.255.255.6:8081"
+OLLAMA_URL = "http://10.255.255.6:8085"
 # OLLAMA_MODEL = "dolphin-llama3:8b-v2.9-fp16"
 # OLLAMA_MODEL = "dolphin-llama3:8b-v2.9-q5_K_M"
-# OLLAMA_MODEL = "llama3:70b-instruct-q5_K_M"
-OLLAMA_MODEL = "llama3:8b-instruct-q8_0"
+OLLAMA_MODEL = "llama3:70b-instruct-q5_K_M"
+# OLLAMA_MODEL = "llama3:8b-instruct-q8_0"
 # OLLAMA_MODEL = "mixtral:8x22b-instruct-v0.1-q5_K_M"
 # OLLAMA_MODEL = "mixtral:8x7b-instruct-v0.1-q5_K_M"
 

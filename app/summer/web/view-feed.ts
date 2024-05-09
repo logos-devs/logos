@@ -12,19 +12,29 @@ import "@material/web/fab/fab";
 import "@material/web/icon/icon";
 import "@material/web/list/list";
 import "@material/web/list/list-item";
+import "@material/web/labs/navigationbar/navigation-bar";
+import "@material/web/labs/navigationtab/navigation-tab";
 import {user} from "app/auth/web/state";
 import {lazyInject} from "dev/logos/service/client/web/bind";
 import {css, html, LitElement} from 'lit';
 import {customElement, state} from "lit/decorators.js";
 import {when} from "lit/directives/when.js";
+import "./view-feed-entry";
+
+enum FeedTab {
+    HOME = 0,
+    SEARCH = 1,
+    PROFILE = 2,
+}
 
 @customElement('view-feed')
-class ViewFeed extends LitElement {
+export class ViewFeed extends LitElement {
     @lazyInject(FeedServicePromiseClient) private feedServiceClient!: FeedServicePromiseClient;
 
     @state() private entryList: Entry[] = [];
     @state() private sourceList: Source[] = [];
     @state() private selectedTags: String[] = [];
+    @state() private selectedTab: FeedTab = FeedTab.HOME;
 
     getSourceIcon(source_id) {
         for (const source of this.sourceList) {
@@ -36,6 +46,10 @@ class ViewFeed extends LitElement {
 
     connectedCallback() {
         super.connectedCallback();
+
+        this.addEventListener('navigation-bar-activated', (ev: any) => {
+            this.selectedTab = ev.detail.index;
+        });
 
         this.feedServiceClient.getFeed(new GetFeedRequest()).then(
             (getFeedResponse: GetFeedResponse) => {
@@ -52,7 +66,15 @@ class ViewFeed extends LitElement {
                 --mdc-theme-primary: #fcfcfc;
                 --mdc-theme-on-primary: #777;
                 --md-sys-color-surface: #fcfcfc;
+                --md-icon-font: 'Material Icons';
+                --md-sys-color-surface-container: #222;
+
                 font-family: sans-serif;
+            }
+
+            md-navigation-bar {
+                position: fixed;
+                bottom: 0;
             }
 
             h1 {
@@ -113,6 +135,55 @@ class ViewFeed extends LitElement {
         `;
     }
 
+    render() {
+        return html`
+            <h1>☀️</h1>
+
+            <md-icon-button id="login-button"
+                            @click=${(ev) => window.location.assign(cognitoPublicHostMap[location.host].loginUrl)}>
+                <md-icon>${user.isAuthenticated ? "account_circle" : "login"}</md-icon>
+            </md-icon-button>
+
+            <md-navigation-bar activeIndex="1">
+                <md-navigation-tab .label="Home">
+                    <md-icon slot="active-icon">home</md-icon>
+                    <md-icon slot="inactive-icon">home</md-icon>
+                </md-navigation-tab>
+
+                <md-navigation-tab .label="Search">
+                    <md-icon slot="active-icon">search</md-icon>
+                    <md-icon slot="inactive-icon">search</md-icon>
+                </md-navigation-tab>
+                <md-navigation-tab .label="Profile">
+                    <md-icon slot="active-icon">account_circle</md-icon>
+                    <md-icon slot="inactive-icon">account_circle</md-icon>
+                </md-navigation-tab>
+            </md-navigation-bar>
+
+            <div>
+                ${this.entryList.map((entry, index) =>
+                        html`
+                            <view-feed-entry .entry=${entry}></view-feed-entry>`)}
+
+            </div>
+
+            ${when(this.selectedTags, () => html`
+                <md-chip-set class="top">
+                    ${this.selectedTags.map(tag => html`
+                        <md-filter-chip label="${tag}"
+                                        selected
+                                        @click=${ev => {
+                                            ev.stopPropagation()
+                                            this.toggleTag(tag);
+                                        }}>
+                        </md-filter-chip>
+                    `)}
+                </md-chip-set>
+            `)}
+
+        `;
+    }
+
     formattedDate(date_str) {
         const
             date = new Date(date_str),
@@ -145,96 +216,61 @@ class ViewFeed extends LitElement {
             this.selectedTags = newTags;
         }
     }
-
-    render() {
-        return html`
-            <h1>☀️</h1>
-
-            <md-icon-button id="login-button"
-                            @click=${(ev) => window.location.href = cognitoPublicHostMap[location.host].loginUrl}>
-                <md-icon>${user.isAuthenticated ? "account_circle" : "login"}</md-icon>
-            </md-icon-button>
-
-            <md-outlined-card>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-                dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-                ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-                fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia
-                deserunt mollit anim id est laborum.
-            </md-outlined-card>
-
-            <div>
-                ${this.entryList.map((entry, index) => html`
-                    <div class="mdc-card entry-card">
-                        <div @click=${() => window.location.href = entry.getLinkUrl()}
-                             class="mdc-card__primary-action entry-card__primary-action" tabindex="0">
-                            ${when(entry.getImageUrl(), () => html`
-                                <div class="mdc-card__media mdc-card__media--16-9 entry-card__media"
-                                     style="background-image: url(&quot;${entry.getImageUrl()}&quot;);"></div>
-                            `)}
-                            <div class="entry-card__primary">
-                                <h2 class="entry-card__title mdc-typography mdc-typography--headline6">
-                                    ${entry.getName()}</h2>
-                                <h3 class="entry-card__subtitle mdc-typography mdc-typography--subtitle2">
-                                    <md-chip-set type="filter" style="display: none">
-                                        ${entry.getTagsList().map(
-                                                tag => html`
-                                                    <md-filter-chip label="${tag}"
-                                                                    @click=${ev => {
-                                                                        ev.stopPropagation()
-                                                                        this.toggleTag(tag);
-                                                                    }}>
-                                                    </md-filter-chip>
-                                                `)}
-                                    </md-chip-set>
-                                    ${this.formattedDate(entry.getPublishedAt())}
-                                </h3>
-                            </div>
-                            <div class="entry-card__secondary mdc-typography mdc-typography--body2">
-                                ${entry.getBody()}
-                            </div>
-                        </div>
-                        <div class="mdc-card__actions">
-                            <div class="mdc-card__action-buttons">
-                                <img class="source-icon"
-                                     src="${this.getSourceIcon(entry.getSourceRssId())}">
-                            </div>
-                            <div class="mdc-card__action-icons">
-                                <!--                                            <button class="mdc-icon-button material-icons mdc-card__action mdc-card__action&#45;&#45;icon&#45;&#45;unbounded"-->
-                                <!--                                                    title="Share" data-mdc-ripple-is-unbounded="true">-->
-                                <!--                                                push_pin-->
-                                <!--                                            </button>-->
-                                ${when(navigator['share'], () => html`
-                                    <button class="mdc-icon-button material-icons mdc-card__action mdc-card__action--icon--unbounded"
-                                            title="Share" data-mdc-ripple-is-unbounded="true"
-                                            @click=${() => navigator.share({
-                                                title: entry.getName(),
-                                                text: entry.getBody(),
-                                                url: entry.getLinkUrl()
-                                            })}>
-                                        share
-                                    </button>
-                                `)}
-                            </div>
-                        </div>
-                    </div>
-                `)}
-            </div>
-
-            ${when(this.selectedTags, () => html`
-                <md-chip-set class="top">
-                    ${this.selectedTags.map(tag => html`
-                        <md-filter-chip label="${tag}"
-                                        selected
-                                        @click=${ev => {
-                                            ev.stopPropagation()
-                                            this.toggleTag(tag);
-                                        }}>
-                        </md-filter-chip>
-                    `)}
-                </md-chip-set>
-            `)}
-
-        `;
-    }
 }
+
+
+// html`
+//     <div class="mdc-card entry-card">
+//         <div @click=${() => window.location.href = entry.getLinkUrl()}
+//              class="mdc-card__primary-action entry-card__primary-action" tabindex="0">
+//             ${when(entry.getImageUrl(), () => html`
+//                 <div class="mdc-card__media mdc-card__media--16-9 entry-card__media"
+//                      style="background-image: url(&quot;${entry.getImageUrl()}&quot;);"></div>
+//             `)}
+//             <div class="entry-card__primary">
+//                 <h2 class="entry-card__title mdc-typography mdc-typography--headline6">
+//                     ${entry.getName()}</h2>
+//                 <h3 class="entry-card__subtitle mdc-typography mdc-typography--subtitle2">
+//                     <md-chip-set type="filter" style="display: none">
+//                         ${entry.getTagsList().map(
+//                                 tag => html`
+//                                     <md-filter-chip label="${tag}"
+//                                                     @click=${ev => {
+//                                                         ev.stopPropagation()
+//                                                         this.toggleTag(tag);
+//                                                     }}>
+//                                     </md-filter-chip>
+//                                 `)}
+//                     </md-chip-set>
+//                     ${this.formattedDate(entry.getPublishedAt())}
+//                 </h3>
+//             </div>
+//             <div class="entry-card__secondary mdc-typography mdc-typography--body2">
+//                 ${entry.getBody()}
+//             </div>
+//         </div>
+//         <div class="mdc-card__actions">
+//             <div class="mdc-card__action-buttons">
+//                 <img class="source-icon"
+//                      src="${this.getSourceIcon(entry.getSourceRssId())}">
+//             </div>
+//             <div class="mdc-card__action-icons">
+//                 <!--                                            <button class="mdc-icon-button material-icons mdc-card__action mdc-card__action&#45;&#45;icon&#45;&#45;unbounded"-->
+//                 <!--                                                    title="Share" data-mdc-ripple-is-unbounded="true">-->
+//                 <!--                                                push_pin-->
+//                 <!--                                            </button>-->
+//                 ${when(navigator['share'], () => html`
+//                     <button class="mdc-icon-button material-icons mdc-card__action mdc-card__action--icon--unbounded"
+//                             title="Share" data-mdc-ripple-is-unbounded="true"
+//                             @click=${() => navigator.share({
+//                                 title: entry.getName(),
+//                                 text: entry.getBody(),
+//                                 url: entry.getLinkUrl()
+//                             })}>
+//                         share
+//                     </button>
+//                 `)}
+//             </div>
+//         </div>
+//     </div>
+// `)
