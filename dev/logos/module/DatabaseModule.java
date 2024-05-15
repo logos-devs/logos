@@ -63,13 +63,13 @@ class RdsIamAuthHikariDataSource extends HikariDataSource {
                            .region(new DefaultAwsRegionProviderChain().getRegion())
                            .build()
                            .generateAuthenticationToken(
-                                   GenerateAuthenticationTokenRequest
-                                           .builder()
-                                           .credentialsProvider(DefaultCredentialsProvider.create())
-                                           .hostname(hostname)
-                                           .port(CLUSTER_RW_PORT)
-                                           .username(getUsername())
-                                           .build());
+                               GenerateAuthenticationTokenRequest
+                                   .builder()
+                                   .credentialsProvider(DefaultCredentialsProvider.create())
+                                   .hostname(hostname)
+                                   .port(CLUSTER_RW_PORT)
+                                   .username(getUsername())
+                                   .build());
     }
 }
 
@@ -86,7 +86,7 @@ public class DatabaseModule extends AbstractModule {
         config.setJdbcUrl(DB_URL);
         config.setUsername(DB_USER);
         config.addDataSourceProperty("minimumIdle", 5);
-        config.addDataSourceProperty("maximumPoolSize", 5);
+        config.addDataSourceProperty("maximumPoolSize", 25);
         // config.addDataSourceProperty("cachePrepStmts", "true");
         // config.addDataSourceProperty("prepStmtCacheSize", "200");
         // config.addDataSourceProperty("prepStmtCacheSqlLimit", "1024");

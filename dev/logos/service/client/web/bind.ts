@@ -5,6 +5,7 @@ import {VoiceServicePromiseClient} from "@app/digits/web/client/voice_grpc_web_p
 import {FileServicePromiseClient} from "@app/review/web/client/file_grpc_web_pb.js";
 import {ProjectServicePromiseClient} from "@app/review/web/client/project_grpc_web_pb.js";
 import {FeedServicePromiseClient} from "@app/summer/proto/feed_grpc_web_pb.js";
+import {SourceRssStorageServicePromiseClient} from "@app/summer/storage/summer/source_rss_grpc_web_pb.js";
 import {DevEndpoint} from "@logos/endpoint";
 import {user} from "app/auth/web/state";
 import {Container} from "inversify";
@@ -61,6 +62,7 @@ function makeClient<Client>(clientClass: new (endpoint: string, credentials: any
     FeedServicePromiseClient,
     VoiceServicePromiseClient,
     PhoneNumberStorageServicePromiseClient,
+    SourceRssStorageServicePromiseClient,
     CognitoServicePromiseClient
 ].map((clientClass: ClientClass) => {
     container.bind(clientClass).toDynamicValue(

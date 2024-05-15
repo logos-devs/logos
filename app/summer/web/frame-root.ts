@@ -1,25 +1,98 @@
-import {css, LitElement} from 'lit';
-import {customElement} from "lit/decorators.js";
+import "@material/web/labs/navigationtab/navigation-tab";
+import {Router} from "@vaadin/router";
+import {css, html, LitElement} from 'lit';
+import {customElement, query} from "lit/decorators.js";
+import "@material/web/icon/icon";
+import "@material/web/iconbutton/icon-button";
+import "@material/web/labs/navigationbar/navigation-bar";
 import {router} from "./router";
 
 @customElement('frame-root')
-class FrameRoot extends LitElement {
+export class FrameRoot extends LitElement {
     static get styles() {
+        // language=CSS
         return css`
             :host {
-                //--mdc-theme-primary: #fcfcfc;
-                //--md-theme-on-primary: #777;
-                //--md-sys-color-surface: #fcfcfc;
+                height: 100%;
+                --mdc-theme-primary: #fcfcfc;
+                --mdc-theme-on-primary: #777;
+                --md-sys-color-surface: #fcfcfc;
+                --md-icon-font: 'Material Icons';
+                --md-sys-color-surface-container: #222;
+                --md-sys-color-surface-container-highest: #222;
+                --md-navigation-bar-container-height: 50px;
+
+                font-family: sans-serif;
+            }
+
+            #content {
+                height: 100%;
+                overflow-y: auto;
+                padding: 1em;
+            }
+
+            md-navigation-bar {
+                position: fixed;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.5);
+                backdrop-filter: blur(20px);
+                -webkit-backdrop-filter: blur(20px);
+            }
+
+            @media (prefers-color-scheme: dark) {
+                :host {
+                    --md-sys-color-surface: #292929;
+                    --md-sys-color-on-surface: white;
+                    --md-sys-color-surface-container: rgba(0, 0, 0, 0.5);
+                    --md-sys-color-surface-container-highest: rgba(0, 0, 0, 0.5);
+                    --md-sys-color-on-surface-variant: #ccc;
+                    --mdc-theme-primary: #292929;
+                    --mdc-theme-on-primary: #77;
+                }
             }
         `;
     }
 
-    firstUpdated(changedProperties) {
-        router.setOutlet(this.shadowRoot);
+    @query("#content")
+    private content: HTMLDivElement;
+
+    override connectedCallback() {
+        super.connectedCallback();
+        const tabPaths = ["/", "/explore", "/profile"];
+
+        let skipFirst = true;
+        this.addEventListener('navigation-bar-activated', (ev: CustomEvent<{ activeIndex: number }>) => {
+            if (skipFirst) { // skip the first event, which is fired when the component is initialized
+                skipFirst = false;
+                return;
+            }
+
+            const tabIndex: number = ev.detail.activeIndex;
+
+            /* there are paths which don't correspond to a tab */
+            if (tabPaths.some(path => window.location.pathname === path)) {
+                history.pushState({}, "", tabPaths[tabIndex]);
+                Router.go(window.location.href);
+            }
+        });
+    }
+
+    override firstUpdated() {
+        router.setOutlet(this.content);
         router.setRoutes([
             {
                 path: "/", component: "view-feed", action: () => {
                     import("./view-feed");
+                }
+            },
+            {
+                path: "/explore", component: "view-explore", action: () => {
+                    import("./view-explore");
+                }
+            },
+            {
+                path: "/profile", component: "view-profile", action: () => {
+                    import("./view-profile");
                 }
             },
             {
@@ -28,5 +101,28 @@ class FrameRoot extends LitElement {
                 }
             }
         ]);
+    }
+
+    override render() {
+        return html`
+            <div id="content"></div>
+
+            <md-navigation-bar activeIndex="1">
+                <md-navigation-tab .label="Home">
+                    <md-icon slot="active-icon">home</md-icon>
+                    <md-icon slot="inactive-icon">home</md-icon>
+                </md-navigation-tab>
+
+                <md-navigation-tab .label="Search">
+                    <md-icon slot="active-icon">search</md-icon>
+                    <md-icon slot="inactive-icon">search</md-icon>
+                </md-navigation-tab>
+
+                <md-navigation-tab .label="Profile">
+                    <md-icon slot="active-icon">account_circle</md-icon>
+                    <md-icon slot="inactive-icon">account_circle</md-icon>
+                </md-navigation-tab>
+            </md-navigation-bar>
+        `;
     }
 }

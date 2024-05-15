@@ -47,7 +47,7 @@ build:remote --nolegacy_important_outputs
 build:remote --noslim_profile 
 build:remote --platforms=@buildbuddy_toolchain//:platform
 build:remote --remote_cache=grpcs://remote.buildbuddy.io
-build:remote --remote_executor=grpcs://remote.buildbuddy.io
+#build:remote --remote_executor=grpcs://remote.buildbuddy.io
 build:remote --remote_timeout=3600
 
 try-import %workspace%/.bazelrc.local

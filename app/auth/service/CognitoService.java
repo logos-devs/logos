@@ -110,7 +110,7 @@ public class CognitoService extends CognitoServiceGrpc.CognitoServiceImplBase im
 
         String json;
         try (CloseableHttpClient client = HttpClients.createDefault();
-             CloseableHttpResponse tokenResponse = client.execute(tokenRequest);
+             CloseableHttpResponse tokenResponse = client.execute(tokenRequest)
         ) {
             if (tokenResponse.getStatusLine().getStatusCode() != HttpStatusCode.OK) {
                 onFailedRequest(responseObserver, SEVERE, TOKEN_REQUEST_FAILURE_MSG,

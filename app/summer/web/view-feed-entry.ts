@@ -1,4 +1,6 @@
-import "@material/web/labs/card/outlined-card";
+import "@material/web/labs/card/filled-card";
+import "@material/web/chips/chip-set";
+import "@material/web/chips/filter-chip";
 import {Entry} from "@app/summer/storage/summer/entry_pb.js";
 import {css, html, LitElement} from 'lit';
 import {customElement, property, state} from "lit/decorators.js";
@@ -13,11 +15,15 @@ export class ViewFeedEntry extends LitElement {
             :host {
             }
 
-            md-outlined-card {
-                position: relative;
+            md-filled-card {
                 padding: 1em;
-                margin: 1em;
-                font-family: monospace;
+                position: relative;
+                margin-top: 1em;
+                backdrop-filter: blur(50px);
+            }
+
+            md-filled-card h3 {
+                margin-top: 0;
             }
         `;
     }
@@ -56,9 +62,67 @@ export class ViewFeedEntry extends LitElement {
 
     render() {
         return html`
-            <md-outlined-card .style=${`left: ${this.x1}`} draggable="true">
+            <md-filled-card .style=${`left: ${this.x1}`} draggable="true">
+                <h3>${this.entry.getName()}</h3>
                 ${this.entry.getBody()}
-            </md-outlined-card>
+                <md-chip-set>
+                    ${this.entry.getTagsList().map(
+                            tag => html`
+                                <md-filter-chip label="${tag}"
+                                                @click=${ev => {
+                                                    ev.stopPropagation()
+                                                    //this.toggleTag(tag);
+                                                }}>
+                                </md-filter-chip>
+                            `)}
+                </md-chip-set>
+            </md-filled-card>
         `;
     }
 }
+
+
+// html`
+//     <div class="mdc-card entry-card">
+//         <div @click=${() => window.location.href = entry.getLinkUrl()}
+//              class="mdc-card__primary-action entry-card__primary-action" tabindex="0">
+//             ${when(entry.getImageUrl(), () => html`
+//                 <div class="mdc-card__media mdc-card__media--16-9 entry-card__media"
+//                      style="background-image: url(&quot;${entry.getImageUrl()}&quot;);"></div>
+//             `)}
+//             <div class="entry-card__primary">
+//                 <h2 class="entry-card__title mdc-typography mdc-typography--headline6">
+//                     ${entry.getName()}</h2>
+//                 <h3 class="entry-card__subtitle mdc-typography mdc-typography--subtitle2">
+//                     ${this.formattedDate(entry.getPublishedAt())}
+//                 </h3>
+//             </div>
+//             <div class="entry-card__secondary mdc-typography mdc-typography--body2">
+//                 ${entry.getBody()}
+//             </div>
+//         </div>
+//         <div class="mdc-card__actions">
+//             <div class="mdc-card__action-buttons">
+//                 <img class="source-icon"
+//                      src="${this.getSourceIcon(entry.getSourceRssId())}">
+//             </div>
+//             <div class="mdc-card__action-icons">
+//                 <!--                                            <button class="mdc-icon-button material-icons mdc-card__action mdc-card__action&#45;&#45;icon&#45;&#45;unbounded"-->
+//                 <!--                                                    title="Share" data-mdc-ripple-is-unbounded="true">-->
+//                 <!--                                                push_pin-->
+//                 <!--                                            </button>-->
+//                 ${when(navigator['share'], () => html`
+//                     <button class="mdc-icon-button material-icons mdc-card__action mdc-card__action--icon--unbounded"
+//                             title="Share" data-mdc-ripple-is-unbounded="true"
+//                             @click=${() => navigator.share({
+//                                 title: entry.getName(),
+//                                 text: entry.getBody(),
+//                                 url: entry.getLinkUrl()
+//                             })}>
+//                         share
+//                     </button>
+//                 `)}
+//             </div>
+//         </div>
+//     </div>
+// `)

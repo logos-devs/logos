@@ -21,14 +21,47 @@ public class GuardServerInterceptor implements ServerInterceptor {
         ServerCall.Listener<ReqT> delegate = next.startCall(call, headers);
 
         return new ForwardingServerCallListener.SimpleForwardingServerCallListener<ReqT>(delegate) {
+            private boolean callClosed = false;
+
             @Override
             public void onMessage(ReqT message) {
-                Optional<Status> guardResult = service.guard(message);
-                if (guardResult.isPresent()) {
-                    call.close(guardResult.get(), new Metadata());
-                    return;
+                if (!callClosed) {
+                    Optional<Status> guardResult = service.guard(message);
+                    if (guardResult.isPresent()) {
+                        call.close(guardResult.get(), new Metadata());
+                        callClosed = true;
+                        return;
+                    }
+                    super.onMessage(message);
                 }
-                super.onMessage(message);
+            }
+
+            @Override
+            public void onHalfClose() {
+                if (!callClosed) {
+                    super.onHalfClose();
+                }
+            }
+
+            @Override
+            public void onCancel() {
+                if (!callClosed) {
+                    super.onCancel();
+                }
+            }
+
+            @Override
+            public void onComplete() {
+                if (!callClosed) {
+                    super.onComplete();
+                }
+            }
+
+            @Override
+            public void onReady() {
+                if (!callClosed) {
+                    super.onReady();
+                }
             }
         };
     }

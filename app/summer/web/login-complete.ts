@@ -37,19 +37,19 @@ export class LoginComplete extends LitElement {
 
     static get styles() {
         return css`
-          :host {
-            width: 100vw;
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-          }
+            :host {
+                width: 100vw;
+                height: 100vh;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-direction: column;
+            }
 
-          #message {
-            margin-top: 1em;
-            font-family: var(--font-user-message);
-          }
+            #message {
+                margin-top: 1em;
+                font-family: var(--font-user-message);
+            }
         `;
     }
 

@@ -2,9 +2,10 @@ package dev.logos.service.storage.pg;
 
 
 public abstract class Column extends Identifier {
-    public static final Column STAR = new Column("*", "*", null){};
+    public static final Column STAR = new Column("*", "*", null) {
+    };
 
-    String storageType;
+    private final String storageType;
 
     public Column(String identifier,
                   String quotedIdentifier,
@@ -12,5 +13,9 @@ public abstract class Column extends Identifier {
 
         super(identifier, quotedIdentifier);
         this.storageType = storageType;
+    }
+
+    public String getStorageType() {
+        return storageType;
     }
 }

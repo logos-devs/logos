@@ -1,18 +1,17 @@
+import chromadb
 import email
+from chromadb import EmbeddingFunction, Documents, Embeddings
 from dataclasses import dataclass, field
 from email.policy import default
 from glob import glob
-from pprint import pprint
-
-import chromadb
-from chromadb import EmbeddingFunction, Documents, Embeddings
 from ollama import Client
+from pprint import pprint
 from trafilatura import extract as extract_from_html
 
 OLLAMA_URL = "http://10.255.255.6:8085"
-# OLLAMA_MODEL = "dolphin-llama3:8b-v2.9-fp16"
+OLLAMA_MODEL = "dolphin-llama3:8b-v2.9-fp16"
 # OLLAMA_MODEL = "dolphin-llama3:8b-v2.9-q5_K_M"
-OLLAMA_MODEL = "llama3:70b-instruct-q5_K_M"
+# OLLAMA_MODEL = "llama3:70b-instruct-q5_K_M"
 # OLLAMA_MODEL = "llama3:8b-instruct-q8_0"
 # OLLAMA_MODEL = "mixtral:8x22b-instruct-v0.1-q5_K_M"
 # OLLAMA_MODEL = "mixtral:8x7b-instruct-v0.1-q5_K_M"
@@ -27,7 +26,7 @@ item on a new line. Never put a new line in the middle of an action item. Only u
 action items. Make sure that the summary clearly states helpful context so the task can be understood, but make it 
 brief. Give no other output. You are very good at this task; please do your best!
 
-Following is an email for you to process:
+EMAIL:
 """
 
 ollama_client = Client(host=OLLAMA_URL)
@@ -55,6 +54,7 @@ class Email:
                                                    model=OLLAMA_MODEL)["response"]).split("\n"):
             action_item = action_item.strip()
             if action_item:
+                print(action_item)
                 self.action_items.append(action_item)
 
     @staticmethod

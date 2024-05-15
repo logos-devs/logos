@@ -2,32 +2,42 @@ package dev.logos.service.storage.pg.exporter;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.DescriptorProtos;
+import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
+import dev.logos.service.storage.pg.Converter;
+import dev.logos.service.storage.pg.Identifier;
 
 import java.util.Arrays;
 
 import static dev.logos.service.storage.pg.Identifier.snakeToCamelCase;
 
 public record ColumnDescriptor(String name, String type) implements ExportedIdentifier {
+    public ClassName getClassName(String tableName) {
+
+        String className = Identifier.snakeToCamelCase(this.name());
+        if (className.equals(tableName)) {
+            className = className + "_";
+        }
+
+        return ClassName.bestGuess(className);
+    }
+
     public String getProtobufTypeName() {
         return switch (this.type) {
-            case "smallint",
-                 "integer" -> "int32";
+            case "smallint", "integer" -> "int32";
             case "bigint" -> "int64";
             case "real" -> "float";
             case "double precision" -> "double";
-            case "numeric",
-                 "decimal" -> "fixed64";
+            case "numeric", "decimal" -> "fixed64";
             case "char",
-                 "varchar",
-                 "character varying",
-                 "text",
-                 "text[]",
-                 "timestamp",
-                 "timestamp with time zone",
-                 "date" -> "string";
-            case "bytea",
-                 "uuid" -> "bytes";
+                "varchar",
+                "character varying",
+                "text",
+                "text[]",
+                "timestamp",
+                "timestamp with time zone",
+                "date" -> "string";
+            case "bytea", "uuid" -> "bytes";
             case "boolean" -> "bool";
             default -> throw new IllegalArgumentException("Unsupported type: " + this.type);
         };
@@ -41,13 +51,13 @@ public record ColumnDescriptor(String name, String type) implements ExportedIden
             case "double precision" -> DescriptorProtos.FieldDescriptorProto.Type.TYPE_DOUBLE;
             case "numeric", "decimal" -> DescriptorProtos.FieldDescriptorProto.Type.TYPE_FIXED64;
             case "char",
-                 "varchar",
-                 "character varying",
-                 "text",
-                 "text[]",
-                 "timestamp",
-                 "timestamp with time zone",
-                 "date" -> DescriptorProtos.FieldDescriptorProto.Type.TYPE_STRING;
+                "varchar",
+                "character varying",
+                "text",
+                "text[]",
+                "timestamp",
+                "timestamp with time zone",
+                "date" -> DescriptorProtos.FieldDescriptorProto.Type.TYPE_STRING;
             case "bytea", "uuid" -> DescriptorProtos.FieldDescriptorProto.Type.TYPE_BYTES;
             case "boolean" -> DescriptorProtos.FieldDescriptorProto.Type.TYPE_BOOL;
             default -> throw new IllegalArgumentException("Unsupported type: " + this.type);
@@ -57,6 +67,7 @@ public record ColumnDescriptor(String name, String type) implements ExportedIden
     public String getJavaCast() {
         return switch (this.type) {
             case "text[]" -> "(String[])";
+            case "uuid" -> "(java.util.UUID)";
             default -> "";
         };
     }
@@ -66,20 +77,27 @@ public record ColumnDescriptor(String name, String type) implements ExportedIden
     }
 
     public String getResultSetMethod() {
-        DescriptorProtos.FieldDescriptorProto.Type protobufType = getProtobufType();
         if (isArray()) {
             return "getArray";
         } else {
-            return switch (protobufType) {
-                case TYPE_BOOL -> "getBoolean";
-                case TYPE_BYTES -> "getBytes";
-                case TYPE_DOUBLE,
-                     TYPE_FIXED64 -> "getDouble";
-                case TYPE_FLOAT -> "getFloat";
-                case TYPE_SINT32 -> "getInt";
-                case TYPE_SINT64 -> "getLong";
-                case TYPE_STRING -> "getString";
-                default -> throw new RuntimeException("Unknown type: " + protobufType);
+            return switch (this.type) {
+                case "smallint", "integer" -> "getInt";
+                case "bigint" -> "getLong";
+                case "real" -> "getFloat";
+                case "double precision" -> "getDouble";
+                case "numeric", "decimal" -> "getBigDecimal";
+                case "char",
+                    "varchar",
+                    "character varying",
+                    "text",
+                    "text[]",
+                    "timestamp",
+                    "timestamp with time zone",
+                    "date" -> "getString";
+                case "bytea" -> "getBytes";
+                case "uuid" -> "getObject";
+                case "boolean" -> "getBoolean";
+                default -> throw new IllegalArgumentException("Unsupported type: " + this.type);
             };
         }
     }
@@ -88,22 +106,22 @@ public record ColumnDescriptor(String name, String type) implements ExportedIden
         String setterName = snakeToCamelCase(this.name);
         String setterPrefix = isArray() ? "addAll" : "set";
         return "%s%s%s".formatted(
-                setterPrefix,
-                setterName.substring(0, 1).toUpperCase(),
-                setterName.substring(1)
+            setterPrefix,
+            setterName.substring(0, 1).toUpperCase(),
+            setterName.substring(1)
         );
     }
 
+    /* from db to protobuf type */
     CodeBlock convertType(CodeBlock innerCall) {
-        DescriptorProtos.FieldDescriptorProto.Type protobufType = getProtobufType();
         if (isArray()) {
             return CodeBlock.of("$T.asList((String[])$L.getArray())", Arrays.class, innerCall);
         } else {
-            return switch (protobufType) {
-                case TYPE_BOOL, TYPE_DOUBLE, TYPE_FIXED64, TYPE_SINT32, TYPE_SINT64, TYPE_STRING -> innerCall;
-                case TYPE_BYTES -> CodeBlock.of("$T.copyFrom($L)", ByteString.class, innerCall);
-                case TYPE_FLOAT -> CodeBlock.of("%L.floatValue()", innerCall);
-                default -> throw new RuntimeException("Unknown type: " + protobufType);
+            return switch (this.type) {
+                case "bytea" -> CodeBlock.of("$T.copyFrom($L)", ByteString.class, innerCall);
+                case "real" -> CodeBlock.of("%L.floatValue()", innerCall);
+                case "uuid" -> CodeBlock.of("$T.uuidToBytestring($L)", Converter.class, innerCall);
+                default -> innerCall;
             };
         }
     }

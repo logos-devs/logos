@@ -9,6 +9,7 @@ import dev.logos.user.AnonymousUser;
 import dev.logos.user.User;
 import io.grpc.*;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 
@@ -24,7 +25,6 @@ import java.security.spec.RSAPublicKeySpec;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -61,18 +61,16 @@ public class CognitoServerInterceptor implements ServerInterceptor {
         Context ctx = Context.current();
 
         String value = requestHeaders.get(AUTHORIZATION_METADATA_KEY);
+        User user = new AnonymousUser();
+
         if (value != null && value.startsWith(BEARER_TYPE)) {
-            User user = authenticateUser(value.substring(BEARER_TYPE.length()).trim());
-            ctx = ctx.withValue(
-                    USER_CONTEXT_KEY,
-                    Optional.ofNullable(user).orElse(new AnonymousUser())
-            );
+            user = authenticateUser(value.substring(BEARER_TYPE.length()).trim());
         }
 
-        return Contexts.interceptCall(ctx, call, requestHeaders, next);
+        return Contexts.interceptCall(ctx.withValue(USER_CONTEXT_KEY, user), call, requestHeaders, next);
     }
 
-    private AuthenticatedUser authenticateUser(String token) {
+    private User authenticateUser(String token) {
         try {
             String headerJson = new String(Base64.getUrlDecoder().decode(token.split("\\.")[0]),
                                            StandardCharsets.UTF_8);
@@ -88,9 +86,9 @@ public class CognitoServerInterceptor implements ServerInterceptor {
             claims.getPayload().forEach((key, value) -> logger.log(Level.FINEST, key + ": " + value));
 
             return new AuthenticatedUser(token, claims.getPayload());
-        } catch (IOException | NoSuchAlgorithmException | InvalidKeySpecException e) {
-            logger.log(Level.SEVERE, "Failed to authenticate", e);
-            return null;
+        } catch (ExpiredJwtException | IOException | NoSuchAlgorithmException | InvalidKeySpecException e) {
+            logger.log(Level.SEVERE, "Failed to authenticate");
+            return new AnonymousUser();
         }
     }
 

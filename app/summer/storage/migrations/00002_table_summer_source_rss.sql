@@ -14,7 +14,7 @@ begin
         synced_at timestamp with time zone
     );
 
-    grant select, update, delete on summer.source_rss to storage;
+    grant select, insert, update, delete on summer.source_rss to storage;
 
     create or replace function tests.role_storage_can_select_from_summer_source_rss() returns void as
     $$

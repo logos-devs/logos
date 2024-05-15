@@ -22,8 +22,8 @@ public class FeedService extends FeedServiceImplBase implements Service {
 
     @Inject
     public FeedService(
-            SourceRssStorageServiceFutureStub sourceRssStorageService,
-            EntryStorageServiceFutureStub entryStorageService
+        SourceRssStorageServiceFutureStub sourceRssStorageService,
+        EntryStorageServiceFutureStub entryStorageService
     ) {
         this.sourceRssStorageService = sourceRssStorageService;
         this.entryStorageService = entryStorageService;
@@ -36,27 +36,36 @@ public class FeedService extends FeedServiceImplBase implements Service {
 
     @Override
     public void getFeed(
-            GetFeedRequest request,
-            StreamObserver<GetFeedResponse> responseObserver
+        GetFeedRequest request,
+        StreamObserver<GetFeedResponse> responseObserver
     ) {
         try {
             responseObserver.onNext(
-                    GetFeedResponse.newBuilder().setFeed(
-                            Feed.newBuilder()
-                                .addAllEntry(
-                                        entryStorageService.list(ListEntryRequest.newBuilder().build())
-                                                           .get()
-                                                           .getResultsList())
-                                .addAllSource(
-                                        sourceRssStorageService.list(ListSourceRssRequest.newBuilder().build())
-                                                               .get()
-                                                               .getResultsList().stream().map(
-                                                                       sourceRss -> Source.newBuilder()
-                                                                                          .setId(sourceRss.getId())
-                                                                                          .setIcon(sourceRss.getFaviconUrl())
-                                                                                          .build())
-                                                               .toList())
-                                .build()).build());
+                GetFeedResponse.newBuilder().setFeed(
+                    Feed.newBuilder()
+                        .addAllSource(
+                            sourceRssStorageService
+                                .list(ListSourceRssRequest.newBuilder().build())
+                                .get()
+                                .getResultsList()
+                                .stream()
+                                .map(sourceRss -> {
+                                    try {
+                                        return Source
+                                            .newBuilder()
+                                            .setId(sourceRss.getId())
+                                            .setIcon(sourceRss.getFaviconUrl())
+                                            .addAllEntry(
+                                                entryStorageService
+                                                    .list(ListEntryRequest.newBuilder().build())
+                                                    .get()
+                                                    .getResultsList())
+                                            .build();
+                                    } catch (InterruptedException | ExecutionException e) {
+                                        throw new RuntimeException(e);
+                                    }
+                                }).toList())
+                        .build()).build());
             responseObserver.onCompleted();
 
         } catch (InterruptedException | ExecutionException err) {

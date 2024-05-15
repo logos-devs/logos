@@ -1,4 +1,5 @@
 load("@aspect_rules_js//js/private:js_info.bzl", "js_info")
+load("@aspect_rules_js//js:defs.bzl", "js_library")
 
 def _schema_export_impl(ctx):
     proto_desc_bundle = ctx.actions.declare_file("bundle.desc")
@@ -167,9 +168,10 @@ def storage_java_proto_library(name, srcs, visibility):
         ],
     )
 
-#
-#    js_library(
-#        name = name + "_grpc_web_client",
-#        deps = [name],
-#        visibility = visibility,
-#    )
+def storage_grpc_web_library(name, srcs, visibility):
+    js_library(
+        name = name,
+        srcs = srcs,
+        visibility = visibility,
+        deps = ["//:node_modules"],
+    )

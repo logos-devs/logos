@@ -1,6 +1,5 @@
 package dev.logos.service.storage;
 
-import com.google.protobuf.ByteString;
 import com.google.protobuf.GeneratedMessageV3;
 import dev.logos.service.Service;
 import dev.logos.service.storage.exceptions.EntityReadException;
@@ -9,8 +8,6 @@ import dev.logos.service.storage.pg.Select;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 
-import java.nio.ByteBuffer;
-import java.util.UUID;
 import java.util.stream.Stream;
 
 public interface EntityStorageService<
@@ -24,39 +21,15 @@ public interface EntityStorageService<
     DeleteResponse extends GeneratedMessageV3,
     Entity extends GeneratedMessageV3,
     StorageIdentifier
-> extends Service {
+    > extends Service {
 
     EntityStorage<Entity, StorageIdentifier> getStorage();
+
     Select.Builder query(ListRequest listRequest);
 
-    default <Request extends GeneratedMessageV3> Entity entity(Request ignoredRequest) {
-        throw new UnsupportedOperationException("Not implemented.");
-    }
+    <Request> Entity entity(Request ignoredRequest);
 
-    default <Request> StorageIdentifier id(Request ignoredRequest) {
-        throw new UnsupportedOperationException("Not implemented.");
-    }
-
-    // TODO move this shameful code to its proper place in the pg<->protobuf converter
-    default UUID bytestringToUuid(ByteString byteString) {
-        if (byteString.size() != 16) {
-            throw new IllegalArgumentException("Invalid UUID byte length: " + byteString.size());
-        }
-
-        long mostSigBits = byteString.substring(0, 8).asReadOnlyByteBuffer().getLong();
-        long leastSigBits = byteString.substring(8, 16).asReadOnlyByteBuffer().getLong();
-
-        return new UUID(mostSigBits, leastSigBits);
-    }
-
-    // TODO move this shameful code to its proper place in the pg<->protobuf converter
-    default ByteString uuidToByteString(UUID uuid) {
-        byte[] bytes = new byte[16];
-        ByteBuffer bb = ByteBuffer.wrap(bytes);
-        bb.putLong(uuid.getMostSignificantBits());
-        bb.putLong(uuid.getLeastSignificantBits());
-        return ByteString.copyFrom(bytes);
-    }
+    <Request> StorageIdentifier id(Request request);
 
     interface RequestHandler<Response> {
         Response handle() throws EntityReadException, EntityWriteException;
@@ -66,7 +39,7 @@ public interface EntityStorageService<
         throw new UnsupportedOperationException("Not implemented.");
     }
 
-    default <Req, Resp> Resp response(StorageIdentifier ignoredId, Req ignoredRequest) {
+    default <Req extends GeneratedMessageV3, Resp extends GeneratedMessageV3> Resp response(StorageIdentifier ignoredId, Req ignoredRequest) {
         throw new UnsupportedOperationException("Not implemented.");
     }
 
@@ -76,7 +49,7 @@ public interface EntityStorageService<
             responseObserver.onCompleted();
         } catch (EntityReadException | EntityWriteException e) {
             responseObserver.onError(
-                    Status.UNAVAILABLE.withCause(e).asRuntimeException());
+                Status.UNAVAILABLE.withCause(e).asRuntimeException());
         }
     }
 
@@ -95,11 +68,11 @@ public interface EntityStorageService<
 
     default void update(UpdateRequest updateRequest, StreamObserver<UpdateResponse> responseObserver) {
         request(updateRequest, responseObserver, () ->
-                response(getStorage().update(id(updateRequest), entity(updateRequest)), updateRequest));
+            response(getStorage().update(id(updateRequest), entity(updateRequest)), updateRequest));
     }
 
     default void delete(DeleteRequest deleteRequest, StreamObserver<DeleteResponse> responseObserver) {
         request(deleteRequest, responseObserver, () ->
-                response(getStorage().delete(id(deleteRequest)), deleteRequest));
+            response(getStorage().delete(id(deleteRequest)), deleteRequest));
     }
 }
