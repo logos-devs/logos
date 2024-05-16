@@ -31,10 +31,6 @@ public interface EntityStorageService<
 
     <Request> StorageIdentifier id(Request request);
 
-    interface RequestHandler<Response> {
-        Response handle() throws EntityReadException, EntityWriteException;
-    }
-
     default ListResponse response(Stream<Entity> ignoredEntityStream, ListRequest ignoredRequest) {
         throw new UnsupportedOperationException("Not implemented.");
     }
@@ -51,6 +47,10 @@ public interface EntityStorageService<
             responseObserver.onError(
                 Status.UNAVAILABLE.withCause(e).asRuntimeException());
         }
+    }
+
+    interface RequestHandler<Response> {
+        Response handle() throws EntityReadException, EntityWriteException;
     }
 
     default void list(ListRequest listRequest, StreamObserver<ListResponse> responseObserver) {

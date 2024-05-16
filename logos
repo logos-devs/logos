@@ -167,7 +167,7 @@ dev_setup() {
                         --output text \
                         | cut -d' ' -f 9)"
 
-    echo "Updating kubeconfig for $STACK in $AWS_REGION"
+    echo "Updating kubeconfig for $STACK in $AWS_REGION as role $ROLE_ARN"
     aws eks update-kubeconfig \
                 --name logos-eks \
                 --region "$AWS_REGION" \

@@ -1,4 +1,4 @@
-import {App, CfnOutput, Environment, SecretValue, Stack, StackProps} from "aws-cdk-lib";
+import {App, CfnOutput, Duration, Environment, SecretValue, Stack, StackProps} from "aws-cdk-lib";
 import {UserPool, UserPoolClient, UserPoolDomain} from "aws-cdk-lib/aws-cognito";
 import {PolicyStatement} from "aws-cdk-lib/aws-iam";
 import {ARecord, HostedZone, RecordTarget} from "aws-cdk-lib/aws-route53";
@@ -68,7 +68,8 @@ export class CognitoStack extends Stack {
                 generateSecret: true,
                 oAuth: {
                     callbackUrls: [redirectUri],
-                }
+                },
+                accessTokenValidity: Duration.hours(8),
             });
 
             cognitoPublicHostMapOutput[fqdn] = {

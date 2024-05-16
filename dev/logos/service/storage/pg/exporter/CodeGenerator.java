@@ -5,6 +5,7 @@ import com.google.inject.Inject;
 import com.google.inject.TypeLiteral;
 import com.google.protobuf.DescriptorProtos;
 import com.google.protobuf.DescriptorProtos.FieldDescriptorProto;
+import com.google.protobuf.GeneratedMessageV3;
 import com.squareup.javapoet.*;
 import dev.logos.service.storage.EntityStorage;
 import dev.logos.service.storage.EntityStorageService;
@@ -610,6 +611,8 @@ public class CodeGenerator {
                     .addMethod(makeRpcHandler(deleteRequestMessage, deleteResponseMessage, "delete"))
                     .addMethod(makeEntityGetter("entity", entityMessage, createRequestMessage, updateRequestMessage))
                     .addMethod(makeIdGetter("id", storageIdentifier, updateRequestMessage, deleteRequestMessage))
+
+                    // ListResponse response(Stream<Entity>, ListRequest)
                     .addMethod(MethodSpec.methodBuilder("response")
                                          .addModifiers(PUBLIC)
                                          .addParameter(
@@ -624,33 +627,52 @@ public class CodeGenerator {
                                              listResponseMessage,
                                              tableDescriptor.getInstanceVariableName())
                                          .build())
-                    .addMethod(MethodSpec.methodBuilder("response")
-                                         .addModifiers(PUBLIC)
-                                         .addParameter(ClassName.get(UUID.class), "id")
-                                         .addParameter(createRequestMessage, "request")
-                                         .returns(createResponseMessage)
-                                         .addStatement("return $T.newBuilder().setId($T.uuidToBytestring(id)).build()",
-                                                       createResponseMessage,
-                                                       Converter.class)
-                                         .build())
-                    .addMethod(MethodSpec.methodBuilder("response")
-                                         .addModifiers(PUBLIC)
-                                         .addParameter(ClassName.get(UUID.class), "id")
-                                         .addParameter(updateRequestMessage, "request")
-                                         .returns(updateResponseMessage)
-                                         .addStatement("return $T.newBuilder().setId($T.uuidToBytestring(id)).build()",
-                                                       updateResponseMessage,
-                                                       Converter.class)
-                                         .build())
-                    .addMethod(MethodSpec.methodBuilder("response")
-                                         .addModifiers(PUBLIC)
-                                         .addParameter(ClassName.get(UUID.class), "id")
-                                         .addParameter(deleteRequestMessage, "request")
-                                         .returns(deleteResponseMessage)
-                                         .addStatement("return $T.newBuilder().setId($T.uuidToBytestring(id)).build()",
-                                                       deleteResponseMessage,
-                                                       Converter.class)
-                                         .build());
+
+                    // <Req extends GeneratedMessageV4, Resp extends GeneratedMessageV3> Resp response(StorageIdentifier, Req)
+                    .addMethod(
+                        MethodSpec.methodBuilder("response")
+                                  .addAnnotation(Override.class)
+                                  .addModifiers(PUBLIC)
+                                  .addTypeVariable(TypeVariableName.get("Req", GeneratedMessageV3.class))
+                                  .addTypeVariable(TypeVariableName.get("Resp", GeneratedMessageV3.class))
+                                  .returns(TypeVariableName.get("Resp"))
+                                  .addParameter(UUID.class, "id")
+                                  .addParameter(TypeVariableName.get("Req"), "request")
+                                  .beginControlFlow("if (request instanceof $T)", createRequestMessage)
+                                  .addStatement("return (Resp) $T.newBuilder().build()", createResponseMessage)
+                                  .endControlFlow()
+                                  .addStatement("return null")
+                                  .build()
+
+                    )
+//                    .addMethod(MethodSpec.methodBuilder("response")
+//                                         .addModifiers(PUBLIC)
+//                                         .addParameter(ClassName.get(UUID.class), "id")
+//                                         .addParameter(createRequestMessage, "request")
+//                                         .returns(createResponseMessage)
+//                                         .addStatement("return $T.newBuilder().setId($T.uuidToBytestring(id)).build()",
+//                                                       createResponseMessage,
+//                                                       Converter.class)
+//                                         .build())
+//                    .addMethod(MethodSpec.methodBuilder("response")
+//                                         .addModifiers(PUBLIC)
+//                                         .addParameter(ClassName.get(UUID.class), "id")
+//                                         .addParameter(updateRequestMessage, "request")
+//                                         .returns(updateResponseMessage)
+//                                         .addStatement("return $T.newBuilder().setId($T.uuidToBytestring(id)).build()",
+//                                                       updateResponseMessage,
+//                                                       Converter.class)
+//                                         .build())
+//                    .addMethod(MethodSpec.methodBuilder("response")
+//                                         .addModifiers(PUBLIC)
+//                                         .addParameter(ClassName.get(UUID.class), "id")
+//                                         .addParameter(deleteRequestMessage, "request")
+//                                         .returns(deleteResponseMessage)
+//                                         .addStatement("return $T.newBuilder().setId($T.uuidToBytestring(id)).build()",
+//                                                       deleteResponseMessage,
+//                                                       Converter.class)
+//                                         .build())
+            ;
 
         for (ClassName message : List.of(listRequestMessage, createRequestMessage, updateRequestMessage,
                                          deleteRequestMessage)) {

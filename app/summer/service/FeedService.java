@@ -49,22 +49,19 @@ public class FeedService extends FeedServiceImplBase implements Service {
                                 .get()
                                 .getResultsList()
                                 .stream()
-                                .map(sourceRss -> {
-                                    try {
-                                        return Source
-                                            .newBuilder()
-                                            .setId(sourceRss.getId())
-                                            .setIcon(sourceRss.getFaviconUrl())
-                                            .addAllEntry(
-                                                entryStorageService
-                                                    .list(ListEntryRequest.newBuilder().build())
-                                                    .get()
-                                                    .getResultsList())
-                                            .build();
-                                    } catch (InterruptedException | ExecutionException e) {
-                                        throw new RuntimeException(e);
-                                    }
-                                }).toList())
+                                .map(sourceRss ->
+                                         Source
+                                             .newBuilder()
+                                             .setId(sourceRss.getId())
+                                             .setName(sourceRss.getName())
+                                             .setIcon(sourceRss.getFaviconUrl())
+                                             .build()
+                                ).toList())
+                        .addAllEntry(
+                            entryStorageService
+                                .list(ListEntryRequest.newBuilder().build())
+                                .get()
+                                .getResultsList())
                         .build()).build());
             responseObserver.onCompleted();
 

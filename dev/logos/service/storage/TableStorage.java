@@ -118,11 +118,12 @@ public class TableStorage<Entity, StorageIdentifier> implements EntityStorage<En
     }
 
     public StorageIdentifier delete(StorageIdentifier id) throws EntityWriteException {
-        try (Query deleteQuery = jdbi.withHandle(
-            handle -> handle.createQuery(
-                                String.format("delete from %s where id = :id returning id", relation.quotedIdentifier))
-                            .bind("id", id))) {
-            return deleteQuery.mapTo(this.storageIdentifierClass).first();
+        String queryStr = String.format("delete from %s where id = :id returning id", relation.quotedIdentifier);
+
+        try (Handle handle = jdbi.open()) {
+            Query query = handle.createQuery(queryStr);
+            query.bind("id", id);
+            return query.mapTo(this.storageIdentifierClass).first();
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Failed to delete entity %s".formatted(relation.quotedIdentifier), e);
             throw new EntityWriteException();

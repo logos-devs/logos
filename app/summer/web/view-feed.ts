@@ -1,6 +1,7 @@
 import {MobxReactionUpdate} from '@adobe/lit-mobx';
 import {FeedServicePromiseClient} from "@app/summer/proto/feed_grpc_web_pb.js";
-import {GetFeedRequest, GetFeedResponse, Source} from "@app/summer/proto/feed_pb.js";
+import {Feed, GetFeedRequest, GetFeedResponse, Source} from "@app/summer/proto/feed_pb.js";
+import {Entry} from "@app/summer/storage/summer/entry_pb.js";
 import "@material/web/iconbutton/icon-button";
 import "@material/web/button/outlined-button";
 import "@material/web/chips/chip-set";
@@ -22,7 +23,11 @@ import "./view-feed-entry";
 export class ViewFeed extends MobxReactionUpdate(LitElement) {
     @lazyInject(FeedServicePromiseClient) private feedServiceClient!: FeedServicePromiseClient;
 
+    // TODO: need to revert nesting entries under sources, as the feed should just contain the N most recent entries,
+    //       not N per source
+
     @state() private sourceList: Source[] = [];
+    @state() private entriesBySource = new Map<String, Entry[]>();
     @state() private selectedTags: String[] = [];
 
     getSourceIcon(source_id) {
@@ -39,7 +44,16 @@ export class ViewFeed extends MobxReactionUpdate(LitElement) {
         if (user.isAuthenticated) {
             this.feedServiceClient.getFeed(new GetFeedRequest()).then(
                 (getFeedResponse: GetFeedResponse) => {
-                    const feed = getFeedResponse.getFeed();
+                    const feed: Feed = getFeedResponse.getFeed();
+
+                    feed.getEntryList().forEach((entry: Entry) => {
+                        const source_id = entry.getSourceRssId_asB64();
+                        if (!this.entriesBySource.has(source_id)) {
+                            this.entriesBySource.set(source_id, []);
+                        }
+                        this.entriesBySource.get(source_id).push(entry);
+                    });
+
                     this.sourceList = feed.getSourceList();
                 }
             );
@@ -118,13 +132,20 @@ export class ViewFeed extends MobxReactionUpdate(LitElement) {
                 </md-chip-set>
             `)}
 
-            <div>
-                ${this.sourceList.map(source => html`
-                    ${source.getEntryList().map(entry => html`
-                        <view-feed-entry .entry=${entry}></view-feed-entry>
-                    `)}
-                `)}
-            </div>
+            ${this.sourceList.map((source: Source) => {
+                const entries = this.entriesBySource.get(source.getId_asB64());
+                if (entries) {
+                    return html`
+                        <div>
+                            ${entries.map((entry: Entry) => html`
+                                <view-feed-entry .entry=${entry}></view-feed-entry>
+                            `)}
+                        </div>
+                    `;
+                } else {
+                    return html``;
+                }
+            })}
         `;
     }
 

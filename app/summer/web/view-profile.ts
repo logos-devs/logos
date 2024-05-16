@@ -2,7 +2,9 @@ import {SourceRssStorageServicePromiseClient} from "@app/summer/storage/summer/s
 import {
     CreateSourceRssRequest,
     CreateSourceRssResponse,
+    DeleteSourceRssRequest,
     ListSourceRssRequest,
+    ListSourceRssResponse,
     SourceRss,
     UpdateSourceRssRequest,
     UpdateSourceRssResponse
@@ -29,9 +31,10 @@ interface EntityCreatedEventDetail {
 
 class EntityCreatedEvent extends CustomEvent<EntityCreatedEventDetail> {
     constructor(detail: EntityCreatedEventDetail) {
-        super('entity-created', {detail});
+        super('entity-created', {detail, bubbles: true, composed: true});
     }
 }
+
 
 interface EntityUpdatedEventDetail {
     id: string;
@@ -39,19 +42,60 @@ interface EntityUpdatedEventDetail {
 
 class EntityUpdatedEvent extends CustomEvent<EntityUpdatedEventDetail> {
     constructor(detail: EntityUpdatedEventDetail) {
-        super('entity-updated', {detail});
+        super('entity-updated', {detail, bubbles: true, composed: true});
     }
 }
 
 
-const cardStyles = css`
+interface EntityDeletedEventDetail {
+    id: string;
+}
+
+class EntityDeletedEvent extends CustomEvent<EntityDeletedEventDetail> {
+    constructor(detail: EntityDeletedEventDetail) {
+        super('entity-deleted', {detail, bubbles: true, composed: true});
+    }
+}
+
+
+interface CloseComponentEventDetail {
+}
+
+class CloseComponentEvent extends CustomEvent<CloseComponentEventDetail> {
+    constructor() {
+        super('close-component', {bubbles: true, composed: true});
+    }
+}
+
+
+const sharedStyles = css`
+    h2 {
+        text-align: center;
+    }
+
     h3 {
         text-align: center;
+    }
+
+    md-filled-card {
+        margin-bottom: 1em;
+    }
+
+    md-icon-button#cancel {
+        position: absolute;
+        right: 0.5em;
+        top: 0.5em;
     }
 
     md-filled-text-field {
         display: block;
         margin: 0.5em;
+    }
+
+    md-icon-button#cancel {
+        position: absolute;
+        right: 0.5em;
+        top: 0.5em;
     }
 `;
 
@@ -60,7 +104,7 @@ const cardStyles = css`
 export class ViewSourceRss extends LitElement {
     @property({type: Object}) sourceRss: SourceRss;
 
-    static styles = [cardStyles, css`
+    static styles = [sharedStyles, css`
         :host {
         }
 
@@ -107,12 +151,11 @@ export class ViewSourceRss extends LitElement {
 @customElement('edit-source-rss')
 export class EditSourceRss extends LitElement {
     @property({type: Object}) sourceRss: SourceRss;
-    @state() private editing: boolean = false;
     @queryAll("md-filled-text-field") private fields: MdFilledTextField[];
 
     @lazyInject(SourceRssStorageServicePromiseClient) private sourceRssServiceClient!: SourceRssStorageServicePromiseClient;
 
-    static styles = [cardStyles, css`
+    static styles = [sharedStyles, css`
         :host {
         }
     `];
@@ -122,14 +165,11 @@ export class EditSourceRss extends LitElement {
 
         return html`
             <md-filled-card>
-                <h3>Edit RSS Feed</h3>
-
-                <md-icon-button id="cancel" @click=${() => this.dispatchEvent(new CustomEvent('cancel-editing', {
-                    bubbles: true,
-                    composed: true,
-                }))}>
+                <md-icon-button id="cancel" @click=${() => this.dispatchEvent(new CloseComponentEvent())}>
                     <md-icon>cancel</md-icon>
                 </md-icon-button>
+
+                <h3>Edit RSS Feed</h3>
 
                 <md-filled-text-field name="setName"
                                       label="Name"
@@ -142,6 +182,19 @@ export class EditSourceRss extends LitElement {
                                       value=${this.sourceRss.getFaviconUrl()}></md-filled-text-field>
 
                 <md-filled-button @click=${ev => {
+                    this.sourceRssServiceClient.delete(
+                            new DeleteSourceRssRequest()
+                                    .setId(this.sourceRss.getId())
+                    ).then((response: UpdateSourceRssResponse) => {
+                        this.dispatchEvent(
+                                new EntityDeletedEvent({id: response.getId().toString()})
+                        );
+                        this.dispatchEvent(new CloseComponentEvent());
+                    });
+                }}>Delete
+                </md-filled-button>
+
+                <md-filled-button @click=${ev => {
                     this.fields.forEach(field => {
                         this.sourceRss[field.name](field.value);
                     });
@@ -151,10 +204,10 @@ export class EditSourceRss extends LitElement {
                                     .setId(this.sourceRss.getId())
                                     .setEntity(this.sourceRss)
                     ).then((response: UpdateSourceRssResponse) => {
-                        this.editing = false;
                         this.dispatchEvent(
                                 new EntityUpdatedEvent({id: response.getId().toString()})
                         );
+                        this.dispatchEvent(new CloseComponentEvent());
                     });
                 }}>Save
                 </md-filled-button>
@@ -169,8 +222,9 @@ export class EditableSourceRss extends LitElement {
     @property({type: Object}) sourceRss: SourceRss;
     @state() private editing: boolean = false;
 
-    static styles = [cardStyles, css`
+    static styles = [sharedStyles, css`
         :host {
+            margin-top: 0.5em;
         }
     `];
 
@@ -178,7 +232,7 @@ export class EditableSourceRss extends LitElement {
         return html`
             ${when(this.editing,
                     () => html`
-                        <edit-source-rss @cancel-editing=${(ev: CustomEvent) => {
+                        <edit-source-rss @close-component=${(ev: CustomEvent) => {
                             this.editing = false;
                             ev.stopPropagation();
                         }} .sourceRss=${this.sourceRss}></edit-source-rss>
@@ -201,15 +255,22 @@ export class AddSourceRss extends LitElement {
 
     @queryAll("md-filled-text-field") private fields: MdFilledTextField[];
 
-    static styles = [cardStyles, css`
+    static styles = [sharedStyles, css`
         :host {
             position: relative;
+            margin-top: 1em;
+            display: flex;
+            flex-direction: row-reverse;
         }
 
         md-icon-button#cancel {
             position: absolute;
             right: 0.5em;
             top: 0.5em;
+        }
+
+        md-filled-card {
+            width: 100%;
         }
     `];
 
@@ -262,43 +323,63 @@ export class AddSourceRss extends LitElement {
 }
 
 
+@customElement('list-editable-entity')
+export class ListEditableEntity extends LitElement {
+    @state() private entityList = [];
+
+    override render() {
+        return html`
+            ${map(this.entityList, entity => html`
+                <editable-source-rss .sourceRss=${entity}></editable-source-rss>
+            `)}
+
+            <add-source-rss></add-source-rss>
+        `;
+    }
+}
+
+
 @customElement('view-profile')
 export class ViewProfile extends LitElement {
     @lazyInject(SourceRssStorageServicePromiseClient) private sourceRssServiceClient!: SourceRssStorageServicePromiseClient;
 
-    @state() private sourceRssList: SourceRss[] = [];
+    @state() private entityList: SourceRss[] = [];
 
-    static styles = [cardStyles, css`
+    static styles = [sharedStyles, css`
         :host {
-            margin: 1em;
         }
     `];
 
-    override connectedCallback() {
-        super.connectedCallback();
-
-        if (user.isAuthenticated) {
-            this.sourceRssServiceClient.list(new ListSourceRssRequest()).then((response) => {
-                this.sourceRssList = response.getResultsList();
-            });
-        }
+    loadResults() {
+        this.sourceRssServiceClient.list(new ListSourceRssRequest()).then((response: ListSourceRssResponse) => {
+            this.entityList = response.getResultsList();
+        });
     }
 
-    render() {
-        return html`
-            <h2>Sources</h2>
+    override connectedCallback() {
+        super.connectedCallback();
+        user.isAuthenticated && this.loadResults();
+    }
 
-            ${when(user.isAuthenticated, () => html`
-                ${map(this.sourceRssList, sourceRss => html`
-                    <editable-source-rss .sourceRss=${sourceRss}></editable-source-rss>
+    override render() {
+        return html`
+            <div @entity-created=${this.loadResults}
+                 @entity-updated=${this.loadResults}
+                 @entity-deleted=${this.loadResults}>
+
+                ${when(user.isAuthenticated, () => html`
+                    <h3>RSS Feeds</h3>
+                    <list-editable-entity .entityList=${this.entityList}></list-editable-entity>
+
+
+                    <h3>Email</h3>
+                `, () => html`
+                    <md-icon-button id="login-button"
+                                    @click=${() => window.location.assign(cognitoPublicHostMap[location.host].loginUrl)}>
+                        <md-icon>login</md-icon>
+                    </md-icon-button>
                 `)}
-                <add-source-rss></add-source-rss>
-            `, () => html`
-                <md-icon-button id="login-button"
-                                @click=${() => window.location.assign(cognitoPublicHostMap[location.host].loginUrl)}>
-                    <md-icon>login</md-icon>
-                </md-icon-button>
-            `)}
+            </div>
         `;
     }
 }

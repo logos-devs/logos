@@ -7,12 +7,13 @@ option java_multiple_files = true;
 
 message Source {
   bytes id = 1;
-  string icon = 2;
-  repeated Entry entry = 3;
+  string name = 2;
+  string icon = 3;
 }
 
 message Feed {
   repeated Source source = 1;
+  repeated Entry entry = 2;
 }
 
 message GetFeedRequest {

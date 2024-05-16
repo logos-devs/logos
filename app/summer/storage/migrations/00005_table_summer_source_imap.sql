@@ -21,6 +21,10 @@ begin
     end;
     $$ language plpgsql;
 
+    alter table summer.entry
+        add column source_imap_id uuid
+            references summer.source_imap (id)
+                on delete cascade;
 end;
 $mig$ language plpgsql;
 
