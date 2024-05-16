@@ -138,7 +138,7 @@ export class ViewFeed extends MobxReactionUpdate(LitElement) {
                     return html`
                         <div>
                             ${entries.map((entry: Entry) => html`
-                                <view-feed-entry .entry=${entry}></view-feed-entry>
+                                <view-feed-entry .entry=${entry} .source="${source}"></view-feed-entry>
                             `)}
                         </div>
                     `;

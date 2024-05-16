@@ -1,6 +1,7 @@
 import "@material/web/labs/card/filled-card";
 import "@material/web/chips/chip-set";
 import "@material/web/chips/filter-chip";
+import {Source} from "@app/summer/proto/feed_pb.js";
 import {Entry} from "@app/summer/storage/summer/entry_pb.js";
 import {css, html, LitElement} from 'lit';
 import {customElement, property, state} from "lit/decorators.js";
@@ -8,6 +9,8 @@ import {customElement, property, state} from "lit/decorators.js";
 @customElement('view-feed-entry')
 export class ViewFeedEntry extends LitElement {
     @property({type: Object}) entry: Entry;
+    @property({type: Object}) source: Source;
+
     @state() private x1 = 0;
 
     static get styles() {
@@ -24,6 +27,10 @@ export class ViewFeedEntry extends LitElement {
 
             md-filled-card h3 {
                 margin-top: 0;
+            }
+
+            md-filter-chip {
+                margin-top: 1em;
             }
         `;
     }
@@ -63,7 +70,7 @@ export class ViewFeedEntry extends LitElement {
     render() {
         return html`
             <md-filled-card .style=${`left: ${this.x1}`} draggable="true">
-                <h3>${this.entry.getName()}</h3>
+                <h3>${this.source.getName()} - ${this.entry.getName()}</h3>
                 ${this.entry.getBody()}
                 <md-chip-set>
                     ${this.entry.getTagsList().map(
