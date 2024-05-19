@@ -49,10 +49,7 @@ RUN wget https://github.com/chainguard-dev/apko/releases/download/v0.13.2/apko_0
     mv apko_0.13.2_linux_amd64/apko /usr/local/bin/ && \
     rm -rf apko_0.13.2_linux_amd64
 
-RUN curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add
-RUN apt-add-repository -y "deb https://apt.kubernetes.io/ kubernetes-xenial main"
-RUN apt-get update
-RUN apt-get install -y kubectl
+RUN curl -LO https://dl.k8s.io/release/v1.30.0/bin/linux/amd64/kubectl && install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
 
 RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
     unzip awscliv2.zip && \
