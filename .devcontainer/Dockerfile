@@ -5,6 +5,7 @@ SHELL ["/bin/bash", "-euc"]
 RUN apt-get update && apt-get upgrade -y
 
 RUN apt-get install -y \
+    amazon-ecr-credential-helper \
     command-not-found \
     clang \
     docker.io \
