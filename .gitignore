@@ -1,6 +1,8 @@
-/.ijwb/.blaze/modules/.workspace.iml
+*.sw?
 /.DS_Store
 /.bazelrc.local
+/.eclipse
+/.ijwb/.blaze/modules/.workspace.iml
 /.ijwb/.idea/libraries
 /.pnpm-store
 /bazel-bin
@@ -11,4 +13,3 @@
 /dev/logos/infra/dist
 /node_modules/*
 /vendor/js/dist
-*.sw?

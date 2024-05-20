@@ -10,7 +10,7 @@ http_archive(
     url = "https://github.com/bazelbuild/rules_python/releases/download/0.27.0/rules_python-0.27.0.tar.gz",
 )
 
-load("@rules_python//python:repositories.bzl", "py_repositories", "python_register_toolchains")
+load("@rules_python//python:repositories.bzl", "py_repositories")
 
 py_repositories()
 
@@ -56,8 +56,6 @@ http_file(
 )
 
 # rules_go
-load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
-
 http_archive(
     name = "io_bazel_rules_go",
     sha256 = "51dc53293afe317d2696d4d6433a4c33feedb7748a9e352072e2ec3c0dafd2c6",

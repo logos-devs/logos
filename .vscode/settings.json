@@ -44,4 +44,5 @@
     "typescript.tsdk": "node_modules/typescript/lib",
     "java.project.explorer.showNonJavaResources": true,
     "bazel.projectview.open": false,
+    "java.server.launchMode": "Standard",
 }

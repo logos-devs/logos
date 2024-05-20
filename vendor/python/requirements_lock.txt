@@ -101,6 +101,7 @@ requests-oauthlib==2.0.0
 rich==13.7.1
 rsa==4.9
 s3transfer==0.7.0
+setuptools==68.2.2
 sgmllib3k==1.0.0
 shellingham==1.5.4
 six==1.16.0
