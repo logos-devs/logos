@@ -13,6 +13,7 @@ RUN apt-get install -y \
     openjdk-17-jre-headless \
     openssh-server \
     postgresql-client \
+    python3.10-venv \
     software-properties-common \
     sqitch \
     libdbd-pg-perl
