@@ -45,4 +45,5 @@
     "java.project.explorer.showNonJavaResources": true,
     "bazel.projectview.open": false,
     "java.server.launchMode": "Standard",
+    "bazel.enableCodeLens": true,
 }
