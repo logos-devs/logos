@@ -27,18 +27,36 @@ SERVER_TUNNEL_PID="/tmp/logos_server_tunnel_pid"
 trap 'cleanup' INT TERM ERR
 
 _update_bazelrc_env() {
-  var_name="$1"; shift 1
-  var_value="$1"; shift 1
+  local var_name="$1"; shift 1
+  local var_value="$1"; shift 1
+  local bazelrc_local="$WORKSPACE_DIR/.bazelrc.local"
 
-  bazelrc_local="$WORKSPACE_DIR/.bazelrc.local"
   touch "$bazelrc_local"
   echo -e "\nUpdating $bazelrc_local with env var $var_name=$var_value"
 
-  $SED -i "/action_env=$var_name=/d" "$bazelrc_local" || true
-  $SED -i "/run_under=$var_name=/d" "$bazelrc_local" || true
+  "$SED" -i "/action_env=$var_name=/d" "$bazelrc_local" || true
+  "$SED" -i "/run_under=$var_name=/d" "$bazelrc_local" || true
 
   echo "build --action_env=$var_name=$var_value" >> "$bazelrc_local"
   echo "run --run_under=$var_name=$var_value" >> "$bazelrc_local"
+}
+
+_update_bazelrc_buildbuddy_api_key() {
+  local apikey=""
+
+  while [ -z "$apikey" ]; do
+    read -r -p "BuildBuddy API Key: " apikey
+  done
+  stderr
+
+  local hdr="build --remote_header=x-buildbuddy-api-key"
+  local bazelrc_local="$WORKSPACE_DIR/.bazelrc.local"
+
+  touch "$bazelrc_local"
+
+  echo -e "\nUpdating $bazelrc_local with buildbuddy API key"
+  "$SED" -i "/$hdr=/d" "$bazelrc_local" || true
+  echo "$hdr=$apikey" >> "$bazelrc_local"
 }
 
 _run_with_pid() {
@@ -180,6 +198,7 @@ dev_setup() {
 
     dev_env
     _update_bazelrc_env STORAGE_PG_BACKEND_HOST "$PG_AUTH_RESOLVED_HOST"
+    _update_bazelrc_buildbuddy_api_key
 
     $BAZEL run -- @pnpm//:pnpm --dir "$WORKSPACE_DIR" install
 }
