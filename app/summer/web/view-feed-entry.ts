@@ -25,6 +25,7 @@ export class ViewFeedEntry extends LitElement {
                 backdrop-filter: blur(50px);
             }
 
+
             md-filled-card h3 {
                 margin-top: 0;
             }

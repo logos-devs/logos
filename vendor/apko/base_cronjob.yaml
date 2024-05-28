@@ -9,7 +9,7 @@ contents:
     - coreutils
     - glibc
     - libpq-16
-    - python-3.11
+    - python-3.12
     - wolfi-base
     - wolfi-baselayout
     - py3-lxml

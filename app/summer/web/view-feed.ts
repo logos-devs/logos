@@ -23,9 +23,6 @@ import "./view-feed-entry";
 export class ViewFeed extends MobxReactionUpdate(LitElement) {
     @lazyInject(FeedServicePromiseClient) private feedServiceClient!: FeedServicePromiseClient;
 
-    // TODO: need to revert nesting entries under sources, as the feed should just contain the N most recent entries,
-    //       not N per source
-
     @state() private sourceList: Source[] = [];
     @state() private entriesBySource = new Map<String, Entry[]>();
     @state() private selectedTags: String[] = [];

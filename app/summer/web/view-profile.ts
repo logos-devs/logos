@@ -3,6 +3,7 @@ import {
     CreateSourceRssRequest,
     CreateSourceRssResponse,
     DeleteSourceRssRequest,
+    DeleteSourceRssResponse,
     ListSourceRssRequest,
     ListSourceRssResponse,
     SourceRss,
@@ -13,8 +14,9 @@ import cognitoPublicHostMap from "@infra/cognito_public_host_map.json";
 import {MdFilledTextField} from "@material/web/textfield/filled-text-field";
 import {user} from "app/auth/web/state";
 import {lazyInject} from "dev/logos/service/client/web/bind";
-import {css, html, LitElement} from "lit";
+import {css, html, LitElement, TemplateResult} from "lit";
 import {customElement, property, queryAll, state} from "lit/decorators.js";
+import {choose} from "lit/directives/choose.js";
 import {map} from 'lit/directives/map.js';
 
 import "@material/web/button/filled-button";
@@ -22,38 +24,36 @@ import "@material/web/iconbutton/icon-button";
 import "@material/web/icon/icon";
 import "@material/web/labs/card/filled-card";
 import "@material/web/textfield/filled-text-field";
+import {styleMap} from "lit/directives/style-map.js";
 import {when} from "lit/directives/when.js";
 
+type EntityEventType = 'entity-created' | 'entity-updated' | 'entity-deleted';
 
-interface EntityCreatedEventDetail {
-    id: string;
+interface EntityEventDetail {
+    id: Uint8Array;
 }
 
-class EntityCreatedEvent extends CustomEvent<EntityCreatedEventDetail> {
-    constructor(detail: EntityCreatedEventDetail) {
-        super('entity-created', {detail, bubbles: true, composed: true});
+class EntityEvent extends CustomEvent<EntityEventDetail> {
+    constructor(type: EntityEventType, detail: EntityEventDetail) {
+        super(type, {detail, bubbles: true, composed: true});
     }
 }
 
-
-interface EntityUpdatedEventDetail {
-    id: string;
-}
-
-class EntityUpdatedEvent extends CustomEvent<EntityUpdatedEventDetail> {
-    constructor(detail: EntityUpdatedEventDetail) {
-        super('entity-updated', {detail, bubbles: true, composed: true});
+class EntityCreatedEvent extends EntityEvent {
+    constructor(detail: EntityEventDetail) {
+        super('entity-created', detail);
     }
 }
 
-
-interface EntityDeletedEventDetail {
-    id: string;
+class EntityUpdatedEvent extends EntityEvent {
+    constructor(detail: EntityEventDetail) {
+        super('entity-updated', detail);
+    }
 }
 
-class EntityDeletedEvent extends CustomEvent<EntityDeletedEventDetail> {
-    constructor(detail: EntityDeletedEventDetail) {
-        super('entity-deleted', {detail, bubbles: true, composed: true});
+class EntityDeletedEvent extends EntityEvent {
+    constructor(detail: EntityEventDetail) {
+        super('entity-deleted', detail);
     }
 }
 
@@ -100,10 +100,22 @@ const sharedStyles = css`
 `;
 
 
-@customElement('view-source-rss')
-export class ViewSourceRss extends LitElement {
-    @property({type: Object}) sourceRss: SourceRss;
+export abstract class ViewEntity<Entity> extends LitElement {
+    @property({type: Object}) entity: Entity;
 
+    abstract renderEntity(entity: Entity): TemplateResult;
+
+    render() {
+        return html`
+            <md-filled-card>
+                ${this.renderEntity(this.entity)}
+            </md-filled-card>
+        `;
+    }
+}
+
+@customElement('view-source-rss')
+export class ViewSourceRss extends ViewEntity<SourceRss> {
     static styles = [sharedStyles, css`
         :host {
         }
@@ -132,16 +144,137 @@ export class ViewSourceRss extends LitElement {
         }
     `];
 
-    render() {
-        const faviconUrl = this.sourceRss.getFaviconUrl();
+    override renderEntity(sourceRss: SourceRss) {
+        const faviconUrl = sourceRss.getFaviconUrl();
 
         return html`
-            <md-filled-card>
-                ${faviconUrl && html`<img id="favicon" alt="favicon" src="${this.sourceRss.getFaviconUrl()}">`}
-                <div id="content">
-                    <h3>${this.sourceRss.getName()}</h3>
-                    <div class="">${this.sourceRss.getUrl()}</div>
-                </div>
+            ${faviconUrl && html`<img id="favicon" alt="favicon" src="${sourceRss.getFaviconUrl()}">`}
+            <div id="content">
+                <h3>${sourceRss.getName()}</h3>
+                <div class="">${sourceRss.getUrl()}</div>
+            </div>
+        `;
+    }
+}
+
+
+type EntityStorageServicePromiseClient<UpdateRequest, UpdateResponse, DeleteRequest, DeleteResponse> = {
+    update: (request: UpdateRequest) => Promise<UpdateResponse>,
+    delete: (request: DeleteRequest) => Promise<DeleteResponse>,
+};
+
+
+interface Constructable<T> {
+    new(...args: any[]): T;
+}
+
+type EntityMutationRequest<Request, Entity> = {
+    setId: (id: Uint8Array) => Request,
+    setEntity?: (entity: Entity) => Request
+};
+
+type EntityMutationResponse = {
+    getId_asU8: () => Uint8Array
+};
+
+
+enum EntityEditorState {
+    VIEWING,
+    EDITING,
+}
+
+export abstract class EditEntity<
+    Entity extends { getId_asU8: () => Uint8Array },
+    ServiceClient extends EntityStorageServicePromiseClient<UpdateRequest, UpdateResponse, DeleteRequest, DeleteResponse>,
+    UpdateRequest extends EntityMutationRequest<UpdateRequest, Entity>,
+    UpdateResponse extends EntityMutationResponse,
+    DeleteRequest extends EntityMutationRequest<DeleteRequest, Entity>,
+    DeleteResponse extends EntityMutationResponse,
+> extends LitElement {
+    @property({type: Object}) entity: Entity;
+    @queryAll("md-filled-text-field") private fields: MdFilledTextField[];
+    @state() private state: EntityEditorState = EntityEditorState.VIEWING;
+
+    protected abstract updateRequestClass: Constructable<UpdateRequest>;
+    protected abstract deleteRequestClass: Constructable<DeleteRequest>;
+
+    @lazyInject(SourceRssStorageServicePromiseClient) private serviceClient!: ServiceClient;
+
+    static styles = [sharedStyles, css`
+        img#favicon {
+            height: 50px;
+            width: 50px;
+            background-color: white;
+            border-top-left-radius: 12px;
+            border-bottom-left-radius: 12px;
+        }
+
+        md-filled-card {
+            flex-direction: row;
+        }
+
+        div#content {
+            text-align: center;
+            width: 100%;
+        }
+
+        div#content h3 {
+            margin-bottom: 0;
+            margin-top: 0.25em;
+            padding: 0;
+        }
+    `];
+
+    abstract getDisplayName(entity: Entity): string;
+
+    abstract renderFields(entity: Entity): TemplateResult;
+
+    abstract renderView(entity: Entity): TemplateResult;
+
+    private handleSave() {
+        this.fields.forEach(field => this.entity[field.name](field.value));
+
+        this.serviceClient.update(
+            new this.updateRequestClass()
+                .setId(this.entity.getId_asU8())
+                .setEntity(this.entity)
+        ).then(response => {
+            this.dispatchEvent(new EntityUpdatedEvent({id: response.getId_asU8()}));
+            this.dispatchEvent(new CloseComponentEvent());
+        });
+    }
+
+    private handleDelete() {
+        this.serviceClient.delete(new this.deleteRequestClass().setId(this.entity.getId_asU8())).then(
+            response => {
+                this.dispatchEvent(new EntityDeletedEvent({id: response.getId_asU8()}));
+                this.dispatchEvent(new CloseComponentEvent());
+            }
+        );
+    }
+
+    render() {
+        return html`
+            <md-filled-card
+                    style=${styleMap({flexDirection: this.state == EntityEditorState.VIEWING ? 'row' : 'column'})}>
+                ${choose(this.state, [
+                    [EntityEditorState.VIEWING, () => html`
+                        <div @click=${() => this.state = EntityEditorState.EDITING}>
+                            ${this.renderView(this.entity)}
+                        </div>
+                    `],
+                    [EntityEditorState.EDITING, () => html`
+                        <md-icon-button id="cancel" @click=${() => this.state = EntityEditorState.VIEWING}>
+                            <md-icon>cancel</md-icon>
+                        </md-icon-button>
+
+                        <h3>Edit ${this.getDisplayName(this.entity)}</h3>
+                        ${this.renderFields(this.entity)}
+
+                        <md-filled-button @click=${this.handleDelete}>Delete</md-filled-button>
+                        <md-filled-button @click=${this.handleSave}>Save</md-filled-button>
+                    `]
+                ])}
             </md-filled-card>
         `;
     }
@@ -149,69 +282,43 @@ export class ViewSourceRss extends LitElement {
 
 
 @customElement('edit-source-rss')
-export class EditSourceRss extends LitElement {
-    @property({type: Object}) sourceRss: SourceRss;
-    @queryAll("md-filled-text-field") private fields: MdFilledTextField[];
+export class EditSourceRss extends EditEntity<
+    SourceRss,
+    SourceRssStorageServicePromiseClient,
+    UpdateSourceRssRequest,
+    UpdateSourceRssResponse,
+    DeleteSourceRssRequest,
+    DeleteSourceRssResponse
+> {
+    protected override updateRequestClass = UpdateSourceRssRequest;
+    protected override deleteRequestClass = DeleteSourceRssRequest;
 
-    @lazyInject(SourceRssStorageServicePromiseClient) private sourceRssServiceClient!: SourceRssStorageServicePromiseClient;
+    override getDisplayName(sourceRss: SourceRss): string {
+        return sourceRss.getName() + " RSS Feed";
+    }
 
-    static styles = [sharedStyles, css`
-        :host {
-        }
-    `];
-
-    render() {
-        console.debug(this.sourceRss);
-
+    override renderFields(sourceRss: SourceRss) {
         return html`
-            <md-filled-card>
-                <md-icon-button id="cancel" @click=${() => this.dispatchEvent(new CloseComponentEvent())}>
-                    <md-icon>cancel</md-icon>
-                </md-icon-button>
+            <md-filled-text-field name="setName"
+                                  label="Name"
+                                  value=${sourceRss.getName()}></md-filled-text-field>
+            <md-filled-text-field name="setUrl"
+                                  label="URL"
+                                  value=${sourceRss.getUrl()}></md-filled-text-field>
+            <md-filled-text-field name="setFaviconUrl"
+                                  label="Favicon URL"
+                                  value=${sourceRss.getFaviconUrl()}></md-filled-text-field>
+        `;
+    }
 
-                <h3>Edit RSS Feed</h3>
-
-                <md-filled-text-field name="setName"
-                                      label="Name"
-                                      value=${this.sourceRss.getName()}></md-filled-text-field>
-                <md-filled-text-field name="setUrl"
-                                      label="URL"
-                                      value=${this.sourceRss.getUrl()}></md-filled-text-field>
-                <md-filled-text-field name="setFaviconUrl"
-                                      label="Favicon URL"
-                                      value=${this.sourceRss.getFaviconUrl()}></md-filled-text-field>
-
-                <md-filled-button @click=${ev => {
-                    this.sourceRssServiceClient.delete(
-                            new DeleteSourceRssRequest()
-                                    .setId(this.sourceRss.getId())
-                    ).then((response: UpdateSourceRssResponse) => {
-                        this.dispatchEvent(
-                                new EntityDeletedEvent({id: response.getId().toString()})
-                        );
-                        this.dispatchEvent(new CloseComponentEvent());
-                    });
-                }}>Delete
-                </md-filled-button>
-
-                <md-filled-button @click=${ev => {
-                    this.fields.forEach(field => {
-                        this.sourceRss[field.name](field.value);
-                    });
-
-                    this.sourceRssServiceClient.update(
-                            new UpdateSourceRssRequest()
-                                    .setId(this.sourceRss.getId())
-                                    .setEntity(this.sourceRss)
-                    ).then((response: UpdateSourceRssResponse) => {
-                        this.dispatchEvent(
-                                new EntityUpdatedEvent({id: response.getId().toString()})
-                        );
-                        this.dispatchEvent(new CloseComponentEvent());
-                    });
-                }}>Save
-                </md-filled-button>
-            </md-filled-card>
+    override renderView(sourceRss: SourceRss) {
+        const faviconUrl = sourceRss.getFaviconUrl();
+        return html`
+            ${faviconUrl && html`<img id="favicon" alt="favicon" src="${faviconUrl}">`}
+            <div id="content">
+                <h3>${sourceRss.getName()}</h3>
+                <div class="">${sourceRss.getUrl()}</div>
+            </div>
         `;
     }
 }
@@ -235,11 +342,11 @@ export class EditableSourceRss extends LitElement {
                         <edit-source-rss @close-component=${(ev: CustomEvent) => {
                             this.editing = false;
                             ev.stopPropagation();
-                        }} .sourceRss=${this.sourceRss}></edit-source-rss>
+                        }} .entity=${this.sourceRss}></edit-source-rss>
                     `,
                     () => html`
                         <view-source-rss @click=${() => this.editing = true}
-                                         .sourceRss=${this.sourceRss}></view-source-rss>
+                                         .entity=${this.sourceRss}></view-source-rss>
                     `
             )}
         `;
@@ -285,9 +392,7 @@ export class AddSourceRss extends LitElement {
             new CreateSourceRssRequest().setEntity(sourceRss)
         ).then((response: CreateSourceRssResponse) => {
             this.editing = false;
-            this.dispatchEvent(
-                new EntityCreatedEvent({id: response.getId().toString()})
-            );
+            this.dispatchEvent(new EntityCreatedEvent({id: response.getId_asU8()}));
         });
     }
 
@@ -330,7 +435,7 @@ export class ListEditableEntity extends LitElement {
     override render() {
         return html`
             ${map(this.entityList, entity => html`
-                <editable-source-rss .sourceRss=${entity}></editable-source-rss>
+                <edit-source-rss .entity=${entity}></edit-source-rss>
             `)}
 
             <add-source-rss></add-source-rss>
@@ -370,7 +475,6 @@ export class ViewProfile extends LitElement {
                 ${when(user.isAuthenticated, () => html`
                     <h3>RSS Feeds</h3>
                     <list-editable-entity .entityList=${this.entityList}></list-editable-entity>
-
 
                     <h3>Email</h3>
                 `, () => html`
