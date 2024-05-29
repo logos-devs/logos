@@ -10,6 +10,7 @@ js_library(
     deps = [
         "//app/auth/proto:web",
         "//app/summer/proto:grpc_web",
+        "//dev/logos/service/client/web/storage",
         "//dev/logos/service/storage/pg/exporter:export",
     ],
 )
