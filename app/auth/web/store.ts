@@ -10,7 +10,7 @@ import {
     ValidatePublicKeyCredentialResponse
 } from "@app/auth/proto/auth_pb.js";
 import * as webauthnJson from "@github/webauthn-json";
-import {container} from "@logos/bind";
+import {rootContainer} from "@logos/bind";
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 
 
@@ -20,17 +20,17 @@ export const startRegistration = createAsyncThunk(
         startRegistrationRequest: StartRegistrationRequest,
         {dispatch}
     ) => {
-        const authServiceClient: AuthServicePromiseClient = container.get(AuthServicePromiseClient);
+        const authServiceClient: AuthServicePromiseClient = rootContainer.get(AuthServicePromiseClient);
         const startRegistrationResponse: StartRegistrationResponse =
             await authServiceClient.startRegistration(startRegistrationRequest);
 
         dispatch(validatePublicKeyCredential(
             new ValidatePublicKeyCredentialRequest()
-            .setCredentialsCreateOptions(startRegistrationResponse.getCredentialsCreateOptions())
-            .setPublicKeyCredential(JSON.stringify(
-                await webauthnJson.create(
-                    JSON.parse(startRegistrationResponse.getCredentialsCreateOptions()
-                                                        .getPayload())))))
+                .setCredentialsCreateOptions(startRegistrationResponse.getCredentialsCreateOptions())
+                .setPublicKeyCredential(JSON.stringify(
+                    await webauthnJson.create(
+                        JSON.parse(startRegistrationResponse.getCredentialsCreateOptions()
+                            .getPayload())))))
         );
     }
 );
@@ -41,7 +41,7 @@ export const validatePublicKeyCredential = createAsyncThunk(
         validatePublicKeyCredentialRequest: ValidatePublicKeyCredentialRequest
     ) => {
         const validatePublicKeyCredentialResponse: ValidatePublicKeyCredentialResponse =
-            await (container.get(AuthServicePromiseClient) as AuthServicePromiseClient).validatePublicKeyCredential(validatePublicKeyCredentialRequest);
+            await (rootContainer.get(AuthServicePromiseClient) as AuthServicePromiseClient).validatePublicKeyCredential(validatePublicKeyCredentialRequest);
 
         console.debug(validatePublicKeyCredentialResponse);
     }
@@ -51,16 +51,16 @@ export const startAssertion = createAsyncThunk(
     "auth/startAssertion",
     async (_, {dispatch}) => {
         const startAssertionResponse: StartAssertionResponse =
-            await (container.get(AuthServicePromiseClient) as AuthServicePromiseClient).startAssertion(new StartAssertionRequest());
+            await (rootContainer.get(AuthServicePromiseClient) as AuthServicePromiseClient).startAssertion(new StartAssertionRequest());
 
         dispatch(finishAssertion(
             new FinishAssertionRequest()
-            .setCredentialsGetOptions(startAssertionResponse.getCredentialsGetOptions())
-            .setPublicKeyCredential(
-                JSON.stringify(
-                    await webauthnJson.get({
-                        "publicKey": JSON.parse(startAssertionResponse.getCredentialsGetOptions().getPayload()).publicKeyCredentialRequestOptions
-                    })))));
+                .setCredentialsGetOptions(startAssertionResponse.getCredentialsGetOptions())
+                .setPublicKeyCredential(
+                    JSON.stringify(
+                        await webauthnJson.get({
+                            "publicKey": JSON.parse(startAssertionResponse.getCredentialsGetOptions().getPayload()).publicKeyCredentialRequestOptions
+                        })))));
     }
 );
 
@@ -68,7 +68,7 @@ export const finishAssertion = createAsyncThunk(
     "auth/startAssertion",
     async (finishAssertionRequest: FinishAssertionRequest) => {
         const finishAssertionResponse: FinishAssertionResponse =
-            await (container.get(AuthServicePromiseClient) as AuthServicePromiseClient).finishAssertion(finishAssertionRequest);
+            await (rootContainer.get(AuthServicePromiseClient) as AuthServicePromiseClient).finishAssertion(finishAssertionRequest);
 
         return finishAssertionResponse.getToken();
     }

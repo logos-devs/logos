@@ -6,6 +6,7 @@ import "@material/web/icon/icon";
 import "@material/web/iconbutton/icon-button";
 import "@material/web/labs/navigationbar/navigation-bar";
 import {router} from "./router";
+import "./module/summer-module";
 
 @customElement('frame-root')
 export class FrameRoot extends LitElement {

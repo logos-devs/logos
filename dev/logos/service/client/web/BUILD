@@ -23,6 +23,7 @@ js_library(
         "//app/rep/web",
         "//app/review/web",
         "//app/summer/web",
+        "//dev/logos/service/client/web/module",
     ],
 )
 

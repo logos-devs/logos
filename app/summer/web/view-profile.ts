@@ -10,6 +10,7 @@ import "@material/web/icon/icon";
 import "@material/web/labs/card/filled-card";
 import "@material/web/textfield/filled-text-field";
 
+import "./entity/source-imap-list";
 import "./entity/source-rss-list";
 
 
@@ -24,10 +25,11 @@ export class ViewProfile extends LitElement {
     override render() {
         return html`
             ${when(user.isAuthenticated, () => html`
-                <h2>RSS Feeds</h2>
-                <source-rss-list></source-rss-list>
-
                 <h2>Email</h2>
+                <source-imap-list></source-imap-list>
+
+                <h2>RSS</h2>
+                <source-rss-list></source-rss-list>
             `, () => html`
                 <md-icon-button id="login-button"
                                 @click=${() => window.location.assign(cognitoPublicHostMap[location.host].loginUrl)}>

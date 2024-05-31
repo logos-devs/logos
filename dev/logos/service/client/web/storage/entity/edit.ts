@@ -104,7 +104,9 @@ export abstract class EditEntity<
 
     abstract getDisplayName(entity: Entity): string;
 
-    abstract getDescription(entity: Entity): string;
+    protected getDescription(entity: Entity): string {
+        return '';
+    }
 
     protected getThumbnailUrl(entity: Entity): string {
         return '';

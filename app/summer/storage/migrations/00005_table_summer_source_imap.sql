@@ -6,7 +6,7 @@ begin
     (
         id uuid primary key default uuid_generate_v4(),
         address text not null,
-        credentials_pubkey text not null,
+        credentials_pubkey text,
         created_at timestamp with time zone not null default now(),
         updated_at timestamp with time zone not null default now()
     );
