@@ -12,15 +12,13 @@ type ClientConstructor = new (hostname: string, credentials: any, options: any) 
 const endpoint = new DevEndpoint();
 const endpointUrl = endpoint.getURL();
 
-console.debug(rootContainer);
 
 class AuthInterceptor {
-    constructor(private token: string) {
-    }
-
     intercept(request: any, invoker: any) {
-        const metadata = request.getMetadata();
-        metadata.Authorization = 'Bearer ' + this.token;
+        if (user.isAuthenticated) {
+            const metadata = request.getMetadata();
+            metadata.Authorization = 'Bearer ' + user.accessToken;
+        }
         return invoker(request);
     }
 }
@@ -30,12 +28,16 @@ export abstract class AppModule extends ContainerModule {
 
     protected clients: ClientConstructor[] = [];
 
+    static {
+        console.debug(this);
+    }
+
     constructor() {
         super((bind: interfaces.Bind) => {
             this.configure();
             this.clients.forEach(clientClass => {
                 const
-                    interceptors = [new AuthInterceptor(user.accessToken)],
+                    interceptors = [new AuthInterceptor()],
                     client = new clientClass(endpointUrl, null, {
                         unaryInterceptors: interceptors,
                         streamInterceptors: interceptors,
@@ -50,6 +52,10 @@ export abstract class AppModule extends ContainerModule {
     protected addClient(clientClass: ClientConstructor): void {
         this.clients.push(clientClass);
     }
+}
+
+export function registerModule(target: new () => AppModule) {
+    rootContainer.load(new target())
 }
 
 export const {lazyInject} = getDecorators(rootContainer);

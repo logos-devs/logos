@@ -6,17 +6,17 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import dev.logos.job.Job;
 import dev.logos.job.JobState;
-import dev.logos.module.DatabaseModule;
 import dev.logos.service.Service;
+import dev.logos.service.storage.module.DatabaseModule;
 import io.grpc.ServerBuilder;
 import io.grpc.ServerInterceptor;
 import io.grpc.inprocess.InProcessServerBuilder;
-import org.reflections.Reflections;
-import org.reflections.scanners.Scanners;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -90,8 +90,8 @@ public class Server implements Job {
                     TERMINATION_GRACE_PERIOD_SECONDS,
                     SECONDS);
                 innerServer.shutdown().awaitTermination(
-                        TERMINATION_GRACE_PERIOD_SECONDS,
-                        SECONDS);
+                    TERMINATION_GRACE_PERIOD_SECONDS,
+                    SECONDS);
                 this.jobState = STOPPED;
             } catch (InterruptedException e) {
                 this.jobState = RUNTIME_FAILURE;
@@ -123,16 +123,30 @@ public class Server implements Job {
         modules.add(new DatabaseModule());
         modules.add(new ServerModule());
 
-        String parentPackageName = "app";
-        Reflections reflections = new Reflections(parentPackageName, Scanners.SubTypes);
-
-        for (Class<? extends AbstractModule> clazz : reflections.getSubTypesOf(AbstractModule.class)) {
-            String packageName = clazz.getPackageName();
-            if (packageName.startsWith(parentPackageName) && !Modifier.isAbstract(clazz.getModifiers())) {
-                err.println("MODULE: " + clazz.getCanonicalName());
-                modules.add(clazz.getDeclaredConstructor().newInstance());
+        try (InputStream inputStream = Server.class.getClassLoader().getResourceAsStream("META-INF/app-modules.txt")) {
+            assert inputStream != null;
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    Class<?> clazz = Class.forName(line);
+                    err.println("MODULE: " + clazz.getCanonicalName());
+                    modules.add((AbstractModule) clazz.getDeclaredConstructor().newInstance());
+                }
             }
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
         }
+
+//        String parentPackageName = "app";
+//        Reflections reflections = new Reflections(parentPackageName, Scanners.SubTypes);
+//
+//        for (Class<? extends AbstractModule> clazz : reflections.getSubTypesOf(AbstractModule.class)) {
+//            String packageName = clazz.getPackageName();
+//            if (packageName.startsWith(parentPackageName) && !Modifier.isAbstract(clazz.getModifiers())) {
+//                err.println("MODULE: " + clazz.getCanonicalName());
+//                modules.add(clazz.getDeclaredConstructor().newInstance());
+//            }
+//        }
 
         Injector injector = Guice.createInjector(modules);
         Server server = injector.getInstance(Server.class);

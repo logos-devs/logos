@@ -21,8 +21,8 @@ java_binary(
     main_class = "dev.logos.service.storage.pg.exporter.Exporter",
     visibility = ["//app:__subpackages__"],
     deps = [
-        "//dev/logos/module:database_module",
         "//dev/logos/service/storage:storage_library",
+        "//dev/logos/service/storage/module",
         "//dev/logos/service/storage/pg",
         "//dev/logos/service/storage/validator",
         "//dev/logos/user",

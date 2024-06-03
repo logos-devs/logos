@@ -1,0 +1,21 @@
+java_library(
+    name = "module",
+    srcs = glob(["DatabaseModule.java"]),
+    visibility = ["//dev/logos:__subpackages__"],
+    deps = [
+        "//dev/logos/service/storage/pg",
+        "@maven//:com_google_inject_guice",
+        "@maven//:com_zaxxer_HikariCP",
+        "@maven//:dnsjava_dnsjava",
+        "@maven//:javax_inject_javax_inject",
+        "@maven//:org_jdbi_jdbi3_core",
+        "@maven//:org_jdbi_jdbi3_postgres",
+        "@maven//:org_postgresql_postgresql",
+        "@maven//:software_amazon_awssdk_auth",
+        "@maven//:software_amazon_awssdk_rds",
+        "@maven//:software_amazon_awssdk_regions",
+        "@maven//:software_amazon_awssdk_sso",
+        "@maven//:software_amazon_awssdk_ssooidc",
+        "@maven//:software_amazon_awssdk_utils",
+    ],
+)

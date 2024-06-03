@@ -9,7 +9,7 @@ import com.google.protobuf.DescriptorProtos.FileDescriptorSet;
 import com.querydsl.sql.codegen.MetaDataExporter;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
-import dev.logos.module.DatabaseModule;
+import dev.logos.service.storage.module.DatabaseModule;
 
 import javax.sql.DataSource;
 import java.io.File;
@@ -64,12 +64,13 @@ public class Exporter {
     }
 
     public static void writeProtoDescriptorSet(List<FileDescriptorProto> fileDescriptorProtos, String decriptorSetPath, String descriptorSetFilename) throws IOException {
-        try (FileOutputStream fileOutputStream = new FileOutputStream("%s/%s".formatted(decriptorSetPath, descriptorSetFilename))) {
+        try (FileOutputStream fileOutputStream = new FileOutputStream(
+            "%s/%s".formatted(decriptorSetPath, descriptorSetFilename))) {
             FileDescriptorSet
-                    .newBuilder()
-                    .addAllFile(fileDescriptorProtos)
-                    .build()
-                    .writeTo(fileOutputStream);
+                .newBuilder()
+                .addAllFile(fileDescriptorProtos)
+                .build()
+                .writeTo(fileOutputStream);
         }
     }
 
@@ -84,9 +85,9 @@ public class Exporter {
             List<FileDescriptorProto> fileDescriptorProtos = new ArrayList<>();
 
             List<SchemaDescriptor> schemaDescriptors = SchemaDescriptor.extract(
-                    connection,
-                    new Gson().fromJson(args[4], new TypeToken<Map<String, List<String>>>() {
-                    }.getType()));
+                connection,
+                new Gson().fromJson(args[4], new TypeToken<Map<String, List<String>>>() {
+                }.getType()));
 
             for (SchemaDescriptor schemaDescriptor : schemaDescriptors) {
                 List<TypeSpec> tableClasses = new ArrayList<>();
@@ -96,7 +97,7 @@ public class Exporter {
                     exporter.codeGenerator.makeStorageModule(schemaDescriptor, tableDescriptor);
 
                     FileDescriptorProto resultFileDescriptorProto =
-                            exporter.codeGenerator.makeResultProtoFileDescriptor(schemaDescriptor, tableDescriptor);
+                        exporter.codeGenerator.makeResultProtoFileDescriptor(schemaDescriptor, tableDescriptor);
 
                     fileDescriptorProtos.add(resultFileDescriptorProto);
 
@@ -128,16 +129,17 @@ public class Exporter {
                     }
 
                     TypeSpec tableClass = exporter.codeGenerator.makeTableClass(
-                            schemaDescriptor,
-                            tableDescriptor,
-                            columnClasses,
-                            tableDescriptor.columns());
+                        schemaDescriptor,
+                        tableDescriptor,
+                        columnClasses,
+                        tableDescriptor.columns());
 
                     tableClasses.add(tableClass);
                 }
 
                 File protoDescriptorFile = new File(args[5]);
-                writeProtoDescriptorSet(fileDescriptorProtos, protoDescriptorFile.getParent(), protoDescriptorFile.getName());
+                writeProtoDescriptorSet(fileDescriptorProtos, protoDescriptorFile.getParent(),
+                                        protoDescriptorFile.getName());
 
                 JavaFile.builder(exporter.buildPackage,
                                  exporter.codeGenerator.makeSchemaClass(schemaDescriptor, tableClasses))

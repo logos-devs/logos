@@ -11,9 +11,11 @@ import app.summer.storage.summer.SourceRssStorageServiceGrpc.SourceRssStorageSer
 import com.google.inject.Provides;
 import dev.logos.app.App;
 import dev.logos.app.AppModule;
+import dev.logos.module.registerModule;
 import io.grpc.ManagedChannel;
 
 
+@registerModule
 public class SummerModule extends AppModule {
     @Provides
     public App provideApp() {
@@ -34,14 +36,14 @@ public class SummerModule extends AppModule {
     @Provides
     public EntryStorageServiceFutureStub provideEntryStorageServiceStub(ManagedChannel managedChannel) {
         return EntryStorageServiceFutureStub.newStub(
-                (channel, callOptions) -> EntryStorageServiceGrpc.newFutureStub(managedChannel),
-                managedChannel);
+            (channel, callOptions) -> EntryStorageServiceGrpc.newFutureStub(managedChannel),
+            managedChannel);
     }
 
     @Provides
     public SourceRssStorageServiceFutureStub provideSourceRssStorageServiceStub(ManagedChannel managedChannel) {
         return SourceRssStorageServiceFutureStub.newStub(
-                (channel, callOptions) -> SourceRssStorageServiceGrpc.newFutureStub(managedChannel),
-                managedChannel);
+            (channel, callOptions) -> SourceRssStorageServiceGrpc.newFutureStub(managedChannel),
+            managedChannel);
     }
 }

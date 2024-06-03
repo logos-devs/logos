@@ -1,21 +1,27 @@
 java_library(
-    name = "database_module",
-    srcs = ["DatabaseModule.java"],
-    visibility = ["//visibility:public"],
-    deps = [
-        "//dev/logos/service/storage/pg",
-        "@maven//:com_google_inject_guice",
-        "@maven//:com_zaxxer_HikariCP",
-        "@maven//:dnsjava_dnsjava",
-        "@maven//:javax_inject_javax_inject",
-        "@maven//:org_jdbi_jdbi3_core",
-        "@maven//:org_jdbi_jdbi3_postgres",
-        "@maven//:org_postgresql_postgresql",
-        "@maven//:software_amazon_awssdk_auth",
-        "@maven//:software_amazon_awssdk_rds",
-        "@maven//:software_amazon_awssdk_regions",
-        "@maven//:software_amazon_awssdk_sso",
-        "@maven//:software_amazon_awssdk_ssooidc",
-        "@maven//:software_amazon_awssdk_utils",
+    name = "module_library",
+    srcs = [
+        "RegisterModuleProcessor.java",
+        "registerModule.java",
     ],
+    resources = [
+        "META-INF/services/javax.annotation.processing.Processor",
+    ],
+    visibility = [
+        "//app:__subpackages__",
+        "//dev/logos:__subpackages__",
+    ],
+    deps = [
+        "@maven//:com_google_inject_guice",
+    ],
+)
+
+java_plugin(
+    name = "module",
+    processor_class = "dev.logos.module.RegisterModuleProcessor",
+    visibility = [
+        "//app:__subpackages__",
+        "//dev/logos:__subpackages__",
+    ],
+    deps = [":module_library"],
 )
