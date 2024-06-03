@@ -4,6 +4,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Inject;
 import com.google.inject.Provides;
 import com.google.inject.multibindings.Multibinder;
+import dev.logos.app.register.registerModule;
 import dev.logos.service.Service;
 import dev.logos.service.backend.interceptor.GuardServerInterceptor;
 import dev.logos.user.NotAuthenticated;
@@ -68,17 +69,18 @@ class AuthTokenForwardingInterceptor implements ClientInterceptor {
     }
 }
 
+@registerModule
 public class ServerModule extends AbstractModule {
 
     @Override
     protected void configure() {
         Multibinder
-                .newSetBinder(binder(), ServerInterceptor.class)
-                .addBinding().to(GuardServerInterceptor.class);
+            .newSetBinder(binder(), ServerInterceptor.class)
+            .addBinding().to(GuardServerInterceptor.class);
 
         Multibinder
-                .newSetBinder(binder(), ClientInterceptor.class)
-                .addBinding().to(AuthTokenForwardingInterceptor.class);
+            .newSetBinder(binder(), ClientInterceptor.class)
+            .addBinding().to(AuthTokenForwardingInterceptor.class);
     }
 
     @Provides

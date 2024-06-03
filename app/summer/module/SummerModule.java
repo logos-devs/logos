@@ -11,7 +11,7 @@ import app.summer.storage.summer.SourceRssStorageServiceGrpc.SourceRssStorageSer
 import com.google.inject.Provides;
 import dev.logos.app.App;
 import dev.logos.app.AppModule;
-import dev.logos.module.registerModule;
+import dev.logos.app.register.registerModule;
 import io.grpc.ManagedChannel;
 
 

@@ -1,8 +1,12 @@
 java_library(
     name = "module",
     srcs = glob(["DatabaseModule.java"]),
+    plugins = [
+        "//dev/logos/app/register:module",
+    ],
     visibility = ["//dev/logos:__subpackages__"],
     deps = [
+        "//dev/logos/app/register:module_library",
         "//dev/logos/service/storage/pg",
         "@maven//:com_google_inject_guice",
         "@maven//:com_zaxxer_HikariCP",

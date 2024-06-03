@@ -127,7 +127,7 @@ schema_export_rule = rule(
     ],
 )
 
-def schema_export(name, tables, visibility, deps = None, migrations = None):
+def schema_export(name, tables, visibility = None, deps = None, migrations = None):
     schema_export_rule(
         name = name,
         tables = tables,
@@ -145,12 +145,14 @@ def schema_export(name, tables, visibility, deps = None, migrations = None):
         visibility = visibility,
     )
 
-def storage_java_proto_library(name, srcs, visibility):
+def storage_java_proto_library(name, srcs, visibility = None):
     native.java_library(
         name = name,
         srcs = srcs,
         visibility = visibility,
         deps = [
+            "//dev/logos/app",
+            "//dev/logos/app/register:module_library",
             "//dev/logos/service/storage/pg",
             "//dev/logos/service/storage/validator",
             "//dev/logos/service/storage:storage_library",
@@ -166,7 +168,24 @@ def storage_java_proto_library(name, srcs, visibility):
             "@maven//:javax_annotation_javax_annotation_api",
             "@maven//:javax_inject_javax_inject",
         ],
+        plugins = [
+            "//dev/logos/app/register:module",
+        ],
     )
+
+#    visibility = [
+#        "//dev/logos/service:__subpackages__",
+#    ],
+#    deps = [
+#        "//app/summer/service",
+#        "//app/summer/storage",
+#        "//dev/logos/app",
+#        "//dev/logos/app/register:module_library",
+#        "@io_grpc_grpc_java//api",
+#        "@io_grpc_grpc_java//stub",
+#        "@maven//:com_google_inject_guice",
+#    ],
+#)
 
 def storage_grpc_web_library(name, srcs, visibility):
     js_library(

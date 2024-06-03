@@ -1,4 +1,4 @@
-package dev.logos.module;
+package dev.logos.app.register;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

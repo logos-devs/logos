@@ -7,7 +7,7 @@ java_library(
     ],
     visibility = ["//app/digits:__subpackages__"],
     deps = [
-        ":storage_proto",
+        ":storage_library",
         "//app/digits/proto:voice_java_library",
         "//dev/logos/service/storage:storage_library",
         "//dev/logos/service/storage/pg",
@@ -26,7 +26,7 @@ schema_export(
 )
 
 storage_java_proto_library(
-    name = "storage_proto",
+    name = "storage_library",
     srcs = [":schema_export"],
     visibility = ["//app/digits:__subpackages__"],
 )

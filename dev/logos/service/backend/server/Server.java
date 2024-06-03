@@ -7,7 +7,6 @@ import com.google.inject.Injector;
 import dev.logos.job.Job;
 import dev.logos.job.JobState;
 import dev.logos.service.Service;
-import dev.logos.service.storage.module.DatabaseModule;
 import io.grpc.ServerBuilder;
 import io.grpc.ServerInterceptor;
 import io.grpc.inprocess.InProcessServerBuilder;
@@ -17,10 +16,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
+import java.net.JarURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.logging.Logger;
 
 import static dev.logos.job.JobState.*;
@@ -86,12 +90,8 @@ public class Server implements Job {
 
         return CompletableFuture.supplyAsync(() -> {
             try {
-                outerServer.shutdown().awaitTermination(
-                    TERMINATION_GRACE_PERIOD_SECONDS,
-                    SECONDS);
-                innerServer.shutdown().awaitTermination(
-                    TERMINATION_GRACE_PERIOD_SECONDS,
-                    SECONDS);
+                outerServer.shutdown().awaitTermination(TERMINATION_GRACE_PERIOD_SECONDS, SECONDS);
+                innerServer.shutdown().awaitTermination(TERMINATION_GRACE_PERIOD_SECONDS, SECONDS);
                 this.jobState = STOPPED;
             } catch (InterruptedException e) {
                 this.jobState = RUNTIME_FAILURE;
@@ -120,33 +120,33 @@ public class Server implements Job {
         throws IOException, InterruptedException, InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
 
         List<AbstractModule> modules = new ArrayList<>();
-        modules.add(new DatabaseModule());
-        modules.add(new ServerModule());
 
-        try (InputStream inputStream = Server.class.getClassLoader().getResourceAsStream("META-INF/app-modules.txt")) {
-            assert inputStream != null;
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    Class<?> clazz = Class.forName(line);
-                    err.println("MODULE: " + clazz.getCanonicalName());
-                    modules.add((AbstractModule) clazz.getDeclaredConstructor().newInstance());
+        Enumeration<URL> en = Server.class.getClassLoader().getResources("META-INF");
+        while (en.hasMoreElements()) {
+            URL url = en.nextElement();
+            JarURLConnection urlcon = (JarURLConnection) (url.openConnection());
+            try (JarFile jar = urlcon.getJarFile()) {
+                Enumeration<JarEntry> entries = jar.entries();
+                while (entries.hasMoreElements()) {
+                    String entry = entries.nextElement().getName();
+                    if (entry.contains("META-INF/app-modules-")) {
+                        try (InputStream inputStream = Server.class.getClassLoader().getResourceAsStream(entry)) {
+                            assert inputStream != null;
+                            try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
+                                String line;
+                                while ((line = reader.readLine()) != null) {
+                                    Class<?> clazz = Class.forName(line);
+                                    err.println("MODULE: " + clazz.getCanonicalName());
+                                    modules.add((AbstractModule) clazz.getDeclaredConstructor().newInstance());
+                                }
+                            }
+                        } catch (ClassNotFoundException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
                 }
             }
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
         }
-
-//        String parentPackageName = "app";
-//        Reflections reflections = new Reflections(parentPackageName, Scanners.SubTypes);
-//
-//        for (Class<? extends AbstractModule> clazz : reflections.getSubTypesOf(AbstractModule.class)) {
-//            String packageName = clazz.getPackageName();
-//            if (packageName.startsWith(parentPackageName) && !Modifier.isAbstract(clazz.getModifiers())) {
-//                err.println("MODULE: " + clazz.getCanonicalName());
-//                modules.add(clazz.getDeclaredConstructor().newInstance());
-//            }
-//        }
 
         Injector injector = Guice.createInjector(modules);
         Server server = injector.getInstance(Server.class);

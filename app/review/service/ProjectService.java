@@ -3,16 +3,16 @@ package review.service;
 import app.review.proto.project.ListProjectsRequest;
 import app.review.proto.project.ListProjectsResponse;
 import app.review.proto.project.Project;
-import dev.logos.service.storage.pg.Select;
 import dev.logos.service.storage.exceptions.EntityReadException;
+import dev.logos.service.storage.pg.Select;
 import io.grpc.stub.StreamObserver;
 import review.storage.ProjectStorage;
 
 import javax.inject.Inject;
 import java.util.stream.Stream;
 
+import static app.review.Review.project;
 import static app.review.proto.project.ProjectServiceGrpc.ProjectServiceImplBase;
-import static dev.logos.service.storage.pg.exporter.Review.project;
 
 public class ProjectService extends ProjectServiceImplBase {
 
@@ -29,7 +29,7 @@ public class ProjectService extends ProjectServiceImplBase {
         StreamObserver<ListProjectsResponse> responseObserver
     ) {
         try (Stream<Project> projectListStream = projectStorage.query(
-                Select.builder().from(project)
+            Select.builder().from(project)
         )) {
             responseObserver.onNext(
                 ListProjectsResponse.newBuilder()

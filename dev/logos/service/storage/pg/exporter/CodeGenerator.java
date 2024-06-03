@@ -7,6 +7,7 @@ import com.google.protobuf.DescriptorProtos;
 import com.google.protobuf.DescriptorProtos.FieldDescriptorProto;
 import com.google.protobuf.GeneratedMessageV3;
 import com.squareup.javapoet.*;
+import dev.logos.app.register.registerModule;
 import dev.logos.service.storage.EntityStorage;
 import dev.logos.service.storage.EntityStorageService;
 import dev.logos.service.storage.TableStorage;
@@ -705,6 +706,7 @@ public class CodeGenerator {
 
         JavaFile.builder(packageName,
                          TypeSpec.classBuilder("StorageModule")
+                                 .addAnnotation(AnnotationSpec.builder(registerModule.class).build())
                                  .addModifiers(PUBLIC)
                                  .superclass(AbstractModule.class)
                                  .addMethod(MethodSpec.methodBuilder("configure")

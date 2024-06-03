@@ -5,6 +5,7 @@ import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import dev.logos.app.register.registerModule;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.postgres.PostgresPlugin;
 import org.postgresql.Driver;
@@ -73,6 +74,7 @@ class RdsIamAuthHikariDataSource extends HikariDataSource {
     }
 }
 
+@registerModule
 public class DatabaseModule extends AbstractModule {
     static String DB_URL = Optional.ofNullable(System.getenv("STORAGE_PG_BACKEND_JDBC_URL"))
                                    .orElse("jdbc:postgresql://localhost:15432/logos");

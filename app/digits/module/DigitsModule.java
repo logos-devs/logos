@@ -5,9 +5,11 @@ import app.digits.service.VoiceService;
 import app.digits.storage.PhoneNumberStorage;
 import com.google.inject.AbstractModule;
 import com.google.inject.multibindings.Multibinder;
+import dev.logos.app.register.registerModule;
 import dev.logos.client.twilio.TwilioModule;
 import io.grpc.BindableService;
 
+@registerModule
 public class DigitsModule extends AbstractModule {
 
     @Override

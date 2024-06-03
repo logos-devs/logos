@@ -21,6 +21,7 @@ java_binary(
     main_class = "dev.logos.service.storage.pg.exporter.Exporter",
     visibility = ["//app:__subpackages__"],
     deps = [
+        "//dev/logos/app/register:module_library",
         "//dev/logos/service/storage:storage_library",
         "//dev/logos/service/storage/module",
         "//dev/logos/service/storage/pg",
@@ -45,35 +46,25 @@ java_binary(
     ],
 )
 
-schema_export(
-    name = "export",
-    tables = {
-        "auth": ["credential"],
-        "review": ["project"],
-    },
-    visibility = ["//app:__subpackages__"],
-)
-
-java_library(
-    name = "schema_export_library",
-    srcs = [
-        ":export",
-    ],
-    visibility = ["//app:__subpackages__"],
-    deps = [
-        "//dev/logos/service/storage:storage_library",
-        "//dev/logos/service/storage/pg",
-        "//dev/logos/service/storage/validator",
-        "//dev/logos/user",
-        "@com_google_protobuf//java/core",
-        "@io_grpc_grpc_java//api",
-        "@io_grpc_grpc_java//protobuf",
-        "@io_grpc_grpc_java//stub",
-        "@maven//:com_google_guava_guava",
-        "@maven//:com_google_inject_guice",
-        "@maven//:com_querydsl_querydsl_core",
-        "@maven//:com_querydsl_querydsl_sql",
-        "@maven//:javax_annotation_javax_annotation_api",
-        "@maven//:javax_inject_javax_inject",
-    ],
-)
+#java_library(
+#    name = "schema_export_library",
+#    srcs = [
+#        ":export",
+#    ],
+#    deps = [
+#        "//dev/logos/service/storage:storage_library",
+#        "//dev/logos/service/storage/pg",
+#        "//dev/logos/service/storage/validator",
+#        "//dev/logos/user",
+#        "@com_google_protobuf//java/core",
+#        "@io_grpc_grpc_java//api",
+#        "@io_grpc_grpc_java//protobuf",
+#        "@io_grpc_grpc_java//stub",
+#        "@maven//:com_google_guava_guava",
+#        "@maven//:com_google_inject_guice",
+#        "@maven//:com_querydsl_querydsl_core",
+#        "@maven//:com_querydsl_querydsl_sql",
+#        "@maven//:javax_annotation_javax_annotation_api",
+#        "@maven//:javax_inject_javax_inject",
+#    ],
+#)

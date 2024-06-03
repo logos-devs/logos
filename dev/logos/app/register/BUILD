@@ -18,7 +18,8 @@ java_library(
 
 java_plugin(
     name = "module",
-    processor_class = "dev.logos.module.RegisterModuleProcessor",
+    generates_api = True,
+    processor_class = "dev.logos.app.register.RegisterModuleProcessor",
     visibility = [
         "//app:__subpackages__",
         "//dev/logos:__subpackages__",

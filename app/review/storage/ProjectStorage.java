@@ -7,7 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
 
-import static dev.logos.service.storage.pg.exporter.Review.project;
+import static app.review.Review.project;
 
 
 public class ProjectStorage extends TableStorage<Project, UUID> {

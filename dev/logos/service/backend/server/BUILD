@@ -5,6 +5,9 @@ java_binary(
         "ServerModule.java",
     ],
     main_class = "dev.logos.service.backend.server.Server",
+    plugins = [
+        "//dev/logos/app/register:module",
+    ],
     visibility = ["//visibility:public"],
     deps = [
         "//app/auth/module",
@@ -15,6 +18,7 @@ java_binary(
         "//app/review/grammar:aipname_parser_java",
         "//app/review/grammar:java9_parser_java",
         "//app/summer/module",
+        "//dev/logos/app/register:module_library",
         "//dev/logos/job",
         "//dev/logos/service",
         "//dev/logos/service/backend/interceptor",
