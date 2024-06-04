@@ -2609,7 +2609,7 @@
       "general": {
         "bzlTransitiveDigest": "P1R9t/AGcmM0NvBX0w5+3Oh7Ohhn2m6vHXs4dmiL+jc=",
         "accumulatedFileDigests": {
-          "@@//:pnpm-lock.yaml": "97f75067fc94754fe36e8fb5cf4dbb878ac427a016d1e1c830e0b83a4e8551af"
+          "@@//:pnpm-lock.yaml": "fa7a2a4f14cce3d2e8609d9227fa35385e81f7f3a435ba5eb754dba61d648cec"
         },
         "envVariables": {},
         "generatedRepoSpecs": {
@@ -6160,6 +6160,35 @@
               "link_packages": {},
               "integrity": "sha512-Qntc3jrtwwrsAC+X8wms8zhrTr0sFXnyEGhZd9sLtsJ/6gGQKFzNB+wWbOcpJd7BR8ThNCoKt76BuQahfMvpeA==",
               "url": "https://registry.npmjs.org/@smithy/middleware-stack/-/middleware-stack-2.2.0.tgz",
+              "commit": "",
+              "patch_args": [],
+              "patches": [],
+              "custom_postinstall": "",
+              "npm_auth": "",
+              "npm_auth_basic": "",
+              "npm_auth_username": "",
+              "npm_auth_password": "",
+              "lifecycle_hooks": [],
+              "extra_build_content": "",
+              "generate_bzl_library_targets": false
+            }
+          },
+          "npm__path-to-regexp__6.2.2": {
+            "bzlFile": "@@aspect_rules_js~1.34.0//npm/private:npm_import.bzl",
+            "ruleClassName": "npm_import_rule",
+            "attributes": {
+              "name": "aspect_rules_js~1.34.0~npm~npm__path-to-regexp__6.2.2",
+              "package": "path-to-regexp",
+              "version": "6.2.2",
+              "root_package": "",
+              "link_workspace": "",
+              "link_packages": {
+                "": [
+                  "path-to-regexp"
+                ]
+              },
+              "integrity": "sha512-GQX3SSMokngb36+whdpRXE+3f9V8UzyAorlYvOGx87ufGHehNTn5lCxrKtLyZ4Yl/wEKnNnr98ZzOwwDZV5ogw==",
+              "url": "https://registry.npmjs.org/path-to-regexp/-/path-to-regexp-6.2.2.tgz",
               "commit": "",
               "patch_args": [],
               "patches": [],
@@ -34622,6 +34651,36 @@
               "lifecycle_hooks": [],
               "extra_build_content": "",
               "generate_bzl_library_targets": false
+            }
+          },
+          "npm__path-to-regexp__6.2.2__links": {
+            "bzlFile": "@@aspect_rules_js~1.34.0//npm/private:npm_import.bzl",
+            "ruleClassName": "npm_import_links",
+            "attributes": {
+              "name": "aspect_rules_js~1.34.0~npm~npm__path-to-regexp__6.2.2__links",
+              "package": "path-to-regexp",
+              "version": "6.2.2",
+              "dev": false,
+              "root_package": "",
+              "link_packages": {
+                "": [
+                  "path-to-regexp"
+                ]
+              },
+              "deps": {},
+              "transitive_closure": {
+                "path-to-regexp": [
+                  "6.2.2"
+                ]
+              },
+              "lifecycle_build_target": false,
+              "lifecycle_hooks_env": [],
+              "lifecycle_hooks_execution_requirements": [],
+              "bins": {},
+              "npm_translate_lock_repo": "npm",
+              "package_visibility": [
+                "//visibility:public"
+              ]
             }
           },
           "npm__serve-index__1.9.1": {

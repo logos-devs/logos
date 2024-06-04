@@ -36,14 +36,14 @@ public class SummerModule extends AppModule {
     @Provides
     public EntryStorageServiceFutureStub provideEntryStorageServiceStub(ManagedChannel managedChannel) {
         return EntryStorageServiceFutureStub.newStub(
-            (channel, callOptions) -> EntryStorageServiceGrpc.newFutureStub(managedChannel),
-            managedChannel);
+            (channel, callOptions) ->
+                EntryStorageServiceGrpc.newFutureStub(managedChannel), managedChannel);
     }
 
     @Provides
     public SourceRssStorageServiceFutureStub provideSourceRssStorageServiceStub(ManagedChannel managedChannel) {
         return SourceRssStorageServiceFutureStub.newStub(
-            (channel, callOptions) -> SourceRssStorageServiceGrpc.newFutureStub(managedChannel),
-            managedChannel);
+            (channel, callOptions) ->
+                SourceRssStorageServiceGrpc.newFutureStub(managedChannel), managedChannel);
     }
 }

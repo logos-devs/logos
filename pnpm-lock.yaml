@@ -119,6 +119,9 @@ dependencies:
   mobx:
     specifier: 6.12.3
     version: 6.12.3
+  path-to-regexp:
+    specifier: 6.2.2
+    version: 6.2.2
   pwa-helpers:
     specifier: 0.9.1
     version: 0.9.1
@@ -4796,6 +4799,10 @@ packages:
 
   /path-to-regexp@2.4.0:
     resolution: {integrity: sha512-G6zHoVqC6GGTQkZwF4lkuEyMbVOjoBKAEybQUypI1WTkqinCOrq2x6U2+phkJ1XsEMTy4LjtwPI7HW+NVrRR2w==}
+    dev: false
+
+  /path-to-regexp@6.2.2:
+    resolution: {integrity: sha512-GQX3SSMokngb36+whdpRXE+3f9V8UzyAorlYvOGx87ufGHehNTn5lCxrKtLyZ4Yl/wEKnNnr98ZzOwwDZV5ogw==}
     dev: false
 
   /path-type@4.0.0:

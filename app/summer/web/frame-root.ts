@@ -1,12 +1,12 @@
-import "@material/web/labs/navigationtab/navigation-tab";
-import {Router} from "@vaadin/router";
-import {css, html, LitElement} from 'lit';
-import {customElement, query} from "lit/decorators.js";
 import "@material/web/icon/icon";
 import "@material/web/iconbutton/icon-button";
 import "@material/web/labs/navigationbar/navigation-bar";
-import {router} from "./router";
+import "@material/web/labs/navigationtab/navigation-tab";
+import "dev/logos/service/client/web/components/router-path";
+import {css, html, LitElement} from 'lit';
+import {customElement, query} from "lit/decorators.js";
 import "./module/summer-module";
+
 
 @customElement('frame-root')
 export class FrameRoot extends LitElement {
@@ -73,42 +73,32 @@ export class FrameRoot extends LitElement {
             /* there are paths which don't correspond to a tab */
             if (tabPaths.some(path => window.location.pathname === path)) {
                 history.pushState({}, "", tabPaths[tabIndex]);
-                Router.go(window.location.href);
+                window.dispatchEvent(new Event('popstate'));
             }
         });
     }
 
-    override firstUpdated() {
-        router.setOutlet(this.content);
-        router.setRoutes([
-            {
-                path: "/", component: "view-feed", action: () => {
-                    import("./view-feed");
-                }
-            },
-            {
-                path: "/explore", component: "view-explore", action: () => {
-                    import("./view-explore");
-                }
-            },
-            {
-                path: "/profile", component: "view-profile", action: () => {
-                    import("./view-profile");
-                }
-            },
-            {
-                path: "/login/complete", component: "login-complete", action: () => {
-                    import("./login-complete");
-                }
-            }
-        ]);
-    }
-
     override render() {
         return html`
-            <div id="content"></div>
+            <div id="content">
+                <router-path pattern="/" .action=${() => import("./view-feed")}>
+                    <view-feed></view-feed>
+                </router-path>
 
-            <md-navigation-bar activeIndex="1">
+                <router-path pattern="/explore" .action=${() => import("./view-explore")}>
+                    <view-explore></view-explore>
+                </router-path>
+
+                <router-path pattern="/profile" .action=${() => import("./view-profile")}>
+                    <view-profile></view-profile>
+                </router-path>
+
+                <router-path pattern="/login/complete" .action=${() => import("./login-complete")}>
+                    <login-complete></login-complete>
+                </router-path>
+            </div>
+
+            <md-navigation-bar>
                 <md-navigation-tab .label="Home">
                     <md-icon slot="active-icon">home</md-icon>
                     <md-icon slot="inactive-icon">home</md-icon>
