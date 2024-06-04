@@ -8,6 +8,5 @@ js_library(
     visibility = ["//dev/logos/service/client/web:__pkg__"],
     deps = [
         "//app/digits/web/client:voice_grpc_web_client",
-        "//dev/logos/service/storage/pg/exporter:export",
     ],
 )
