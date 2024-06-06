@@ -1,24 +1,8 @@
-load("//dev/logos/service/storage/pg/exporter:schema_export.bzl", "schema_export", "storage_java_proto_library")
-
-java_library(
-    name = "phone_number_storage",
-    srcs = [
-        "PhoneNumberStorage.java",
-    ],
-    visibility = ["//app/digits:__subpackages__"],
-    deps = [
-        ":storage_library",
-        "//app/digits/proto:voice_java_library",
-        "//dev/logos/service/storage:storage_library",
-        "//dev/logos/service/storage/pg",
-        "@com_google_protobuf//:protobuf_java",
-        "@maven//:com_google_inject_guice",
-        "@maven//:javax_inject_javax_inject",
-    ],
-)
+load("//dev/logos/service/storage/pg/exporter:schema_export.bzl", "schema_export", "storage_grpc_web_library", "storage_java_proto_library")
 
 schema_export(
     name = "schema_export",
+    migrations = ["//app/digits/storage/migrations"],
     tables = {
         "digits": ["phone_number"],
     },
@@ -26,7 +10,13 @@ schema_export(
 )
 
 storage_java_proto_library(
-    name = "storage_library",
+    name = "storage",
     srcs = [":schema_export"],
     visibility = ["//app/digits:__subpackages__"],
+)
+
+storage_grpc_web_library(
+    name = "grpc_web",
+    srcs = [":schema_export"],
+    visibility = ["//app/summer:__subpackages__"],
 )

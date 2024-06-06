@@ -18,9 +18,9 @@ java_library(
     deps = [
         ":voice_java_grpc",
         "//app/digits/proto:voice_java_library",
-        "//app/digits/storage:phone_number_storage",
-        "//app/digits/storage:storage_library",
+        "//app/digits/storage",
         "//dev/logos/client/twilio",
+        "//dev/logos/service",
         "//dev/logos/service/storage/pg",
         "@maven//:com_google_inject_guice",
         "@maven//:com_twilio_sdk_twilio",

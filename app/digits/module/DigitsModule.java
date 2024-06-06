@@ -2,28 +2,18 @@ package app.digits.module;
 
 import app.digits.service.PhoneNumberStorageService;
 import app.digits.service.VoiceService;
-import app.digits.storage.PhoneNumberStorage;
-import com.google.inject.AbstractModule;
-import com.google.inject.multibindings.Multibinder;
+import dev.logos.app.AppModule;
 import dev.logos.app.register.registerModule;
 import dev.logos.client.twilio.TwilioModule;
-import io.grpc.BindableService;
 
 @registerModule
-public class DigitsModule extends AbstractModule {
+public class DigitsModule extends AppModule {
 
     @Override
     protected void configure() {
         install(new TwilioModule());
-
-        bind(PhoneNumberStorage.class).toInstance(new PhoneNumberStorage());
-
-        Multibinder.newSetBinder(binder(), BindableService.class)
-                   .addBinding().to(VoiceService.class);
-
-        Multibinder.newSetBinder(binder(), BindableService.class)
-                   .addBinding().to(PhoneNumberStorageService.class);
-
+        addService(VoiceService.class);
+        addService(PhoneNumberStorageService.class);
         super.configure();
     }
 }

@@ -1,7 +1,5 @@
 package app.digits.service;
 
-import static app.digits.proto.voice.VoiceServiceGrpc.VoiceServiceImplBase;
-
 import app.digits.proto.voice.CallRequest;
 import app.digits.proto.voice.CallResponse;
 import com.google.inject.Inject;
@@ -9,9 +7,12 @@ import com.twilio.http.TwilioRestClient;
 import com.twilio.rest.api.v2010.account.Call;
 import com.twilio.type.PhoneNumber;
 import com.twilio.type.Twiml;
+import dev.logos.service.Service;
 import io.grpc.stub.StreamObserver;
 
-public class VoiceService extends VoiceServiceImplBase {
+import static app.digits.proto.voice.VoiceServiceGrpc.VoiceServiceImplBase;
+
+public class VoiceService extends VoiceServiceImplBase implements Service {
 
     private final TwilioRestClient twilioClient;
 

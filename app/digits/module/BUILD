@@ -8,8 +8,7 @@ java_library(
     deps = [
         "//app/digits/proto:voice_java_library",
         "//app/digits/service",
-        "//app/digits/storage:phone_number_storage",
-        "//app/digits/storage:storage_library",
+        "//dev/logos/app",
         "//dev/logos/app/register:module_library",
         "//dev/logos/client/twilio",
         "//dev/logos/service/storage:storage_library",
