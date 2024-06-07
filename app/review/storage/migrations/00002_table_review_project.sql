@@ -5,7 +5,7 @@ begin
     create table review.project
     (
         id uuid primary key default uuid_generate_v4(),
-        project text not null
+        name varchar(255) not null
     );
 
     grant select, insert, update, delete on review.project to storage;

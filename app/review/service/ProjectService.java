@@ -1,43 +1,23 @@
 package review.service;
 
-import app.review.proto.project.ListProjectsRequest;
-import app.review.proto.project.ListProjectsResponse;
-import app.review.proto.project.Project;
-import dev.logos.service.storage.exceptions.EntityReadException;
+import app.review.review.ListProjectRequest;
+import app.review.review.ProjectStorageServiceBase;
 import dev.logos.service.storage.pg.Select;
-import io.grpc.stub.StreamObserver;
-import review.storage.ProjectStorage;
-
-import javax.inject.Inject;
-import java.util.stream.Stream;
+import dev.logos.user.User;
 
 import static app.review.Review.project;
-import static app.review.proto.project.ProjectServiceGrpc.ProjectServiceImplBase;
+import static app.review.Review.Project.name;
+import static dev.logos.service.storage.pg.Select.select;
 
-public class ProjectService extends ProjectServiceImplBase {
 
-    private final ProjectStorage projectStorage;
-
-    @Inject
-    ProjectService(ProjectStorage projectStorage) {
-        this.projectStorage = projectStorage;
+public class ProjectService extends ProjectStorageServiceBase {
+    @Override
+    public <Req> boolean allow(Req request, User user) {
+        return user.isAuthenticated();
     }
 
     @Override
-    public void listProjects(
-        ListProjectsRequest request,
-        StreamObserver<ListProjectsResponse> responseObserver
-    ) {
-        try (Stream<Project> projectListStream = projectStorage.query(
-            Select.builder().from(project)
-        )) {
-            responseObserver.onNext(
-                ListProjectsResponse.newBuilder()
-                                    .addAllProjects(projectListStream.toList())
-                                    .build());
-            responseObserver.onCompleted();
-        } catch (EntityReadException e) {
-            responseObserver.onError(e);
-        }
+    public Select.Builder query(ListProjectRequest request) {
+        return select(name).from(project);
     }
 }
