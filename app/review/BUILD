@@ -59,6 +59,7 @@ java_grpc_library(
 
 schema_export(
     name = "schema_export",
+    migrations = ["//app/review/storage/migrations"],
     tables = {
         "review": ["project"],
     },
