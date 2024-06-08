@@ -1,8 +1,8 @@
 // TODO : name grpc_web_client outputs after the rule that created them, e.g. ./client/project_grpc_web_client.js
 import {FileServicePromiseClient} from "@app/review/web/client/file_grpc_web_pb.js";
 import {File, FileType, ListFilesRequest, ListFilesResponse} from "@app/review/web/client/file_pb.js";
-import {ProjectServicePromiseClient} from "@app/review/web/client/project_grpc_web_pb.js";
-import {ListProjectsRequest, ListProjectsResponse, Project} from "@app/review/web/client/project_pb.js";
+import {ProjectStorageServicePromiseClient} from "@app/review/review/project_grpc_web_pb.js";
+import {ListProjectRequest, ListProjectResponse, Project} from "@app/review/review/project_pb.js";
 import {lazyInject} from "@logos/bind";
 // import '@material/mwc-button';
 // import {Dialog} from "@material/mwc-dialog";
@@ -17,16 +17,17 @@ import {lazyInject} from "@logos/bind";
 // import '@material/mwc-textfield';
 // import '@material/mwc-top-app-bar-fixed';
 import {css, html, LitElement} from 'lit';
-import {property, query} from 'lit/decorators.js';
+import {customElement, property, query} from 'lit/decorators.js';
 
 const FILE_TYPE_ICONS: { [key: string]: string } = {
     [FileType.DIRECTORY]: 'folder',
     [FileType.REGULAR_FILE]: 'text_snippet'
 };
 
+@customElement('review-editor')
 class ReviewEditor extends LitElement {
     @lazyInject(FileServicePromiseClient) private fileServiceClient!: FileServicePromiseClient;
-    @lazyInject(ProjectServicePromiseClient) private projectServiceClient!: ProjectServicePromiseClient;
+    @lazyInject(ProjectStorageServicePromiseClient) private projectServiceClient!: ProjectStorageServicePromiseClient;
 
     @property({type: Array}) projects: Array<Project> = [];
     @property({type: Object}) selectedProject?: Project;
@@ -232,10 +233,10 @@ class ReviewEditor extends LitElement {
     connectedCallback() {
         super.connectedCallback();
 
-        this.projectServiceClient.listProjects(new ListProjectsRequest().setParent("dummy")).then(
-            (listProjectsResponse: ListProjectsResponse) => {
-                this.projects = listProjectsResponse.getProjectsList();
-                this.fileServiceClient.listFiles(new ListFilesRequest().setParent("logos")).then(
+        this.projectServiceClient.listProjects(new ListProjectRequest()).then(
+            (listProjectsResponse: ListProjectResponse) => {
+                this.projects = listProjectsResponse.getResultsList();
+                this.fileServiceClient.listFiles(new ListFilesRequest()).then(
                     (listFilesResponse: ListFilesResponse) => {
                         this.files = listFilesResponse.getFilesList();
                     }
@@ -347,5 +348,3 @@ class ReviewEditor extends LitElement {
         `;
     }
 }
-
-customElements.define('review-editor', ReviewEditor);

@@ -5,8 +5,8 @@ js_library(
     srcs = glob(["**/*.ts"]),
     visibility = ["//dev/logos/service/client/web:__pkg__"],
     deps = [
+        "//app/review:grpc_web",
         "//app/review/web/client:annotation_grpc_web_client",
         "//app/review/web/client:file_grpc_web_client",
-        "//app/review/web/client:project_grpc_web_client",
     ],
 )

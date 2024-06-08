@@ -1,7 +1,7 @@
 load("@rules_proto//proto:defs.bzl", "proto_library")
 load("@rules_proto_grpc//java:defs.bzl", "java_grpc_library")
 load("@rules_proto_grpc//java:defs.bzl", "java_proto_library")
-load("//dev/logos/service/storage/pg/exporter:schema_export.bzl", "schema_export", "storage_java_proto_library")
+load("//dev/logos/service/storage/pg/exporter:schema_export.bzl", "schema_export", "storage_grpc_web_library", "storage_java_proto_library")
 
 proto_library(
     name = "annotation_proto",
@@ -50,6 +50,12 @@ schema_export(
 storage_java_proto_library(
     name = "storage_library",
     srcs = [":schema_export"],
+)
+
+storage_grpc_web_library(
+    name = "grpc_web",
+    srcs = [":schema_export"],
+    visibility = ["//app/review:__subpackages__"],
 )
 
 java_library(

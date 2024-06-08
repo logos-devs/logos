@@ -11,9 +11,3 @@ grpc_web_client(
     proto = "//app/review:file_proto",
     visibility = ["//app/review/web:__subpackages__"],
 )
-
-grpc_web_client(
-    name = "project_grpc_web_client",
-    proto = "//app/review:project_proto",
-    visibility = ["//app/review/web:__subpackages__"],
-)
