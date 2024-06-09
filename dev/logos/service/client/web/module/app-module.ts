@@ -1,4 +1,3 @@
-import {Router} from "@vaadin/router";
 import {user} from "app/auth/web/state";
 import {rootContainer} from "dev/logos/service/client/web/bind";
 import {DevEndpoint} from "dev/logos/service/client/web/endpoint";
@@ -23,13 +22,11 @@ class AuthInterceptor {
 }
 
 type ClientConstructor = new (hostname: string, credentials: any, options: any) => any;
-type RouterConstructor = new () => Router;
 
 export abstract class AppModule extends ContainerModule {
     abstract configure(): void;
 
     protected clients: ClientConstructor[] = [];
-    protected routers: RouterConstructor[] = [];
 
     constructor() {
         super((bind: interfaces.Bind) => {
@@ -45,18 +42,11 @@ export abstract class AppModule extends ContainerModule {
                 enableDevTools([client]);
                 bind(clientClass).toDynamicValue(() => client);
             });
-
-            this.routers.forEach(
-                routerClass => bind(routerClass).toDynamicValue(() => new routerClass));
         });
     }
 
     protected addClient(clientClass: ClientConstructor): void {
         this.clients.push(clientClass);
-    }
-
-    protected addRouter(routerClass: RouterConstructor) {
-        this.routers.push(routerClass);
     }
 }
 
