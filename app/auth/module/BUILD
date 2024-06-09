@@ -13,7 +13,6 @@ java_library(
         "//app/auth/interceptor/cognito",
         "//app/auth/module/data",
         "//app/auth/service",
-        "//app/auth/storage:auth_storage",
         "//app/auth/user",
         "//dev/logos/app",
         "//dev/logos/app/register:module_library",

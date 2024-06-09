@@ -4,23 +4,18 @@ bazel_dep(
 )
 
 aspect_bazel_lib = use_extension("@aspect_bazel_lib//lib:extensions.bzl", "toolchains")
-
 use_repo(aspect_bazel_lib, "coreutils_toolchains")
-
 use_repo(aspect_bazel_lib, "jq_toolchains")
-
 use_repo(aspect_bazel_lib, "yq_toolchains")
 
 bazel_dep(
     name = "container_structure_test",
     version = "1.16.0",
 )
-
 bazel_dep(
     name = "gazelle",
     version = "0.34.0",
 )
-
 bazel_dep(
     name = "rules_pkg",
     version = "0.9.1",
@@ -31,14 +26,12 @@ bazel_dep(
     name = "aspect_rules_js",
     version = "1.34.0",
 )
-
 bazel_dep(
     name = "rules_nodejs",
     version = "5.8.2",
 )
 
 node = use_extension("@rules_nodejs//nodejs:extensions.bzl", "node")
-
 node.toolchain(node_version = "18.13.0")
 
 npm = use_extension(
@@ -46,13 +39,11 @@ npm = use_extension(
     "npm",
     dev_dependency = True,
 )
-
 npm.npm_translate_lock(
     name = "npm",
     pnpm_lock = "//:pnpm-lock.yaml",
     verify_node_modules_ignored = "//:.bazelignore",
 )
-
 use_repo(npm, "npm")
 
 pnpm = use_extension(
@@ -60,7 +51,6 @@ pnpm = use_extension(
     "pnpm",
     dev_dependency = True,
 )
-
 use_repo(pnpm, "pnpm")
 
 # rules_ts
@@ -74,9 +64,7 @@ rules_ts_ext = use_extension(
     "ext",
     dev_dependency = True,
 )
-
 rules_ts_ext.deps()
-
 use_repo(rules_ts_ext, "npm_typescript")
 
 # rules_go
@@ -86,7 +74,6 @@ bazel_dep(
 )
 
 go_sdk = use_extension("@rules_go//go:extensions.bzl", "go_sdk")
-
 go_sdk.download(version = "1.20.3")
 
 # rules_oci
@@ -96,62 +83,49 @@ bazel_dep(
 )
 
 oci = use_extension("@rules_oci//oci:extensions.bzl", "oci")
-
 oci.pull(
     name = "alpine_image",
     digest = "sha256:c5c5fda71656f28e49ac9c5416b3643eaa6a108a8093151d6d1afc9463be8e33",
     image = "docker.io/library/alpine",
     # tag = "3.18",
 )
-
 use_repo(oci, "alpine_image")
-
 oci.pull(
     name = "envoy_image_old",
     #digest = "sha256:5d5619b0d3d4311bfef48783c04df1e5aed71615710b876b951bd70c1e1e18ee",
     image = "docker.io/envoyproxy/envoy",
+    platforms = ["linux/amd64"],
     tag = "tools-v1.29-latest",
-    platforms = ["linux/amd64"]
 )
-
 use_repo(oci, "envoy_image_old")
-
 oci.pull(
     name = "distroless_java_container",
     digest = "sha256:c7151ad9a6787379ccf205e14b9ef18e0757e56d789c155269fc7b5f83d2a93e",
     image = "gcr.io/distroless/java17-debian11",
     # tag = "latest",
 )
-
 use_repo(oci, "distroless_java_container")
-
 oci.pull(
     name = "console_container",
     digest = "sha256:459be81018f0481adcf57ca0ab3e4fba19cfcc48f2280e1d672343d10dccb8a3",
     image = "docker.io/alpine/socat",
     # tag = "latest",
 )
-
 use_repo(oci, "console_container")
-
 oci.pull(
     name = "nginx_container",
     digest = "sha256:e06ffa63074d69b12c7f7712d7aebc4cc72d25217e55788d54160a2bd77182f4",
     image = "docker.io/library/nginx",
     # tag = "stable-alpine",
 )
-
 use_repo(oci, "nginx_container")
-
 oci.pull(
     name = "stolon_container",
     digest = "sha256:5d8a8292d9a008ba29cbe0285bd5d4d041a75945e1ffedb14b1bfbee5b2414fa",
     image = "docker.io/sorintlab/stolon",
     # tag = "master-pg14",
 )
-
 use_repo(oci, "stolon_container")
-
 oci.pull(
     name = "distroless_python_image",
     digest = "sha256:baac841d0711ecbb673fa410a04793f876a242a6ca801d148ef867f02745b156",
@@ -161,7 +135,6 @@ oci.pull(
         "linux/arm64/v8",
     ],
 )
-
 use_repo(oci, "distroless_python_image")
 
 # rules_apko
@@ -177,7 +150,6 @@ apk.translate_lock(
     name = "base_cronjob_image",
     lock = "//vendor/apko:base_cronjob.lock.json",
 )
-
 use_repo(apk, "base_cronjob_image")
 
 # envoy image
@@ -185,5 +157,4 @@ apk.translate_lock(
     name = "envoy_image",
     lock = "//vendor/apko:envoy.lock.json",
 )
-
 use_repo(apk, "envoy_image")

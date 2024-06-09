@@ -4,9 +4,6 @@ import com.google.inject.Inject;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.Descriptors.FieldDescriptor;
 import com.google.protobuf.GeneratedMessageV3;
-import com.querydsl.sql.Configuration;
-import com.querydsl.sql.PostgreSQLTemplates;
-import com.querydsl.sql.SQLQueryFactory;
 import dev.logos.service.storage.exceptions.EntityReadException;
 import dev.logos.service.storage.exceptions.EntityWriteException;
 import dev.logos.service.storage.pg.Column;
@@ -54,16 +51,6 @@ public class TableStorage<Entity, StorageIdentifier> implements EntityStorage<En
         this.relation = relation;
         this.entityClass = entityClass1;
         this.storageIdentifierClass = storageIdentifierClass;
-    }
-
-    @Deprecated
-    protected SQLQueryFactory getQueryFactory() {
-        return new SQLQueryFactory(
-            new Configuration(
-                PostgreSQLTemplates.builder()
-                                   .printSchema()
-                                   .build()),
-            dataSource);
     }
 
     // TODO : write a mapper which uses the proto reflection API. The members

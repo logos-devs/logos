@@ -12,7 +12,6 @@ java_binary(
     deps = [
         "//app/auth/module",
         "//app/auth/service",
-        "//app/auth/storage:auth_storage",
         "//app/digits/module",
         "//app/review:review_service",
         "//app/review/grammar:aipname_parser_java",

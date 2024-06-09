@@ -163,10 +163,7 @@ def storage_java_proto_library(name, srcs, visibility = None):
             "@io_grpc_grpc_java//stub",
             "@maven//:com_google_guava_guava",
             "@maven//:com_google_inject_guice",
-            "@maven//:com_querydsl_querydsl_core",
-            "@maven//:com_querydsl_querydsl_sql",
             "@maven//:javax_annotation_javax_annotation_api",
-            "@maven//:javax_inject_javax_inject",
         ],
         plugins = [
             "//dev/logos/app/register:module",

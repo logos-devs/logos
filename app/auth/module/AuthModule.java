@@ -3,7 +3,6 @@ package app.auth.module;
 import app.auth.interceptor.cognito.CognitoServerInterceptor;
 import app.auth.module.data.CognitoHostConfig;
 import app.auth.module.data.CognitoHostSecret;
-import app.auth.service.AuthService;
 import app.auth.service.CognitoService;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
@@ -27,7 +26,7 @@ public class AuthModule extends AppModule {
 
     @Override
     protected void configure() {
-        addService(AuthService.class);
+//        addService(AuthService.class);
         addService(CognitoService.class);
         addInterceptor(CognitoServerInterceptor.class);
         super.configure();

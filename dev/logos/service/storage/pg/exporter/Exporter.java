@@ -6,7 +6,6 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.protobuf.DescriptorProtos.FileDescriptorProto;
 import com.google.protobuf.DescriptorProtos.FileDescriptorSet;
-import com.querydsl.sql.codegen.MetaDataExporter;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
 import dev.logos.service.storage.module.DatabaseModule;
@@ -45,18 +44,6 @@ public class Exporter {
         return connection;
     }
 
-    @Deprecated
-    public void export() throws SQLException, IOException {
-        Injector injector = Guice.createInjector(new DatabaseModule());
-        DataSource dataSource = injector.getInstance(DataSource.class);
-
-        MetaDataExporter exporter = new MetaDataExporter();
-        exporter.setPackageName(buildPackage);
-        exporter.setTargetFolder(new File(buildDir));
-        exporter.setSchemaToPackage(true);
-        exporter.export(dataSource.getConnection().getMetaData());
-    }
-
     public static void writeProtoSources(String protoSrc, String protoPath, String protoFilename) throws IOException {
         try (FileOutputStream fileOutputStream = new FileOutputStream("%s/%s".formatted(protoPath, protoFilename))) {
             fileOutputStream.write(protoSrc.getBytes());
@@ -80,7 +67,6 @@ public class Exporter {
             String build_package = args[3];
 
             Exporter exporter = new Exporter(args[2], args[3], new CodeGenerator(build_dir, build_package));
-            exporter.export();
 
             List<FileDescriptorProto> fileDescriptorProtos = new ArrayList<>();
 

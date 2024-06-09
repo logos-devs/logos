@@ -74,7 +74,6 @@ java_library(
         "//dev/logos/service/storage/pg",
         "//dev/logos/user",
         "@maven//:com_google_inject_guice",
-        "@maven//:javax_inject_javax_inject",
         "@maven//:org_antlr_antlr4_runtime",
     ],
 )

@@ -7,7 +7,7 @@ java_grpc_library(
 
 java_library(
     name = "service",
-    srcs = glob(["**/*.java"]),
+    srcs = ["CognitoService.java"],
     visibility = [
         "//app/auth/module:__subpackages__",
         "//dev/logos/service:__subpackages__",
@@ -16,7 +16,6 @@ java_library(
         ":auth_java_grpc",
         "//app/auth/module/data",
         "//app/auth/proto:java",
-        "//app/auth/storage:auth_storage",
         "//dev/logos/service",
         "//dev/logos/service/storage:storage_library",
         "//dev/logos/user",
@@ -29,8 +28,6 @@ java_library(
         "@maven//:com_google_guava_guava",
         "@maven//:com_google_inject_guice",
         "@maven//:com_yubico_webauthn_server_core",
-        "@maven//:javax_inject_javax_inject",
-        "@maven//:javax_json_javax_json_api",
         "@maven//:org_apache_httpcomponents_client5_httpclient5",
         "@maven//:org_apache_httpcomponents_httpclient",
         "@maven//:org_apache_httpcomponents_httpcore",

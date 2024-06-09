@@ -25,8 +25,6 @@ java_library(
         "@io_grpc_grpc_java//api",
         "@io_grpc_grpc_java//stub",
         "@maven//:com_google_inject_guice",
-        "@maven//:com_querydsl_querydsl_core",
-        "@maven//:com_querydsl_querydsl_sql",
         "@maven//:org_jdbi_jdbi3_core",
         "@maven//:org_jdbi_jdbi3_postgres",
         "@maven//:org_postgresql_postgresql",

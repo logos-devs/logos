@@ -113,11 +113,12 @@ rules_proto_dependencies()
 
 rules_proto_toolchains()
 
+# rules_proto_grpc
 http_archive(
     name = "rules_proto_grpc",
-    sha256 = "f87d885ebfd6a1bdf02b4c4ba5bf6fb333f90d54561e4d520a8413c8d1fb7beb",
-    strip_prefix = "rules_proto_grpc-4.5.0",
-    urls = ["https://github.com/rules-proto-grpc/rules_proto_grpc/archive/4.5.0.tar.gz"],
+    integrity = "sha256-wNcY9NiSxSQCVQTmelv+gzYLOpguZUvHH+11FOuKyK0=",
+    strip_prefix = "rules_proto_grpc-4.6.0",
+    urls = ["https://github.com/rules-proto-grpc/rules_proto_grpc/archive/4.6.0.tar.gz"],
 )
 
 load("@rules_proto_grpc//:repositories.bzl", "rules_proto_grpc_repos", "rules_proto_grpc_toolchains")
@@ -126,13 +127,19 @@ rules_proto_grpc_toolchains()
 
 rules_proto_grpc_repos()
 
-load("@rules_proto_grpc//java:repositories.bzl", rules_proto_grpc_java_repos = "java_repos")
+load("@rules_proto//proto:repositories.bzl", "rules_proto_dependencies", "rules_proto_toolchains")
 
-rules_proto_grpc_java_repos()
+rules_proto_dependencies()
 
-load("@rules_proto_grpc//js:repositories.bzl", rules_proto_grpc_js_repos = "js_repos")
+rules_proto_toolchains()
 
-rules_proto_grpc_js_repos()
+load("@rules_proto_grpc//java:repositories.bzl", "java_repos")
+
+java_repos()
+
+load("@rules_proto_grpc//js:repositories.bzl", "js_repos")
+
+js_repos()
 
 # Java Maven deps
 load("@io_grpc_grpc_java//:repositories.bzl", "IO_GRPC_GRPC_JAVA_ARTIFACTS", "IO_GRPC_GRPC_JAVA_OVERRIDE_TARGETS", "grpc_java_repositories")
@@ -144,11 +151,6 @@ maven_install(
         "com.fasterxml.jackson.dataformat:jackson-dataformat-cbor:2.15.2",
         "com.google.inject:guice:7.0.0",
         "com.mysema.commons:mysema-commons-lang:0.2.4",
-        "com.querydsl:codegen-utils:5.0.0",
-        "com.querydsl:querydsl-codegen:5.0.0",
-        "com.querydsl:querydsl-core:5.0.0",
-        "com.querydsl:querydsl-sql-codegen:5.0.0",
-        "com.querydsl:querydsl-sql:5.0.0",
         "com.twilio.sdk:twilio:10.2.1",
         "com.yubico:webauthn-server-core:2.5.0",
         "com.zaxxer:HikariCP:5.0.1",
@@ -162,7 +164,7 @@ maven_install(
         "org.eclipse.jgit:org.eclipse.jgit:6.6.0.202305301015-r",
         "org.jdbi:jdbi3-core:3.39.1",
         "com.squareup:javapoet:1.13.0",
-        "com.google.code.gson:gson:2.10.1",
+        "com.google.code.gson:gson:2.9.0",
         "org.jdbi:jdbi3-postgres:3.35.0",
         "org.junit.jupiter:junit-jupiter-api:5.9.3",
         "org.postgresql:postgresql:42.6.0",
