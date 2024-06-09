@@ -8,11 +8,16 @@ import com.twilio.rest.api.v2010.account.Call;
 import com.twilio.type.PhoneNumber;
 import com.twilio.type.Twiml;
 import dev.logos.service.Service;
+import dev.logos.user.User;
 import io.grpc.stub.StreamObserver;
 
 import static app.digits.proto.voice.VoiceServiceGrpc.VoiceServiceImplBase;
 
 public class VoiceService extends VoiceServiceImplBase implements Service {
+    @Override
+    public <Req> boolean allow(Req request, User user) {
+        return user.isAuthenticated();
+    }
 
     private final TwilioRestClient twilioClient;
 

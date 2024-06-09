@@ -173,20 +173,6 @@ def storage_java_proto_library(name, srcs, visibility = None):
         ],
     )
 
-#    visibility = [
-#        "//dev/logos/service:__subpackages__",
-#    ],
-#    deps = [
-#        "//app/summer/service",
-#        "//app/summer/storage",
-#        "//dev/logos/app",
-#        "//dev/logos/app/register:module_library",
-#        "@io_grpc_grpc_java//api",
-#        "@io_grpc_grpc_java//stub",
-#        "@maven//:com_google_inject_guice",
-#    ],
-#)
-
 def storage_grpc_web_library(name, srcs, visibility):
     js_library(
         name = name,

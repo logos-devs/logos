@@ -233,7 +233,7 @@ class ReviewEditor extends LitElement {
     connectedCallback() {
         super.connectedCallback();
 
-        this.projectServiceClient.listProjects(new ListProjectRequest()).then(
+        this.projectServiceClient.list(new ListProjectRequest()).then(
             (listProjectsResponse: ListProjectResponse) => {
                 this.projects = listProjectsResponse.getResultsList();
                 this.fileServiceClient.listFiles(new ListFilesRequest()).then(

@@ -8,7 +8,7 @@ import "./Key";
 
 @customElement("dialer-keypad")
 export class DialerKeypad extends LitElement {
-    @query("mwc-textfield") input!: MdOutlinedTextField;
+    @query("md-outlined-text-field") input!: MdOutlinedTextField;
     @queryAll("dialer-key") keys!: DialerKey[];
 
     private formatter = new PhoneNumberUtil();

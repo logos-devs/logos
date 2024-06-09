@@ -22,6 +22,7 @@ java_library(
         "//dev/logos/client/twilio",
         "//dev/logos/service",
         "//dev/logos/service/storage/pg",
+        "//dev/logos/user",
         "@maven//:com_google_inject_guice",
         "@maven//:com_twilio_sdk_twilio",
         "@maven//:javax_inject_javax_inject",

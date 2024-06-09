@@ -9,7 +9,10 @@ npm_link_all_packages(name = "node_modules")
 copy_to_bin(
     name = "tsconfig",
     srcs = ["tsconfig.json"],
-    visibility = ["//dev/logos:__subpackages__"],
+    visibility = [
+        "//app:__subpackages__",
+        "//dev/logos:__subpackages__",
+    ],
 )
 
 sh_binary(

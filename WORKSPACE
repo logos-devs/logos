@@ -149,7 +149,7 @@ maven_install(
         "com.querydsl:querydsl-core:5.0.0",
         "com.querydsl:querydsl-sql-codegen:5.0.0",
         "com.querydsl:querydsl-sql:5.0.0",
-        "com.twilio.sdk:twilio:9.8.0",
+        "com.twilio.sdk:twilio:10.2.1",
         "com.yubico:webauthn-server-core:2.5.0",
         "com.zaxxer:HikariCP:5.0.1",
         "dnsjava:dnsjava:3.5.2",

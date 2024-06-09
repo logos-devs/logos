@@ -1,27 +1,28 @@
+import "@app/digits/web/components/dialer/Keypad";
+import "@material/web/button/outlined-button";
+import "@material/web/dialog/dialog";
+import "@material/web/fab/fab";
+import "@material/web/icon/icon";
+import "@material/web/iconbutton/icon-button";
+import "@material/web/labs/card/filled-card";
+import "@material/web/labs/navigationbar/navigation-bar";
+import "@material/web/labs/navigationtab/navigation-tab";
+import "@material/web/list/list";
+import "@material/web/list/list-item";
+import "@material/web/menu/menu";
+import "@material/web/menu/menu-item";
 import {PhoneNumberStorageServicePromiseClient} from "@app/digits/storage/digits/phone_number_grpc_web_pb.js";
 import {ListPhoneNumberRequest, PhoneNumber} from "@app/digits/storage/digits/phone_number_pb.js";
 import {VoiceServicePromiseClient} from "@app/digits/web/client/voice_grpc_web_pb.js";
 import {CallRequest} from "@app/digits/web/client/voice_pb.js";
 import {DialerKeypad} from "@app/digits/web/components/dialer/Keypad";
-import "@app/digits/web/components/dialer/Keypad";
 import {lazyInject} from "@logos/bind";
-// import "@material/mwc-button";
-// import {Button} from "@material/mwc-button";
-// import "@material/mwc-dialog";
-// import "@material/mwc-menu";
-// import {Menu} from "@material/mwc-menu";
-// import "@material/mwc-slider";
-// import "@material/mwc-tab-bar";
-// import "@material/mwc-textfield";
+import {MdMenu} from "@material/web/menu/menu";
 import {css, html, LitElement} from "lit";
 import {customElement, property, query, state} from "lit/decorators.js";
 import {choose} from "lit/directives/choose.js";
 import {when} from "lit/directives/when.js";
 
-
-// solve spam by using the ethereum wot to classify reputation of phone numbers to eliminate spam!
-// use wot as the anti-spam mechanism
-// when another ethereum identity proves control of a phone number, the hash of that number moves from old owner to new
 
 enum Tabs {
     Dialpad = "dialpad",
@@ -37,8 +38,8 @@ export class FrameDigits extends LitElement {
     @state() private selectedNumber!: PhoneNumber;
     @state() private ownedNumbers: PhoneNumber[] = [];
     @state() tab = Tabs.Dialpad;
-    @query("mwc-button") callButton;
-    @query('mwc-menu') menu;
+    @query("md-button") callButton;
+    @query('md-menu') menu: MdMenu;
     @query('dialer-keypad') dialerKeypad!: DialerKeypad;
 
     // language=CSS
@@ -74,7 +75,7 @@ export class FrameDigits extends LitElement {
 
     connectedCallback() {
         super.connectedCallback();
-        this.phoneNumberStorageServiceClient.listPhoneNumber(
+        this.phoneNumberStorageServiceClient.list(
             new ListPhoneNumberRequest()
         ).then(listPhoneNumberResponse => {
             this.ownedNumbers = listPhoneNumberResponse.getResultsList();
@@ -85,30 +86,30 @@ export class FrameDigits extends LitElement {
     render() {
         return html`
             ${when(this.selectedNumber, () => html`
-                <mwc-button label=${this.selectedNumber.getPhoneNumber()}
-                            @click=${() => this.menu.open = true}>
-                </mwc-button>
+                <h1 id="selectNumber" @click=${() => this.menu.open = true}>
+                    ${this.selectedNumber.getPhoneNumber()}
+                </h1>
 
-                <mwc-menu>
+                <md-menu anchor="selectNumber">
                     ${this.ownedNumbers.map(ownedNumber => html`
-                        <mwc-list-item @click=${() => this.selectedNumber = ownedNumber}>
+                        <md-menu-item @click=${() => this.selectedNumber = ownedNumber}>
                             ${ownedNumber.getPhoneNumber()}
-                        </mwc-list-item>
+                        </md-menu-item>
                     `)}
-                </mwc-menu>
+                </md-menu>
 
                 ${choose(this.tab, [
                     [Tabs.Dialpad, () => html`
                         <dialer-keypad></dialer-keypad>
                         <div class="call-control">
-                            <mwc-icon class="call-button"
-                                      @click=${() => this.voiceServiceClient.call(
-                                              new CallRequest()
-                                                      .setFromPhoneNumber(this.selectedNumber.getPhoneNumber())
-                                                      .setToPhoneNumber(this.dialerKeypad.number)
-                                      )}>
+                            <md-icon class="call-button"
+                                     @click=${() => this.voiceServiceClient.call(
+                                             new CallRequest()
+                                                     .setFromPhoneNumber(this.selectedNumber.getPhoneNumber())
+                                                     .setToPhoneNumber(this.dialerKeypad.number)
+                                     )}>
                                 phone
-                            </mwc-icon>
+                            </md-icon>
                         </div>
                     `],
                     [Tabs.SMS, () => html``],
@@ -116,12 +117,14 @@ export class FrameDigits extends LitElement {
                 ])}
             `)}
 
-            <mwc-tab-bar>
+            <md-navigation-bar>
                 ${[Tabs.Dialpad, Tabs.SMS, Tabs.Settings].map(tab => html`
-                    <mwc-tab icon=${tab}
-                             @click=${() => this.tab = tab}></mwc-tab>
+                    <md-navigation-tab @click=${() => this.tab = tab}>
+                        <md-icon slot="active-icon">${tab}</md-icon>
+                        <md-icon slot="inactive-icon">${tab}</md-icon>
+                    </md-navigation-tab>
                 `)}
-            </mwc-tab-bar>
+            </md-navigation-bar>
         `;
     }
 }
