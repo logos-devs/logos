@@ -39,9 +39,18 @@ export class IamStack extends Stack {
                 ]
             })
         )
+
+        this.serviceAccount.addToPrincipalPolicy(
+            new PolicyStatement({
+                actions: ["secretsmanager:GetSecretValue"],
+                resources: [
+                    `arn:aws:secretsmanager:${props.env.region}:${props.env.account}:secret:dev/external/twilio-??????`
+                ]
+            })
+        )
     }
 }
 
 export function makeIamStack(app: App, id: string, eksStack, rdsStack, env: Environment): IamStack {
-    return new IamStack(app, id, eksStack, rdsStack, { env })
+    return new IamStack(app, id, eksStack, rdsStack, {env})
 }
