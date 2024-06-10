@@ -18,7 +18,6 @@ java_binary(
         "//app/review/grammar:java9_parser_java",
         "//app/summer/module",
         "//dev/logos/app/register:module_library",
-        "//dev/logos/job",
         "//dev/logos/service",
         "//dev/logos/service/backend/interceptor",
         "//dev/logos/service/storage:storage_library",

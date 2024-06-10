@@ -4,8 +4,6 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
-import dev.logos.job.Job;
-import dev.logos.job.JobState;
 import dev.logos.service.Service;
 import io.grpc.ServerBuilder;
 import io.grpc.ServerInterceptor;
@@ -22,19 +20,16 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.logging.Logger;
 
-import static dev.logos.job.JobState.*;
 import static java.lang.System.err;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 
-public class Server implements Job {
+public class Server {
 
-    private JobState jobState = STOPPED;
     private static final int DEFAULT_PORT = 8081;
     private static final int TERMINATION_GRACE_PERIOD_SECONDS = 25;
     private final Logger logger;
@@ -62,58 +57,30 @@ public class Server implements Job {
         outerServer = outerServerBuilder.build();
     }
 
-    public CompletableFuture<Job> start() {
-        this.jobState = STARTING;
-
-        return CompletableFuture.supplyAsync(() -> {
-            try {
-                outerServer.start();
-                innerServer.start();
-                this.jobState = RUNNING;
-                logger.info("Server started, listening on " + outerServer.getPort());
-                Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-                    err.println("*** shutting down gRPC server since JVM is shutting down");
-                    Server.this.stop().thenApply(job -> {
-                        err.println("*** server shut down");
-                        return job;
-                    });
-                }));
-                return Server.this;
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        });
-    }
-
-    public CompletableFuture<Job> stop() {
-        this.jobState = STOPPING;
-
-        return CompletableFuture.supplyAsync(() -> {
-            try {
-                outerServer.shutdown().awaitTermination(TERMINATION_GRACE_PERIOD_SECONDS, SECONDS);
-                innerServer.shutdown().awaitTermination(TERMINATION_GRACE_PERIOD_SECONDS, SECONDS);
-                this.jobState = STOPPED;
-            } catch (InterruptedException e) {
-                this.jobState = RUNTIME_FAILURE;
-                throw new RuntimeException(e);
-            }
-            return Server.this;
-        });
-    }
-
-    @Override
-    public String getName() {
-        return this.getClass().getCanonicalName();
-    }
-
-    @Override
-    public JobState getState() {
-        return this.jobState;
+    public void start() {
+        try {
+            outerServer.start();
+            innerServer.start();
+            logger.info("Server started, listening on " + outerServer.getPort());
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                err.println("*** shutting down gRPC server since JVM is shutting down");
+                try {
+                    outerServer.shutdown();
+                    innerServer.shutdown();
+                    this.blockUntilShutdown();
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                err.println("*** server shut down");
+            }));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void blockUntilShutdown() throws InterruptedException {
-        outerServer.awaitTermination();
-        innerServer.awaitTermination();
+        outerServer.awaitTermination(TERMINATION_GRACE_PERIOD_SECONDS, SECONDS);
+        innerServer.awaitTermination(TERMINATION_GRACE_PERIOD_SECONDS, SECONDS);
     }
 
     public static void main(String[] args)
