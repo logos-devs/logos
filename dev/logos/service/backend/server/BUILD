@@ -1,10 +1,12 @@
 java_binary(
     name = "server",
     srcs = [
-        "Server.java",
+        "AuthTokenCallCredentials.java",
+        "AuthTokenForwardingInterceptor.java",
+        "ServerExecutor.java",
         "ServerModule.java",
     ],
-    main_class = "dev.logos.service.backend.server.Server",
+    main_class = "dev.logos.service.backend.server.ServerExecutor",
     plugins = [
         "//dev/logos/app/register:module",
     ],
