@@ -37,7 +37,7 @@ cdk.cdk_binary(
 )
 
 js_run_binary(
-    name = "cdk_deploy",
+    name = "aws",
     outs = ["outputs.json"],
     args = [
         "deploy",
@@ -61,16 +61,16 @@ js_run_binary(
 
 jq(
     name = "cognito_public_host_map",
-    srcs = [":cdk_deploy"],
+    srcs = [":aws"],
     out = "cognito_public_host_map.json",
     args = ["--raw-output"],
     filter = '."logos-cognito"."logosCognitoPublicHostMap"',
-    visibility = ["//dev/logos/service/client/web:__pkg__"],
+    visibility = ["//app/summer/web:__subpackages__"],
 )
 
 jq(
     name = "cognito_server_config",
-    srcs = [":cdk_deploy"],
+    srcs = [":aws"],
     out = "cognito_server_config.json",
     args = ["--raw-output"],
     filter = '."logos-cognito"."logosCognitoServerConfig"',
@@ -79,7 +79,7 @@ jq(
 
 jq(
     name = "cognito_hosts",
-    srcs = [":cdk_deploy"],
+    srcs = [":aws"],
     out = "cognito_hosts.json",
     args = ["--raw-output"],
     filter = '."logos-cognito"."logosCognitoHosts"',

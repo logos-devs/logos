@@ -5,6 +5,7 @@ js_library(
     srcs = glob(["**/*.ts"]) + [
         "//app/summer/storage:grpc_web",
         "//app/summer/storage:schema_export",
+        "//dev/logos/stack/aws:cognito_public_host_map",
     ],
     visibility = ["//dev/logos/service/client/web:__pkg__"],
     deps = [

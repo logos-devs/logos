@@ -24,11 +24,6 @@
         "./dev/logos/service/client/web/*",
         "./bazel-out/k8-fastbuild/bin/dev/logos/service/client/web/*",
         "./bazel-out/k8-dbg/bin/dev/logos/service/client/web/*"
-      ],
-      "@stack/aws/*": [
-        "./dev/logos/stack/aws/*",
-        "./bazel-out/k8-fastbuild/bin/dev/logos/stack/aws/*",
-        "./bazel-out/k8-dbg/bin/dev/logos/stack/aws/*"
       ]
     },
     "sourceMap": true,
