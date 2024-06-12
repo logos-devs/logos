@@ -5,8 +5,8 @@ java_library(
         "//dev/logos/app/register:module",
     ],
     resources = [
-        "//dev/logos/stack:cognito_hosts",
-        "//dev/logos/stack:cognito_server_config",
+        "//dev/logos/stack/aws:cognito_hosts",
+        "//dev/logos/stack/aws:cognito_server_config",
     ],
     visibility = ["//dev/logos/service:__subpackages__"],
     deps = [

@@ -13,19 +13,6 @@
     ],
     "module": "commonjs",
     "moduleResolution": "Node",
-    "paths": {
-      "@app/*": [
-        "./app/*",
-        "./bazel-out/k8-fastbuild/bin/app/*",
-        "./bazel-out/k8-dbg/bin/app/*"
-      ],
-      "@logos/*": [
-        "./dev/logos/stack/service/client/web/*",
-        "./bazel-out/k8-fastbuild/bin/dev/logos/stack/service/client/web/*",
-        "./bazel-out/k8-dbg/bin/dev/logos/stack/service/client/web/*"
-      ]
-    },
-    // FIXME remove when mwc-drawer works without throwing TS2430
     "skipLibCheck": true,
     // TODO : Re-enable strict after fixing d.ts generation for grpc-web clients
     "strict": false,
@@ -40,16 +27,4 @@
     // https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-7.html#the-usedefineforclassfields-flag-and-the-declare-property-modifier
     "useDefineForClassFields": false
   }
-  //   "include": [
-  //     "./app/**/*.js",
-  //     "./app/**/*.json",
-  //     "./app/**/*.ts",
-  //     "./dev/logos/stack/**/*.ts",
-  //     "./dev/logos/stack/service/client/web/**/*.js",
-  //     "./dev/logos/stack/service/client/web/**/*.json",
-  //     "./dev/logos/stack/service/client/web/**/*.ts",
-  //     "./dev/logos/stack/service/storage/**/*.js",
-  //     "./dev/logos/stack/service/storage/**/*.json",
-  //     "./dev/logos/stack/service/storage/**/*.ts",
-  //   ]
 }

@@ -3,35 +3,38 @@
     "options": {
         "shell": {
             "executable": "/bin/bash",
-            "args": ["-l", "-c"]
+            "args": [
+                "-l",
+                "-c"
+            ]
         }
     },
     "tasks": [
         {
-            "label": "//dev/logos/stack/service/client/web:dev_server",
+            "label": "//dev/logos/stack/aws/service/client/web:dev_server",
             "command": "ibazel",
             "args": [
                 "run",
-                "//dev/logos/stack/service/client/web:dev_server"
+                "//dev/logos/service/client/web:dev_server"
             ],
             "type": "shell",
             "problemMatcher": [
                 "$tsc-watch"
             ],
-            "isBackground": true,
+            "isBackground": true
         },
         {
-            "label": "//dev/logos/stack/service/backend:Server",
+            "label": "//dev/logos/stack/aws/service/backend:Server",
             "command": "ibazel",
             "args": [
                 "run",
-                "//dev/logos/stack/service/backend:Server",
+                "//dev/logos/service/backend:Server",
                 "--",
                 "--debug"
             ],
             "type": "shell",
             "isBackground": true,
-            "problemMatcher": [],
+            "problemMatcher": []
         }
     ]
 }

@@ -5,7 +5,7 @@ import {ARecord, HostedZone, RecordTarget} from "aws-cdk-lib/aws-route53";
 import {UserPoolDomainTarget} from "aws-cdk-lib/aws-route53-targets";
 import {Secret} from "aws-cdk-lib/aws-secretsmanager";
 import {LogosApp} from "../construct/logos";
-import {IamStack} from "../stack/iam";
+import {IamStack} from "./iam";
 import {AcmStack} from "./acm";
 
 

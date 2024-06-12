@@ -5,7 +5,7 @@ js_library(
     name = "web_library",
     srcs = [
         "index.html",
-        "//dev/logos/stack:cognito_public_host_map",
+        "//dev/logos/stack/aws:cognito_public_host_map",
     ] + glob(
         [
             "**/*.js",

@@ -25,10 +25,10 @@
         "./bazel-out/k8-fastbuild/bin/dev/logos/service/client/web/*",
         "./bazel-out/k8-dbg/bin/dev/logos/service/client/web/*"
       ],
-      "@stack/*": [
-        "./dev/logos/stack/*",
-        "./bazel-out/k8-fastbuild/bin/dev/logos/stack/*",
-        "./bazel-out/k8-dbg/bin/dev/logos/stack/*"
+      "@stack/aws/*": [
+        "./dev/logos/stack/aws/*",
+        "./bazel-out/k8-fastbuild/bin/dev/logos/stack/aws/*",
+        "./bazel-out/k8-dbg/bin/dev/logos/stack/aws/*"
       ]
     },
     "sourceMap": true,
@@ -55,11 +55,11 @@
     "./app/**/*.js",
     "./app/**/*.json",
     "./app/**/*.ts",
-    "./dev/logos/stack/**/*.js",
-    "./dev/logos/stack/**/*.json",
-    "./dev/logos/stack/**/*.ts",
-    "./bazel-out/k8-fastbuild/bin/dev/logos/stack/cognito_login_urls.json",
-    "./bazel-out/k8-fastbuild/bin/dev/logos/stack/cognito_public_host_map.json",
+    "./dev/logos/stack/aws/**/*.js",
+    "./dev/logos/stack/aws/**/*.json",
+    "./dev/logos/stack/aws/**/*.ts",
+    "./bazel-out/k8-fastbuild/bin/dev/logos/stack/aws/cognito_login_urls.json",
+    "./bazel-out/k8-fastbuild/bin/dev/logos/stack/aws/cognito_public_host_map.json",
     "./dev/logos/service/client/web/**/*.js",
     "./dev/logos/service/client/web/**/*.json",
     "./dev/logos/service/client/web/**/*.ts",
