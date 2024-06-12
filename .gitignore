@@ -10,6 +10,6 @@
 /bazel-out
 /bazel-testlogs
 /cfg/*
-/dev/logos/infra/dist
+/dev/logos/stack/dist
 /node_modules/*
 /vendor/js/dist

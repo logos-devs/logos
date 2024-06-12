@@ -42,7 +42,7 @@ public class AuthModule extends AppModule {
     InputStream cognitoHostsJson() {
         return Objects.requireNonNull(
             getClass().getResourceAsStream(
-                "/dev/logos/infra/cognito_hosts.json"));
+                "/dev/logos/stack/cognito_hosts.json"));
     }
 
     @Provides
@@ -76,7 +76,7 @@ public class AuthModule extends AppModule {
     InputStream cognitoServerConfigsJson() {
         return Objects.requireNonNull(
             getClass().getResourceAsStream(
-                "/dev/logos/infra/cognito_server_config.json"));
+                "/dev/logos/stack/cognito_server_config.json"));
     }
 
     @Provides
