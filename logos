@@ -85,7 +85,6 @@ _kill_with_pid() {
 
 cleanup() {
     trap - INT TERM ERR
-    #rds_tunnel_down
     server_tunnel_down
 }
 
@@ -147,16 +146,13 @@ dev_env() {
 
 dev_server() {
   dev_env
-  #rds_tunnel_up
   server_tunnel_up
-  # TODO switch to using telepresence intercept
   ibazel run //dev/logos/service/backend/server
   #$BAZEL run //dev/logos/service/backend/server -- --debug
 }
 
 dev_client() {
   dev_env
-  #rds_tunnel_up
   telepresence intercept client-deployment --port 8080 -- ibazel run //dev/logos/service/client/web:dev_server
 }
 
@@ -298,28 +294,6 @@ rds_setup() {
 SQL
 }
 
-rds_deploy() {
-    rds_sqitch deploy "$@"
-}
-
-rds_sqitch() {
-    rds_tunnel_up
-
-    SQITCH_PASSWORD="$(rds_token "$PG_DB_MIGRATION_USER")"
-    export SQITCH_PASSWORD
-    CMD="$1"; shift 1
-
-    pushd "$DB_MIGRATION_DIR"
-    sqitch "$CMD" --db-name "$PG_DB_NAME" \
-                  --db-user "$PG_DB_MIGRATION_USER" \
-                  --db-host "$PG_TUNNEL_HOST" \
-                  --db-port "$PG_TUNNEL_PORT" \
-                  "$@"
-    popd
-
-    unset SQITCH_PASSWORD
-}
-
 rds_token() {
     USERNAME=$1; shift 1
 
@@ -335,14 +309,6 @@ rds() {
         setup)
             shift 1
             rds_setup "$@"
-            ;;
-        deploy)
-            shift 1
-            rds_deploy "$@"
-            ;;
-        sqitch)
-            shift 1
-            rds_sqitch "$@"
             ;;
         token)
             shift 1
@@ -374,9 +340,6 @@ deploy() {
     $BAZEL run //dev/logos/service/console
 
     dev_env
-
-    rds_tunnel_up
-    rds_deploy
 
     $BAZEL run //dev/logos/ingress/nginx
     $BAZEL run //app/summer/jobs/feeds
