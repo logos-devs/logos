@@ -10,6 +10,5 @@
 /bazel-out
 /bazel-testlogs
 /cfg/*
-/dev/logos/stack/aws/dist
 /node_modules/*
 /vendor/js/dist

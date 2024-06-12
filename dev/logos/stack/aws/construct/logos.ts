@@ -16,7 +16,7 @@ export class Deployment {
     static readonly Staging = new Deployment("stage");
     static readonly Production = new Deployment("");
 
-    readonly host: string;
+    readonly host?: string;
 
     constructor(host: string) {
         this.host = host;
@@ -25,8 +25,7 @@ export class Deployment {
     public getFQDN(domain: string) {
         if (this.host) {
             return `${this.host}.${domain}`;
-        }
-        else {
+        } else {
             return domain;
         }
     }
@@ -34,7 +33,7 @@ export class Deployment {
 
 export class LogosApp {
     readonly name: string;
-    readonly host: string;
+    readonly host?: string;
     readonly domain: string;
     readonly deployment: Deployment;
 

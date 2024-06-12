@@ -13,14 +13,17 @@ function dashToCamel(s: string): string {
     return s.replace(/(-\w)/g, (match) => match[1].toUpperCase());
 }
 
+type HostPublicParams = { baseUrl: string, loginUrl: string, redirectUrl: string };
+type HostSecretParams = { clientCredentialsSecretArn: string } & HostPublicParams;
+
 export class CognitoStack extends Stack {
     constructor(scope: App, id: string, acmStack: AcmStack, iamStack: IamStack, props: StackProps, apps: LogosApp[]) {
         super(scope, id, props);
 
         const
-            cognitoPublicHostMapOutput = {},
-            cognitoSecretHostMapOutput = {},
-            cognitoHostsOutput = [];
+            cognitoPublicHostMapOutput: { [key: string]: HostPublicParams } = {},
+            cognitoSecretHostMapOutput: { [key: string]: HostSecretParams } = {},
+            cognitoHostsOutput: string[] = [];
 
         apps.map(app => {
             const

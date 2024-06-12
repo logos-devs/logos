@@ -12,7 +12,6 @@ ts_project(
     ]) + [
         "app.ts",
     ],
-    composite = True,
     transpiler = "tsc",
     tsconfig = "tsconfig.json",
     deps = [

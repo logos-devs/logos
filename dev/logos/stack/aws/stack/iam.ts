@@ -7,7 +7,7 @@ import {RdsStack} from "./rds";
 export class IamStack extends Stack {
     readonly serviceAccount: ServiceAccount;
 
-    constructor(scope: App, id: string, eksStack: EksBlueprint, rdsStack: RdsStack, props?: StackProps) {
+    constructor(scope: App, id: string, eksStack: EksBlueprint, rdsStack: RdsStack, props: StackProps) {
         super(scope, id, props);
 
         const serviceAccountName = id + '-eks-service-account';
@@ -21,11 +21,13 @@ export class IamStack extends Stack {
             }
         );
 
+        const env = props.env!;
+
         this.serviceAccount.addToPrincipalPolicy(
             new PolicyStatement({
                 actions: ["rds-db:connect"],
                 resources: [
-                    `arn:aws:rds-db:${props.env.region}:${props.env.account}:dbuser:${rdsStack.databaseCluster.clusterResourceIdentifier}/storage`
+                    `arn:aws:rds-db:${env.region}:${env.account}:dbuser:${rdsStack.databaseCluster.clusterResourceIdentifier}/storage`
                 ]
             })
         )
@@ -35,7 +37,7 @@ export class IamStack extends Stack {
             new PolicyStatement({
                 actions: ["secretsmanager:GetSecretValue"],
                 resources: [
-                    `arn:aws:secretsmanager:${props.env.region}:${props.env.account}:secret:dev/external/openai-??????`
+                    `arn:aws:secretsmanager:${env.region}:${env.account}:secret:dev/external/openai-??????`
                 ]
             })
         )
@@ -44,13 +46,13 @@ export class IamStack extends Stack {
             new PolicyStatement({
                 actions: ["secretsmanager:GetSecretValue"],
                 resources: [
-                    `arn:aws:secretsmanager:${props.env.region}:${props.env.account}:secret:dev/external/twilio-??????`
+                    `arn:aws:secretsmanager:${env.region}:${env.account}:secret:dev/external/twilio-??????`
                 ]
             })
         )
     }
 }
 
-export function makeIamStack(app: App, id: string, eksStack, rdsStack, env: Environment): IamStack {
+export function makeIamStack(app: App, id: string, eksStack: EksBlueprint, rdsStack: RdsStack, env: Environment): IamStack {
     return new IamStack(app, id, eksStack, rdsStack, {env})
 }
