@@ -15,7 +15,13 @@ ts_project(
     transpiler = "tsc",
     tsconfig = "tsconfig.json",
     deps = [
-        "//:node_modules",
+        "//:node_modules/@aws-quickstart/eks-blueprints",
+        "//:node_modules/@types/node",
+        "//:node_modules/aws-cdk",
+        "//:node_modules/aws-cdk-lib",
+        "//:node_modules/aws-sdk",
+        "//:node_modules/constructs",
+        "//:node_modules/reflect-metadata",
     ],
 )
 
@@ -25,7 +31,6 @@ cdk.cdk_binary(
     data = [
         "cdk.json",
         ":app",
-        "//:node_modules",
     ],
     tags = ["no-sandbox"],
     visibility = ["//visibility:private"],
@@ -40,7 +45,6 @@ js_run_binary(
         "--all",
         "--outputs-file",
         "outputs.json",
-        #"--hotswap", # TODO this should only be done in dev environments!
         "--require-approval",
         "never",
     ],
