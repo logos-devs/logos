@@ -1,4 +1,4 @@
-import cognitoPublicHostMap from "@stack/cognito_public_host_map.json";
+import cognitoPublicHostMap from "@stack/aws/cognito_public_host_map.json";
 import {user} from "app/auth/web/state";
 import {css, html, LitElement} from "lit";
 import {customElement} from "lit/decorators.js";
