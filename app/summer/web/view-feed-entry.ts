@@ -1,8 +1,8 @@
 import "@material/web/labs/card/filled-card";
 import "@material/web/chips/chip-set";
 import "@material/web/chips/filter-chip";
-import {Source} from "@app/summer/proto/feed_pb.js";
-import {Entry} from "@app/summer/storage/summer/entry_pb.js";
+import {Source} from "app/summer/proto/feed_pb.js";
+import {Entry} from "app/summer/storage/summer/entry_pb.js";
 import {css, html, LitElement} from 'lit';
 import {customElement, property, state} from "lit/decorators.js";
 

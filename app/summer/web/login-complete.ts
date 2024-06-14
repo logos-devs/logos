@@ -1,15 +1,16 @@
-import {CognitoServicePromiseClient} from "@app/auth/proto/cognito_grpc_web_pb.js";
-import {ProcessAuthCodeRequest, ProcessAuthCodeResponse} from "@app/auth/proto/cognito_pb.js";
+import {CognitoServicePromiseClient} from "app/auth/proto/cognito_grpc_web_pb.js";
+import {ProcessAuthCodeRequest, ProcessAuthCodeResponse} from "app/auth/proto/cognito_pb.js";
 
 import "@material/web/progress/circular-progress";
-import {user} from "app/auth/web/state";
-import {lazyInject} from "dev/logos/service/client/web/bind";
+import {CognitoUser} from "app/auth/web/state";
+import {inject} from "inversify";
 import {css, html, LitElement} from 'lit';
 import {customElement} from "lit/decorators.js";
 
 @customElement('login-complete')
 export class LoginComplete extends LitElement {
-    @lazyInject(CognitoServicePromiseClient) private cognitoServiceClient!: CognitoServicePromiseClient;
+    @inject(CognitoUser) private user: CognitoUser;
+    @inject(CognitoServicePromiseClient) private cognitoServiceClient: CognitoServicePromiseClient;
 
     connectedCallback() {
         super.connectedCallback();
@@ -21,14 +22,14 @@ export class LoginComplete extends LitElement {
             // TODO : cookie should be set by server
             // document.cookie = `logosAccessToken=${encodeURIComponent(processAuthCodeResponse.getAccessToken())}; max-age=${processAuthCodeResponse.getExpiresIn()}; path=/; samesite=strict;`;
 
-            user.accessToken = processAuthCodeResponse.getAccessToken();
-            user.idToken = processAuthCodeResponse.getIdToken();
-            user.refreshToken = processAuthCodeResponse.getRefreshToken();
-            user.isAuthenticated = true;
+            this.user.accessToken = processAuthCodeResponse.getAccessToken();
+            this.user.idToken = processAuthCodeResponse.getIdToken();
+            this.user.refreshToken = processAuthCodeResponse.getRefreshToken();
+            this.user.isAuthenticated = true;
 
-            localStorage.setItem("logosAccessToken", user.accessToken);
-            localStorage.setItem("logosIdToken", user.idToken);
-            localStorage.setItem("logosRefreshToken", user.refreshToken);
+            localStorage.setItem("logosAccessToken", this.user.accessToken);
+            localStorage.setItem("logosIdToken", this.user.idToken);
+            localStorage.setItem("logosRefreshToken", this.user.refreshToken);
 
             window.history.pushState(null, "", "/")
             window.dispatchEvent(new PopStateEvent('popstate'));

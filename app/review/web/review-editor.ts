@@ -1,9 +1,14 @@
 // TODO : name grpc_web_client outputs after the rule that created them, e.g. ./client/project_grpc_web_client.js
-import {FileServicePromiseClient} from "@app/review/web/client/file_grpc_web_pb.js";
-import {File, FileType, ListFilesRequest, ListFilesResponse} from "@app/review/web/client/file_pb.js";
-import {ProjectStorageServicePromiseClient} from "@app/review/review/project_grpc_web_pb.js";
-import {ListProjectRequest, ListProjectResponse, Project} from "@app/review/review/project_pb.js";
-import {lazyInject} from "@logos/bind";
+import {FileServicePromiseClient} from "app/review/proto/file_grpc_web_pb.js";
+import {
+    GetFileRequest,
+    File,
+    FileType,
+    ListFilesRequest,
+    ListFilesResponse
+} from "app/review/proto/file_pb.js";
+import {ProjectStorageServicePromiseClient} from "app/review/storage/review/project_grpc_web_pb.js";
+import {ListProjectRequest, ListProjectResponse, Project} from "app/review/storage/review/project_pb.js";
 // import '@material/mwc-button';
 // import {Dialog} from "@material/mwc-dialog";
 // import '@material/mwc-drawer';
@@ -18,6 +23,7 @@ import {lazyInject} from "@logos/bind";
 // import '@material/mwc-top-app-bar-fixed';
 import {css, html, LitElement} from 'lit';
 import {customElement, property, query} from 'lit/decorators.js';
+import {inject} from "inversify";
 
 const FILE_TYPE_ICONS: { [key: string]: string } = {
     [FileType.DIRECTORY]: 'folder',
@@ -26,8 +32,8 @@ const FILE_TYPE_ICONS: { [key: string]: string } = {
 
 @customElement('review-editor')
 class ReviewEditor extends LitElement {
-    @lazyInject(FileServicePromiseClient) private fileServiceClient!: FileServicePromiseClient;
-    @lazyInject(ProjectStorageServicePromiseClient) private projectServiceClient!: ProjectStorageServicePromiseClient;
+    @inject(FileServicePromiseClient) private fileServiceClient!: FileServicePromiseClient;
+    @inject(ProjectStorageServicePromiseClient) private projectServiceClient!: ProjectStorageServicePromiseClient;
 
     @property({type: Array}) projects: Array<Project> = [];
     @property({type: Object}) selectedProject?: Project;
@@ -256,7 +262,10 @@ class ReviewEditor extends LitElement {
     }
 
     openFile(fileName: string) {
-        this.fileServiceClient.getFile(fileName).then(
+        const getFileRequest: GetFileRequest = new GetFileRequest();
+        getFileRequest.setName(fileName);
+
+        this.fileServiceClient.getFile(getFileRequest).then(
             (file: File) => {
                 this.file = file;
                 this.drawer!.open = false;

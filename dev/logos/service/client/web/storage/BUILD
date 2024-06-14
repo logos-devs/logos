@@ -1,6 +1,6 @@
-load("@aspect_rules_js//js:defs.bzl", "js_library")
+load("//bzl:ts.bzl", "ts_library")
 
-js_library(
+ts_library(
     name = "storage",
     srcs = [
         "client.ts",
@@ -11,5 +11,9 @@ js_library(
         "index.ts",
     ],
     visibility = ["//app:__subpackages__"],
-    deps = ["//:node_modules"],
+    deps = [
+        "//:node_modules/@material/web",
+        "//:node_modules/lit",
+        "//:node_modules/lit-html",
+    ],
 )

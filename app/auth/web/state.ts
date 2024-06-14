@@ -1,4 +1,5 @@
 import {CognitoJwtVerifier} from "aws-jwt-verify";
+import {User} from "dev/logos/service/client/web/module/user";
 import {action, autorun, observable} from 'mobx';
 
 
@@ -8,9 +9,9 @@ const verifier = CognitoJwtVerifier.create({
     clientId: "tq7gphv26nsp3m9plqpruco0r",
 });
 
-export class User {
+export class CognitoUser extends User {
     @observable
-    public isAuthenticated = localStorage.getItem("logosAccessToken") !== null;
+    public isAuthenticated: boolean = localStorage.getItem("logosAccessToken") !== null;
 
     @observable
     public accessToken: string | null = localStorage.getItem("logosAccessToken");
@@ -28,6 +29,7 @@ export class User {
     public decodedRefreshToken: any | null = this.refreshToken;
 
     constructor() {
+        super();
         verifier.hydrate().then(
             () => {
                 this.updateDecodedTokens()
@@ -81,5 +83,3 @@ export class User {
         localStorage.removeItem("logosRefreshToken");
     }
 }
-
-export const user = new User();

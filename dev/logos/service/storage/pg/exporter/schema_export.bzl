@@ -175,5 +175,8 @@ def storage_grpc_web_library(name, srcs, visibility):
         name = name,
         srcs = srcs,
         visibility = visibility,
-        deps = ["//:node_modules"],
+        deps = [
+            "//:node_modules/grpc-web",
+            "//:node_modules/google-protobuf",
+        ],
     )

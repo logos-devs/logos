@@ -12,7 +12,7 @@ java_library(
     ],
     deps = [
         "//app/auth/user",
-        "//app/summer/proto",
+        "//app/summer/proto:java_library",
         "//app/summer/storage",
         "//dev/logos/service",
         "//dev/logos/service/storage:storage_library",

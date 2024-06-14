@@ -11,17 +11,17 @@ import "@material/web/list/list";
 import "@material/web/list/list-item";
 import "@material/web/menu/menu";
 import "@material/web/menu/menu-item";
-import {PhoneNumberStorageServicePromiseClient} from "@app/digits/storage/digits/phone_number_grpc_web_pb.js";
-import {ListPhoneNumberRequest, PhoneNumber} from "@app/digits/storage/digits/phone_number_pb.js";
-import {VoiceServicePromiseClient} from "@app/digits/web/client/voice_grpc_web_pb.js";
-import {CallRequest} from "@app/digits/web/client/voice_pb.js";
-import {DialerKeypad} from "@app/digits/web/components/dialer/Keypad";
-import {lazyInject} from "@logos/bind";
+import {PhoneNumberStorageServicePromiseClient} from "app/digits/storage/digits/phone_number_grpc_web_pb.js";
+import {ListPhoneNumberRequest, PhoneNumber} from "app/digits/storage/digits/phone_number_pb.js";
+import {VoiceServicePromiseClient} from "app/digits/proto/voice_grpc_web_pb.js";
+import {CallRequest} from "app/digits/proto/voice_pb.js";
+import {DialerKeypad} from "app/digits/web/components/dialer/Keypad";
 import {MdMenu} from "@material/web/menu/menu";
 import {css, html, LitElement} from "lit";
 import {customElement, property, query, state} from "lit/decorators.js";
 import {choose} from "lit/directives/choose.js";
 import {when} from "lit/directives/when.js";
+import {inject} from "inversify";
 
 
 enum Tabs {
@@ -32,8 +32,8 @@ enum Tabs {
 
 @customElement("frame-digits")
 export class FrameDigits extends LitElement {
-    @lazyInject(VoiceServicePromiseClient) private voiceServiceClient!: VoiceServicePromiseClient;
-    @lazyInject(PhoneNumberStorageServicePromiseClient) private phoneNumberStorageServiceClient!: PhoneNumberStorageServicePromiseClient;
+    @inject(VoiceServicePromiseClient) private voiceServiceClient!: VoiceServicePromiseClient;
+    @inject(PhoneNumberStorageServicePromiseClient) private phoneNumberStorageServiceClient!: PhoneNumberStorageServicePromiseClient;
     @property({type: String}) name!: string;
     @state() private selectedNumber!: PhoneNumber;
     @state() private ownedNumbers: PhoneNumber[] = [];

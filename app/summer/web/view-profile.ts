@@ -1,5 +1,5 @@
+import {User} from "dev/logos/service/client/web/module/user";
 import cognitoPublicHostMap from "dev/logos/stack/aws/cognito_public_host_map.json";
-import {user} from "app/auth/web/state";
 import {css, html, LitElement} from "lit";
 import {customElement} from "lit/decorators.js";
 import {when} from "lit/directives/when.js";
@@ -12,10 +12,13 @@ import "@material/web/textfield/filled-text-field";
 
 import "./entity/source-imap-list";
 import "./entity/source-rss-list";
+import {inject} from "inversify";
 
 
 @customElement('view-profile')
 export class ViewProfile extends LitElement {
+    @inject(User) user: User;
+
     static styles = css`
         h2 {
             text-align: center;
@@ -24,7 +27,7 @@ export class ViewProfile extends LitElement {
 
     override render() {
         return html`
-            ${when(user.isAuthenticated, () => html`
+            ${when(this.user.isAuthenticated, () => html`
                 <h2>Email</h2>
                 <source-imap-list></source-imap-list>
 

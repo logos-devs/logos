@@ -1,12 +1,14 @@
-load("@aspect_rules_js//js:defs.bzl", "js_library")
+load("//bzl:ts.bzl", "ts_library")
 
-js_library(
+ts_library(
     name = "web",
-    srcs = glob(["**/*.ts"]),
+    srcs = ["review-editor.ts"],
     visibility = ["//dev/logos/service/client/web:__pkg__"],
     deps = [
-        "//app/review:grpc_web",
-        "//app/review/web/client:annotation_grpc_web_client",
-        "//app/review/web/client:file_grpc_web_client",
+        "//:node_modules/inversify",
+        "//:node_modules/lit",
+        "//app/review/proto:annotation_grpc_web",
+        "//app/review/proto:file_grpc_web",
+        "//app/review/storage:grpc_web",
     ],
 )

@@ -1,4 +1,4 @@
-load("@build_bazel_rules_nodejs//:providers.bzl", "DeclarationInfo", "JSEcmaScriptModuleInfo", "JSNamedModuleInfo", "declaration_info")
+load("@build_bazel_rules_nodejs//:providers.bzl", "declaration_info")
 load("@rules_proto//proto:defs.bzl", "ProtoInfo")
 load("@aspect_rules_js//js:defs.bzl", "js_library")
 
@@ -116,4 +116,8 @@ def grpc_web_client(name, proto, visibility, deps = None):
         name = name,
         srcs = [":{}_files".format(name)],
         visibility = visibility,
+        deps = [
+            "//:node_modules/grpc-web",
+            "//:node_modules/google-protobuf",
+        ],
     )

@@ -21,7 +21,7 @@ test --incompatible_default_to_explicit_init_py
 build --javacopt="-XepDisableAllChecks"
 
 build --sandbox_default_allow_network=false
-#build --repo_env=CC=clang
+build --repo_env=CC=clang
 
 run --incompatible_strict_action_env
 
@@ -33,23 +33,23 @@ fetch --@aspect_rules_ts//ts:skipLibCheck=honor_tsconfig
 query --@aspect_rules_ts//ts:skipLibCheck=honor_tsconfig
 
 # buildbuddy
-build --bes_backend=grpcs://logos-dev.buildbuddy.io
-build --bes_results_url=https://logos-dev.buildbuddy.io/invocation/
-build --crosstool_top=@buildbuddy_toolchain//:toolchain
-build --experimental_profile_include_primary_output 
-build --experimental_profile_include_target_label
-build --experimental_remote_cache_compression
-build --extra_execution_platforms=@buildbuddy_toolchain//:platform
-build --extra_toolchains=@buildbuddy_toolchain//:cc_toolchain
-build --jobs=150
-build --host_platform=@buildbuddy_toolchain//:platform
-build --nolegacy_important_outputs
-build --noslim_profile 
-build --platforms=@buildbuddy_toolchain//:platform
-build --remote_build_event_upload=minimal
-build --remote_cache=grpcs://logos-dev.buildbuddy.io
-build --remote_executor=grpcs://logos-dev.buildbuddy.io
-build --remote_timeout=3600
+#build --bes_backend=grpcs://logos-dev.buildbuddy.io
+#build --bes_results_url=https://logos-dev.buildbuddy.io/invocation/
+#build --crosstool_top=@buildbuddy_toolchain//:toolchain
+#build --experimental_profile_include_primary_output 
+#build --experimental_profile_include_target_label
+#build --experimental_remote_cache_compression
+#build --extra_execution_platforms=@buildbuddy_toolchain//:platform
+#build --extra_toolchains=@buildbuddy_toolchain//:cc_toolchain
+#build --jobs=150
+#build --host_platform=@buildbuddy_toolchain//:platform
+#build --nolegacy_important_outputs
+#build --noslim_profile 
+#build --platforms=@buildbuddy_toolchain//:platform
+#build --remote_build_event_upload=minimal
+#build --remote_cache=grpcs://logos-dev.buildbuddy.io
+#build --remote_executor=grpcs://logos-dev.buildbuddy.io
+#build --remote_timeout=3600
 
 try-import %workspace%/.bazelrc.local
 try-import %workspace%/.apko/.bazelrc

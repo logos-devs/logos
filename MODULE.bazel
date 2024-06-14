@@ -1,6 +1,6 @@
 bazel_dep(
     name = "aspect_bazel_lib",
-    version = "2.7.0",
+    version = "2.7.7",
 )
 
 aspect_bazel_lib = use_extension("@aspect_bazel_lib//lib:extensions.bzl", "toolchains")
@@ -22,17 +22,12 @@ bazel_dep(
 )
 
 # rules_js
-bazel_dep(
-    name = "aspect_rules_js",
-    version = "1.34.0",
-)
-bazel_dep(
-    name = "rules_nodejs",
-    version = "5.8.2",
-)
+bazel_dep(name = "aspect_rules_js", version = "1.42.3")
+bazel_dep(name = "rules_nodejs", version = "5.8.2")
 
 node = use_extension("@rules_nodejs//nodejs:extensions.bzl", "node")
-node.toolchain(node_version = "18.13.0")
+node.toolchain(node_version = "16.14.2")
+#################################
 
 npm = use_extension(
     "@aspect_rules_js//npm:extensions.bzl",
@@ -46,17 +41,16 @@ npm.npm_translate_lock(
 )
 use_repo(npm, "npm")
 
-pnpm = use_extension(
-    "@aspect_rules_js//npm:extensions.bzl",
-    "pnpm",
-    dev_dependency = True,
-)
+pnpm = use_extension("@aspect_rules_js//npm:extensions.bzl", "pnpm")
+
+# Allows developers to use the matching pnpm version, for example:
+# bazel run -- @pnpm --dir /home/runner/work/rules_js/rules_js install
 use_repo(pnpm, "pnpm")
 
 # rules_ts
 bazel_dep(
     name = "aspect_rules_ts",
-    version = "2.1.0",
+    version = "2.4.2",
 )
 
 rules_ts_ext = use_extension(
@@ -66,6 +60,12 @@ rules_ts_ext = use_extension(
 )
 rules_ts_ext.deps()
 use_repo(rules_ts_ext, "npm_typescript")
+
+# rules_rollup
+bazel_dep(name = "aspect_rules_rollup", version = "1.0.3")
+
+rollup_ext = use_extension("@aspect_rules_rollup//rollup:extensions.bzl", "ext")
+rollup_ext.deps()
 
 # rules_go
 bazel_dep(

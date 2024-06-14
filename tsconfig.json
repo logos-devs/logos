@@ -1,9 +1,7 @@
 {
   "compilerOptions": {
-    "allowJs": false,
-    "baseUrl": "./",
-    "composite": true,
-    "outDir": "vendor/js/dist/",
+    "baseUrl": ".",
+    "declaration": true,
     "emitDecoratorMetadata": true,
     "esModuleInterop": true,
     "experimentalDecorators": true,
@@ -11,21 +9,9 @@
       "es6",
       "dom"
     ],
-    "module": "ES2022",
-    "moduleResolution": "Node",
+    "module": "esnext",
+    "moduleResolution": "node",
     "resolveJsonModule": true,
-    "paths": {
-      "@app/*": [
-        "./app/*",
-        "./bazel-out/k8-fastbuild/bin/app/*",
-        "./bazel-out/k8-dbg/bin/app/*"
-      ],
-      "@logos/*": [
-        "./dev/logos/service/client/web/*",
-        "./bazel-out/k8-fastbuild/bin/dev/logos/service/client/web/*",
-        "./bazel-out/k8-dbg/bin/dev/logos/service/client/web/*"
-      ]
-    },
     "sourceMap": true,
     // TODO : Re-enable strict after fixing d.ts generation for grpc-web clients
     "strict": false,
@@ -34,32 +20,10 @@
       "node",
       "reflect-metadata"
     ],
-    "rootDir": ".",
-    "rootDirs": [
-      ".",
-      "./bazel-out/k8-fastbuild/bin/",
-      "./bazel-out/k8-dbg/bin/"
-    ],
     // Enabling this flag breaks decorators as used for dependency injection,
     // and is otherwise automatically enabled by targeting ES2022. Check that
     // decorators still work before removing or setting to true.
     // https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-7.html#the-usedefineforclassfields-flag-and-the-declare-property-modifier
     "useDefineForClassFields": false
-  },
-  "include": [
-    "./app/**/*.js",
-    "./app/**/*.json",
-    "./app/**/*.ts",
-    "./dev/logos/stack/aws/**/*.js",
-    "./dev/logos/stack/aws/**/*.json",
-    "./dev/logos/stack/aws/**/*.ts",
-    "./bazel-out/k8-fastbuild/bin/dev/logos/stack/aws/cognito_login_urls.json",
-    "./bazel-out/k8-fastbuild/bin/dev/logos/stack/aws/cognito_public_host_map.json",
-    "./dev/logos/service/client/web/**/*.js",
-    "./dev/logos/service/client/web/**/*.json",
-    "./dev/logos/service/client/web/**/*.ts",
-    "./dev/logos/storage/**/*.js",
-    "./dev/logos/storage/**/*.json",
-    "./dev/logos/storage/**/*.ts"
-  ]
+  }
 }

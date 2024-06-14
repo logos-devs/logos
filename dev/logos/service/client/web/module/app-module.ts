@@ -1,43 +1,46 @@
-import {user} from "app/auth/web/state";
-import {rootContainer} from "dev/logos/service/client/web/bind";
-import {DevEndpoint} from "dev/logos/service/client/web/endpoint";
-import {ContainerModule, interfaces} from "inversify";
-import getDecorators from "inversify-inject-decorators";
+import {DevEndpoint} from "./endpoint";
+import {Container, ContainerModule, interfaces, inject, multiInject} from "inversify";
+import {UnaryInterceptor} from "grpc-web";
+
+declare global {
+    interface Window {
+        __GRPCWEB_DEVTOOLS__: (clients: any[]) => any;
+    }
+}
 
 const enableDevTools = window.__GRPCWEB_DEVTOOLS__ || ((_: any) => {
 });
 
-const endpoint = new DevEndpoint();
-const endpointUrl = endpoint.getURL();
+export const
+    rootContainer = new Container(),
+    endpoint = new DevEndpoint(),
+    endpointUrl = endpoint.getURL();
 
 
-class AuthInterceptor {
-    intercept(request: any, invoker: any) {
-        if (user.isAuthenticated) {
-            const metadata = request.getMetadata();
-            metadata.Authorization = 'Bearer ' + user.accessToken;
-        }
-        return invoker(request);
-    }
+export abstract class ClientUnaryInterceptor implements UnaryInterceptor<any, any> {
+    abstract intercept(request: any, invoker: any);
 }
+
 
 type ClientConstructor = new (hostname: string, credentials: any, options: any) => any;
 
 export abstract class AppModule extends ContainerModule {
+    protected bind: interfaces.Bind;
+    protected clients: ClientConstructor[] = [];
+
     abstract configure(): void;
 
-    protected clients: ClientConstructor[] = [];
+    @multiInject(ClientUnaryInterceptor) interceptors: ClientUnaryInterceptor[];
 
     constructor() {
         super((bind: interfaces.Bind) => {
+            this.bind = bind;
             this.configure();
             this.clients.forEach(clientClass => {
-                const
-                    interceptors = [new AuthInterceptor()],
-                    client = new clientClass(endpointUrl, null, {
-                        unaryInterceptors: interceptors,
-                        streamInterceptors: interceptors,
-                    });
+                const client = new clientClass(endpointUrl, null, {
+                    unaryInterceptors: this.interceptors,
+                    streamInterceptors: this.interceptors,
+                });
 
                 enableDevTools([client]);
                 bind(clientClass).toDynamicValue(() => client);
@@ -53,5 +56,3 @@ export abstract class AppModule extends ContainerModule {
 export function registerModule(target: new () => AppModule) {
     rootContainer.load(new target())
 }
-
-export const {lazyInject} = getDecorators(rootContainer);

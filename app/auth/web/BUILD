@@ -1,10 +1,22 @@
-load("@aspect_rules_js//js:defs.bzl", "js_library")
+load("//bzl:ts.bzl", "ts_library")
 
-js_library(
+ts_library(
     name = "web",
-    srcs = glob(["**/*.ts"]),
-    visibility = ["//dev/logos/service/client/web:__pkg__"],
+    srcs = [
+        "interceptor/cognito-auth-interceptor.ts",
+        "module/auth-module.ts",
+        "state.ts",
+    ],
+    visibility = [
+        "//dev/logos/service/client/web/module:__pkg__",
+        # TODO: Remove this when login-complete.ts is moved here
+        "//app/summer/web:__subpackages__",
+    ],
     deps = [
+        "//:node_modules/aws-jwt-verify",
+        "//:node_modules/grpc-web",
+        "//:node_modules/mobx",
         "//app/auth/proto:web",
+        "//dev/logos/service/client/web/module",
     ],
 )

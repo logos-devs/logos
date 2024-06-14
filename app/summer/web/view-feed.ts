@@ -1,7 +1,7 @@
 import {MobxReactionUpdate} from '@adobe/lit-mobx';
-import {FeedServicePromiseClient} from "@app/summer/proto/feed_grpc_web_pb.js";
-import {Feed, GetFeedRequest, GetFeedResponse, Source} from "@app/summer/proto/feed_pb.js";
-import {Entry} from "@app/summer/storage/summer/entry_pb.js";
+import {FeedServicePromiseClient} from "app/summer/proto/feed_grpc_web_pb.js";
+import {Feed, GetFeedRequest, GetFeedResponse, Source} from "app/summer/proto/feed_pb.js";
+import {Entry} from "app/summer/storage/summer/entry_pb.js";
 import "@material/web/iconbutton/icon-button";
 import "@material/web/button/outlined-button";
 import "@material/web/chips/chip-set";
@@ -12,16 +12,17 @@ import "@material/web/icon/icon";
 import "@material/web/labs/card/filled-card";
 import "@material/web/list/list";
 import "@material/web/list/list-item";
-import {user} from "app/auth/web/state";
-import {lazyInject} from "dev/logos/service/client/web/bind";
+import {User} from "dev/logos/service/client/web/module/user";
 import {css, html, LitElement} from 'lit';
 import {customElement, state} from "lit/decorators.js";
 import {when} from "lit/directives/when.js";
 import "./view-feed-entry";
+import {inject} from 'inversify';
 
 @customElement('view-feed')
 export class ViewFeed extends MobxReactionUpdate(LitElement) {
-    @lazyInject(FeedServicePromiseClient) private feedServiceClient!: FeedServicePromiseClient;
+    @inject(FeedServicePromiseClient) private feedServiceClient: FeedServicePromiseClient;
+    @inject(User) private user: User;
 
     @state() private sourceList: Source[] = [];
     @state() private entriesBySource = new Map<String, Entry[]>();
@@ -38,7 +39,7 @@ export class ViewFeed extends MobxReactionUpdate(LitElement) {
     connectedCallback() {
         super.connectedCallback();
 
-        if (user.isAuthenticated) {
+        if (this.user.isAuthenticated) {
             this.feedServiceClient.getFeed(new GetFeedRequest()).then(
                 (getFeedResponse: GetFeedResponse) => {
                     const feed: Feed = getFeedResponse.getFeed();

@@ -1,17 +1,17 @@
-import {SourceImapStorageServicePromiseClient} from "@app/summer/storage/summer/source_imap_grpc_web_pb.js";
+import {SourceImapStorageServicePromiseClient} from "app/summer/storage/summer/source_imap_grpc_web_pb.js";
 import {
     DeleteSourceImapRequest,
     DeleteSourceImapResponse,
     SourceImap,
     UpdateSourceImapRequest,
     UpdateSourceImapResponse
-} from "@app/summer/storage/summer/source_imap_pb.js";
-import {lazyInject} from "dev/logos/service/client/web/bind";
+} from "app/summer/storage/summer/source_imap_pb.js";
 import {EditEntity} from "dev/logos/service/client/web/storage";
 import {html} from "lit";
 import {customElement} from "lit/decorators.js";
 
 import "@material/web/textfield/filled-text-field";
+import {inject} from "inversify";
 
 
 @customElement('source-imap-edit')
@@ -23,7 +23,7 @@ export class SourceImapEdit extends EditEntity<
     DeleteSourceImapRequest,
     DeleteSourceImapResponse
 > {
-    @lazyInject(SourceImapStorageServicePromiseClient) protected override serviceClient: SourceImapStorageServicePromiseClient;
+    @inject(SourceImapStorageServicePromiseClient) protected override serviceClient: SourceImapStorageServicePromiseClient;
     protected override updateRequestClass = UpdateSourceImapRequest;
     protected override deleteRequestClass = DeleteSourceImapRequest;
 

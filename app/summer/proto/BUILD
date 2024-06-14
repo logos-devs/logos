@@ -4,7 +4,7 @@ load("@rules_proto_grpc//js:defs.bzl", "js_grpc_web_compile")
 load("//bzl:grpc_web.bzl", "grpc_web_client")
 
 proto_library(
-    name = "feed_proto",
+    name = "proto",
     srcs = ["feed.proto"],
     visibility = [
         "//app/summer:__subpackages__",
@@ -15,8 +15,8 @@ proto_library(
 )
 
 java_grpc_library(
-    name = "proto",
-    protos = [":feed_proto"],
+    name = "java_library",
+    protos = [":proto"],
     visibility = [
         "//app/summer:__subpackages__",
     ],
@@ -27,7 +27,7 @@ java_grpc_library(
 
 grpc_web_client(
     name = "grpc_web",
-    proto = ":feed_proto",
+    proto = ":proto",
     visibility = ["//app/summer/web:__pkg__"],
     deps = [
         "//app/summer/storage:schema_export",

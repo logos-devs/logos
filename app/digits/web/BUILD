@@ -1,12 +1,17 @@
-load("@aspect_rules_js//js:defs.bzl", "js_library")
+load("//bzl:ts.bzl", "ts_library")
 
-js_library(
+ts_library(
     name = "web",
     srcs = glob(["**/*.ts"]) + [
         "//app/digits/storage:schema_export",
     ],
     visibility = ["//dev/logos/service/client/web:__pkg__"],
     deps = [
-        "//app/digits/web/client:voice_grpc_web_client",
+        "//:node_modules/@material/web",
+        "//:node_modules/google-libphonenumber",
+        "//:node_modules/inversify",
+        "//:node_modules/lit",
+        "//:node_modules/lit-html",
+        "//app/digits/proto:grpc_web",
     ],
 )
