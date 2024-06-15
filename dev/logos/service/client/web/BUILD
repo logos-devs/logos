@@ -11,8 +11,9 @@ ts_library(
         "index.ts",
         "media.d.ts",
     ],
-    visibility = ["//app:__pkg__"],
+    #visibility = ["//app:__pkg__"],
     deps = [
+        "//:node_modules/@material/web",
         "//:node_modules/path-to-regexp",
         "//app/digits/web",
         "//app/review/web",
@@ -28,15 +29,46 @@ rollup(
     node_modules = "//:node_modules",
     output_dir = True,
     sourcemap = "true",
+    visibility = ["//dev/logos/service/client:__pkg__"],
     deps = [
         ":web_library",
         "//:node_modules/@rollup/plugin-commonjs",
+        "//:node_modules/@rollup/plugin-html",
         "//:node_modules/@rollup/plugin-json",
         "//:node_modules/@rollup/plugin-node-resolve",
+        "//:node_modules/@rollup/plugin-replace",
         "//:node_modules/@rollup/plugin-terser",
         "//:node_modules/rollup",
         "//:node_modules/rollup-plugin-includepaths",
     ],
+)
+
+load("@aspect_rules_js//js:defs.bzl", "js_run_devserver")
+load("@npm//:@web/dev-server/package_json.bzl", wds = "bin")
+
+wds.wds_binary(
+    name = "wds_tool",
+)
+
+js_run_devserver(
+    name = "dev",
+    args = [
+        "--watch",
+        "--debug",
+        "--root-dir",
+        "$(location :web)",
+        "--app-index",
+        "index.html",
+        "--port",
+        "8080",
+        "--hostname",
+        "0.0.0.0",
+    ],
+    data = [":web"],
+    tags = [
+        "ibazel_notify_changes",
+    ],
+    tool = ":wds_tool",
 )
 
 #
@@ -57,9 +89,6 @@ rollup(
 #        "//:node_modules/html-webpack-plugin",
 #        "//:node_modules/tsconfig-paths-webpack-plugin",
 #        "//:tsconfig",
-#    ],
-#    tags = [
-#        "ibazel_notify_changes",
 #    ],
 #    visibility = ["//visibility:private"],
 #)

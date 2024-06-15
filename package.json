@@ -2,6 +2,9 @@
   "name": "logos",
   "private": true,
   "type": "module",
+  "browser": {
+    "crypto": false
+  },
   "dependencies": {
     "aws-jwt-verify": "4.0.1",
     "@adobe/lit-mobx": "2.2.2",
@@ -13,12 +16,15 @@
     "@metamask/detect-provider": "1.2.0",
     "@reduxjs/toolkit": "1.8.5",
     "@rollup/plugin-commonjs": "26.0.1",
-    "@rollup/plugin-terser": "0.4.4",
-    "@rollup/plugin-node-resolve": "15.2.3",
+    "@rollup/plugin-html": "1.0.3",
     "@rollup/plugin-json": "6.1.0",
+    "@rollup/plugin-node-resolve": "15.2.3",
+    "@rollup/plugin-replace": "5.0.7",
+    "@rollup/plugin-terser": "0.4.4",
     "@types/google-libphonenumber": "7.4.30",
     "@types/node": "20.14.2",
     "@webcomponents/webcomponentsjs": "2.8.0",
+    "@web/dev-server": "0.4.5",
     "aws-cdk": "2.145.0",
     "aws-cdk-lib": "2.145.0",
     "aws-sdk": "2.1637.0",

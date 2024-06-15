@@ -1,12 +1,12 @@
 package review.service;
 
-import app.review.review.ListProjectRequest;
-import app.review.review.ProjectStorageServiceBase;
+import app.review.storage.review.ListProjectRequest;
+import app.review.storage.review.ProjectStorageServiceBase;
 import dev.logos.service.storage.pg.Select;
 import dev.logos.user.User;
 
-import static app.review.Review.project;
-import static app.review.Review.Project.name;
+import static app.review.storage.Review.project;
+import static app.review.storage.Review.Project.name;
 import static dev.logos.service.storage.pg.Select.select;
 
 

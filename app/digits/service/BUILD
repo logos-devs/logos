@@ -2,7 +2,7 @@ load("@rules_proto_grpc//java:defs.bzl", "java_grpc_library")
 
 java_grpc_library(
     name = "voice_java_grpc",
-    protos = ["//app/digits/proto:voice_proto"],
+    protos = ["//app/digits/proto"],
 )
 
 java_library(
@@ -17,7 +17,7 @@ java_library(
     ],
     deps = [
         ":voice_java_grpc",
-        "//app/digits/proto:voice_java_library",
+        "//app/digits/proto:java_library",
         "//app/digits/storage",
         "//dev/logos/client/twilio",
         "//dev/logos/service",

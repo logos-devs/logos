@@ -3,11 +3,12 @@ import {ProcessAuthCodeRequest, ProcessAuthCodeResponse} from "app/auth/proto/co
 
 import "@material/web/progress/circular-progress";
 import {CognitoUser} from "app/auth/web/state";
-import {inject} from "inversify";
+import {inject, injectable} from "inversify";
 import {css, html, LitElement} from 'lit';
 import {customElement} from "lit/decorators.js";
 
 @customElement('login-complete')
+@injectable()
 export class LoginComplete extends LitElement {
     @inject(CognitoUser) private user: CognitoUser;
     @inject(CognitoServicePromiseClient) private cognitoServiceClient: CognitoServicePromiseClient;

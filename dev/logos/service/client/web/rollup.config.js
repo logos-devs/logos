@@ -2,6 +2,8 @@ import terser from '@rollup/plugin-terser';
 import commonjs from '@rollup/plugin-commonjs';
 import includePaths from 'rollup-plugin-includepaths';
 import json from '@rollup/plugin-json';
+import html from '@rollup/plugin-html';
+import replace from '@rollup/plugin-replace';
 import nodeResolve from '@rollup/plugin-node-resolve';
 
 
@@ -21,13 +23,22 @@ const allowedWarnings = {
 export default {
     plugins: [
         commonjs(), // needed by google-libphonenumber
-        nodeResolve(),
+        nodeResolve({
+            browser: true
+        }),
         includePaths({paths: ["./"]}),
+        replace({
+            preventAssignment: true,
+            values: {
+                'process.env.NODE_ENV': JSON.stringify('production')
+            }
+        }),
         terser(),
-        json()
+        json(),
+        html()
     ],
     output: {
-        format: 'esm',
+        format: 'es',
         sourcemap: true,
     },
     onwarn(warning, warn) {

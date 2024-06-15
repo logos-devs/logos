@@ -6,7 +6,7 @@ java_library(
     ],
     visibility = ["//dev/logos/service:__subpackages__"],
     deps = [
-        "//app/digits/proto:voice_java_library",
+        "//app/digits/proto:java_library",
         "//app/digits/service",
         "//dev/logos/app",
         "//dev/logos/app/register:module_library",

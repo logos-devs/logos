@@ -1,6 +1,7 @@
 import {DevEndpoint} from "./endpoint";
 import {Container, ContainerModule, interfaces, inject, multiInject} from "inversify";
 import {UnaryInterceptor} from "grpc-web";
+import getDecorators from "inversify-inject-decorators";
 
 declare global {
     interface Window {
@@ -56,3 +57,6 @@ export abstract class AppModule extends ContainerModule {
 export function registerModule(target: new () => AppModule) {
     rootContainer.load(new target())
 }
+
+const container: Container = new Container();
+export const {lazyInject} = getDecorators(container, false);
