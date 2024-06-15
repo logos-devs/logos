@@ -33,6 +33,7 @@ rollup(
         "//:node_modules/@rollup/plugin-commonjs",
         "//:node_modules/@rollup/plugin-json",
         "//:node_modules/@rollup/plugin-node-resolve",
+        "//:node_modules/@rollup/plugin-terser",
         "//:node_modules/rollup",
         "//:node_modules/rollup-plugin-includepaths",
     ],

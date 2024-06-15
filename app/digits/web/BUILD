@@ -13,5 +13,6 @@ ts_library(
         "//:node_modules/lit",
         "//:node_modules/lit-html",
         "//app/digits/proto:grpc_web",
+        "//app/digits/storage:grpc_web",
     ],
 )

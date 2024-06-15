@@ -1,5 +1,5 @@
 {
-  "app": "env node app.js",
+  "app": "env node --experimental-specifier-resolution=node app.js",
   "watch": {
     "include": [
       "**"

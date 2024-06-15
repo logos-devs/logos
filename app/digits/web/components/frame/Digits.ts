@@ -1,4 +1,4 @@
-import "@app/digits/web/components/dialer/Keypad";
+import "../dialer/Keypad";
 import "@material/web/button/outlined-button";
 import "@material/web/dialog/dialog";
 import "@material/web/fab/fab";

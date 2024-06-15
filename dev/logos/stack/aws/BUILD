@@ -12,6 +12,9 @@ ts_project(
     ]) + [
         "app.ts",
     ],
+    declaration = True,
+    resolve_json_module = True,
+    source_map = True,
     transpiler = "tsc",
     tsconfig = "tsconfig.json",
     deps = [
@@ -31,6 +34,13 @@ cdk.cdk_binary(
     data = [
         "cdk.json",
         ":app",
+        "//:node_modules/@aws-quickstart/eks-blueprints",
+        "//:node_modules/@types/node",
+        "//:node_modules/aws-cdk",
+        "//:node_modules/aws-cdk-lib",
+        "//:node_modules/aws-sdk",
+        "//:node_modules/constructs",
+        "//:node_modules/reflect-metadata",
     ],
     tags = ["no-sandbox"],
     visibility = ["//visibility:private"],

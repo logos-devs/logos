@@ -1,6 +1,6 @@
 {
   "lockFileVersion": 6,
-  "moduleFileHash": "520f0010eafdd072aa0e5683aa1fd0f4396ef37cb70d84dc06ba5f0a730e4a0d",
+  "moduleFileHash": "ff3f1a8d69b10a268a5b22ea7e6a9771b564d01972b2cf4d2fca96cd7d33355b",
   "flags": {
     "cmdRegistries": [
       "https://bcr.bazel.build/"
@@ -58,7 +58,7 @@
             {
               "tagName": "toolchain",
               "attributeValues": {
-                "node_version": "16.14.2"
+                "node_version": "18.13.0"
               },
               "devDependency": false,
               "location": {
@@ -67896,7 +67896,7 @@
             "ruleClassName": "node_repositories",
             "attributes": {
               "platform": "linux_s390x",
-              "node_version": "16.14.2"
+              "node_version": "18.13.0"
             }
           },
           "nodejs_windows_amd64": {
@@ -67904,7 +67904,7 @@
             "ruleClassName": "node_repositories",
             "attributes": {
               "platform": "windows_amd64",
-              "node_version": "16.14.2"
+              "node_version": "18.13.0"
             }
           },
           "nodejs_toolchains": {
@@ -67919,7 +67919,7 @@
             "ruleClassName": "node_repositories",
             "attributes": {
               "platform": "linux_amd64",
-              "node_version": "16.14.2"
+              "node_version": "18.13.0"
             }
           },
           "nodejs_linux_ppc64le": {
@@ -67927,7 +67927,7 @@
             "ruleClassName": "node_repositories",
             "attributes": {
               "platform": "linux_ppc64le",
-              "node_version": "16.14.2"
+              "node_version": "18.13.0"
             }
           },
           "nodejs_darwin_amd64": {
@@ -67935,7 +67935,7 @@
             "ruleClassName": "node_repositories",
             "attributes": {
               "platform": "darwin_amd64",
-              "node_version": "16.14.2"
+              "node_version": "18.13.0"
             }
           },
           "nodejs_linux_arm64": {
@@ -67943,7 +67943,7 @@
             "ruleClassName": "node_repositories",
             "attributes": {
               "platform": "linux_arm64",
-              "node_version": "16.14.2"
+              "node_version": "18.13.0"
             }
           },
           "nodejs": {
@@ -67958,7 +67958,7 @@
             "ruleClassName": "node_repositories",
             "attributes": {
               "platform": "darwin_arm64",
-              "node_version": "16.14.2"
+              "node_version": "18.13.0"
             }
           }
         },

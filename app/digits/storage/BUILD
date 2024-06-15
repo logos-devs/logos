@@ -18,5 +18,5 @@ storage_java_proto_library(
 storage_grpc_web_library(
     name = "grpc_web",
     srcs = [":schema_export"],
-    visibility = ["//app/summer:__subpackages__"],
+    visibility = ["//app/digits:__subpackages__"],
 )
