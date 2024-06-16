@@ -1,4 +1,3 @@
-//import {lazyInject} from "dev/logos/service/client/web/module/app-module";
 import {lazyInject} from "dev/logos/service/client/web/module/app-module";
 import {User} from "dev/logos/service/client/web/module/user";
 import cognitoPublicHostMap from "dev/logos/stack/aws/cognito_public_host_map.json";
@@ -14,13 +13,11 @@ import "@material/web/textfield/filled-text-field";
 
 import "./entity/source-imap-list";
 import "./entity/source-rss-list";
-import {inject, injectable} from "inversify";
 
 
 @customElement('view-profile')
 export class ViewProfile extends LitElement {
-    //@lazyInject(User) user: User;
-    @inject(User) user: User;
+    @lazyInject(User) user: User;
 
     static styles = css`
         h2 {

@@ -1,5 +1,5 @@
 import {DevEndpoint} from "./endpoint";
-import {Container, ContainerModule, interfaces, inject, multiInject} from "inversify";
+import {Container, ContainerModule, interfaces, inject, multiInject, injectable} from "inversify";
 import {UnaryInterceptor} from "grpc-web";
 import getDecorators from "inversify-inject-decorators";
 
@@ -18,6 +18,7 @@ export const
     endpointUrl = endpoint.getURL();
 
 
+@injectable()
 export abstract class ClientUnaryInterceptor implements UnaryInterceptor<any, any> {
     abstract intercept(request: any, invoker: any);
 }
@@ -25,26 +26,31 @@ export abstract class ClientUnaryInterceptor implements UnaryInterceptor<any, an
 
 type ClientConstructor = new (hostname: string, credentials: any, options: any) => any;
 
+@injectable()
 export abstract class AppModule extends ContainerModule {
     protected bind: interfaces.Bind;
     protected clients: ClientConstructor[] = [];
 
     abstract configure(): void;
 
-    @multiInject(ClientUnaryInterceptor) interceptors: ClientUnaryInterceptor[];
-
     constructor() {
         super((bind: interfaces.Bind) => {
             this.bind = bind;
             this.configure();
-            this.clients.forEach(clientClass => {
-                const client = new clientClass(endpointUrl, null, {
-                    unaryInterceptors: this.interceptors,
-                    streamInterceptors: this.interceptors,
-                });
 
-                enableDevTools([client]);
-                bind(clientClass).toDynamicValue(() => client);
+            this.clients.forEach(clientClass => {
+                bind(clientClass).toDynamicValue(
+                    () => {
+                        const interceptors = rootContainer.getAll(ClientUnaryInterceptor);
+                        console.debug(interceptors);
+                        const client = new clientClass(endpointUrl, null, {
+                            unaryInterceptors: interceptors,
+                            streamInterceptors: interceptors,
+                        });
+                        enableDevTools([client]);
+                        return client;
+                    }
+                );
             });
         });
     }
@@ -58,5 +64,4 @@ export function registerModule(target: new () => AppModule) {
     rootContainer.load(new target())
 }
 
-const container: Container = new Container();
-export const {lazyInject} = getDecorators(container, false);
+export const {lazyInject} = getDecorators(rootContainer);

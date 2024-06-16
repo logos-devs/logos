@@ -58,7 +58,7 @@ js_run_devserver(
         "--root-dir",
         "$(location :web)",
         "--app-index",
-        "index.html",
+        "$(location :web)/index.html",
         "--port",
         "8080",
         "--hostname",

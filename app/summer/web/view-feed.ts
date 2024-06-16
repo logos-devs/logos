@@ -12,18 +12,17 @@ import "@material/web/icon/icon";
 import "@material/web/labs/card/filled-card";
 import "@material/web/list/list";
 import "@material/web/list/list-item";
+import {lazyInject} from "dev/logos/service/client/web/module/app-module";
 import {User} from "dev/logos/service/client/web/module/user";
 import {css, html, LitElement} from 'lit';
 import {customElement, state} from "lit/decorators.js";
 import {when} from "lit/directives/when.js";
 import "./view-feed-entry";
-import {inject, injectable} from 'inversify';
 
 @customElement('view-feed')
-@injectable()
 export class ViewFeed extends MobxReactionUpdate(LitElement) {
-    @inject(FeedServicePromiseClient) private feedServiceClient: FeedServicePromiseClient;
-    @inject(User) private user: User;
+    @lazyInject(User) private user: User;
+    @lazyInject(FeedServicePromiseClient) private feedServiceClient: FeedServicePromiseClient;
 
     @state() private sourceList: Source[] = [];
     @state() private entriesBySource = new Map<String, Entry[]>();
@@ -107,7 +106,7 @@ export class ViewFeed extends MobxReactionUpdate(LitElement) {
 
             @media (prefers-color-scheme: dark) {
                 h1 {
-                    filter: grayscale();
+                    filter: grayscale(100%);
                 }
             }
         `;

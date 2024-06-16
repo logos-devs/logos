@@ -1,6 +1,8 @@
 import "reflect-metadata";
-import "dev/logos/service/client/web/module/app-module";
+import 'app/auth/web/module/auth-module';
+import 'app/summer/web/module/summer-module';
 import 'dev/logos/service/client/web/components/base-router';
+
 import {styles as typescaleStyles} from '@material/web/typography/md-typescale-styles.js';
 
 document.adoptedStyleSheets.push(typescaleStyles.styleSheet);

@@ -1,5 +1,6 @@
 import {SourceRssStorageServicePromiseClient} from "app/summer/storage/summer/source_rss_grpc_web_pb.js";
 import {ListSourceRssRequest, ListSourceRssResponse, SourceRss} from "app/summer/storage/summer/source_rss_pb.js";
+import {lazyInject} from "dev/logos/service/client/web/module/app-module";
 import {ListEntity} from "dev/logos/service/client/web/storage";
 import {html} from "lit";
 import {customElement} from "lit/decorators.js";
@@ -16,7 +17,7 @@ export class SourceRssList extends ListEntity<
     ListSourceRssRequest,
     ListSourceRssResponse
 > {
-    @inject(SourceRssStorageServicePromiseClient) protected override serviceClient: SourceRssStorageServicePromiseClient;
+    @lazyInject(SourceRssStorageServicePromiseClient) protected override serviceClient: SourceRssStorageServicePromiseClient;
     protected override listRequestClass = ListSourceRssRequest;
 
     protected override renderCreate() {

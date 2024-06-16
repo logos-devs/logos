@@ -6,6 +6,7 @@ import {
     UpdateSourceRssRequest,
     UpdateSourceRssResponse
 } from "app/summer/storage/summer/source_rss_pb.js";
+import {lazyInject} from "dev/logos/service/client/web/module/app-module";
 import {EditEntity} from "dev/logos/service/client/web/storage";
 import {html} from "lit";
 import {customElement} from "lit/decorators.js";
@@ -23,7 +24,7 @@ export class SourceRssEdit extends EditEntity<
     DeleteSourceRssRequest,
     DeleteSourceRssResponse
 > {
-    @inject(SourceRssStorageServicePromiseClient) protected override serviceClient: SourceRssStorageServicePromiseClient;
+    @lazyInject(SourceRssStorageServicePromiseClient) protected override serviceClient: SourceRssStorageServicePromiseClient;
     protected override updateRequestClass = UpdateSourceRssRequest;
     protected override deleteRequestClass = DeleteSourceRssRequest;
 

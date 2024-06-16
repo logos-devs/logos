@@ -1,5 +1,6 @@
 import {CognitoJwtVerifier} from "aws-jwt-verify";
 import {User} from "dev/logos/service/client/web/module/user";
+import {injectable} from "inversify";
 import {action, autorun, observable} from 'mobx';
 
 
@@ -9,6 +10,7 @@ const verifier = CognitoJwtVerifier.create({
     clientId: "tq7gphv26nsp3m9plqpruco0r",
 });
 
+@injectable()
 export class CognitoUser extends User {
     @observable
     public isAuthenticated: boolean = localStorage.getItem("logosAccessToken") !== null;

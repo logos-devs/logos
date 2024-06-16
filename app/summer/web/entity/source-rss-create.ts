@@ -1,5 +1,6 @@
 import {SourceRssStorageServicePromiseClient} from "app/summer/storage/summer/source_rss_grpc_web_pb.js";
 import {CreateSourceRssRequest, CreateSourceRssResponse, SourceRss} from "app/summer/storage/summer/source_rss_pb.js";
+import {lazyInject} from "dev/logos/service/client/web/module/app-module";
 import {CreateEntity} from "dev/logos/service/client/web/storage";
 import {html} from "lit";
 import {customElement} from "lit/decorators.js";
@@ -15,7 +16,7 @@ export class SourceRssCreate extends CreateEntity<
     CreateSourceRssRequest,
     CreateSourceRssResponse
 > {
-    @inject(SourceRssStorageServicePromiseClient) protected override serviceClient: SourceRssStorageServicePromiseClient;
+    @lazyInject(SourceRssStorageServicePromiseClient) protected override serviceClient: SourceRssStorageServicePromiseClient;
     protected override createRequestClass = CreateSourceRssRequest;
     protected override entityClass = SourceRss;
 
