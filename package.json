@@ -36,7 +36,6 @@
     "google-libphonenumber": "3.2.34",
     "google-protobuf": "3.21.2",
     "grpc-web": "1.5.0",
-    "html-webpack-plugin": "5.6.0",
     "inversify": "6.0.2",
     "inversify-inject-decorators": "3.1.0",
     "jdenticon": "3.3.0",
@@ -45,6 +44,7 @@
     "lit-html": "3.1.4",
     "lit-redux-router": "0.22.0",
     "mobx": "6.12.3",
+    "ollama": "0.5.2",
     "path-to-regexp": "6.2.2",
     "pwa-helpers": "0.9.1",
     "reflect-metadata": "0.2.2",
@@ -53,18 +53,9 @@
     "tiny-attribution-generator": "0.1.3",
     "ts-loader": "9.5.1",
     "ts-protoc-gen": "0.15.0",
-    "tsconfig-paths-webpack-plugin": "4.1.0",
     "tslib": "2.6.3",
     "tsyringe": "4.8.0",
-    "typescript": "5.4.5",
-    "webpack": "5.91.0"
-  },
-  "devDependencies": {
-    "clean-webpack-plugin": "4.0.0",
-    "file-loader": "6.2.0",
-    "source-map-loader": "5.0.0",
-    "webpack-cli": "5.1.4",
-    "webpack-dev-server": "5.0.4"
+    "typescript": "5.4.5"
   },
   "pnpm": {
     "overrides": {

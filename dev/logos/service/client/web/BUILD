@@ -1,5 +1,4 @@
 load("@aspect_rules_rollup//rollup:defs.bzl", "rollup")
-load("@npm//:webpack-cli/package_json.bzl", webpack = "bin")
 load("//bzl:ts.bzl", "ts_library")
 
 ts_library(
@@ -70,45 +69,3 @@ js_run_devserver(
     ],
     tool = ":wds_tool",
 )
-
-#
-#webpack.webpack_cli_binary(
-#    name = "dev_server",
-#    args = [
-#        "serve",
-#        "--hot",
-#        "--env",
-#        "development",
-#        "--config",
-#        "webpack.config.js",
-#    ],
-#    chdir = package_name(),
-#    data = [
-#        "webpack.config.js",
-#        ":web_library",
-#        "//:node_modules/html-webpack-plugin",
-#        "//:node_modules/tsconfig-paths-webpack-plugin",
-#        "//:tsconfig",
-#    ],
-#    visibility = ["//visibility:private"],
-#)
-#
-#webpack.webpack_cli(
-#    name = "web",
-#    srcs = [
-#        "webpack.config.js",
-#        ":web_library",
-#        "//:node_modules/html-webpack-plugin",
-#        "//:node_modules/tsconfig-paths-webpack-plugin",
-#        "//:tsconfig",
-#    ],
-#    args = [
-#        "--env",
-#        "production",
-#        "--config",
-#        "webpack.config.js",
-#    ],
-#    chdir = package_name(),
-#    out_dirs = ["dist"],
-#    visibility = ["//dev/logos/service/client:__subpackages__"],
-#)
