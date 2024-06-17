@@ -98,6 +98,25 @@ http_archive(
     urls = ["https://github.com/grpc/grpc-web/archive/refs/tags/1.4.2.tar.gz"],
 )
 
+RULES_JVM_EXTERNAL_TAG = "6.1"
+RULES_JVM_EXTERNAL_SHA = "08ea921df02ffe9924123b0686dc04fd0ff875710bfadb7ad42badb931b0fd50"
+
+http_archive(
+    name = "rules_jvm_external",
+    strip_prefix = "rules_jvm_external-%s" % RULES_JVM_EXTERNAL_TAG,
+    sha256 = RULES_JVM_EXTERNAL_SHA,
+    url = "https://github.com/bazelbuild/rules_jvm_external/releases/download/%s/rules_jvm_external-%s.tar.gz" % (RULES_JVM_EXTERNAL_TAG, RULES_JVM_EXTERNAL_TAG)
+)
+
+load("@rules_jvm_external//:repositories.bzl", "rules_jvm_external_deps")
+
+rules_jvm_external_deps()
+
+load("@rules_jvm_external//:setup.bzl", "rules_jvm_external_setup")
+
+rules_jvm_external_setup()
+
+# rules_proto
 http_archive(
     name = "rules_proto",
     sha256 = "80d3a4ec17354cccc898bfe32118edd934f851b03029d63ef3fc7c8663a7415c",
