@@ -12,3 +12,4 @@
 /cfg/*
 /node_modules/*
 /vendor/js/dist
+/worktrees/*
