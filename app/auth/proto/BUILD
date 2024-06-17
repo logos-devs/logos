@@ -1,11 +1,10 @@
 load("@rules_proto//proto:defs.bzl", "proto_library")
-load("@rules_proto_grpc//java:defs.bzl", "java_proto_library")
+load("@rules_proto_grpc//java:defs.bzl", "java_grpc_library")
 load("//bzl:grpc_web.bzl", "grpc_web_client")
 
 proto_library(
     name = "proto",
     srcs = [
-        "auth.proto",
         "cognito.proto",
     ],
     visibility = [
@@ -14,7 +13,7 @@ proto_library(
     ],
 )
 
-java_proto_library(
+java_grpc_library(
     name = "java",
     protos = [":proto"],
     visibility = [

@@ -1,10 +1,3 @@
-load("@rules_proto_grpc//java:defs.bzl", "java_grpc_library")
-
-java_grpc_library(
-    name = "auth_java_grpc",
-    protos = ["//app/auth/proto"],
-)
-
 java_library(
     name = "service",
     srcs = ["CognitoService.java"],
@@ -13,7 +6,6 @@ java_library(
         "//dev/logos/service:__subpackages__",
     ],
     deps = [
-        ":auth_java_grpc",
         "//app/auth/module/data",
         "//app/auth/proto:java",
         "//dev/logos/service",
@@ -21,6 +13,7 @@ java_library(
         "//dev/logos/user",
         "@io_grpc_grpc_java//api",
         "@io_grpc_grpc_java//context",
+        "@io_grpc_grpc_java//stub",
         "@maven//:com_auth0_java_jwt",
         "@maven//:com_fasterxml_jackson_core_jackson_annotations",
         "@maven//:com_fasterxml_jackson_core_jackson_core",

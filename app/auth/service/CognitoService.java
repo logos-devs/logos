@@ -41,9 +41,9 @@ public class CognitoService extends CognitoServiceGrpc.CognitoServiceImplBase im
 
     @Inject
     public CognitoService(
-            Logger logger,
-            Map<String, CognitoHostConfig> cognitoHostConfigs,
-            Map<String, CognitoHostSecret> cognitoHostSecrets
+        Logger logger,
+        Map<String, CognitoHostConfig> cognitoHostConfigs,
+        Map<String, CognitoHostSecret> cognitoHostSecrets
     ) {
         this.logger = logger;
         this.cognitoHostConfigs = cognitoHostConfigs;
@@ -51,24 +51,24 @@ public class CognitoService extends CognitoServiceGrpc.CognitoServiceImplBase im
     }
 
     private void onFailedRequest(
-            StreamObserver<?> responseObserver,
-            Level level,
-            String msg,
-            Object obj
+        StreamObserver<?> responseObserver,
+        Level level,
+        String msg,
+        Object obj
     ) {
         logger.log(level, msg, obj);
         responseObserver.onError(
-                Status.INVALID_ARGUMENT
-                        .withDescription(msg)
-                        .asRuntimeException());
+            Status.INVALID_ARGUMENT
+                .withDescription(msg)
+                .asRuntimeException());
     }
 
     record Tokens(
-            String access_token,
-            String id_token,
-            String refresh_token,
-            String token_type,
-            int expires_in
+        String access_token,
+        String id_token,
+        String refresh_token,
+        String token_type,
+        int expires_in
     ) {
         Tokens {
             requireNonNull(access_token);
@@ -95,11 +95,11 @@ public class CognitoService extends CognitoServiceGrpc.CognitoServiceImplBase im
         tokenRequest.setHeader("Content-Type", "application/x-www-form-urlencoded");
 
         List<BasicNameValuePair> tokenRequestPayload = List.of(
-                new BasicNameValuePair("grant_type", "authorization_code"),
-                new BasicNameValuePair("code", request.getAuthCode()),
-                new BasicNameValuePair("client_id", cognitoHostSecret.clientId()),
-                new BasicNameValuePair("client_secret", cognitoHostSecret.clientSecret()),
-                new BasicNameValuePair("redirect_uri", cognitoHostConfig.redirectUrl()));
+            new BasicNameValuePair("grant_type", "authorization_code"),
+            new BasicNameValuePair("code", request.getAuthCode()),
+            new BasicNameValuePair("client_id", cognitoHostSecret.clientId()),
+            new BasicNameValuePair("client_secret", cognitoHostSecret.clientSecret()),
+            new BasicNameValuePair("redirect_uri", cognitoHostConfig.redirectUrl()));
 
         try {
             tokenRequest.setEntity(new UrlEncodedFormEntity(tokenRequestPayload));
