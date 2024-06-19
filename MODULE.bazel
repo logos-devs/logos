@@ -1,3 +1,8 @@
+# rules_foreign_cc
+bazel_dep(name = "rules_foreign_cc", version = "0.10.1")
+
+#rules_foreign_cc = use_extension("")
+
 # stardoc
 bazel_dep(name = "stardoc", version = "0.6.2")
 

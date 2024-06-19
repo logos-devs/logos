@@ -21,7 +21,10 @@ test --incompatible_default_to_explicit_init_py
 build --javacopt="-XepDisableAllChecks"
 
 build --sandbox_default_allow_network=false
+build --action_env=CC=clang
+build --action_env=CXX=clang++
 build --repo_env=CC=clang
+build --repo_env=CXX=clang++
 
 run --incompatible_strict_action_env
 
