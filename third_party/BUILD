@@ -17,9 +17,7 @@ configure_make(
     env = {
         "HOSTCC": "clang",
         "HOSTCXX": "clang++",
-        "LDFLAGS": "-s",
     },
     lib_source = ":busybox_files",
-    linkopts = ["--static"],
     out_binaries = ["../_install/bin/busybox"],
 )
