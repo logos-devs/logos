@@ -13,7 +13,6 @@ configure_make(
     args = ["-C busybox"],
     configure_command = "busybox_config.sh",
     configure_in_place = True,
-    copts = ["-static"],
     env = {
         "HOSTCC": "clang",
         "HOSTCXX": "clang++",
