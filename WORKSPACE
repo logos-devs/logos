@@ -99,13 +99,14 @@ http_archive(
 )
 
 RULES_JVM_EXTERNAL_TAG = "6.1"
+
 RULES_JVM_EXTERNAL_SHA = "08ea921df02ffe9924123b0686dc04fd0ff875710bfadb7ad42badb931b0fd50"
 
 http_archive(
     name = "rules_jvm_external",
-    strip_prefix = "rules_jvm_external-%s" % RULES_JVM_EXTERNAL_TAG,
     sha256 = RULES_JVM_EXTERNAL_SHA,
-    url = "https://github.com/bazelbuild/rules_jvm_external/releases/download/%s/rules_jvm_external-%s.tar.gz" % (RULES_JVM_EXTERNAL_TAG, RULES_JVM_EXTERNAL_TAG)
+    strip_prefix = "rules_jvm_external-%s" % RULES_JVM_EXTERNAL_TAG,
+    url = "https://github.com/bazelbuild/rules_jvm_external/releases/download/%s/rules_jvm_external-%s.tar.gz" % (RULES_JVM_EXTERNAL_TAG, RULES_JVM_EXTERNAL_TAG),
 )
 
 load("@rules_jvm_external//:repositories.bzl", "rules_jvm_external_deps")
@@ -275,4 +276,27 @@ buildbuddy(
     name = "buildbuddy_toolchain",
     container_image = UBUNTU20_04_IMAGE,
     llvm = True,
+)
+
+# busybox
+new_local_repository(
+    name = "busybox",
+    build_file_content = """
+genrule(
+    name = "busybox_static",
+    srcs = glob(["**"]),
+    outs = ["busybox"],
+    cmd = \"""
+        mkdir -p "$(@D)/busybox_build" && \\
+        rsync -aL "$$(pwd)/external/busybox/" "$(@D)/busybox_build/" && \\
+        pushd "$(@D)/busybox_build" && \\
+        make defconfig > /dev/null && \\
+        sed -i '/# CONFIG_STATIC is not set/c\\\\CONFIG_STATIC=y' .config
+        make -j && \\
+        popd && \\
+        cp "$(@D)/busybox_build/busybox" "$(@D)/busybox"
+    \""",
+)
+""",
+    path = "third_party/busybox",
 )

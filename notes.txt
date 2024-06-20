@@ -1,0 +1,64 @@
+prompt bazel rule
+
+takes a prompt that applies to the entire bazel module (up until the next BUILD file)
+
+AI agents have "runs" which concern a particular "scope" which may be a particular bazel modulee
+
+agents have access to a busybox environment with many tools available to
+manipulate software.
+
+they have access to a running postgresql instance with pg_vector
+
+all access to systems happens through logos RPCs they call with a command line
+client.
+
+they store their own observations and notes and whatever else they want in the
+vector database
+
+they can query the vector database from the command line.
+
+agents accumuate a journal of their thoughts and actions performed during a run. this is part of context
+
+agents can ask the "operator" questions in the journal
+
+unclear whether agents are permitted to change their own prompts (yet?)
+
+use vectordb to attach tickets to everything? everything visible in teh
+terminal session?
+
+terminal UI needs to tell the agent whenever there are relevant vectordb
+results for current screen contents.
+
+use the terminal PS1? use something like a status bar?
+
+
+
+
+UI for LLM:
+
+NO: after I wrote all this I realized I was reinventing a shitty terminal.
+just give the thing a terminal.
+
+text-only interface which consists of a series of expandable/collapsable vertical regions (imagine an accordion in ncurses)
+
+LLM can see any number of files in this way, and can expand/collapse them to move around.
+LLM can see type information for all imports currently available in files being viewed
+LLM can see a tree of all files available to browse
+LLM can search for possible imports
+
+LLM can see continuous build output (which is always the *entire* project's //... build, to start)
+
+LLM can always see the hierarchy of PROMPT files concatenate at the top of the screen (shown just like the files)
+
+need to design editing modality. possibly most natural to just append proposed changes at the bottom, with a way to
+commit them to the file.
+
+
+LLM works in a single git worktree
+
+human merges from worktree to base tree?
+human accepts pull requests?
+
+
+
+

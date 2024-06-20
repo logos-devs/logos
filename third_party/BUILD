@@ -9,8 +9,12 @@ filegroup(
 )
 
 configure_make(
-    name = "busybox",
-    args = ["-C busybox"],
+    name = "busybox_build",
+    args = [
+        "-C",
+        "busybox",
+        "-j",
+    ],
     configure_command = "busybox_config.sh",
     configure_in_place = True,
     env = {
@@ -18,5 +22,14 @@ configure_make(
         "HOSTCXX": "clang++",
     },
     lib_source = ":busybox_files",
-    out_binaries = ["../_install/bin/busybox"],
+    #out_binaries = ["_install/bin/busybox"],
+    visibility = ["//dev/logos/author:__pkg__"],
+)
+
+genrule(
+    name = "busybox",
+    srcs = [":busybox_build"],
+    outs = ["busybox/busybox"],
+    cmd = "cp busybox_build/_install/bin/busybox $(OUTS)",
+    visibility = ["//dev/logos/author:__pkg__"],
 )

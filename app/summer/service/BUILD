@@ -1,3 +1,9 @@
+load("//bzl:prompt.bzl", "prompt")
+
+prompt("""
+    This service provides APIs for use by web clients to retrieve an authenticated user's feed.
+""")
+
 java_library(
     name = "service",
     srcs = [
