@@ -296,6 +296,7 @@ genrule(
         popd && \\
         cp "$(@D)/busybox_build/busybox" "$(@D)/busybox"
     \""",
+    visibility = ["//visibility:public"]
 )
 """,
     path = "third_party/busybox",
