@@ -21,11 +21,10 @@ test --incompatible_default_to_explicit_init_py
 build --javacopt="-XepDisableAllChecks"
 
 build --sandbox_default_allow_network=false
-build --action_env=CC=clang
-build --action_env=CXX=clang++
-build --repo_env=CC=clang
-build --repo_env=CXX=clang++
-
+build --action_env=CC=/usr/lib/llvm/17/bin/clang
+build --action_env=CXX=/usr/lib/llvm/17/bin/clang++
+build --repo_env=CC=/usr/lib/llvm/17/bin/clang
+build --repo_env=CXX=/usr/lib/llvm/17/bin/clang++
 run --incompatible_strict_action_env
 
 common --incompatible_allow_tags_propagation

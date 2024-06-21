@@ -1,16 +1,16 @@
 def _run_in_ns_impl(ctx):
     script = ctx.actions.declare_file(ctx.attr.name + "_run_in_ns.sh")
 
-    ctx.actions.write(script, """#!/bin/sh -eux
-CHROOT_DIR="$1"; shift 1
+    ctx.actions.write(script, """#!/bin/bash -eu
+JOB_DIR="$BUILD_WORKSPACE_DIRECTORY/jobs/job_$(date +"%Y%m%d%H%M")_$(mktemp -u XXXXXX)"
+WORKTREE_DIR="$JOB_DIR/src"
 
-mkdir -p "$CHROOT_DIR/dev"
-tar -xf $(dirname "$0")/busybox.tar -C "$CHROOT_DIR"
+mkdir -p "$WORKTREE_DIR"
+tar -xf $(dirname "$0")/busybox.tar -C "$JOB_DIR"
 
-exec unshare --user --mount --pid --fork --root "$CHROOT_DIR" /usr/bin/busybox sh -c "{cmd}"
+env -i PS1='author@logos: $ ' unshare --user --mount --pid --fork --root "$JOB_DIR" /usr/bin/busybox $@
 """.format(
         root_tar = ctx.file.root.path,
-        cmd = ctx.attr.cmd,
     ), is_executable = True)
 
     return [DefaultInfo(
@@ -22,7 +22,6 @@ run_in_ns = rule(
     implementation = _run_in_ns_impl,
     attrs = {
         "root": attr.label(mandatory = True, allow_single_file = True),
-        "cmd": attr.string(mandatory = True),
     },
     executable = True,
 )

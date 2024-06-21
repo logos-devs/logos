@@ -1,111 +1,65 @@
-import * as childProcess from 'child_process';
+import pty from 'node-pty';
 import {Ollama} from "ollama";
-import * as path from 'path';
-import fs from "fs";
 
 process.chdir(process.env.BUILD_WORKSPACE_DIRECTORY);
-const busyboxPath = process.argv[2];
 
-console.log(busyboxPath);
-process.exit(0);
-
-const server: Ollama = new Ollama({host: "http://10.255.255.6:8085"});
+const
+    server: Ollama = new Ollama({host: "http://10.255.255.6:8085"}),
+    CONTEXT_LENGTH = 8192,
+    PROMPT = 'author@logos: $ ';
 
 async function generate(msg: string) {
     return await server.chat({
-        model: 'llama3:70b-instruct-q5_K_M',
-        messages: [
-            {role: 'user', content: msg}
-        ],
-        options: {
-            num_ctx: 8192
-        }
+        model: "llama3:8b-instruct-fp16",
+        //model: 'llama3:70b-instruct-q5_K_M',
+        messages: [{role: 'user', content: msg}],
+        options: {num_ctx: CONTEXT_LENGTH}
     });
 }
 
-function execToString(cmd: string): string {
-    return childProcess.execSync(cmd).toString();
-}
+let context = `# You are an AI agent which develops software automatically. You are connected to a real Linux terminal with a busybox environment which allows you to execute commands. You will use these commands to work on the project. You can only issue commands to the terminal. The following is your terminal session. Please use commands to explore the project and make changes as needed. Whenever you want to make plans or think out loud, or say something to the human user, you must write those statements as a shell comment by preceding every new line with # just like I have done with these instructions. DO NOT wrap your commands with backticks. Remember that in this session everything you write will be directly evaluated by the busybox ash shell. Good luck!
 
-function isMatchOrAncestor(queryTarget: string, targetToMatch: string): boolean {
-    const queryParts = queryTarget.split(":")[0].split("/");
-    const targetParts = targetToMatch.split(":")[0].split("/");
+`;
+const ptyProcess = pty.spawn("/bin/bash", [
+    "-c",
+    "bazel run --ui_event_filters=-info,-stdout,-stderr --noshow_progress //dev/logos/author:shell sh"
+], {
+    name: 'xterm',
+    cols: 128,
+    rows: 64,
+    env: process.env
+});
 
-    if (queryTarget === targetToMatch) {
-        return true;
-    }
-
-    if (queryParts.length < targetParts.length) {
-        for (let i = 0; i < queryParts.length; i++) {
-            if (queryParts[i] !== targetParts[i]) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    return false;
-}
-
-function contents(directoryPath: string) {
-    let results = [];
-
-    function walk(directory: string) {
-        const files = fs.readdirSync(directory);
-
-        files.forEach((file) => {
-            const filePath = path.join(directory, file);
-            const stats = fs.statSync(filePath);
-
-            if (stats.isFile()) {
-                results.push({name: filePath, type: 'F'});
-            } else if (stats.isDirectory()) {
-                results.push({name: filePath, type: 'D'});
-                walk(filePath);
-            }
+ptyProcess.onData((data) => {
+    //console.log("onData: ", {data});
+    process.stdout.write(data);
+    context += data;
+    if (data.endsWith(PROMPT)) {
+        //console.log("endedWith!!!");
+        generate(context).then((response) => {
+            const cmd = response.message.content.trimEnd() + "\r";
+            context += cmd;
+            ptyProcess.write(cmd);
         });
     }
+});
 
-    walk(directoryPath);
-    return results;
-}
+process.stdin.setRawMode(true);
 
+process.stdin.on('data', (data) => {
+    ptyProcess.write(data.toString());
+});
 
-const target = process.argv[2],
-    prompt = execToString("bazel query 'kind(prompt, //...)'")
-        .split("\n")
-        .filter((queryTarget: string) => queryTarget && isMatchOrAncestor(queryTarget, target))
-        .map((queryTarget: string) => {
-            execToString(`bazel build ${queryTarget}`);
-            return queryTarget;
-        })
-        .map((queryTarget: string) => {
-            return fs.readFileSync(`bazel-bin/${queryTarget.replace(/^\/\//, '').replace(/:prompt$/, "/prompt.txt")}`, 'utf8').trim();
-        })
-        .join("\n"),
+await new Promise<void>((resolve, reject) => {
+    ptyProcess.onExit(({exitCode, signal}) => {
+        console.log(`PTY process exited with code ${exitCode} and signal ${signal}`);
+        exitCode ? reject() : resolve();
+    });
 
-    moduleTarget = target.split(":")[0],
-    directory = moduleTarget.replace(/^\/\//, ''),
-    editor = `$ help
-You are an AI agent which develops software automatically. Below is the description of the current bazel
-module you are working on. You are connected to a terminal which allows you to execute commands. You will use these
-commands to work on the project. You cannot talk to the user. You can only issue commands to the terminal. The following
-is your terminal session. Please use commands to explore the project.
-
-${prompt}
- 
-$ pwd
-${directory}
-
-$ bazel build ${moduleTarget}/...
-${execToString(`bazel build ${moduleTarget}/... 2>&1`)}
-
-$ ls
-${contents(directory).map((item) =>
-        `${item.type}:${item.name}`).join('\n')}
-
-$ `;
-
-console.log(editor);
-console.log(await generate(editor));
-// .forEach((queryTarget: string) => console.log(queryTarget));
+    console.log('PTY created. You can now interact with the shell.');
+    console.log('Press Ctrl+C to exit.');
+}).finally(() => {
+    ptyProcess.kill();
+    process.stdin.setRawMode(false);
+    process.exit();
+});

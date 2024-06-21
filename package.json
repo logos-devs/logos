@@ -44,6 +44,8 @@
     "lit-html": "3.1.4",
     "lit-redux-router": "0.22.0",
     "mobx": "6.12.3",
+    "node-gyp": "10.1.0",
+    "node-pty": "1.0.0",
     "ollama": "0.5.2",
     "path-to-regexp": "6.2.2",
     "pwa-helpers": "0.9.1",

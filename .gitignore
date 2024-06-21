@@ -10,6 +10,6 @@
 /bazel-out
 /bazel-testlogs
 /cfg/*
+/jobs/*
 /node_modules/*
 /vendor/js/dist
-/worktrees/*
