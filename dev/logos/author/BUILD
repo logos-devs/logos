@@ -9,9 +9,10 @@ ts_library(
         "author.ts",
     ],
     deps = [
+        "//:node_modules/ai",
         "//:node_modules/node-gyp",
         "//:node_modules/node-pty",
-        "//:node_modules/ollama",
+        "//:node_modules/ollama-ai-provider",
     ],
 )
 
