@@ -2947,7 +2947,7 @@
       "general": {
         "bzlTransitiveDigest": "pw9PJ49MWK3btrd/EP4jtisNfeoj1mj7lUpKLc+vrmc=",
         "recordedFileInputs": {
-          "@@//pnpm-lock.yaml": "9b86c6efb4c29351a56419da39c00a14f9f9594f1f1570319bb2a99ec1225dcf",
+          "@@//pnpm-lock.yaml": "741143148146c29fd62f1f5db6f9fe07347fac17e9c6552675fe878405eb4e01",
           "@@aspect_bazel_lib~~toolchains~yq_linux_amd64//yq": "042f7462ec8378f8b0d3bac85d1b1a063b63beef5d8e3826bb2377294116ae90"
         },
         "recordedDirentsInputs": {},
@@ -3319,6 +3319,32 @@
               "extra_build_content": "",
               "generate_bzl_library_targets": false,
               "extract_full_archive": false
+            }
+          },
+          "npm__at_types_scheduler__0.23.0__links": {
+            "bzlFile": "@@aspect_rules_js~//npm/private:npm_import.bzl",
+            "ruleClassName": "npm_import_links",
+            "attributes": {
+              "package": "@types/scheduler",
+              "version": "0.23.0",
+              "dev": false,
+              "root_package": "",
+              "link_packages": {},
+              "deps": {},
+              "transitive_closure": {
+                "@types/scheduler": [
+                  "0.23.0"
+                ]
+              },
+              "lifecycle_build_target": false,
+              "lifecycle_hooks_env": [],
+              "lifecycle_hooks_execution_requirements": [],
+              "lifecycle_hooks_use_default_shell_env": false,
+              "bins": {},
+              "package_visibility": [
+                "//visibility:public"
+              ],
+              "replace_package": ""
             }
           },
           "npm__statuses__1.5.0__links": {
@@ -4718,6 +4744,33 @@
                 "//visibility:public"
               ],
               "replace_package": ""
+            }
+          },
+          "npm__abort-controller__3.0.0": {
+            "bzlFile": "@@aspect_rules_js~//npm/private:npm_import.bzl",
+            "ruleClassName": "npm_import_rule",
+            "attributes": {
+              "package": "abort-controller",
+              "version": "3.0.0",
+              "root_package": "",
+              "link_workspace": "",
+              "link_packages": {},
+              "integrity": "sha512-h8lQ8tacZYnR3vNQTgibj+tODHI5/+l06Au2Pcriv/Gmet0eaj4TwWH41sO9wnHDiQsEj19q0drzdWdeAHtweg==",
+              "url": "https://registry.npmjs.org/abort-controller/-/abort-controller-3.0.0.tgz",
+              "commit": "",
+              "patch_args": [
+                "-p0"
+              ],
+              "patches": [],
+              "custom_postinstall": "",
+              "npm_auth": "",
+              "npm_auth_basic": "",
+              "npm_auth_username": "",
+              "npm_auth_password": "",
+              "lifecycle_hooks": [],
+              "extra_build_content": "",
+              "generate_bzl_library_targets": false,
+              "extract_full_archive": false
             }
           },
           "npm__y18n__5.0.8": {
@@ -7137,269 +7190,6 @@
               "replace_package": ""
             }
           },
-          "npm__ai__3.2.5__-1585157919__links": {
-            "bzlFile": "@@aspect_rules_js~//npm/private:npm_import.bzl",
-            "ruleClassName": "npm_import_links",
-            "attributes": {
-              "package": "ai",
-              "version": "3.2.5_-1585157919",
-              "dev": false,
-              "root_package": "",
-              "link_packages": {
-                "": [
-                  "ai"
-                ]
-              },
-              "deps": {
-                "@ai-sdk/provider": "0.0.10",
-                "@ai-sdk/provider-utils": "0.0.16_zod_3.22.4",
-                "@ai-sdk/react": "0.0.6_react_18.3.1__zod_3.22.4",
-                "@ai-sdk/solid": "0.0.5_solid-js_1.8.17__zod_3.22.4",
-                "@ai-sdk/svelte": "0.0.5_svelte_4.2.18__zod_3.22.4",
-                "@ai-sdk/ui-utils": "0.0.5_zod_3.22.4",
-                "@ai-sdk/vue": "0.0.5_vue_3.4.30__zod_3.22.4",
-                "eventsource-parser": "1.1.2",
-                "json-schema": "0.4.0",
-                "jsondiffpatch": "0.6.0",
-                "nanoid": "3.3.6",
-                "react": "18.3.1",
-                "secure-json-parse": "2.7.0",
-                "sswr": "2.1.0_svelte_4.2.18",
-                "svelte": "4.2.18",
-                "zod": "3.22.4",
-                "zod-to-json-schema": "3.22.5_zod_3.22.4"
-              },
-              "transitive_closure": {
-                "@ai-sdk/provider": [
-                  "0.0.10"
-                ],
-                "@ai-sdk/provider-utils": [
-                  "0.0.16_zod_3.22.4"
-                ],
-                "@ai-sdk/react": [
-                  "0.0.6_react_18.3.1__zod_3.22.4"
-                ],
-                "@ai-sdk/solid": [
-                  "0.0.5_solid-js_1.8.17__zod_3.22.4"
-                ],
-                "@ai-sdk/svelte": [
-                  "0.0.5_svelte_4.2.18__zod_3.22.4"
-                ],
-                "@ai-sdk/ui-utils": [
-                  "0.0.5_zod_3.22.4"
-                ],
-                "@ai-sdk/vue": [
-                  "0.0.5_vue_3.4.30__zod_3.22.4"
-                ],
-                "@ampproject/remapping": [
-                  "2.3.0"
-                ],
-                "@babel/helper-string-parser": [
-                  "7.24.7"
-                ],
-                "@babel/helper-validator-identifier": [
-                  "7.24.7"
-                ],
-                "@babel/parser": [
-                  "7.24.7"
-                ],
-                "@babel/types": [
-                  "7.24.7"
-                ],
-                "@jridgewell/gen-mapping": [
-                  "0.3.5"
-                ],
-                "@jridgewell/resolve-uri": [
-                  "3.1.0"
-                ],
-                "@jridgewell/set-array": [
-                  "1.2.1"
-                ],
-                "@jridgewell/sourcemap-codec": [
-                  "1.4.15"
-                ],
-                "@jridgewell/trace-mapping": [
-                  "0.3.25"
-                ],
-                "@types/diff-match-patch": [
-                  "1.0.36"
-                ],
-                "@types/estree": [
-                  "1.0.5"
-                ],
-                "@vue/compiler-core": [
-                  "3.4.30"
-                ],
-                "@vue/compiler-dom": [
-                  "3.4.30"
-                ],
-                "@vue/compiler-sfc": [
-                  "3.4.30"
-                ],
-                "@vue/compiler-ssr": [
-                  "3.4.30"
-                ],
-                "@vue/reactivity": [
-                  "3.4.30"
-                ],
-                "@vue/runtime-core": [
-                  "3.4.30"
-                ],
-                "@vue/runtime-dom": [
-                  "3.4.30"
-                ],
-                "@vue/server-renderer": [
-                  "3.4.30_vue_3.4.30"
-                ],
-                "@vue/shared": [
-                  "3.4.30"
-                ],
-                "acorn": [
-                  "8.10.0"
-                ],
-                "ai": [
-                  "3.2.5_-1585157919"
-                ],
-                "aria-query": [
-                  "5.3.0"
-                ],
-                "axobject-query": [
-                  "4.0.0"
-                ],
-                "chalk": [
-                  "5.3.0"
-                ],
-                "code-red": [
-                  "1.0.4"
-                ],
-                "css-tree": [
-                  "2.3.1"
-                ],
-                "csstype": [
-                  "3.1.3"
-                ],
-                "dequal": [
-                  "2.0.3"
-                ],
-                "diff-match-patch": [
-                  "1.0.5"
-                ],
-                "entities": [
-                  "4.5.0"
-                ],
-                "estree-walker": [
-                  "2.0.2",
-                  "3.0.3"
-                ],
-                "eventsource-parser": [
-                  "1.1.2"
-                ],
-                "is-reference": [
-                  "3.0.2"
-                ],
-                "js-tokens": [
-                  "4.0.0"
-                ],
-                "json-schema": [
-                  "0.4.0"
-                ],
-                "jsondiffpatch": [
-                  "0.6.0"
-                ],
-                "locate-character": [
-                  "3.0.0"
-                ],
-                "loose-envify": [
-                  "1.4.0"
-                ],
-                "magic-string": [
-                  "0.30.10"
-                ],
-                "mdn-data": [
-                  "2.0.30"
-                ],
-                "nanoid": [
-                  "3.3.6",
-                  "3.3.7"
-                ],
-                "periscopic": [
-                  "3.1.0"
-                ],
-                "picocolors": [
-                  "1.0.0"
-                ],
-                "postcss": [
-                  "8.4.38"
-                ],
-                "react": [
-                  "18.3.1"
-                ],
-                "secure-json-parse": [
-                  "2.7.0"
-                ],
-                "seroval": [
-                  "1.0.7"
-                ],
-                "seroval-plugins": [
-                  "1.0.7_seroval_1.0.7"
-                ],
-                "solid-js": [
-                  "1.8.17"
-                ],
-                "solid-swr-store": [
-                  "0.10.7_-560257279"
-                ],
-                "source-map-js": [
-                  "1.2.0"
-                ],
-                "sswr": [
-                  "2.1.0_svelte_4.2.18"
-                ],
-                "svelte": [
-                  "4.2.18"
-                ],
-                "swr": [
-                  "2.2.0_react_18.3.1"
-                ],
-                "swr-store": [
-                  "0.10.6"
-                ],
-                "swrev": [
-                  "4.0.0"
-                ],
-                "swrv": [
-                  "1.0.4_vue_3.4.30"
-                ],
-                "to-fast-properties": [
-                  "2.0.0"
-                ],
-                "typescript": [
-                  "5.4.5"
-                ],
-                "use-sync-external-store": [
-                  "1.2.2_react_18.3.1"
-                ],
-                "vue": [
-                  "3.4.30_typescript_5.4.5"
-                ],
-                "zod": [
-                  "3.22.4"
-                ],
-                "zod-to-json-schema": [
-                  "3.22.5_zod_3.22.4"
-                ]
-              },
-              "lifecycle_build_target": false,
-              "lifecycle_hooks_env": [],
-              "lifecycle_hooks_execution_requirements": [],
-              "lifecycle_hooks_use_default_shell_env": false,
-              "bins": {},
-              "package_visibility": [
-                "//visibility:public"
-              ],
-              "replace_package": ""
-            }
-          },
           "npm__inflight__1.0.6": {
             "bzlFile": "@@aspect_rules_js~//npm/private:npm_import.bzl",
             "ruleClassName": "npm_import_rule",
@@ -7467,6 +7257,37 @@
               "transitive_closure": {
                 "wrappy": [
                   "1.0.2"
+                ]
+              },
+              "lifecycle_build_target": false,
+              "lifecycle_hooks_env": [],
+              "lifecycle_hooks_execution_requirements": [],
+              "lifecycle_hooks_use_default_shell_env": false,
+              "bins": {},
+              "package_visibility": [
+                "//visibility:public"
+              ],
+              "replace_package": ""
+            }
+          },
+          "npm__iconv-lite__0.4.24__links": {
+            "bzlFile": "@@aspect_rules_js~//npm/private:npm_import.bzl",
+            "ruleClassName": "npm_import_links",
+            "attributes": {
+              "package": "iconv-lite",
+              "version": "0.4.24",
+              "dev": false,
+              "root_package": "",
+              "link_packages": {},
+              "deps": {
+                "safer-buffer": "2.1.2"
+              },
+              "transitive_closure": {
+                "iconv-lite": [
+                  "0.4.24"
+                ],
+                "safer-buffer": [
+                  "2.1.2"
                 ]
               },
               "lifecycle_build_target": false,
@@ -9618,6 +9439,50 @@
               "replace_package": ""
             }
           },
+          "npm__at_types_react-dom__18.3.0__links": {
+            "bzlFile": "@@aspect_rules_js~//npm/private:npm_import.bzl",
+            "ruleClassName": "npm_import_links",
+            "attributes": {
+              "package": "@types/react-dom",
+              "version": "18.3.0",
+              "dev": false,
+              "root_package": "",
+              "link_packages": {
+                "": [
+                  "@types/react-dom"
+                ]
+              },
+              "deps": {
+                "@types/react": "18.2.8"
+              },
+              "transitive_closure": {
+                "@types/prop-types": [
+                  "15.7.12"
+                ],
+                "@types/react": [
+                  "18.2.8"
+                ],
+                "@types/react-dom": [
+                  "18.3.0"
+                ],
+                "@types/scheduler": [
+                  "0.23.0"
+                ],
+                "csstype": [
+                  "3.1.3"
+                ]
+              },
+              "lifecycle_build_target": false,
+              "lifecycle_hooks_env": [],
+              "lifecycle_hooks_execution_requirements": [],
+              "lifecycle_hooks_use_default_shell_env": false,
+              "bins": {},
+              "package_visibility": [
+                "//visibility:public"
+              ],
+              "replace_package": ""
+            }
+          },
           "npm__koa-static__5.0.0__links": {
             "bzlFile": "@@aspect_rules_js~//npm/private:npm_import.bzl",
             "ruleClassName": "npm_import_links",
@@ -9766,6 +9631,37 @@
               "extract_full_archive": false
             }
           },
+          "npm__abort-controller__3.0.0__links": {
+            "bzlFile": "@@aspect_rules_js~//npm/private:npm_import.bzl",
+            "ruleClassName": "npm_import_links",
+            "attributes": {
+              "package": "abort-controller",
+              "version": "3.0.0",
+              "dev": false,
+              "root_package": "",
+              "link_packages": {},
+              "deps": {
+                "event-target-shim": "5.0.1"
+              },
+              "transitive_closure": {
+                "abort-controller": [
+                  "3.0.0"
+                ],
+                "event-target-shim": [
+                  "5.0.1"
+                ]
+              },
+              "lifecycle_build_target": false,
+              "lifecycle_hooks_env": [],
+              "lifecycle_hooks_execution_requirements": [],
+              "lifecycle_hooks_use_default_shell_env": false,
+              "bins": {},
+              "package_visibility": [
+                "//visibility:public"
+              ],
+              "replace_package": ""
+            }
+          },
           "npm__at_smithy_util-body-length-node__2.3.0": {
             "bzlFile": "@@aspect_rules_js~//npm/private:npm_import.bzl",
             "ruleClassName": "npm_import_rule",
@@ -9818,6 +9714,40 @@
               "extra_build_content": "",
               "generate_bzl_library_targets": false,
               "extract_full_archive": false
+            }
+          },
+          "npm__agentkeepalive__4.5.0__links": {
+            "bzlFile": "@@aspect_rules_js~//npm/private:npm_import.bzl",
+            "ruleClassName": "npm_import_links",
+            "attributes": {
+              "package": "agentkeepalive",
+              "version": "4.5.0",
+              "dev": false,
+              "root_package": "",
+              "link_packages": {},
+              "deps": {
+                "humanize-ms": "1.2.1"
+              },
+              "transitive_closure": {
+                "agentkeepalive": [
+                  "4.5.0"
+                ],
+                "humanize-ms": [
+                  "1.2.1"
+                ],
+                "ms": [
+                  "2.1.3"
+                ]
+              },
+              "lifecycle_build_target": false,
+              "lifecycle_hooks_env": [],
+              "lifecycle_hooks_execution_requirements": [],
+              "lifecycle_hooks_use_default_shell_env": false,
+              "bins": {},
+              "package_visibility": [
+                "//visibility:public"
+              ],
+              "replace_package": ""
             }
           },
           "npm__at_types_range-parser__1.2.4": {
@@ -11899,37 +11829,6 @@
                 "//visibility:public"
               ],
               "replace_package": ""
-            }
-          },
-          "npm__ai__3.2.5__-1585157919": {
-            "bzlFile": "@@aspect_rules_js~//npm/private:npm_import.bzl",
-            "ruleClassName": "npm_import_rule",
-            "attributes": {
-              "package": "ai",
-              "version": "3.2.5_-1585157919",
-              "root_package": "",
-              "link_workspace": "",
-              "link_packages": {
-                "": [
-                  "ai"
-                ]
-              },
-              "integrity": "sha512-Af4prTiDL+PKGLuAkNmaCSc3JJWTefjYTuzoLqghj/jsHz61ldyV91JT0Lra3wa9Yt/uDBc8wf4wHd7vCOXbfg==",
-              "url": "https://registry.npmjs.org/ai/-/ai-3.2.5.tgz",
-              "commit": "",
-              "patch_args": [
-                "-p0"
-              ],
-              "patches": [],
-              "custom_postinstall": "",
-              "npm_auth": "",
-              "npm_auth_basic": "",
-              "npm_auth_username": "",
-              "npm_auth_password": "",
-              "lifecycle_hooks": [],
-              "extra_build_content": "",
-              "generate_bzl_library_targets": false,
-              "extract_full_archive": false
             }
           },
           "npm__clone__2.1.2": {
@@ -14275,6 +14174,33 @@
               "replace_package": ""
             }
           },
+          "npm__form-data__4.0.0": {
+            "bzlFile": "@@aspect_rules_js~//npm/private:npm_import.bzl",
+            "ruleClassName": "npm_import_rule",
+            "attributes": {
+              "package": "form-data",
+              "version": "4.0.0",
+              "root_package": "",
+              "link_workspace": "",
+              "link_packages": {},
+              "integrity": "sha512-ETEklSGi5t0QMZuiXoA/Q6vcnxcLQP5vdugSpuAyi6SVGi2clPPp+xgEhuMaHC+zGgn31Kd235W35f7Hykkaww==",
+              "url": "https://registry.npmjs.org/form-data/-/form-data-4.0.0.tgz",
+              "commit": "",
+              "patch_args": [
+                "-p0"
+              ],
+              "patches": [],
+              "custom_postinstall": "",
+              "npm_auth": "",
+              "npm_auth_basic": "",
+              "npm_auth_username": "",
+              "npm_auth_password": "",
+              "lifecycle_hooks": [],
+              "extra_build_content": "",
+              "generate_bzl_library_targets": false,
+              "extract_full_archive": false
+            }
+          },
           "npm__smob__1.5.0": {
             "bzlFile": "@@aspect_rules_js~//npm/private:npm_import.bzl",
             "ruleClassName": "npm_import_rule",
@@ -14720,6 +14646,37 @@
               "transitive_closure": {
                 "content-type": [
                   "1.0.5"
+                ]
+              },
+              "lifecycle_build_target": false,
+              "lifecycle_hooks_env": [],
+              "lifecycle_hooks_execution_requirements": [],
+              "lifecycle_hooks_use_default_shell_env": false,
+              "bins": {},
+              "package_visibility": [
+                "//visibility:public"
+              ],
+              "replace_package": ""
+            }
+          },
+          "npm__humanize-ms__1.2.1__links": {
+            "bzlFile": "@@aspect_rules_js~//npm/private:npm_import.bzl",
+            "ruleClassName": "npm_import_links",
+            "attributes": {
+              "package": "humanize-ms",
+              "version": "1.2.1",
+              "dev": false,
+              "root_package": "",
+              "link_packages": {},
+              "deps": {
+                "ms": "2.1.3"
+              },
+              "transitive_closure": {
+                "humanize-ms": [
+                  "1.2.1"
+                ],
+                "ms": [
+                  "2.1.3"
                 ]
               },
               "lifecycle_build_target": false,
@@ -20249,6 +20206,59 @@
               "extract_full_archive": false
             }
           },
+          "npm__at_types_node-fetch__2.6.11__links": {
+            "bzlFile": "@@aspect_rules_js~//npm/private:npm_import.bzl",
+            "ruleClassName": "npm_import_links",
+            "attributes": {
+              "package": "@types/node-fetch",
+              "version": "2.6.11",
+              "dev": false,
+              "root_package": "",
+              "link_packages": {},
+              "deps": {
+                "@types/node": "20.14.2",
+                "form-data": "4.0.0"
+              },
+              "transitive_closure": {
+                "@types/node": [
+                  "20.14.2"
+                ],
+                "@types/node-fetch": [
+                  "2.6.11"
+                ],
+                "asynckit": [
+                  "0.4.0"
+                ],
+                "combined-stream": [
+                  "1.0.8"
+                ],
+                "delayed-stream": [
+                  "1.0.0"
+                ],
+                "form-data": [
+                  "4.0.0"
+                ],
+                "mime-db": [
+                  "1.52.0"
+                ],
+                "mime-types": [
+                  "2.1.35"
+                ],
+                "undici-types": [
+                  "5.26.5"
+                ]
+              },
+              "lifecycle_build_target": false,
+              "lifecycle_hooks_env": [],
+              "lifecycle_hooks_execution_requirements": [],
+              "lifecycle_hooks_use_default_shell_env": false,
+              "bins": {},
+              "package_visibility": [
+                "//visibility:public"
+              ],
+              "replace_package": ""
+            }
+          },
           "npm__lodash.assignwith__4.2.0__links": {
             "bzlFile": "@@aspect_rules_js~//npm/private:npm_import.bzl",
             "ruleClassName": "npm_import_links",
@@ -22381,6 +22391,60 @@
               "replace_package": ""
             }
           },
+          "npm__at_types_node-fetch__2.6.11": {
+            "bzlFile": "@@aspect_rules_js~//npm/private:npm_import.bzl",
+            "ruleClassName": "npm_import_rule",
+            "attributes": {
+              "package": "@types/node-fetch",
+              "version": "2.6.11",
+              "root_package": "",
+              "link_workspace": "",
+              "link_packages": {},
+              "integrity": "sha512-24xFj9R5+rfQJLRyM56qh+wnVSYhyXC2tkoBndtY0U+vubqNsYXGjufB2nn8Q6gt0LrARwL6UBtMCSVCwl4B1g==",
+              "url": "https://registry.npmjs.org/@types/node-fetch/-/node-fetch-2.6.11.tgz",
+              "commit": "",
+              "patch_args": [
+                "-p0"
+              ],
+              "patches": [],
+              "custom_postinstall": "",
+              "npm_auth": "",
+              "npm_auth_basic": "",
+              "npm_auth_username": "",
+              "npm_auth_password": "",
+              "lifecycle_hooks": [],
+              "extra_build_content": "",
+              "generate_bzl_library_targets": false,
+              "extract_full_archive": false
+            }
+          },
+          "npm__at_types_scheduler__0.23.0": {
+            "bzlFile": "@@aspect_rules_js~//npm/private:npm_import.bzl",
+            "ruleClassName": "npm_import_rule",
+            "attributes": {
+              "package": "@types/scheduler",
+              "version": "0.23.0",
+              "root_package": "",
+              "link_workspace": "",
+              "link_packages": {},
+              "integrity": "sha512-YIoDCTH3Af6XM5VuwGG/QL/CJqga1Zm3NkU3HZ4ZHK2fRMPYP1VczsTUqtsf43PH/iJNVlPHAo2oWX7BSdB2Hw==",
+              "url": "https://registry.npmjs.org/@types/scheduler/-/scheduler-0.23.0.tgz",
+              "commit": "",
+              "patch_args": [
+                "-p0"
+              ],
+              "patches": [],
+              "custom_postinstall": "",
+              "npm_auth": "",
+              "npm_auth_basic": "",
+              "npm_auth_username": "",
+              "npm_auth_password": "",
+              "lifecycle_hooks": [],
+              "extra_build_content": "",
+              "generate_bzl_library_targets": false,
+              "extract_full_archive": false
+            }
+          },
           "npm__asynckit__0.4.0__links": {
             "bzlFile": "@@aspect_rules_js~//npm/private:npm_import.bzl",
             "ruleClassName": "npm_import_links",
@@ -22759,6 +22823,49 @@
               "extra_build_content": "",
               "generate_bzl_library_targets": false,
               "extract_full_archive": false
+            }
+          },
+          "npm__at_types_react__18.2.8__links": {
+            "bzlFile": "@@aspect_rules_js~//npm/private:npm_import.bzl",
+            "ruleClassName": "npm_import_links",
+            "attributes": {
+              "package": "@types/react",
+              "version": "18.2.8",
+              "dev": false,
+              "root_package": "",
+              "link_packages": {
+                "": [
+                  "@types/react"
+                ]
+              },
+              "deps": {
+                "@types/prop-types": "15.7.12",
+                "@types/scheduler": "0.23.0",
+                "csstype": "3.1.3"
+              },
+              "transitive_closure": {
+                "@types/prop-types": [
+                  "15.7.12"
+                ],
+                "@types/react": [
+                  "18.2.8"
+                ],
+                "@types/scheduler": [
+                  "0.23.0"
+                ],
+                "csstype": [
+                  "3.1.3"
+                ]
+              },
+              "lifecycle_build_target": false,
+              "lifecycle_hooks_env": [],
+              "lifecycle_hooks_execution_requirements": [],
+              "lifecycle_hooks_use_default_shell_env": false,
+              "bins": {},
+              "package_visibility": [
+                "//visibility:public"
+              ],
+              "replace_package": ""
             }
           },
           "npm__concat-stream__1.6.2__links": {
@@ -24945,6 +25052,33 @@
               "replace_package": ""
             }
           },
+          "npm__web-streams-polyfill__4.0.0-beta.3": {
+            "bzlFile": "@@aspect_rules_js~//npm/private:npm_import.bzl",
+            "ruleClassName": "npm_import_rule",
+            "attributes": {
+              "package": "web-streams-polyfill",
+              "version": "4.0.0-beta.3",
+              "root_package": "",
+              "link_workspace": "",
+              "link_packages": {},
+              "integrity": "sha512-QW95TCTaHmsYfHDybGMwO5IJIM93I/6vTRk+daHTWFPhwh+C8Cg7j7XyKrwrj8Ib6vYXe0ocYNrmzY4xAAN6ug==",
+              "url": "https://registry.npmjs.org/web-streams-polyfill/-/web-streams-polyfill-4.0.0-beta.3.tgz",
+              "commit": "",
+              "patch_args": [
+                "-p0"
+              ],
+              "patches": [],
+              "custom_postinstall": "",
+              "npm_auth": "",
+              "npm_auth_basic": "",
+              "npm_auth_username": "",
+              "npm_auth_password": "",
+              "lifecycle_hooks": [],
+              "extra_build_content": "",
+              "generate_bzl_library_targets": false,
+              "extract_full_archive": false
+            }
+          },
           "npm__at_types_ws__7.4.7__links": {
             "bzlFile": "@@aspect_rules_js~//npm/private:npm_import.bzl",
             "ruleClassName": "npm_import_links",
@@ -25881,6 +26015,33 @@
               "extract_full_archive": false
             }
           },
+          "npm__formdata-node__4.4.1": {
+            "bzlFile": "@@aspect_rules_js~//npm/private:npm_import.bzl",
+            "ruleClassName": "npm_import_rule",
+            "attributes": {
+              "package": "formdata-node",
+              "version": "4.4.1",
+              "root_package": "",
+              "link_workspace": "",
+              "link_packages": {},
+              "integrity": "sha512-0iirZp3uVDjVGt9p49aTaqjk84TrglENEDuqfdlZQ1roC9CWlPk6Avf8EEnZNcAqPonwkG35x4n3ww/1THYAeQ==",
+              "url": "https://registry.npmjs.org/formdata-node/-/formdata-node-4.4.1.tgz",
+              "commit": "",
+              "patch_args": [
+                "-p0"
+              ],
+              "patches": [],
+              "custom_postinstall": "",
+              "npm_auth": "",
+              "npm_auth_basic": "",
+              "npm_auth_username": "",
+              "npm_auth_password": "",
+              "lifecycle_hooks": [],
+              "extra_build_content": "",
+              "generate_bzl_library_targets": false,
+              "extract_full_archive": false
+            }
+          },
           "npm__at_aws-crypto_util__3.0.0": {
             "bzlFile": "@@aspect_rules_js~//npm/private:npm_import.bzl",
             "ruleClassName": "npm_import_rule",
@@ -26001,6 +26162,54 @@
               "extract_full_archive": false
             }
           },
+          "npm__fetch__1.1.0__links": {
+            "bzlFile": "@@aspect_rules_js~//npm/private:npm_import.bzl",
+            "ruleClassName": "npm_import_links",
+            "attributes": {
+              "package": "fetch",
+              "version": "1.1.0",
+              "dev": false,
+              "root_package": "",
+              "link_packages": {
+                "": [
+                  "fetch"
+                ]
+              },
+              "deps": {
+                "biskviit": "1.0.1",
+                "encoding": "0.1.12"
+              },
+              "transitive_closure": {
+                "biskviit": [
+                  "1.0.1"
+                ],
+                "encoding": [
+                  "0.1.12"
+                ],
+                "fetch": [
+                  "1.1.0"
+                ],
+                "iconv-lite": [
+                  "0.4.24"
+                ],
+                "psl": [
+                  "1.9.0"
+                ],
+                "safer-buffer": [
+                  "2.1.2"
+                ]
+              },
+              "lifecycle_build_target": false,
+              "lifecycle_hooks_env": [],
+              "lifecycle_hooks_execution_requirements": [],
+              "lifecycle_hooks_use_default_shell_env": false,
+              "bins": {},
+              "package_visibility": [
+                "//visibility:public"
+              ],
+              "replace_package": ""
+            }
+          },
           "npm__diff-match-patch__1.0.5": {
             "bzlFile": "@@aspect_rules_js~//npm/private:npm_import.bzl",
             "ruleClassName": "npm_import_rule",
@@ -26060,6 +26269,37 @@
                 ],
                 "supports-preserve-symlinks-flag": [
                   "1.0.0"
+                ]
+              },
+              "lifecycle_build_target": false,
+              "lifecycle_hooks_env": [],
+              "lifecycle_hooks_execution_requirements": [],
+              "lifecycle_hooks_use_default_shell_env": false,
+              "bins": {},
+              "package_visibility": [
+                "//visibility:public"
+              ],
+              "replace_package": ""
+            }
+          },
+          "npm__biskviit__1.0.1__links": {
+            "bzlFile": "@@aspect_rules_js~//npm/private:npm_import.bzl",
+            "ruleClassName": "npm_import_links",
+            "attributes": {
+              "package": "biskviit",
+              "version": "1.0.1",
+              "dev": false,
+              "root_package": "",
+              "link_packages": {},
+              "deps": {
+                "psl": "1.9.0"
+              },
+              "transitive_closure": {
+                "biskviit": [
+                  "1.0.1"
+                ],
+                "psl": [
+                  "1.9.0"
                 ]
               },
               "lifecycle_build_target": false,
@@ -27771,6 +28011,32 @@
               "extract_full_archive": false
             }
           },
+          "npm__web-streams-polyfill__4.0.0-beta.3__links": {
+            "bzlFile": "@@aspect_rules_js~//npm/private:npm_import.bzl",
+            "ruleClassName": "npm_import_links",
+            "attributes": {
+              "package": "web-streams-polyfill",
+              "version": "4.0.0-beta.3",
+              "dev": false,
+              "root_package": "",
+              "link_packages": {},
+              "deps": {},
+              "transitive_closure": {
+                "web-streams-polyfill": [
+                  "4.0.0-beta.3"
+                ]
+              },
+              "lifecycle_build_target": false,
+              "lifecycle_hooks_env": [],
+              "lifecycle_hooks_execution_requirements": [],
+              "lifecycle_hooks_use_default_shell_env": false,
+              "bins": {},
+              "package_visibility": [
+                "//visibility:public"
+              ],
+              "replace_package": ""
+            }
+          },
           "npm__buffer-from__1.1.2": {
             "bzlFile": "@@aspect_rules_js~//npm/private:npm_import.bzl",
             "ruleClassName": "npm_import_rule",
@@ -27939,6 +28205,32 @@
               "extra_build_content": "",
               "generate_bzl_library_targets": false,
               "extract_full_archive": false
+            }
+          },
+          "npm__web-streams-polyfill__3.3.3__links": {
+            "bzlFile": "@@aspect_rules_js~//npm/private:npm_import.bzl",
+            "ruleClassName": "npm_import_links",
+            "attributes": {
+              "package": "web-streams-polyfill",
+              "version": "3.3.3",
+              "dev": false,
+              "root_package": "",
+              "link_packages": {},
+              "deps": {},
+              "transitive_closure": {
+                "web-streams-polyfill": [
+                  "3.3.3"
+                ]
+              },
+              "lifecycle_build_target": false,
+              "lifecycle_hooks_env": [],
+              "lifecycle_hooks_execution_requirements": [],
+              "lifecycle_hooks_use_default_shell_env": false,
+              "bins": {},
+              "package_visibility": [
+                "//visibility:public"
+              ],
+              "replace_package": ""
             }
           },
           "npm__at_smithy_abort-controller__2.2.0": {
@@ -28118,6 +28410,40 @@
                 ],
                 "side-channel": [
                   "1.0.4"
+                ]
+              },
+              "lifecycle_build_target": false,
+              "lifecycle_hooks_env": [],
+              "lifecycle_hooks_execution_requirements": [],
+              "lifecycle_hooks_use_default_shell_env": false,
+              "bins": {},
+              "package_visibility": [
+                "//visibility:public"
+              ],
+              "replace_package": ""
+            }
+          },
+          "npm__encoding__0.1.12__links": {
+            "bzlFile": "@@aspect_rules_js~//npm/private:npm_import.bzl",
+            "ruleClassName": "npm_import_links",
+            "attributes": {
+              "package": "encoding",
+              "version": "0.1.12",
+              "dev": false,
+              "root_package": "",
+              "link_packages": {},
+              "deps": {
+                "iconv-lite": "0.4.24"
+              },
+              "transitive_closure": {
+                "encoding": [
+                  "0.1.12"
+                ],
+                "iconv-lite": [
+                  "0.4.24"
+                ],
+                "safer-buffer": [
+                  "2.1.2"
                 ]
               },
               "lifecycle_build_target": false,
@@ -30421,6 +30747,33 @@
               "replace_package": ""
             }
           },
+          "npm__form-data-encoder__1.7.2": {
+            "bzlFile": "@@aspect_rules_js~//npm/private:npm_import.bzl",
+            "ruleClassName": "npm_import_rule",
+            "attributes": {
+              "package": "form-data-encoder",
+              "version": "1.7.2",
+              "root_package": "",
+              "link_workspace": "",
+              "link_packages": {},
+              "integrity": "sha512-qfqtYan3rxrnCk1VYaA4H+Ms9xdpPqvLZa6xmMgFvhO32x7/3J/ExcTd6qpxM0vH2GdMI+poehyBZvqfMTto8A==",
+              "url": "https://registry.npmjs.org/form-data-encoder/-/form-data-encoder-1.7.2.tgz",
+              "commit": "",
+              "patch_args": [
+                "-p0"
+              ],
+              "patches": [],
+              "custom_postinstall": "",
+              "npm_auth": "",
+              "npm_auth_basic": "",
+              "npm_auth_username": "",
+              "npm_auth_password": "",
+              "lifecycle_hooks": [],
+              "extra_build_content": "",
+              "generate_bzl_library_targets": false,
+              "extract_full_archive": false
+            }
+          },
           "npm__at_jridgewell_resolve-uri__3.1.0": {
             "bzlFile": "@@aspect_rules_js~//npm/private:npm_import.bzl",
             "ruleClassName": "npm_import_rule",
@@ -31680,6 +32033,33 @@
               "link_packages": {},
               "integrity": "sha512-1kMyQFAWx6f8alaI6UT65/5YW/7pDWAKAdNwL6vuJLea03KrZRX3PMoONOSJpAS5m3Ot7HlWZvf3wZDNTLELZw==",
               "url": "https://registry.npmjs.org/@aws-sdk/util-endpoints/-/util-endpoints-3.540.0.tgz",
+              "commit": "",
+              "patch_args": [
+                "-p0"
+              ],
+              "patches": [],
+              "custom_postinstall": "",
+              "npm_auth": "",
+              "npm_auth_basic": "",
+              "npm_auth_username": "",
+              "npm_auth_password": "",
+              "lifecycle_hooks": [],
+              "extra_build_content": "",
+              "generate_bzl_library_targets": false,
+              "extract_full_archive": false
+            }
+          },
+          "npm__web-streams-polyfill__3.3.3": {
+            "bzlFile": "@@aspect_rules_js~//npm/private:npm_import.bzl",
+            "ruleClassName": "npm_import_rule",
+            "attributes": {
+              "package": "web-streams-polyfill",
+              "version": "3.3.3",
+              "root_package": "",
+              "link_workspace": "",
+              "link_packages": {},
+              "integrity": "sha512-d2JWLCivmZYTSIoge9MsgFCZrt571BikcWGYkjC1khllbTeDlGqZ2D8vD8E/lJa8WGWbb7Plm8/XJYV7IJHZZw==",
+              "url": "https://registry.npmjs.org/web-streams-polyfill/-/web-streams-polyfill-3.3.3.tgz",
               "commit": "",
               "patch_args": [
                 "-p0"
@@ -35870,6 +36250,341 @@
               "replace_package": ""
             }
           },
+          "npm__ai__3.2.5__-2127310357__links": {
+            "bzlFile": "@@aspect_rules_js~//npm/private:npm_import.bzl",
+            "ruleClassName": "npm_import_links",
+            "attributes": {
+              "package": "ai",
+              "version": "3.2.5_-2127310357",
+              "dev": false,
+              "root_package": "",
+              "link_packages": {
+                "": [
+                  "ai"
+                ]
+              },
+              "deps": {
+                "@ai-sdk/provider": "0.0.10",
+                "@ai-sdk/provider-utils": "0.0.16_zod_3.22.4",
+                "@ai-sdk/react": "0.0.6_react_18.3.1__zod_3.22.4",
+                "@ai-sdk/solid": "0.0.5_solid-js_1.8.17__zod_3.22.4",
+                "@ai-sdk/svelte": "0.0.5_svelte_4.2.18__zod_3.22.4",
+                "@ai-sdk/ui-utils": "0.0.5_zod_3.22.4",
+                "@ai-sdk/vue": "0.0.5_vue_3.4.30__zod_3.22.4",
+                "eventsource-parser": "1.1.2",
+                "json-schema": "0.4.0",
+                "jsondiffpatch": "0.6.0",
+                "nanoid": "3.3.6",
+                "openai": "4.52.0",
+                "react": "18.3.1",
+                "secure-json-parse": "2.7.0",
+                "sswr": "2.1.0_svelte_4.2.18",
+                "svelte": "4.2.18",
+                "zod": "3.22.4",
+                "zod-to-json-schema": "3.22.5_zod_3.22.4"
+              },
+              "transitive_closure": {
+                "@ai-sdk/provider": [
+                  "0.0.10"
+                ],
+                "@ai-sdk/provider-utils": [
+                  "0.0.16_zod_3.22.4"
+                ],
+                "@ai-sdk/react": [
+                  "0.0.6_react_18.3.1__zod_3.22.4"
+                ],
+                "@ai-sdk/solid": [
+                  "0.0.5_solid-js_1.8.17__zod_3.22.4"
+                ],
+                "@ai-sdk/svelte": [
+                  "0.0.5_svelte_4.2.18__zod_3.22.4"
+                ],
+                "@ai-sdk/ui-utils": [
+                  "0.0.5_zod_3.22.4"
+                ],
+                "@ai-sdk/vue": [
+                  "0.0.5_vue_3.4.30__zod_3.22.4"
+                ],
+                "@ampproject/remapping": [
+                  "2.3.0"
+                ],
+                "@babel/helper-string-parser": [
+                  "7.24.7"
+                ],
+                "@babel/helper-validator-identifier": [
+                  "7.24.7"
+                ],
+                "@babel/parser": [
+                  "7.24.7"
+                ],
+                "@babel/types": [
+                  "7.24.7"
+                ],
+                "@jridgewell/gen-mapping": [
+                  "0.3.5"
+                ],
+                "@jridgewell/resolve-uri": [
+                  "3.1.0"
+                ],
+                "@jridgewell/set-array": [
+                  "1.2.1"
+                ],
+                "@jridgewell/sourcemap-codec": [
+                  "1.4.15"
+                ],
+                "@jridgewell/trace-mapping": [
+                  "0.3.25"
+                ],
+                "@types/diff-match-patch": [
+                  "1.0.36"
+                ],
+                "@types/estree": [
+                  "1.0.5"
+                ],
+                "@types/node": [
+                  "18.19.39",
+                  "20.14.2"
+                ],
+                "@types/node-fetch": [
+                  "2.6.11"
+                ],
+                "@vue/compiler-core": [
+                  "3.4.30"
+                ],
+                "@vue/compiler-dom": [
+                  "3.4.30"
+                ],
+                "@vue/compiler-sfc": [
+                  "3.4.30"
+                ],
+                "@vue/compiler-ssr": [
+                  "3.4.30"
+                ],
+                "@vue/reactivity": [
+                  "3.4.30"
+                ],
+                "@vue/runtime-core": [
+                  "3.4.30"
+                ],
+                "@vue/runtime-dom": [
+                  "3.4.30"
+                ],
+                "@vue/server-renderer": [
+                  "3.4.30_vue_3.4.30"
+                ],
+                "@vue/shared": [
+                  "3.4.30"
+                ],
+                "abort-controller": [
+                  "3.0.0"
+                ],
+                "acorn": [
+                  "8.10.0"
+                ],
+                "agentkeepalive": [
+                  "4.5.0"
+                ],
+                "ai": [
+                  "3.2.5_-2127310357"
+                ],
+                "aria-query": [
+                  "5.3.0"
+                ],
+                "asynckit": [
+                  "0.4.0"
+                ],
+                "axobject-query": [
+                  "4.0.0"
+                ],
+                "chalk": [
+                  "5.3.0"
+                ],
+                "code-red": [
+                  "1.0.4"
+                ],
+                "combined-stream": [
+                  "1.0.8"
+                ],
+                "css-tree": [
+                  "2.3.1"
+                ],
+                "csstype": [
+                  "3.1.3"
+                ],
+                "delayed-stream": [
+                  "1.0.0"
+                ],
+                "dequal": [
+                  "2.0.3"
+                ],
+                "diff-match-patch": [
+                  "1.0.5"
+                ],
+                "entities": [
+                  "4.5.0"
+                ],
+                "estree-walker": [
+                  "2.0.2",
+                  "3.0.3"
+                ],
+                "event-target-shim": [
+                  "5.0.1"
+                ],
+                "eventsource-parser": [
+                  "1.1.2"
+                ],
+                "form-data": [
+                  "4.0.0"
+                ],
+                "form-data-encoder": [
+                  "1.7.2"
+                ],
+                "formdata-node": [
+                  "4.4.1"
+                ],
+                "humanize-ms": [
+                  "1.2.1"
+                ],
+                "is-reference": [
+                  "3.0.2"
+                ],
+                "js-tokens": [
+                  "4.0.0"
+                ],
+                "json-schema": [
+                  "0.4.0"
+                ],
+                "jsondiffpatch": [
+                  "0.6.0"
+                ],
+                "locate-character": [
+                  "3.0.0"
+                ],
+                "loose-envify": [
+                  "1.4.0"
+                ],
+                "magic-string": [
+                  "0.30.10"
+                ],
+                "mdn-data": [
+                  "2.0.30"
+                ],
+                "mime-db": [
+                  "1.52.0"
+                ],
+                "mime-types": [
+                  "2.1.35"
+                ],
+                "ms": [
+                  "2.1.3"
+                ],
+                "nanoid": [
+                  "3.3.6",
+                  "3.3.7"
+                ],
+                "node-domexception": [
+                  "1.0.0"
+                ],
+                "node-fetch": [
+                  "2.6.12"
+                ],
+                "openai": [
+                  "4.52.0"
+                ],
+                "periscopic": [
+                  "3.1.0"
+                ],
+                "picocolors": [
+                  "1.0.0"
+                ],
+                "postcss": [
+                  "8.4.38"
+                ],
+                "react": [
+                  "18.3.1"
+                ],
+                "secure-json-parse": [
+                  "2.7.0"
+                ],
+                "seroval": [
+                  "1.0.7"
+                ],
+                "seroval-plugins": [
+                  "1.0.7_seroval_1.0.7"
+                ],
+                "solid-js": [
+                  "1.8.17"
+                ],
+                "solid-swr-store": [
+                  "0.10.7_-560257279"
+                ],
+                "source-map-js": [
+                  "1.2.0"
+                ],
+                "sswr": [
+                  "2.1.0_svelte_4.2.18"
+                ],
+                "svelte": [
+                  "4.2.18"
+                ],
+                "swr": [
+                  "2.2.0_react_18.3.1"
+                ],
+                "swr-store": [
+                  "0.10.6"
+                ],
+                "swrev": [
+                  "4.0.0"
+                ],
+                "swrv": [
+                  "1.0.4_vue_3.4.30"
+                ],
+                "to-fast-properties": [
+                  "2.0.0"
+                ],
+                "tr46": [
+                  "0.0.3"
+                ],
+                "typescript": [
+                  "5.4.5"
+                ],
+                "undici-types": [
+                  "5.26.5"
+                ],
+                "use-sync-external-store": [
+                  "1.2.2_react_18.3.1"
+                ],
+                "vue": [
+                  "3.4.30_typescript_5.4.5"
+                ],
+                "web-streams-polyfill": [
+                  "3.3.3",
+                  "4.0.0-beta.3"
+                ],
+                "webidl-conversions": [
+                  "3.0.1"
+                ],
+                "whatwg-url": [
+                  "5.0.0"
+                ],
+                "zod": [
+                  "3.22.4"
+                ],
+                "zod-to-json-schema": [
+                  "3.22.5_zod_3.22.4"
+                ]
+              },
+              "lifecycle_build_target": false,
+              "lifecycle_hooks_env": [],
+              "lifecycle_hooks_execution_requirements": [],
+              "lifecycle_hooks_use_default_shell_env": false,
+              "bins": {},
+              "package_visibility": [
+                "//visibility:public"
+              ],
+              "replace_package": ""
+            }
+          },
           "npm__yargs-parser__21.1.1__links": {
             "bzlFile": "@@aspect_rules_js~//npm/private:npm_import.bzl",
             "ruleClassName": "npm_import_links",
@@ -36040,6 +36755,33 @@
                 "//visibility:public"
               ],
               "replace_package": ""
+            }
+          },
+          "npm__at_types_node__18.19.39": {
+            "bzlFile": "@@aspect_rules_js~//npm/private:npm_import.bzl",
+            "ruleClassName": "npm_import_rule",
+            "attributes": {
+              "package": "@types/node",
+              "version": "18.19.39",
+              "root_package": "",
+              "link_workspace": "",
+              "link_packages": {},
+              "integrity": "sha512-nPwTRDKUctxw3di5b4TfT3I0sWDiWoPQCZjXhvdkINntwr8lcoVCKsTgnXeRubKIlfnV+eN/HYk6Jb40tbcEAQ==",
+              "url": "https://registry.npmjs.org/@types/node/-/node-18.19.39.tgz",
+              "commit": "",
+              "patch_args": [
+                "-p0"
+              ],
+              "patches": [],
+              "custom_postinstall": "",
+              "npm_auth": "",
+              "npm_auth_basic": "",
+              "npm_auth_username": "",
+              "npm_auth_password": "",
+              "lifecycle_hooks": [],
+              "extra_build_content": "",
+              "generate_bzl_library_targets": false,
+              "extract_full_archive": false
             }
           },
           "npm__koa-send__5.0.1": {
@@ -38867,6 +39609,32 @@
               "replace_package": ""
             }
           },
+          "npm__psl__1.9.0__links": {
+            "bzlFile": "@@aspect_rules_js~//npm/private:npm_import.bzl",
+            "ruleClassName": "npm_import_links",
+            "attributes": {
+              "package": "psl",
+              "version": "1.9.0",
+              "dev": false,
+              "root_package": "",
+              "link_packages": {},
+              "deps": {},
+              "transitive_closure": {
+                "psl": [
+                  "1.9.0"
+                ]
+              },
+              "lifecycle_build_target": false,
+              "lifecycle_hooks_env": [],
+              "lifecycle_hooks_execution_requirements": [],
+              "lifecycle_hooks_use_default_shell_env": false,
+              "bins": {},
+              "package_visibility": [
+                "//visibility:public"
+              ],
+              "replace_package": ""
+            }
+          },
           "npm__err-code__2.0.3": {
             "bzlFile": "@@aspect_rules_js~//npm/private:npm_import.bzl",
             "ruleClassName": "npm_import_rule",
@@ -39197,6 +39965,37 @@
               "link_packages": {},
               "integrity": "sha512-s1xVtKjyGc60O8qcNIzS1X3H+pWEwEfZ7TgNznVDNyuXvLrlNWiAcigPWGl2aAkc8tGcsSG0Qpyw2KYC939LFg==",
               "url": "https://registry.npmjs.org/@aws-sdk/credential-provider-node/-/credential-provider-node-3.556.0.tgz",
+              "commit": "",
+              "patch_args": [
+                "-p0"
+              ],
+              "patches": [],
+              "custom_postinstall": "",
+              "npm_auth": "",
+              "npm_auth_basic": "",
+              "npm_auth_username": "",
+              "npm_auth_password": "",
+              "lifecycle_hooks": [],
+              "extra_build_content": "",
+              "generate_bzl_library_targets": false,
+              "extract_full_archive": false
+            }
+          },
+          "npm__fetch__1.1.0": {
+            "bzlFile": "@@aspect_rules_js~//npm/private:npm_import.bzl",
+            "ruleClassName": "npm_import_rule",
+            "attributes": {
+              "package": "fetch",
+              "version": "1.1.0",
+              "root_package": "",
+              "link_workspace": "",
+              "link_packages": {
+                "": [
+                  "fetch"
+                ]
+              },
+              "integrity": "sha512-5O8TwrGzoNblBG/jtK4NFuZwNCkZX6s5GfRNOaGtm+QGJEuNakSC/i2RW0R93KX6E0jVjNXm6O3CRN4Ql3K+yA==",
+              "url": "https://registry.npmjs.org/fetch/-/fetch-1.1.0.tgz",
               "commit": "",
               "patch_args": [
                 "-p0"
@@ -41846,6 +42645,33 @@
               "extract_full_archive": false
             }
           },
+          "npm__agentkeepalive__4.5.0": {
+            "bzlFile": "@@aspect_rules_js~//npm/private:npm_import.bzl",
+            "ruleClassName": "npm_import_rule",
+            "attributes": {
+              "package": "agentkeepalive",
+              "version": "4.5.0",
+              "root_package": "",
+              "link_workspace": "",
+              "link_packages": {},
+              "integrity": "sha512-5GG/5IbQQpC9FpkRGsSvZI5QYeSCzlJHdpBQntCsuTOxhKD8lqKhrleg2Yi7yvMIf82Ycmmqln9U8V9qwEiJew==",
+              "url": "https://registry.npmjs.org/agentkeepalive/-/agentkeepalive-4.5.0.tgz",
+              "commit": "",
+              "patch_args": [
+                "-p0"
+              ],
+              "patches": [],
+              "custom_postinstall": "",
+              "npm_auth": "",
+              "npm_auth_basic": "",
+              "npm_auth_username": "",
+              "npm_auth_password": "",
+              "lifecycle_hooks": [],
+              "extra_build_content": "",
+              "generate_bzl_library_targets": false,
+              "extract_full_archive": false
+            }
+          },
           "npm__is-lambda__1.0.1": {
             "bzlFile": "@@aspect_rules_js~//npm/private:npm_import.bzl",
             "ruleClassName": "npm_import_rule",
@@ -42354,6 +43180,32 @@
               "extract_full_archive": false
             }
           },
+          "npm__node-domexception__1.0.0__links": {
+            "bzlFile": "@@aspect_rules_js~//npm/private:npm_import.bzl",
+            "ruleClassName": "npm_import_links",
+            "attributes": {
+              "package": "node-domexception",
+              "version": "1.0.0",
+              "dev": false,
+              "root_package": "",
+              "link_packages": {},
+              "deps": {},
+              "transitive_closure": {
+                "node-domexception": [
+                  "1.0.0"
+                ]
+              },
+              "lifecycle_build_target": false,
+              "lifecycle_hooks_env": [],
+              "lifecycle_hooks_execution_requirements": [],
+              "lifecycle_hooks_use_default_shell_env": false,
+              "bins": {},
+              "package_visibility": [
+                "//visibility:public"
+              ],
+              "replace_package": ""
+            }
+          },
           "npm__at_jridgewell_trace-mapping__0.3.18": {
             "bzlFile": "@@aspect_rules_js~//npm/private:npm_import.bzl",
             "ruleClassName": "npm_import_rule",
@@ -42751,6 +43603,37 @@
               "extract_full_archive": false
             }
           },
+          "npm__at_types_node__18.19.39__links": {
+            "bzlFile": "@@aspect_rules_js~//npm/private:npm_import.bzl",
+            "ruleClassName": "npm_import_links",
+            "attributes": {
+              "package": "@types/node",
+              "version": "18.19.39",
+              "dev": false,
+              "root_package": "",
+              "link_packages": {},
+              "deps": {
+                "undici-types": "5.26.5"
+              },
+              "transitive_closure": {
+                "@types/node": [
+                  "18.19.39"
+                ],
+                "undici-types": [
+                  "5.26.5"
+                ]
+              },
+              "lifecycle_build_target": false,
+              "lifecycle_hooks_env": [],
+              "lifecycle_hooks_execution_requirements": [],
+              "lifecycle_hooks_use_default_shell_env": false,
+              "bins": {},
+              "package_visibility": [
+                "//visibility:public"
+              ],
+              "replace_package": ""
+            }
+          },
           "npm__emoji-regex__8.0.0__links": {
             "bzlFile": "@@aspect_rules_js~//npm/private:npm_import.bzl",
             "ruleClassName": "npm_import_links",
@@ -42799,6 +43682,32 @@
                 ],
                 "sprintf-js": [
                   "1.1.3"
+                ]
+              },
+              "lifecycle_build_target": false,
+              "lifecycle_hooks_env": [],
+              "lifecycle_hooks_execution_requirements": [],
+              "lifecycle_hooks_use_default_shell_env": false,
+              "bins": {},
+              "package_visibility": [
+                "//visibility:public"
+              ],
+              "replace_package": ""
+            }
+          },
+          "npm__at_types_prop-types__15.7.12__links": {
+            "bzlFile": "@@aspect_rules_js~//npm/private:npm_import.bzl",
+            "ruleClassName": "npm_import_links",
+            "attributes": {
+              "package": "@types/prop-types",
+              "version": "15.7.12",
+              "dev": false,
+              "root_package": "",
+              "link_packages": {},
+              "deps": {},
+              "transitive_closure": {
+                "@types/prop-types": [
+                  "15.7.12"
                 ]
               },
               "lifecycle_build_target": false,
@@ -44401,6 +45310,33 @@
               "replace_package": ""
             }
           },
+          "npm__biskviit__1.0.1": {
+            "bzlFile": "@@aspect_rules_js~//npm/private:npm_import.bzl",
+            "ruleClassName": "npm_import_rule",
+            "attributes": {
+              "package": "biskviit",
+              "version": "1.0.1",
+              "root_package": "",
+              "link_workspace": "",
+              "link_packages": {},
+              "integrity": "sha512-VGCXdHbdbpEkFgtjkeoBN8vRlbj1ZRX2/mxhE8asCCRalUx2nBzOomLJv8Aw/nRt5+ccDb+tPKidg4XxcfGW4w==",
+              "url": "https://registry.npmjs.org/biskviit/-/biskviit-1.0.1.tgz",
+              "commit": "",
+              "patch_args": [
+                "-p0"
+              ],
+              "patches": [],
+              "custom_postinstall": "",
+              "npm_auth": "",
+              "npm_auth_basic": "",
+              "npm_auth_username": "",
+              "npm_auth_password": "",
+              "lifecycle_hooks": [],
+              "extra_build_content": "",
+              "generate_bzl_library_targets": false,
+              "extract_full_archive": false
+            }
+          },
           "npm__is-binary-path__2.1.0__links": {
             "bzlFile": "@@aspect_rules_js~//npm/private:npm_import.bzl",
             "ruleClassName": "npm_import_links",
@@ -45238,6 +46174,33 @@
               "replace_package": ""
             }
           },
+          "npm__encoding__0.1.12": {
+            "bzlFile": "@@aspect_rules_js~//npm/private:npm_import.bzl",
+            "ruleClassName": "npm_import_rule",
+            "attributes": {
+              "package": "encoding",
+              "version": "0.1.12",
+              "root_package": "",
+              "link_workspace": "",
+              "link_packages": {},
+              "integrity": "sha512-bl1LAgiQc4ZWr++pNYUdRe/alecaHFeHxIJ/pNciqGdKXghaTCOwKkbKp6ye7pKZGu/GcaSXFk8PBVhgs+dJdA==",
+              "url": "https://registry.npmjs.org/encoding/-/encoding-0.1.12.tgz",
+              "commit": "",
+              "patch_args": [
+                "-p0"
+              ],
+              "patches": [],
+              "custom_postinstall": "",
+              "npm_auth": "",
+              "npm_auth_basic": "",
+              "npm_auth_username": "",
+              "npm_auth_password": "",
+              "lifecycle_hooks": [],
+              "extra_build_content": "",
+              "generate_bzl_library_targets": false,
+              "extract_full_archive": false
+            }
+          },
           "npm__encoding__0.1.13": {
             "bzlFile": "@@aspect_rules_js~//npm/private:npm_import.bzl",
             "ruleClassName": "npm_import_rule",
@@ -45785,6 +46748,51 @@
                 ],
                 "tslib": [
                   "2.6.3"
+                ]
+              },
+              "lifecycle_build_target": false,
+              "lifecycle_hooks_env": [],
+              "lifecycle_hooks_execution_requirements": [],
+              "lifecycle_hooks_use_default_shell_env": false,
+              "bins": {},
+              "package_visibility": [
+                "//visibility:public"
+              ],
+              "replace_package": ""
+            }
+          },
+          "npm__form-data__4.0.0__links": {
+            "bzlFile": "@@aspect_rules_js~//npm/private:npm_import.bzl",
+            "ruleClassName": "npm_import_links",
+            "attributes": {
+              "package": "form-data",
+              "version": "4.0.0",
+              "dev": false,
+              "root_package": "",
+              "link_packages": {},
+              "deps": {
+                "asynckit": "0.4.0",
+                "combined-stream": "1.0.8",
+                "mime-types": "2.1.35"
+              },
+              "transitive_closure": {
+                "asynckit": [
+                  "0.4.0"
+                ],
+                "combined-stream": [
+                  "1.0.8"
+                ],
+                "delayed-stream": [
+                  "1.0.0"
+                ],
+                "form-data": [
+                  "4.0.0"
+                ],
+                "mime-db": [
+                  "1.52.0"
+                ],
+                "mime-types": [
+                  "2.1.35"
                 ]
               },
               "lifecycle_build_target": false,
@@ -47568,6 +48576,33 @@
               "replace_package": ""
             }
           },
+          "npm__event-target-shim__5.0.1": {
+            "bzlFile": "@@aspect_rules_js~//npm/private:npm_import.bzl",
+            "ruleClassName": "npm_import_rule",
+            "attributes": {
+              "package": "event-target-shim",
+              "version": "5.0.1",
+              "root_package": "",
+              "link_workspace": "",
+              "link_packages": {},
+              "integrity": "sha512-i/2XbnSz/uxRCU6+NdVJgKWDTM427+MqYbkQzD321DuCQJUqOuJKIA0IM2+W2xtYHdKOmZ4dR6fExsd4SXL+WQ==",
+              "url": "https://registry.npmjs.org/event-target-shim/-/event-target-shim-5.0.1.tgz",
+              "commit": "",
+              "patch_args": [
+                "-p0"
+              ],
+              "patches": [],
+              "custom_postinstall": "",
+              "npm_auth": "",
+              "npm_auth_basic": "",
+              "npm_auth_username": "",
+              "npm_auth_password": "",
+              "lifecycle_hooks": [],
+              "extra_build_content": "",
+              "generate_bzl_library_targets": false,
+              "extract_full_archive": false
+            }
+          },
           "npm__chalk__2.4.2": {
             "bzlFile": "@@aspect_rules_js~//npm/private:npm_import.bzl",
             "ruleClassName": "npm_import_rule",
@@ -47619,6 +48654,37 @@
                 "//visibility:public"
               ],
               "replace_package": ""
+            }
+          },
+          "npm__at_types_react__18.2.8": {
+            "bzlFile": "@@aspect_rules_js~//npm/private:npm_import.bzl",
+            "ruleClassName": "npm_import_rule",
+            "attributes": {
+              "package": "@types/react",
+              "version": "18.2.8",
+              "root_package": "",
+              "link_workspace": "",
+              "link_packages": {
+                "": [
+                  "@types/react"
+                ]
+              },
+              "integrity": "sha512-lTyWUNrd8ntVkqycEEplasWy2OxNlShj3zqS0LuB1ENUGis5HodmhM7DtCoUGbxj3VW/WsGA0DUhpG6XrM7gPA==",
+              "url": "https://registry.npmjs.org/@types/react/-/react-18.2.8.tgz",
+              "commit": "",
+              "patch_args": [
+                "-p0"
+              ],
+              "patches": [],
+              "custom_postinstall": "",
+              "npm_auth": "",
+              "npm_auth_basic": "",
+              "npm_auth_username": "",
+              "npm_auth_password": "",
+              "lifecycle_hooks": [],
+              "extra_build_content": "",
+              "generate_bzl_library_targets": false,
+              "extract_full_archive": false
             }
           },
           "npm__at_aws-sdk_client-sso-oidc__3.556.0__-1679739449": {
@@ -48677,6 +49743,33 @@
               "replace_package": ""
             }
           },
+          "npm__iconv-lite__0.4.24": {
+            "bzlFile": "@@aspect_rules_js~//npm/private:npm_import.bzl",
+            "ruleClassName": "npm_import_rule",
+            "attributes": {
+              "package": "iconv-lite",
+              "version": "0.4.24",
+              "root_package": "",
+              "link_workspace": "",
+              "link_packages": {},
+              "integrity": "sha512-v3MXnZAcvnywkTUEZomIActle7RXXeedOR31wwl7VlyoXO4Qi9arvSenNQWne1TcRwhCL1HwLI21bEqdpj8/rA==",
+              "url": "https://registry.npmjs.org/iconv-lite/-/iconv-lite-0.4.24.tgz",
+              "commit": "",
+              "patch_args": [
+                "-p0"
+              ],
+              "patches": [],
+              "custom_postinstall": "",
+              "npm_auth": "",
+              "npm_auth_basic": "",
+              "npm_auth_username": "",
+              "npm_auth_password": "",
+              "lifecycle_hooks": [],
+              "extra_build_content": "",
+              "generate_bzl_library_targets": false,
+              "extract_full_archive": false
+            }
+          },
           "npm__at_types_bcrypt__5.0.2": {
             "bzlFile": "@@aspect_rules_js~//npm/private:npm_import.bzl",
             "ruleClassName": "npm_import_rule",
@@ -48963,6 +50056,33 @@
               },
               "integrity": "sha512-PY9UxhbQXuDcep3PhZvyIcgf+Yg9/Oet+sftP1vRqK27nbVa6x5/wWpxW+cwMObWKCI4H3FVbR637C60Pe7agQ==",
               "url": "https://registry.npmjs.org/tiny-attribution-generator/-/tiny-attribution-generator-0.1.3.tgz",
+              "commit": "",
+              "patch_args": [
+                "-p0"
+              ],
+              "patches": [],
+              "custom_postinstall": "",
+              "npm_auth": "",
+              "npm_auth_basic": "",
+              "npm_auth_username": "",
+              "npm_auth_password": "",
+              "lifecycle_hooks": [],
+              "extra_build_content": "",
+              "generate_bzl_library_targets": false,
+              "extract_full_archive": false
+            }
+          },
+          "npm__node-domexception__1.0.0": {
+            "bzlFile": "@@aspect_rules_js~//npm/private:npm_import.bzl",
+            "ruleClassName": "npm_import_rule",
+            "attributes": {
+              "package": "node-domexception",
+              "version": "1.0.0",
+              "root_package": "",
+              "link_workspace": "",
+              "link_packages": {},
+              "integrity": "sha512-/jKZoMpw0F8GRwl4/eLROPA3cfcXtLApP0QzLmUT/HuPCZWyB7IY9ZrMeKw2O/nFIqPQB3PVM9aYm0F312AXDQ==",
+              "url": "https://registry.npmjs.org/node-domexception/-/node-domexception-1.0.0.tgz",
               "commit": "",
               "patch_args": [
                 "-p0"
@@ -49777,6 +50897,33 @@
               "extract_full_archive": false
             }
           },
+          "npm__at_types_prop-types__15.7.12": {
+            "bzlFile": "@@aspect_rules_js~//npm/private:npm_import.bzl",
+            "ruleClassName": "npm_import_rule",
+            "attributes": {
+              "package": "@types/prop-types",
+              "version": "15.7.12",
+              "root_package": "",
+              "link_workspace": "",
+              "link_packages": {},
+              "integrity": "sha512-5zvhXYtRNRluoE/jAp4GVsSduVUzNWKkOZrCDBWYtE7biZywwdC2AcEzg+cSMLFRfVgeAFqpfNabiPjxFddV1Q==",
+              "url": "https://registry.npmjs.org/@types/prop-types/-/prop-types-15.7.12.tgz",
+              "commit": "",
+              "patch_args": [
+                "-p0"
+              ],
+              "patches": [],
+              "custom_postinstall": "",
+              "npm_auth": "",
+              "npm_auth_basic": "",
+              "npm_auth_username": "",
+              "npm_auth_password": "",
+              "lifecycle_hooks": [],
+              "extra_build_content": "",
+              "generate_bzl_library_targets": false,
+              "extract_full_archive": false
+            }
+          },
           "npm__http-errors__1.8.1__links": {
             "bzlFile": "@@aspect_rules_js~//npm/private:npm_import.bzl",
             "ruleClassName": "npm_import_links",
@@ -50481,6 +51628,33 @@
               "extract_full_archive": false
             }
           },
+          "npm__psl__1.9.0": {
+            "bzlFile": "@@aspect_rules_js~//npm/private:npm_import.bzl",
+            "ruleClassName": "npm_import_rule",
+            "attributes": {
+              "package": "psl",
+              "version": "1.9.0",
+              "root_package": "",
+              "link_workspace": "",
+              "link_packages": {},
+              "integrity": "sha512-E/ZsdU4HLs/68gYzgGTkMicWTLPdAftJLfJFlLUAAKZGkStNU72sZjT66SnMDVOfOWY/YAoiD7Jxa9iHvngcag==",
+              "url": "https://registry.npmjs.org/psl/-/psl-1.9.0.tgz",
+              "commit": "",
+              "patch_args": [
+                "-p0"
+              ],
+              "patches": [],
+              "custom_postinstall": "",
+              "npm_auth": "",
+              "npm_auth_basic": "",
+              "npm_auth_username": "",
+              "npm_auth_password": "",
+              "lifecycle_hooks": [],
+              "extra_build_content": "",
+              "generate_bzl_library_targets": false,
+              "extract_full_archive": false
+            }
+          },
           "npm__is-reference__3.0.2": {
             "bzlFile": "@@aspect_rules_js~//npm/private:npm_import.bzl",
             "ruleClassName": "npm_import_rule",
@@ -50864,6 +52038,33 @@
                 "//visibility:public"
               ],
               "replace_package": ""
+            }
+          },
+          "npm__humanize-ms__1.2.1": {
+            "bzlFile": "@@aspect_rules_js~//npm/private:npm_import.bzl",
+            "ruleClassName": "npm_import_rule",
+            "attributes": {
+              "package": "humanize-ms",
+              "version": "1.2.1",
+              "root_package": "",
+              "link_workspace": "",
+              "link_packages": {},
+              "integrity": "sha512-Fl70vYtsAFb/C06PTS9dZBo7ihau+Tu/DNCk/OyHhea07S+aeMWpFFkUaXRa8fI+ScZbEI8dfSxwY7gxZ9SAVQ==",
+              "url": "https://registry.npmjs.org/humanize-ms/-/humanize-ms-1.2.1.tgz",
+              "commit": "",
+              "patch_args": [
+                "-p0"
+              ],
+              "patches": [],
+              "custom_postinstall": "",
+              "npm_auth": "",
+              "npm_auth_basic": "",
+              "npm_auth_username": "",
+              "npm_auth_password": "",
+              "lifecycle_hooks": [],
+              "extra_build_content": "",
+              "generate_bzl_library_targets": false,
+              "extract_full_archive": false
             }
           },
           "npm__shebang-regex__3.0.0": {
@@ -51340,6 +52541,37 @@
               "link_packages": {},
               "integrity": "sha512-kFjcSNhnlGV1kyoGk7OXKSawH5JOb/LzUc5w9B02hOTO0dfFRjbHQKvg1d6cf3HbeUmtU9VbbV3qzZ2Teh97WQ==",
               "url": "https://registry.npmjs.org/has-tostringtag/-/has-tostringtag-1.0.0.tgz",
+              "commit": "",
+              "patch_args": [
+                "-p0"
+              ],
+              "patches": [],
+              "custom_postinstall": "",
+              "npm_auth": "",
+              "npm_auth_basic": "",
+              "npm_auth_username": "",
+              "npm_auth_password": "",
+              "lifecycle_hooks": [],
+              "extra_build_content": "",
+              "generate_bzl_library_targets": false,
+              "extract_full_archive": false
+            }
+          },
+          "npm__openai__4.52.0": {
+            "bzlFile": "@@aspect_rules_js~//npm/private:npm_import.bzl",
+            "ruleClassName": "npm_import_rule",
+            "attributes": {
+              "package": "openai",
+              "version": "4.52.0",
+              "root_package": "",
+              "link_workspace": "",
+              "link_packages": {
+                "": [
+                  "openai"
+                ]
+              },
+              "integrity": "sha512-xmiNcdA9QJ5wffHpZDpIsge6AsPTETJ6h5iqDNuFQ7qGSNtonHn8Qe0VHy4UwLE8rBWiSqh4j+iSvuYZSeKkPg==",
+              "url": "https://registry.npmjs.org/openai/-/openai-4.52.0.tgz",
               "commit": "",
               "patch_args": [
                 "-p0"
@@ -51900,6 +53132,37 @@
               "link_packages": {},
               "integrity": "sha512-AlcaJBi/pqqJBIQ8U9Mcpc9i8Aqxn88Skv5d+xBX006BY5u8N3mGLHa5Lgppa7L/HfwgwLgZ6NYs+Ag6uUmJRA==",
               "url": "https://registry.npmjs.org/bowser/-/bowser-2.11.0.tgz",
+              "commit": "",
+              "patch_args": [
+                "-p0"
+              ],
+              "patches": [],
+              "custom_postinstall": "",
+              "npm_auth": "",
+              "npm_auth_basic": "",
+              "npm_auth_username": "",
+              "npm_auth_password": "",
+              "lifecycle_hooks": [],
+              "extra_build_content": "",
+              "generate_bzl_library_targets": false,
+              "extract_full_archive": false
+            }
+          },
+          "npm__at_types_react-dom__18.3.0": {
+            "bzlFile": "@@aspect_rules_js~//npm/private:npm_import.bzl",
+            "ruleClassName": "npm_import_rule",
+            "attributes": {
+              "package": "@types/react-dom",
+              "version": "18.3.0",
+              "root_package": "",
+              "link_workspace": "",
+              "link_packages": {
+                "": [
+                  "@types/react-dom"
+                ]
+              },
+              "integrity": "sha512-EhwApuTmMBmXuFOikhQLIBUn6uFg81SwLMOAUgodJF14SOBOCMdU04gDoYi0WOJJHD144TL32z4yDqCW3dnkQg==",
+              "url": "https://registry.npmjs.org/@types/react-dom/-/react-dom-18.3.0.tgz",
               "commit": "",
               "patch_args": [
                 "-p0"
@@ -52797,6 +54060,37 @@
               "replace_package": ""
             }
           },
+          "npm__ai__3.2.5__-2127310357": {
+            "bzlFile": "@@aspect_rules_js~//npm/private:npm_import.bzl",
+            "ruleClassName": "npm_import_rule",
+            "attributes": {
+              "package": "ai",
+              "version": "3.2.5_-2127310357",
+              "root_package": "",
+              "link_workspace": "",
+              "link_packages": {
+                "": [
+                  "ai"
+                ]
+              },
+              "integrity": "sha512-Af4prTiDL+PKGLuAkNmaCSc3JJWTefjYTuzoLqghj/jsHz61ldyV91JT0Lra3wa9Yt/uDBc8wf4wHd7vCOXbfg==",
+              "url": "https://registry.npmjs.org/ai/-/ai-3.2.5.tgz",
+              "commit": "",
+              "patch_args": [
+                "-p0"
+              ],
+              "patches": [],
+              "custom_postinstall": "",
+              "npm_auth": "",
+              "npm_auth_basic": "",
+              "npm_auth_username": "",
+              "npm_auth_password": "",
+              "lifecycle_hooks": [],
+              "extra_build_content": "",
+              "generate_bzl_library_targets": false,
+              "extract_full_archive": false
+            }
+          },
           "npm__minimatch__9.0.4__links": {
             "bzlFile": "@@aspect_rules_js~//npm/private:npm_import.bzl",
             "ruleClassName": "npm_import_links",
@@ -52925,6 +54219,113 @@
               "extra_build_content": "",
               "generate_bzl_library_targets": false,
               "extract_full_archive": false
+            }
+          },
+          "npm__openai__4.52.0__links": {
+            "bzlFile": "@@aspect_rules_js~//npm/private:npm_import.bzl",
+            "ruleClassName": "npm_import_links",
+            "attributes": {
+              "package": "openai",
+              "version": "4.52.0",
+              "dev": false,
+              "root_package": "",
+              "link_packages": {
+                "": [
+                  "openai"
+                ]
+              },
+              "deps": {
+                "@types/node": "18.19.39",
+                "@types/node-fetch": "2.6.11",
+                "abort-controller": "3.0.0",
+                "agentkeepalive": "4.5.0",
+                "form-data-encoder": "1.7.2",
+                "formdata-node": "4.4.1",
+                "node-fetch": "2.6.12",
+                "web-streams-polyfill": "3.3.3"
+              },
+              "transitive_closure": {
+                "@types/node": [
+                  "18.19.39",
+                  "20.14.2"
+                ],
+                "@types/node-fetch": [
+                  "2.6.11"
+                ],
+                "abort-controller": [
+                  "3.0.0"
+                ],
+                "agentkeepalive": [
+                  "4.5.0"
+                ],
+                "asynckit": [
+                  "0.4.0"
+                ],
+                "combined-stream": [
+                  "1.0.8"
+                ],
+                "delayed-stream": [
+                  "1.0.0"
+                ],
+                "event-target-shim": [
+                  "5.0.1"
+                ],
+                "form-data": [
+                  "4.0.0"
+                ],
+                "form-data-encoder": [
+                  "1.7.2"
+                ],
+                "formdata-node": [
+                  "4.4.1"
+                ],
+                "humanize-ms": [
+                  "1.2.1"
+                ],
+                "mime-db": [
+                  "1.52.0"
+                ],
+                "mime-types": [
+                  "2.1.35"
+                ],
+                "ms": [
+                  "2.1.3"
+                ],
+                "node-domexception": [
+                  "1.0.0"
+                ],
+                "node-fetch": [
+                  "2.6.12"
+                ],
+                "openai": [
+                  "4.52.0"
+                ],
+                "tr46": [
+                  "0.0.3"
+                ],
+                "undici-types": [
+                  "5.26.5"
+                ],
+                "web-streams-polyfill": [
+                  "3.3.3",
+                  "4.0.0-beta.3"
+                ],
+                "webidl-conversions": [
+                  "3.0.1"
+                ],
+                "whatwg-url": [
+                  "5.0.0"
+                ]
+              },
+              "lifecycle_build_target": false,
+              "lifecycle_hooks_env": [],
+              "lifecycle_hooks_execution_requirements": [],
+              "lifecycle_hooks_use_default_shell_env": false,
+              "bins": {},
+              "package_visibility": [
+                "//visibility:public"
+              ],
+              "replace_package": ""
             }
           },
           "npm__at_aws-crypto_sha256-js__3.0.0": {
@@ -53358,6 +54759,41 @@
               "transitive_closure": {
                 "secure-json-parse": [
                   "2.7.0"
+                ]
+              },
+              "lifecycle_build_target": false,
+              "lifecycle_hooks_env": [],
+              "lifecycle_hooks_execution_requirements": [],
+              "lifecycle_hooks_use_default_shell_env": false,
+              "bins": {},
+              "package_visibility": [
+                "//visibility:public"
+              ],
+              "replace_package": ""
+            }
+          },
+          "npm__formdata-node__4.4.1__links": {
+            "bzlFile": "@@aspect_rules_js~//npm/private:npm_import.bzl",
+            "ruleClassName": "npm_import_links",
+            "attributes": {
+              "package": "formdata-node",
+              "version": "4.4.1",
+              "dev": false,
+              "root_package": "",
+              "link_packages": {},
+              "deps": {
+                "node-domexception": "1.0.0",
+                "web-streams-polyfill": "4.0.0-beta.3"
+              },
+              "transitive_closure": {
+                "formdata-node": [
+                  "4.4.1"
+                ],
+                "node-domexception": [
+                  "1.0.0"
+                ],
+                "web-streams-polyfill": [
+                  "4.0.0-beta.3"
                 ]
               },
               "lifecycle_build_target": false,
@@ -54355,6 +55791,32 @@
               "transitive_closure": {
                 "vary": [
                   "1.1.2"
+                ]
+              },
+              "lifecycle_build_target": false,
+              "lifecycle_hooks_env": [],
+              "lifecycle_hooks_execution_requirements": [],
+              "lifecycle_hooks_use_default_shell_env": false,
+              "bins": {},
+              "package_visibility": [
+                "//visibility:public"
+              ],
+              "replace_package": ""
+            }
+          },
+          "npm__event-target-shim__5.0.1__links": {
+            "bzlFile": "@@aspect_rules_js~//npm/private:npm_import.bzl",
+            "ruleClassName": "npm_import_links",
+            "attributes": {
+              "package": "event-target-shim",
+              "version": "5.0.1",
+              "dev": false,
+              "root_package": "",
+              "link_packages": {},
+              "deps": {},
+              "transitive_closure": {
+                "event-target-shim": [
+                  "5.0.1"
                 ]
               },
               "lifecycle_build_target": false,
@@ -56051,6 +57513,32 @@
               "lifecycle_hooks_execution_requirements": [
                 "no-sandbox"
               ],
+              "lifecycle_hooks_use_default_shell_env": false,
+              "bins": {},
+              "package_visibility": [
+                "//visibility:public"
+              ],
+              "replace_package": ""
+            }
+          },
+          "npm__form-data-encoder__1.7.2__links": {
+            "bzlFile": "@@aspect_rules_js~//npm/private:npm_import.bzl",
+            "ruleClassName": "npm_import_links",
+            "attributes": {
+              "package": "form-data-encoder",
+              "version": "1.7.2",
+              "dev": false,
+              "root_package": "",
+              "link_packages": {},
+              "deps": {},
+              "transitive_closure": {
+                "form-data-encoder": [
+                  "1.7.2"
+                ]
+              },
+              "lifecycle_build_target": false,
+              "lifecycle_hooks_env": [],
+              "lifecycle_hooks_execution_requirements": [],
               "lifecycle_hooks_use_default_shell_env": false,
               "bins": {},
               "package_visibility": [
