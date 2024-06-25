@@ -65,3 +65,5 @@ RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | b
     source "$NVM_DIR/nvm.sh" && \
     nvm install lts/hydrogen && \
     npm install -g pnpm
+
+RUN echo "export PS1='\u@\h:\w $ '" >> /root/.bashrc

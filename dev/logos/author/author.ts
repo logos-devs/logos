@@ -130,16 +130,38 @@ container.bind(OllamaParams.Host)
     .toConstantValue("http://10.255.255.6:8085");
 
 
-container.bind(Model).to(OpenAiModel)
+// container.bind(Model).to(OpenAiModel)
+//     .whenTargetNamed(Tasks.LinuxConsoleSession);
+
+container.bind(Model).to(OllamaModel)
     .whenTargetNamed(Tasks.LinuxConsoleSession);
 
+let context = `# You are an AI agent tasked with analyzing and critiquing software code. You have access to a Linux terminal with a bash shell. Your goal is to review the source code of a gRPC web framework called logos and provide a detailed critique.
 
-const
-    CONTEXT_LENGTH = 8192,
-    PROMPT = 'author@logos: $ ';
+# Instructions:
+# 1. Navigate to the project directory: cd /src/logos
+# 2. Use ls to discover what files exist, and cat to read the file's contents
+# 3. After reading each file, append your analysis to critique.txt using cat with a heredoc. Only critique files that exist.
+# 4. Focus on both framework code in /src/logos/dev and app code in /src/logos/apps
+# 5. Provide specific, actionable advice about the source code
+# 6. Be thorough in your analysis - there is no time limit
 
-let context = `# You are an AI agent which develops software automatically. You are connected to a real Linux terminal with a busybox environment which allows you to execute commands. You will use these commands to work on the project. You can only issue text commands to the terminal. You cannot issue special escape codes to the terminal, so please be careful not to run commands which will require you to hit modifier keys like ctrl-c or ctrl-d to return to the prompt. Always use cat with heredoc to create files. You do not have access to interactive text editors. We will add that capability to you later. The following is your terminal session. Use commands to explore the project and make changes as needed. Whenever you want to make plans or think out loud, or say something to the human user, you must write those statements as a shell comment by preceding every new line with # just like I have done with these instructions. DO NOT wrap your commands with backticks. Remember that in this session everything you write will be directly evaluated by the busybox ash shell. Good luck!
+# Important:
+# - Use only basic shell commands (cd, ls, cat, echo)
+# - Never use multi-line shell commands. Only use one-liners.
+# - Avoid any commands that could get the terminal stuck. You cannot use modifier keys, so you should not run any command which requires ctrl-d or ctrl-c to finish
+# - Do not use text editors or commands requiring modifier keys
+# - Write all non-command text as shell comments (preceded by #)
+# - Do NOT use markdown formatting or code blocks
+# - Use cat with heredoc to create or append to files
 
+# Example of using cat with heredoc to append to critique.txt:
+# cat << EOF >> critique.txt
+# Your analysis text here
+# Multiple lines are fine
+# EOF
+
+# Begin your analysis now. Remember to think carefully before executing any command.
 `;
 
 interface Agent {
@@ -150,10 +172,17 @@ interface Agent {
 class ConsoleAgent implements Agent {
     @inject(Model) @named(Tasks.LinuxConsoleSession) private model: Model;
 
+    private promptAwaitsInput(data: string): boolean {
+        const
+            lastNewlinePos = data.lastIndexOf('\n'),
+            lastLine = lastNewlinePos >= 0 ? data.slice(lastNewlinePos + 1) : data;
+        return /root@logos_[a-zA-Z0-9_]+:\S+ \$ $/.test(lastLine);
+    }
+
     async run(): Promise<void> {
         const ptyProcess = pty.spawn("/bin/bash", [
             "-c",
-            "bazel run --ui_event_filters=-info,-stdout,-stderr --noshow_progress //dev/logos/author:shell sh"
+            "bazel run --ui_event_filters=-info,-stdout,-stderr --noshow_progress //dev/logos/author:shell"
         ], {
             name: 'xterm',
             cols: 128,
@@ -161,11 +190,15 @@ class ConsoleAgent implements Agent {
             env: process.env
         });
 
+        process.stdout.write(context);
+
         ptyProcess.onData((data) => {
             process.stdout.write(data);
             context += data;
+            context = context.slice(-5000);
 
-            if (data.endsWith(PROMPT)) {
+            //console.debug("data", {data});
+            if (this.promptAwaitsInput(data)) {
                 this.model.generateText(context).then((response) => {
                     const cmd = response.trimEnd() + "\r";
                     context += cmd;

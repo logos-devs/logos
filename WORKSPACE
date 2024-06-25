@@ -277,27 +277,3 @@ buildbuddy(
     container_image = UBUNTU20_04_IMAGE,
     llvm = True,
 )
-
-# busybox
-new_local_repository(
-    name = "busybox",
-    build_file_content = """
-genrule(
-    name = "busybox_static",
-    srcs = glob(["**"]),
-    outs = ["busybox"],
-    cmd = \"""
-        mkdir -p "$(@D)/busybox_build" && \\
-        rsync -aL "$$(pwd)/external/busybox/" "$(@D)/busybox_build/" && \\
-        pushd "$(@D)/busybox_build" && \\
-        make defconfig > /dev/null && \\
-        sed -i '/# CONFIG_STATIC is not set/c\\\\CONFIG_STATIC=y' .config
-        make -j && \\
-        popd && \\
-        cp "$(@D)/busybox_build/busybox" "$(@D)/busybox"
-    \""",
-    visibility = ["//visibility:public"]
-)
-""",
-    path = "third_party/busybox",
-)
