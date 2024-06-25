@@ -47,6 +47,7 @@
     "node-gyp": "10.1.0",
     "node-pty": "1.0.0",
     "ollama": "0.5.2",
+    "openai": "4.52.0",
     "path-to-regexp": "6.2.2",
     "pwa-helpers": "0.9.1",
     "reflect-metadata": "0.2.2",
@@ -57,7 +58,8 @@
     "ts-protoc-gen": "0.15.0",
     "tslib": "2.6.3",
     "tsyringe": "4.8.0",
-    "typescript": "5.4.5"
+    "typescript": "5.4.5",
+    "winston": "3.13.0"
   },
   "pnpm": {
     "overrides": {

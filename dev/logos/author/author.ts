@@ -4,6 +4,18 @@ import pty from 'node-pty';
 import {Container, injectable, inject, named} from "inversify";
 import {Ollama} from "ollama";
 import {OpenAI} from "openai";
+import winston from "winston";
+
+const logger = winston.createLogger({
+    level: "debug",
+    format: winston.format.combine(
+        //winston.format.timestamp(),
+        winston.format.simple()
+    ),
+    transports: [
+        new winston.transports.File({filename: "/tmp/logos.log"})
+    ]
+});
 
 process.chdir(process.env.BUILD_WORKSPACE_DIRECTORY);
 
@@ -136,16 +148,20 @@ container.bind(OllamaParams.Host)
 container.bind(Model).to(OllamaModel)
     .whenTargetNamed(Tasks.LinuxConsoleSession);
 
-let context = `# You are an AI agent tasked with analyzing and critiquing software code. You have access to a Linux terminal with a bash shell. Your goal is to review the source code of a gRPC web framework called logos and provide a detailed critique.
-
+let context = `
+# You are an AI agent tasked with analyzing and critiquing software code. You have access to a Linux terminal with a
+# bash shell. Your goal is to review the source code of a gRPC web framework called logos and provide a detailed
+# critique.
+# 
 # Instructions:
-# 1. Navigate to the project directory: cd /src/logos
-# 2. Use ls to discover what files exist, and cat to read the file's contents
-# 3. After reading each file, append your analysis to critique.txt using cat with a heredoc. Only critique files that exist.
-# 4. Focus on both framework code in /src/logos/dev and app code in /src/logos/apps
-# 5. Provide specific, actionable advice about the source code
-# 6. Be thorough in your analysis - there is no time limit
-
+# 1. The first command you should run is: find /src/
+# 2. Navigate to the project directory: cd /src/logos
+# 3. Use ls to discover what files exist, and cat to read the file's contents
+# 4. After reading each file, append your analysis to critique.txt using cat with a heredoc. Only critique files that exist.
+# 5. Focus on both framework code in /src/logos/dev and app code in /src/logos/apps
+# 6. Provide specific, actionable advice about the source code
+# 7. Be thorough in your analysis - there is no time limit
+# 
 # Important:
 # - Use only basic shell commands (cd, ls, cat, echo)
 # - Never use multi-line shell commands. Only use one-liners.
@@ -154,14 +170,16 @@ let context = `# You are an AI agent tasked with analyzing and critiquing softwa
 # - Write all non-command text as shell comments (preceded by #)
 # - Do NOT use markdown formatting or code blocks
 # - Use cat with heredoc to create or append to files
-
+# 
 # Example of using cat with heredoc to append to critique.txt:
 # cat << EOF >> critique.txt
 # Your analysis text here
 # Multiple lines are fine
 # EOF
-
+# 
 # Begin your analysis now. Remember to think carefully before executing any command.
+# 
+ 
 `;
 
 interface Agent {
@@ -197,12 +215,16 @@ class ConsoleAgent implements Agent {
             context += data;
             context = context.slice(-5000);
 
-            //console.debug("data", {data});
-            if (this.promptAwaitsInput(data)) {
+            if (this.promptAwaitsInput(context)) {
+                logger.debug(context)
+
                 this.model.generateText(context).then((response) => {
                     const cmd = response.trimEnd() + "\r";
                     context += cmd;
-                    ptyProcess.write(cmd);
+
+                    setTimeout(() => {
+                        ptyProcess.write(cmd);
+                    }, 5000);
                 });
             }
         });

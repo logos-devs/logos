@@ -14,6 +14,7 @@ ts_library(
         "//:node_modules/node-pty",
         "//:node_modules/ollama",
         "//:node_modules/openai",
+        "//:node_modules/winston",
     ],
 )
 
