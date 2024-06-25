@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="processed_querydsl-sql-5.0.03">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/bazel-bin/dev/logos/service/backend/Server.runfiles/maven/v1/https/repo.maven.apache.org/maven2/com/querydsl/querydsl-sql/5.0.0/processed_querydsl-sql-5.0.0.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

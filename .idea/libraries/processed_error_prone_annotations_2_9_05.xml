@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="processed_error_prone_annotations-2.9.05">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/bazel-out/k8-fastbuild/bin/dev/logos/service/storage/pg/exporter/exporter.runfiles/_main/external/maven/v1/https/repo.maven.apache.org/maven2/com/google/errorprone/error_prone_annotations/2.9.0/processed_error_prone_annotations-2.9.0.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

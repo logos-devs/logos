@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="processed_org.eclipse.jgit-6.6.0.202305301015-r">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/bazel-logos/bazel-out/k8-fastbuild/bin/dev/logos/service/backend/Server.runfiles/maven/v1/https/repo.maven.apache.org/maven2/org/eclipse/jgit/org.eclipse.jgit/6.6.0.202305301015-r/processed_org.eclipse.jgit-6.6.0.202305301015-r.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

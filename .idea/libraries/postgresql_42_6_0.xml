@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="postgresql-42.6.0">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/bazel-logos/external/org_postgresql_postgresql_42_6_0/file/v1/https/repo.maven.apache.org/maven2/org/postgresql/postgresql/42.6.0/postgresql-42.6.0.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

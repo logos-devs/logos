@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="perfmark-api-0.25.0">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/bazel-logos/external/io_perfmark_perfmark_api_0_25_0/file/v1/https/repo.maven.apache.org/maven2/io/perfmark/perfmark-api/0.25.0/perfmark-api-0.25.0.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

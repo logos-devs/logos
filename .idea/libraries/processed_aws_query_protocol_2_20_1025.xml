@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="processed_aws-query-protocol-2.20.1025">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/bazel-bin/dev/logos/service/storage/pg/exporter/exporter.runfiles/maven/v1/https/repo.maven.apache.org/maven2/software/amazon/awssdk/aws-query-protocol/2.20.102/processed_aws-query-protocol-2.20.102.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

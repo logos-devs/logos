@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="gson-2.10.1-sources">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/bazel-logos/external/com_google_code_gson_gson_jar_sources_2_10_1/file/v1/https/repo.maven.apache.org/maven2/com/google/code/gson/gson/2.10.1/gson-2.10.1-sources.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

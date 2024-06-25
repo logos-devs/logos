@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="querydsl-core-5.0.0">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/bazel-logos/external/com_querydsl_querydsl_core_5_0_0/file/v1/https/repo.maven.apache.org/maven2/com/querydsl/querydsl-core/5.0.0/querydsl-core-5.0.0.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

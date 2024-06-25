@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="eddsa-0.3.0">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/bazel-logos/external/net_i2p_crypto_eddsa_jar_0_3_0/file/v1/https/repo.maven.apache.org/maven2/net/i2p/crypto/eddsa/0.3.0/eddsa-0.3.0.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="j2objc-annotations-1.3-sources">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/bazel-logos/external/com_google_j2objc_j2objc_annotations_jar_sources_1_3/file/v1/https/repo.maven.apache.org/maven2/com/google/j2objc/j2objc-annotations/1.3/j2objc-annotations-1.3-sources.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

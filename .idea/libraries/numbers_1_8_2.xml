@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="numbers-1.8.2">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/bazel-logos/external/com_github_peteroupc_numbers_1_8_2/file/v1/https/repo.maven.apache.org/maven2/com/github/peteroupc/numbers/1.8.2/numbers-1.8.2.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

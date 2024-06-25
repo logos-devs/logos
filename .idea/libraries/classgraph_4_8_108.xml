@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="classgraph-4.8.108">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/bazel-logos/external/io_github_classgraph_classgraph_4_8_108/file/v1/https/repo.maven.apache.org/maven2/io/github/classgraph/classgraph/4.8.108/classgraph-4.8.108.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

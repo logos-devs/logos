@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="libvoice_java_library1">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/bazel-out/k8-fastbuild/bin/dev/logos/service/backend/Server.runfiles/_main/app/digits/proto/libvoice_java_library.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

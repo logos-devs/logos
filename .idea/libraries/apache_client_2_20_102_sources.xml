@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="apache-client-2.20.102-sources">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/bazel-logos/external/software_amazon_awssdk_apache_client_jar_sources_2_20_102/file/v1/https/repo.maven.apache.org/maven2/software/amazon/awssdk/apache-client/2.20.102/apache-client-2.20.102-sources.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

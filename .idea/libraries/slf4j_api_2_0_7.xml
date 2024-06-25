@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="slf4j-api-2.0.7">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/bazel-logos/external/org_slf4j_slf4j_api_2_0_7/file/v1/https/repo.maven.apache.org/maven2/org/slf4j/slf4j-api/2.0.7/slf4j-api-2.0.7.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

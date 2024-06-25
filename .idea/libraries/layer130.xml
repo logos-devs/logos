@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="layer130">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/bazel-out/k8-fastbuild/bin/node_modules/.aspect_rules_js/aws-cdk-lib@2.122.0_constructs_10.3.0/node_modules/@aws-cdk/asset-awscli-v1/lib/layer.zip!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

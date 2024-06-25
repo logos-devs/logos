@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="processed_annotations-api-6.0.533">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/bazel-logos/bazel-out/k8-fastbuild/bin/dev/logos/service/backend/Server.runfiles/_main/external/maven/v1/https/repo.maven.apache.org/maven2/org/apache/tomcat/annotations-api/6.0.53/processed_annotations-api-6.0.53.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

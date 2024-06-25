@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="libdatabase_module3">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/bazel-out/k8-fastbuild/bin/dev/logos/service/storage/pg/exporter/exporter.runfiles/_main/dev/logos/module/libdatabase_module.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

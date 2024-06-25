@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="libmodule4">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/bazel-logos/bazel-out/k8-fastbuild/bin/dev/logos/service/backend/Server.runfiles/_main/app/digits/module/libmodule.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

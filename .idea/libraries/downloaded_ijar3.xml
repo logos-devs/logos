@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="downloaded-ijar3">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/bazel-bin/external/stringtemplate4/jar/_ijar/jar/stringtemplate4/jar/downloaded-ijar.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

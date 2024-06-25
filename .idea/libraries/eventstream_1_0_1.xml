@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="eventstream-1.0.1">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/bazel-logos/external/software_amazon_eventstream_eventstream_1_0_1/file/v1/https/repo.maven.apache.org/maven2/software/amazon/eventstream/eventstream/1.0.1/eventstream-1.0.1.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

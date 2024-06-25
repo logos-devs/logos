@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="commons-io-2.7-sources">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/bazel-logos/external/commons_io_commons_io_jar_sources_2_7/file/v1/https/repo.maven.apache.org/maven2/commons-io/commons-io/2.7/commons-io-2.7-sources.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

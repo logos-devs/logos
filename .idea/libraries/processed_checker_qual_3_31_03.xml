@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="processed_checker-qual-3.31.03">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/bazel-out/k8-fastbuild/bin/dev/logos/service/storage/pg/exporter/exporter.runfiles/_main/external/maven/v1/https/repo.maven.apache.org/maven2/org/checkerframework/checker-qual/3.31.0/processed_checker-qual-3.31.0.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="processed_twilio-9.8.04">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/bazel-bin/dev/logos/service/backend/Server.runfiles/_main/external/maven/v1/https/repo.maven.apache.org/maven2/com/twilio/sdk/twilio/9.8.0/processed_twilio-9.8.0.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="processed_auth-2.20.1026">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/bazel-bin/dev/logos/service/storage/pg/exporter/exporter.runfiles/_main/external/maven/v1/https/repo.maven.apache.org/maven2/software/amazon/awssdk/auth/2.20.102/processed_auth-2.20.102.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="libnetty2">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/bazel-bin/dev/logos/service/backend/Server.runfiles/_main/external/io_grpc_grpc_java/netty/libnetty.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="processed_netty-nio-client-2.20.1021">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/bazel-out/k8-fastbuild/bin/dev/logos/service/backend/Server.runfiles/_main/external/maven/v1/https/repo.maven.apache.org/maven2/software/amazon/awssdk/netty-nio-client/2.20.102/processed_netty-nio-client-2.20.102.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

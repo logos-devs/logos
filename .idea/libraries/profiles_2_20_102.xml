@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="profiles-2.20.102">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/bazel-logos/external/software_amazon_awssdk_profiles_2_20_102/file/v1/https/repo.maven.apache.org/maven2/software/amazon/awssdk/profiles/2.20.102/profiles-2.20.102.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="libcontext11">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/bazel-bin/dev/logos/service/storage/pg/exporter/exporter.runfiles/_main/external/io_grpc_grpc_java/context/libcontext.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

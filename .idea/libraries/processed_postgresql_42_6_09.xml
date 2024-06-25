@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="processed_postgresql-42.6.09">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/bazel-out/k8-fastbuild/bin/dev/logos/service/backend/Server.runfiles/maven/v1/https/repo.maven.apache.org/maven2/org/postgresql/postgresql/42.6.0/processed_postgresql-42.6.0.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

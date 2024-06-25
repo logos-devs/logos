@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="jjwt-impl-0.12.3-sources">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/bazel-logos/external/io_jsonwebtoken_jjwt_impl_jar_sources_0_12_3/file/v1/https/repo.maven.apache.org/maven2/io/jsonwebtoken/jjwt-impl/0.12.3/jjwt-impl-0.12.3-sources.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

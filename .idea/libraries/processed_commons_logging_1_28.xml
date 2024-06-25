@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="processed_commons-logging-1.28">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/bazel-bin/dev/logos/service/storage/pg/exporter/exporter.runfiles/maven/v1/https/repo.maven.apache.org/maven2/commons-logging/commons-logging/1.2/processed_commons-logging-1.2.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

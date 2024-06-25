@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="libutil3">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/bazel-bin/dev/logos/service/backend/Server.runfiles/com_google_protobuf/java/util/libutil.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

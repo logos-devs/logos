@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="jackson-dataformat-xml-2.14.0">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/bazel-logos/external/com_fasterxml_jackson_dataformat_jackson_dataformat_xml_2_14_0/file/v1/https/repo.maven.apache.org/maven2/com/fasterxml/jackson/dataformat/jackson-dataformat-xml/2.14.0/jackson-dataformat-xml-2.14.0.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

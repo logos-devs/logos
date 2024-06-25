@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="processed_java-jwt-4.4.04">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/bazel-bin/dev/logos/service/backend/Server.runfiles/_main/external/maven/v1/https/repo.maven.apache.org/maven2/com/auth0/java-jwt/4.4.0/processed_java-jwt-4.4.0.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="downloaded13">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/bazel-logos/bazel-out/k8-fastbuild/bin/dev/logos/service/backend/Server.runfiles/_main/external/antlr4_runtime/jar/downloaded.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

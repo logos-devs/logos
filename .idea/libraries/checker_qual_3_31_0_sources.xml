@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="checker-qual-3.31.0-sources">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/bazel-logos/external/org_checkerframework_checker_qual_jar_sources_3_31_0/file/v1/https/repo.maven.apache.org/maven2/org/checkerframework/checker-qual/3.31.0/checker-qual-3.31.0-sources.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

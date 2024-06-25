@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="processed_guava-31.0.1-jre5">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/bazel-logos/bazel-out/k8-fastbuild/bin/dev/logos/service/backend/Server.runfiles/_main/external/maven/v1/https/repo.maven.apache.org/maven2/com/google/guava/guava/31.0.1-jre/processed_guava-31.0.1-jre.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

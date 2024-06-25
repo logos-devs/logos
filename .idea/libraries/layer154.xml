@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="layer154">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/bazel-bin/node_modules/.aspect_rules_js/@aws-cdk+asset-awscli-v1@2.2.201/node_modules/@aws-cdk/asset-awscli-v1/lib/layer.zip!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

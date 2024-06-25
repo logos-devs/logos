@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="processed_netty-handler-4.1.94.Final4">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/bazel-out/k8-fastbuild/bin/dev/logos/service/storage/pg/exporter/exporter.runfiles/maven/v1/https/repo.maven.apache.org/maven2/io/netty/netty-handler/4.1.94.Final/processed_netty-handler-4.1.94.Final.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

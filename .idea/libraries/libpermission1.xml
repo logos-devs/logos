@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="libpermission1">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/bazel-out/k8-fastbuild/bin/dev/logos/service/backend/Server.runfiles/_main/app/auth/permission/libpermission.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

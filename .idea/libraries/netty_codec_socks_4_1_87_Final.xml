@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="netty-codec-socks-4.1.87.Final">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/bazel-logos/external/io_netty_netty_codec_socks_4_1_87_Final/file/v1/https/repo.maven.apache.org/maven2/io/netty/netty-codec-socks/4.1.87.Final/netty-codec-socks-4.1.87.Final.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

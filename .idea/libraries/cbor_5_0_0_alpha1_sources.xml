@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="cbor-5.0.0-alpha1-sources">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/bazel-logos/external/com_upokecenter_cbor_jar_sources_5_0_0_alpha1/file/v1/https/repo.maven.apache.org/maven2/com/upokecenter/cbor/5.0.0-alpha1/cbor-5.0.0-alpha1-sources.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

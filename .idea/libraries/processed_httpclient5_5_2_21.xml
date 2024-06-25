@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="processed_httpclient5-5.2.21">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/bazel-bin/dev/logos/service/backend/Server.runfiles/_main/external/maven/v1/https/repo.maven.apache.org/maven2/org/apache/httpcomponents/client5/httpclient5/5.2.2/processed_httpclient5-5.2.2.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

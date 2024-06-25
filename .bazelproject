@@ -1,0 +1,12 @@
+directories:
+  .
+targets:
+  //dev/...
+additional_languages:
+  java
+  javascript
+  python
+  typescript
+java_language_level: JDK_17
+ts_config_rules:
+  //:tsconfig

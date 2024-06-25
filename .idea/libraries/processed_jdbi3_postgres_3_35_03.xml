@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="processed_jdbi3-postgres-3.35.03">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/bazel-logos/bazel-out/k8-fastbuild/bin/dev/logos/service/backend/Server.runfiles/maven/v1/https/repo.maven.apache.org/maven2/org/jdbi/jdbi3-postgres/3.35.0/processed_jdbi3-postgres-3.35.0.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

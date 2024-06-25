@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="cognitoidentityprovider-2.20.102-sources">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/bazel-logos/external/software_amazon_awssdk_cognitoidentityprovider_jar_sources_2_20_102/file/v1/https/repo.maven.apache.org/maven2/software/amazon/awssdk/cognitoidentityprovider/2.20.102/cognitoidentityprovider-2.20.102-sources.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

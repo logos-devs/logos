@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="bazel2">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/bazel-logos/bazel-out/k8-opt-exec-ST-74b705998179/bin/external/rules_antlr/src/main/java/org/antlr/bazel/bazel.runfiles/_main/external/rules_antlr/src/main/java/org/antlr/bazel/bazel.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

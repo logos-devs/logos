@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="httpclient5-5.2.2">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/bazel-logos/external/org_apache_httpcomponents_client5_httpclient5_5_2_2/file/v1/https/repo.maven.apache.org/maven2/org/apache/httpcomponents/client5/httpclient5/5.2.2/httpclient5-5.2.2.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

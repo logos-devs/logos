@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="guava-31.0.1-jre">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/bazel-logos/external/com_google_guava_guava_31_0_1_jre/file/v1/https/repo.maven.apache.org/maven2/com/google/guava/guava/31.0.1-jre/guava-31.0.1-jre.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

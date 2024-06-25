@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="processed_reactive-streams-1.0.45">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/bazel-bin/dev/logos/service/storage/pg/exporter/exporter.runfiles/maven/v1/https/repo.maven.apache.org/maven2/org/reactivestreams/reactive-streams/1.0.4/processed_reactive-streams-1.0.4.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

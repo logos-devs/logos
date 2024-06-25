@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="jdbi3-core-3.39.1-sources">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/bazel-logos/external/org_jdbi_jdbi3_core_jar_sources_3_39_1/file/v1/https/repo.maven.apache.org/maven2/org/jdbi/jdbi3-core/3.39.1/jdbi3-core-3.39.1-sources.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

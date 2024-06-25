@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="processed_ssooidc-2.20.1024">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/bazel-logos/bazel-out/k8-fastbuild/bin/dev/logos/service/backend/Server.runfiles/maven/v1/https/repo.maven.apache.org/maven2/software/amazon/awssdk/ssooidc/2.20.102/processed_ssooidc-2.20.102.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

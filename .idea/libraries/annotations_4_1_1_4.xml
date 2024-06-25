@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="annotations-4.1.1.4">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/bazel-logos/external/com_google_android_annotations_4_1_1_4/file/v1/https/repo.maven.apache.org/maven2/com/google/android/annotations/4.1.1.4/annotations-4.1.1.4.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

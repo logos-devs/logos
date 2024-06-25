@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="processed_utils-2.20.10211">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/bazel-out/k8-fastbuild/bin/dev/logos/service/backend/Server.runfiles/maven/v1/https/repo.maven.apache.org/maven2/software/amazon/awssdk/utils/2.20.102/processed_utils-2.20.102.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

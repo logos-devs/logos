@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="apiguardian-api-1.1.2">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/bazel-logos/external/org_apiguardian_apiguardian_api_1_1_2/file/v1/https/repo.maven.apache.org/maven2/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

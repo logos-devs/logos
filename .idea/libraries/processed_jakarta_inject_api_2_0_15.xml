@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="processed_jakarta.inject-api-2.0.15">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/bazel-logos/bazel-out/k8-fastbuild/bin/dev/logos/service/storage/pg/exporter/exporter.runfiles/maven/v1/https/repo.maven.apache.org/maven2/jakarta/inject/jakarta.inject-api/2.0.1/processed_jakarta.inject-api-2.0.1.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

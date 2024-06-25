@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="mysema-commons-lang-0.2.4">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/bazel-logos/external/com_mysema_commons_mysema_commons_lang_0_2_4/file/v1/https/repo.maven.apache.org/maven2/com/mysema/commons/mysema-commons-lang/0.2.4/mysema-commons-lang-0.2.4.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

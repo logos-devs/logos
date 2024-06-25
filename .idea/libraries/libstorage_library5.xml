@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="libstorage_library5">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/bazel-bin/dev/logos/service/backend/Server.runfiles/_main/dev/logos/service/storage/libstorage_library.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

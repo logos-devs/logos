@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="layer253">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/bazel-out/k8-fastbuild/bin/dev/logos/infra/cdk.sh.runfiles/_main/node_modules/.aspect_rules_js/@aws-cdk+lambda-layer-kubectl-v25@2.0.4_-1949964481/node_modules/@aws-cdk/lambda-layer-kubectl-v25/lib/layer.zip!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="processed_aopalliance-1.01">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/bazel-logos/bazel-out/k8-fastbuild/bin/dev/logos/service/backend/Server.runfiles/maven/v1/https/repo.maven.apache.org/maven2/aopalliance/aopalliance/1.0/processed_aopalliance-1.0.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

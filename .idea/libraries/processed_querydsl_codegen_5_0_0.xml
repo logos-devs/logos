@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="processed_querydsl-codegen-5.0.0">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/bazel-out/k8-fastbuild/bin/dev/logos/service/storage/pg/exporter/exporter.runfiles/_main/external/maven/v1/https/repo.maven.apache.org/maven2/com/querydsl/querydsl-codegen/5.0.0/processed_querydsl-codegen-5.0.0.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

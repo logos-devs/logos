@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="webauthn-server-core-2.5.0">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/bazel-logos/external/com_yubico_webauthn_server_core_2_5_0/file/v1/https/repo.maven.apache.org/maven2/com/yubico/webauthn-server-core/2.5.0/webauthn-server-core-2.5.0.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

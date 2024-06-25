@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="jackson-core-2.16.1-sources">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/bazel-logos/external/com_fasterxml_jackson_core_jackson_core_jar_sources_2_16_1/file/v1/https/repo.maven.apache.org/maven2/com/fasterxml/jackson/core/jackson-core/2.16.1/jackson-core-2.16.1-sources.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

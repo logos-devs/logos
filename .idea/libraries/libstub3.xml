@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="libstub3">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/bazel-logos/bazel-out/k8-fastbuild/bin/dev/logos/service/backend/Server.runfiles/io_grpc_grpc_java/stub/libstub.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

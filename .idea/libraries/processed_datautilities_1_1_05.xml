@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="processed_datautilities-1.1.05">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/bazel-logos/bazel-out/k8-fastbuild/bin/dev/logos/service/backend/Server.runfiles/maven/v1/https/repo.maven.apache.org/maven2/com/github/peteroupc/datautilities/1.1.0/processed_datautilities-1.1.0.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

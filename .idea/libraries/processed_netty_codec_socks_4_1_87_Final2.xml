@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="processed_netty-codec-socks-4.1.87.Final2">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/bazel-out/k8-fastbuild/bin/dev/logos/service/backend/Server.runfiles/_main/external/maven/v1/https/repo.maven.apache.org/maven2/io/netty/netty-codec-socks/4.1.87.Final/processed_netty-codec-socks-4.1.87.Final.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>
