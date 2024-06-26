@@ -13,8 +13,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8fc60c5c-6b60-44d9-a8a1-dd149d84e1ca" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/../.bazelproject" beforeDir="false" afterPath="$PROJECT_DIR$/../.bazelproject" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../dev/logos/author/author.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../dev/logos/author/author.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -51,13 +51,13 @@
 }]]></component>
   <component name="RdControllerToolWindowsLayoutState" isNewUi="true">
     <layout>
-      <window_info id="Bookmarks" show_stripe_button="false" side_tool="true" />
       <window_info id="Merge Requests" show_stripe_button="false" />
       <window_info id="Commit_Guest" show_stripe_button="false" />
       <window_info id="Pull Requests" show_stripe_button="false" />
       <window_info id="Learn" show_stripe_button="false" />
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.21124302" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.50074184" weight="0.27676398" />
       <window_info id="Commit" order="1" weight="0.25" />
+      <window_info id="Bookmarks" order="2" sideWeight="0.49925816" side_tool="true" weight="0.33554572" />
       <window_info id="Welcome to GitHub Copilot" order="2" show_stripe_button="false" />
       <window_info id="Structure" order="2" side_tool="true" weight="0.25" />
       <window_info anchor="bottom" id="Database Changes" show_stripe_button="false" />
@@ -72,7 +72,7 @@
       <window_info anchor="bottom" id="Terminal" order="3" />
       <window_info anchor="bottom" id="Bazel Problems " order="4" sideWeight="0.49965084" side_tool="true" weight="0.33017418" />
       <window_info anchor="bottom" id="Services" order="4" />
-      <window_info active="true" anchor="bottom" id="Blaze" order="4" sideWeight="0.50034916" visible="true" weight="0.33017418" />
+      <window_info active="true" anchor="bottom" id="Blaze" order="4" sideWeight="0.50034916" visible="true" weight="0.23105264" />
       <window_info anchor="right" id="Plots" show_stripe_button="false" />
       <window_info anchor="right" id="Endpoints" show_stripe_button="false" />
       <window_info anchor="right" id="make" show_stripe_button="false" side_tool="true" />
@@ -105,7 +105,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1719352645574</updated>
-      <workItem from="1719352646619" duration="1869000" />
+      <workItem from="1719352646619" duration="9796000" />
     </task>
     <servers />
   </component>

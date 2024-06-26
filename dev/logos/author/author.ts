@@ -27,12 +27,16 @@ const Tasks = {
     CodeCritique: Symbol.for("CodeCritique")
 };
 
+const GenerativeTextModelParams = {
+    SystemPrompt: Symbol.for("GenerativeTextModelSystemPrompt")
+}
+
 // skipBaseClassChecks allows wrapping external classes for injection without modification
 const container: Container = new Container({skipBaseClassChecks: true});
 
 @injectable()
 abstract class Model {
-    abstract generateText(prompt: string, model?: string): Promise<string>;
+    abstract generateText(prompt: string, model?: string): AsyncGenerator<string>;
 }
 
 enum OpenAiModels {
@@ -61,21 +65,37 @@ class OpenAiServer extends OpenAI {
 class OpenAiModel extends Model {
     private readonly server: OpenAiServer;
     private readonly modelName: string;
+    private readonly systemPrompt: string;
 
     constructor(
         @inject(OpenAiServer) server: OpenAiServer,
         @inject(OpenAiParams.ModelName) modelName: string,
+        @inject(GenerativeTextModelParams.SystemPrompt) systemPrompt: string
     ) {
         super();
         this.server = server;
         this.modelName = modelName;
+        this.systemPrompt = systemPrompt;
     }
 
-    async generateText(prompt: string): Promise<string> {
-        return (await this.server.chat.completions.create({
+    override async *generateText(prompt: string): AsyncGenerator<string> {
+        const stream = await this.server.chat.completions.create({
             model: this.modelName,
-            messages: [{role: "user", content: prompt}]
-        })).choices[0].message.content;
+            stream: true,
+            messages: [
+                {role: "system", content: this.systemPrompt},
+                {role: "user", content: prompt}
+            ]
+        });
+
+        try {
+            for await (const chunk of stream) {
+                yield chunk.choices[0].delta.content;
+            }
+        }
+        finally {
+            stream.controller.abort();
+        }
     }
 }
 
@@ -113,22 +133,33 @@ class OllamaServer extends Ollama {
 class OllamaModel extends Model {
     private readonly server: OllamaServer;
     private readonly modelName: string;
+    private readonly systemPrompt: string;
 
     constructor(
         @inject(OllamaServer) server: OllamaServer,
         @inject(OllamaParams.ModelName) modelName: string,
+        @inject(GenerativeTextModelParams.SystemPrompt) systemPrompt: string,
     ) {
         super();
         this.server = server;
         this.modelName = modelName;
+        this.systemPrompt = systemPrompt;
     }
 
-    override async generateText(prompt: string): Promise<string> {
-        return (await this.server.chat({
+    override async *generateText(prompt: string): AsyncGenerator<string> {
+        const stream = await this.server.chat({
             model: this.modelName,
-            messages: [{role: 'user', content: prompt}],
+            messages: [
+                {role: 'system', content: this.systemPrompt},
+                {role: 'user', content: prompt}
+            ],
+            stream: true,
             options: {}
-        })).message.content;
+        });
+
+        for await (const chunk of stream) {
+            yield chunk.message.content;
+        }
     }
 }
 
@@ -148,7 +179,8 @@ container.bind(OllamaParams.Host)
 container.bind(Model).to(OllamaModel)
     .whenTargetNamed(Tasks.LinuxConsoleSession);
 
-let context = `
+container.bind(GenerativeTextModelParams.SystemPrompt)
+.toConstantValue(`\
 # You are an AI agent tasked with analyzing and critiquing software code. You have access to a Linux terminal with a
 # bash shell. Your goal is to review the source code of a gRPC web framework called logos and provide a detailed
 # critique.
@@ -179,8 +211,11 @@ let context = `
 # 
 # Begin your analysis now. Remember to think carefully before executing any command.
 # 
- 
-`;
+`).whenParentNamed(Tasks.LinuxConsoleSession);
+
+
+// TODO : move to instance property of Agent
+let context = "";
 
 interface Agent {
     run(): Promise<void>;
@@ -210,7 +245,7 @@ class ConsoleAgent implements Agent {
 
         process.stdout.write(context);
 
-        ptyProcess.onData((data) => {
+        ptyProcess.onData(async (data) => {
             process.stdout.write(data);
             context += data;
             context = context.slice(-5000);
@@ -218,14 +253,10 @@ class ConsoleAgent implements Agent {
             if (this.promptAwaitsInput(context)) {
                 logger.debug(context)
 
-                this.model.generateText(context).then((response) => {
-                    const cmd = response.trimEnd() + "\r";
-                    context += cmd;
-
-                    setTimeout(() => {
-                        ptyProcess.write(cmd);
-                    }, 5000);
-                });
+                // TODO : switch to streaming, cut on the first newline, and send each line immediately to the model
+                for await (const chunk of this.model.generateText(context)) {
+                    ptyProcess.write(chunk);
+                }
             }
         });
 
