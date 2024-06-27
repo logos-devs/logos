@@ -6,4 +6,4 @@ bazel-testlogs
 bazel-logos
 vendor/js
 .ijwb
-worktrees
+jobs
