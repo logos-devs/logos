@@ -13,3 +13,4 @@
 /jobs/*
 /node_modules/*
 /vendor/js/dist
+/.ijwb/.idea/workspace.xml
