@@ -120,12 +120,9 @@ public class Select {
             queryParts.add(Arrays.stream(this.columns).map(column -> column.quotedIdentifier).collect(Collectors.joining(", ")));
         }
 
-        // FIXME
         for (Column column : this.columns) {
             queryParts.add(column.toString());
         }
-        queryParts.add("*");
-        // FIXME
 
         queryParts.add(String.format("from %s", this.from));
         if (!this.where.isEmpty()) {

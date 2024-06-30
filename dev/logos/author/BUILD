@@ -1,13 +1,10 @@
 load("//bzl:run_in_docker.bzl", "run_in_docker")
 load("//bzl:ts.bzl", "ts_library")
-load("@aspect_bazel_lib//lib:tar.bzl", "tar")
 load("@aspect_rules_js//js:defs.bzl", "js_binary")
 
 ts_library(
     name = "author_library",
-    srcs = [
-        "author.ts",
-    ],
+    srcs = glob(["**/*.ts"]),
     deps = [
         "//:node_modules/inversify",
         "//:node_modules/node-gyp",
@@ -23,6 +20,7 @@ js_binary(
     data = [
         ":author_library",
     ],
+    args = ["--experimental-specifier-resolution=node"],
     entry_point = "author.js",
 )
 

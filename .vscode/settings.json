@@ -46,4 +46,9 @@
     "bazel.projectview.open": false,
     "java.server.launchMode": "Standard",
     "bazel.enableCodeLens": true,
+    "java.import.maven.enabled": false,
+    "java.import.gradle.enabled": false,
+    "bazel.queriesShareServer": false,
+    "editor.formatOnSave": true,
+    "editor.formatOnSaveMode": "modifications",
 }
