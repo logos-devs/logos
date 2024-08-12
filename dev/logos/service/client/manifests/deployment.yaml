@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: client-deployment
+  labels:
+    app: client
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: client
+  template:
+    metadata:
+      labels:
+        app: client
+    spec:
+      containers:
+        - name: client
+          image: logos-ecr-client
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          volumeMounts:
+            - name: web-bundles
+              mountPath: /app/web-bundles
+              readOnly: true
+            - name: domain-map
+              mountPath: /app/web-nginx/
+              readOnly: true
+      volumes:
+        - name: web-bundles
+          persistentVolumeClaim:
+            claimName: web-bundles-pvc
+            readOnly: true
+        - name: domain-map
+          configMap:
+            name: logos-apps
+            optional: true
+            items:
+              - path: domain-map.conf
+                key: client-nginx-domain-map

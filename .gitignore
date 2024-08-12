@@ -1,0 +1,16 @@
+*.sw?
+/.DS_Store
+/.bazelrc.local
+/.eclipse/projects
+/.ijwb/.blaze/modules/.workspace.iml
+/.ijwb/.idea/libraries
+/.pnpm-store
+/bazel-bin
+/bazel-logos
+/bazel-out
+/bazel-testlogs
+/cfg/*
+/jobs/*
+/node_modules/*
+/vendor/js/dist
+/.ijwb/.idea/workspace.xml

@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: console-deployment
+spec:
+  selector:
+    matchLabels:
+      app: console
+  template:
+    metadata:
+      labels:
+        app: console
+    spec:
+      containers:
+        - name: console
+          image: logos-ecr-console
+          imagePullPolicy: Always
+          volumeMounts:
+            - name: service-jars
+              mountPath: /app/service-jars
+            - name: web-bundles
+              mountPath: /app/web-bundles
+      volumes:
+        - name: service-jars
+          persistentVolumeClaim:
+            claimName: backend-rpc-service-jars
+        - name: web-bundles
+          persistentVolumeClaim:
+            claimName: web-bundles-pvc

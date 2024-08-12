@@ -1,0 +1,35 @@
+{
+	"build": {
+		"dockerfile": "Dockerfile"
+	},
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"BazelBuild.vscode-bazel",
+				"GitHub.copilot",
+				"GitHub.copilot-chat",
+				"GitHub.remotehub",
+				"GitHub.vscode-pull-request-github",
+				"christian-kohler.npm-intellisense",
+				"dbaeumer.vscode-eslint",
+				"github.vscode-github-actions",
+				"ms-azuretools.vscode-docker",
+				"ms-kubernetes-tools.vscode-kubernetes-tools",
+				"ms-ossdata.vscode-postgresql",
+				"ms-python.isort",
+				"ms-vscode.makefile-tools",
+				"redhat.java",
+				"redhat.vscode-yaml",
+				"sfdc.bazel-vscode-java",
+				"timonwong.shellcheck",
+				"vscjava.vscode-java-debug",
+				"vscjava.vscode-java-pack",
+				"vscodevim.vim"
+			]
+		}
+	},
+	"privileged": true,
+	"postStartCommand": {
+		"usermod": "sudo usermod -aG docker vscode"
+	}
+}

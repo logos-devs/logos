@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-controller-deployment
+  labels:
+    app: app-controller
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app-controller
+  template:
+    metadata:
+      labels:
+        app: app-controller
+    spec:
+      serviceAccountName: app-controller-sa
+      containers:
+        - name: backend
+          image: logos-ecr-app-controller
+          imagePullPolicy: Always

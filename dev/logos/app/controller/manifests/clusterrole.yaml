@@ -1,0 +1,16 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: app-controller-role
+rules:
+  - apiGroups: [ "logos.dev" ]
+    resources: [ "apps" ]
+    verbs: [ "get", "list", "watch" ]
+  - apiGroups: [ "" ]
+    resources: [ "configmaps" ]
+    resourceNames: [ "logos-apps" ]
+    verbs: [ "get", "update", "patch" ]
+  - apiGroups: [ "apps" ]
+    resources: [ "deployments" ]
+    resourceNames: [ "backend-deployment" ]
+    verbs: [ "get", "patch" ]

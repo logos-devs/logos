@@ -1,0 +1,306 @@
+module(
+    name = "logos",
+    version = "0.0.1",
+)
+
+bazel_dep(name = "platforms", version = "0.0.10")
+
+http_archive = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
+http_file = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_file")
+
+# rules_cc
+bazel_dep(name = "rules_cc", version = "0.0.9")
+
+# protobuf_javascript
+http_archive(
+    name = "protobuf_javascript_linux",
+    build_file_content = """
+exports_files(["bin/protoc-gen-js"])
+    """,
+    integrity = "sha256-9G19nXm98/MrdcnZx3R6h5NVbQEmE6Ciszz6fQMoKQs=",
+    url = "https://github.com/protocolbuffers/protobuf-javascript/releases/download/v3.21.2/protobuf-javascript-3.21.2-linux-x86_64.tar.gz",
+)
+
+http_archive(
+    name = "protobuf_javascript_osx",
+    build_file_content = """
+exports_files(["bin/protoc-gen-js"])
+    """,
+    integrity = "sha256-W7PscnoPUOeLjx4deSv1WEB3OBjZojEBO4AgCadpmNo=",
+    url = "https://github.com/protocolbuffers/protobuf-javascript/releases/download/v3.21.2/protobuf-javascript-3.21.2-osx-x86_64.tar.gz",
+)
+
+# grpc_web
+http_archive(
+    name = "grpc_web",
+    sha256 = "376937b22095bdbea00f8bcd9442c1824419a99cbc37caf0967e4a0fa8b16658",
+    strip_prefix = "grpc-web-1.4.2",
+    urls = ["https://github.com/grpc/grpc-web/archive/refs/tags/1.4.2.tar.gz"],
+)
+
+#kubectl
+http_file(
+    name = "kubectl_linux",
+    executable = True,
+    sha256 = "7fe3a762d926fb068bae32c399880e946e8caf3d903078bea9b169dcd5c17f6d",
+    url = "https://dl.k8s.io/release/v1.27.1/bin/linux/amd64/kubectl",
+)
+
+http_file(
+    name = "kubectl_osx",
+    executable = True,
+    sha256 = "136f73ede0d52c7985d299432236f891515c050d58d71b4a7d39c45085020ad8",
+    url = "https://dl.k8s.io/release/v1.27.1/bin/darwin/amd64/kubectl",
+)
+
+# k8s cert-manager
+http_file(
+    name = "cert_manager",
+    url = "https://github.com/cert-manager/cert-manager/releases/download/v1.15.2/cert-manager.yaml",
+)
+
+# minikube
+http_file(
+    name = "minikube_linux",
+    executable = True,
+    sha256 = "e53d9e8c31f4c5f683182f5323d3527aa0725f713945c6d081cf71aa548ab388",
+    url = "https://github.com/kubernetes/minikube/releases/download/v1.30.1/minikube-linux-amd64",
+)
+
+http_file(
+    name = "minikube_osx",
+    executable = True,
+    sha256 = "b5938a8772c5565b5d0b795938c367c5190bf65bb51fc55fb2417cb4e1d04ef1",
+    url = "https://github.com/kubernetes/minikube/releases/download/v1.30.1/minikube-darwin-amd64",
+)
+
+# grpc-java
+bazel_dep(name = "grpc-java", version = "1.64.0", repo_name = "io_grpc_grpc_java")
+
+# rules_jvm_external
+bazel_dep(name = "rules_jvm_external", version = "6.2")
+
+maven = use_extension("@rules_jvm_external//:extensions.bzl", "maven")
+maven.install(
+    name = "maven_logos",
+    artifacts = [
+        "com.auth0:java-jwt:4.4.0",
+        "com.fasterxml.jackson.dataformat:jackson-dataformat-cbor:2.15.2",
+        "com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.15.2",
+        "com.google.code.gson:gson:2.10.1",
+        "com.google.inject:guice:7.0.0",
+        "com.mysema.commons:mysema-commons-lang:0.2.4",
+        "com.squareup:javapoet:1.13.0",
+        "com.yubico:webauthn-server-core:2.5.0",
+        "com.zaxxer:HikariCP:5.0.1",
+        "dnsjava:dnsjava:3.5.2",
+        "io.grpc:grpc-netty-shaded:1.64.0",
+        "io.grpc:grpc-protobuf:1.64.0",
+        "io.grpc:grpc-stub:1.64.0",
+        "io.jsonwebtoken:jjwt:0.12.3",
+        "io.kubernetes:client-java:21.0.0",
+        "javax.annotation:javax.annotation-api:1.3.2",
+        "javax.json:javax.json-api:1.1.4",
+        "org.apache.httpcomponents.client5:httpclient5:5.2.2",
+        "org.apache.tomcat:annotations-api:6.0.53",
+        "org.eclipse.jgit:org.eclipse.jgit:6.6.0.202305301015-r",
+        "org.jdbi:jdbi3-core:3.39.1",
+        "org.jdbi:jdbi3-postgres:3.35.0",
+        "org.junit.jupiter:junit-jupiter-api:5.9.3",
+        "org.postgresql:postgresql:42.6.0",
+        "org.reactivestreams:reactive-streams:1.0.4",
+        "org.reflections:reflections:0.10.2",
+        "org.slf4j:slf4j-api:2.0.7",
+        "org.slf4j:slf4j-simple:2.0.7",
+        "software.amazon.awssdk:auth:2.26.23",
+        "software.amazon.awssdk:cognitoidentityprovider:2.26.23",
+        "software.amazon.awssdk:ec2:2.26.23",
+        "software.amazon.awssdk:rds:2.26.23",
+        "software.amazon.awssdk:regions:2.26.23",
+        "software.amazon.awssdk:route53:2.26.23",
+        "software.amazon.awssdk:s3:2.26.23",
+        "software.amazon.awssdk:secretsmanager:2.26.23",
+        "software.amazon.awssdk:sso:2.26.23",
+        "software.amazon.awssdk:ssooidc:2.26.23",
+        "software.amazon.awssdk:sts:2.26.23",
+        "software.amazon.awssdk:utils:2.26.23",
+    ],
+    fail_if_repin_required = True,
+    fetch_javadoc = True,
+    fetch_sources = True,
+    generate_compat_repositories = True,
+    # bazel run @unpinned_maven//:pin
+    lock_file = "//vendor/java:maven_install.json",
+    repositories = [
+        "https://repo.maven.apache.org/maven2/",
+    ],
+    version_conflict_policy = "pinned",
+)
+use_repo(
+    maven,
+    "maven_logos",
+    "unpinned_maven_logos",
+)
+
+# rules_foreign_cc
+bazel_dep(name = "rules_foreign_cc", version = "0.10.1")
+
+# rules_proto
+bazel_dep(name = "rules_proto", version = "6.0.0")
+
+# protobuf
+bazel_dep(name = "protobuf", version = "23.1", repo_name = "com_google_protobuf")
+
+# stardoc
+bazel_dep(name = "stardoc", version = "0.7.0")
+
+# aspect_bazel_lib
+bazel_dep(
+    name = "aspect_bazel_lib",
+    version = "2.7.7",
+)
+
+aspect_bazel_lib = use_extension("@aspect_bazel_lib//lib:extensions.bzl", "toolchains")
+use_repo(aspect_bazel_lib, "coreutils_toolchains")
+use_repo(aspect_bazel_lib, "jq_toolchains")
+use_repo(aspect_bazel_lib, "yq_toolchains")
+
+bazel_dep(
+    name = "container_structure_test",
+    version = "1.16.0",
+)
+bazel_dep(
+    name = "gazelle",
+    version = "0.34.0",
+)
+bazel_dep(
+    name = "rules_pkg",
+    version = "1.0.1",
+)
+
+# rules_js
+bazel_dep(name = "rules_nodejs", version = "6.2.0")
+bazel_dep(name = "aspect_rules_js", version = "2.0.0-rc6")
+
+npm = use_extension(
+    "@aspect_rules_js//npm:extensions.bzl",
+    "npm",
+    dev_dependency = True,
+)
+npm.npm_translate_lock(
+    name = "npm",
+    npmrc = "@//:.npmrc",
+    pnpm_lock = "//:pnpm-lock.yaml",
+    verify_node_modules_ignored = "//:.bazelignore",
+)
+use_repo(npm, "npm")
+
+pnpm = use_extension("@aspect_rules_js//npm:extensions.bzl", "pnpm")
+
+# Allows developers to use the matching pnpm version, for example:
+# bazel run -- @pnpm --dir /home/runner/work/rules_js/rules_js install
+use_repo(pnpm, "pnpm")
+
+# rules_ts
+bazel_dep(name = "aspect_rules_ts", version = "3.0.0-rc1")
+
+rules_ts_ext = use_extension(
+    "@aspect_rules_ts//ts:extensions.bzl",
+    "ext",
+    dev_dependency = True,
+)
+rules_ts_ext.deps()
+use_repo(rules_ts_ext, "npm_typescript")
+
+# rules_rollup
+bazel_dep(name = "aspect_rules_rollup", version = "2.0.0-rc0")
+
+rollup_ext = use_extension("@aspect_rules_rollup//rollup:extensions.bzl", "ext")
+rollup_ext.deps()
+
+# rules_go
+bazel_dep(
+    name = "rules_go",
+    version = "0.46.0",
+)
+
+go_sdk = use_extension("@rules_go//go:extensions.bzl", "go_sdk")
+go_sdk.download(version = "1.20.3")
+
+# rules_oci
+bazel_dep(
+    name = "rules_oci",
+    version = "1.4.0",
+)
+
+oci = use_extension("@rules_oci//oci:extensions.bzl", "oci")
+oci.pull(
+    name = "alpine_image",
+    digest = "sha256:c5c5fda71656f28e49ac9c5416b3643eaa6a108a8093151d6d1afc9463be8e33",
+    image = "docker.io/library/alpine",
+    # tag = "3.18",
+)
+use_repo(oci, "alpine_image")
+oci.pull(
+    name = "envoy_image_old",
+    #digest = "sha256:5d5619b0d3d4311bfef48783c04df1e5aed71615710b876b951bd70c1e1e18ee",
+    image = "docker.io/envoyproxy/envoy",
+    platforms = ["linux/amd64"],
+    tag = "tools-v1.29-latest",
+)
+use_repo(oci, "envoy_image_old")
+oci.pull(
+    name = "distroless_java_container",
+    #digest = "sha256:c7151ad9a6787379ccf205e14b9ef18e0757e56d789c155269fc7b5f83d2a93e",
+    image = "gcr.io/distroless/java17-debian11:debug",
+    platforms = ["linux/amd64"],
+    # tag = "latest",
+)
+use_repo(oci, "distroless_java_container")
+oci.pull(
+    name = "console_container",
+    digest = "sha256:459be81018f0481adcf57ca0ab3e4fba19cfcc48f2280e1d672343d10dccb8a3",
+    image = "docker.io/alpine/socat",
+    # tag = "latest",
+)
+use_repo(oci, "console_container")
+oci.pull(
+    name = "nginx_container",
+    digest = "sha256:e06ffa63074d69b12c7f7712d7aebc4cc72d25217e55788d54160a2bd77182f4",
+    image = "docker.io/library/nginx",
+    # tag = "stable-alpine",
+)
+use_repo(oci, "nginx_container")
+oci.pull(
+    name = "distroless_python_image",
+    digest = "sha256:baac841d0711ecbb673fa410a04793f876a242a6ca801d148ef867f02745b156",
+    image = "gcr.io/distroless/python3",
+    platforms = [
+        "linux/amd64",
+        "linux/arm64/v8",
+    ],
+)
+use_repo(oci, "distroless_python_image")
+
+# rules_apko
+bazel_dep(
+    name = "rules_apko",
+    version = "1.2.1",
+)
+
+apk = use_extension("@rules_apko//apko:extensions.bzl", "apko")
+
+# cronjob image
+apk.translate_lock(
+    name = "base_cronjob_image",
+    lock = "//vendor/apko:base_cronjob.lock.json",
+)
+use_repo(apk, "base_cronjob_image")
+
+# envoy image
+apk.translate_lock(
+    name = "envoy_image",
+    lock = "//vendor/apko:envoy.lock.json",
+)
+use_repo(apk, "envoy_image")

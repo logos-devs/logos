@@ -1,0 +1,14 @@
+boto3==1.29.3
+chromadb==0.5.0
+favicon==0.7.0
+feedparser==6.0.10
+lxml==4.9.4
+ollama==0.1.8
+openai==0.27.10
+requests==2.31.0
+setuptools==68.2.2
+psycopg==3.1.13
+psycopg-binary==3.1.13
+pyinstaller==6.2.0
+trafilatura==1.8.1
+typing_extensions==4.8.0

@@ -1,0 +1,22 @@
+contents:
+  keyring:
+    - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+  repositories:
+    - https://packages.wolfi.dev/os
+  packages:
+    - bash
+    - ca-certificates-bundle
+    - coreutils
+    - glibc
+    - libpq-16
+    - python-3.12
+    - wolfi-base
+    - wolfi-baselayout
+    - py3-lxml
+    - py3-psycopg
+
+environment:
+  PATH: /usr/sbin:/sbin:/usr/bin:/bin
+
+archs:
+  - x86_64
