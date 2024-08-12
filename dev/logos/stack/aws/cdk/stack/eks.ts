@@ -186,7 +186,7 @@ export function makeEksStack(
         }
     );
 
-    const serviceAccountName = id + '-eks-service-account';
+    const serviceAccountName = id + '-backend-service-account';
     const serviceAccount = new ServiceAccount(
         eksStack,
         serviceAccountName,
