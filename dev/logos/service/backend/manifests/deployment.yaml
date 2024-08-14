@@ -25,7 +25,7 @@ spec:
             - name: STORAGE_PG_BACKEND_USER
               value: storage
             - name: LOGOS_SERVICE_JAR_CONFIG_PATH
-              value: /app/config/serviceJars
+              value: /app/config/service-jars
             - name: LOGOS_JAR_DIR
               value: /app/service-jars/
           ports:
