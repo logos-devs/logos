@@ -10,8 +10,10 @@ import io.kubernetes.client.openapi.apis.AppsV1Api;
 import io.kubernetes.client.openapi.apis.CoreV1Api;
 import io.kubernetes.client.openapi.apis.CustomObjectsApi;
 import io.kubernetes.client.openapi.models.V1ConfigMap;
+import io.kubernetes.client.openapi.models.V1Deployment;
 import io.kubernetes.client.openapi.models.V1ObjectMeta;
 import io.kubernetes.client.util.Config;
+import io.kubernetes.client.util.PatchUtils;
 import io.kubernetes.client.util.Watch;
 import com.google.gson.reflect.TypeToken;
 import org.slf4j.Logger;
@@ -19,6 +21,7 @@ import org.slf4j.spi.LoggingEventBuilder;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -82,10 +85,13 @@ public class AppController {
     private static final String CONFIGMAP_NAMESPACE = "default";
     private static final String CONFIGMAP_SERVICE_JAR_KEY = "service-jars";
     private static final String CONFIGMAP_CLIENT_NGINX_DOMAIN_MAP_KEY = "client-nginx-domain-map";
-    private static final String DEPLOYMENT_NAME = "backend-deployment";
-    private static final String DEPLOYMENT_NAMESPACE = "default";
+    private static final String BACKEND_DEPLOYMENT_NAME = "backend-deployment";
+    private static final String BACKEND_DEPLOYMENT_NAMESPACE = "default";
+    private static final String CLIENT_DEPLOYMENT_NAME = "client-deployment";
+    private static final String CLIENT_DEPLOYMENT_NAMESPACE = "default";
     private static final Logger logger = getLogger(AppController.class);
     private static final Route53ZoneCreator route53ZoneCreator = new Route53ZoneCreator();
+    private static final Gson gson = new GsonBuilder().create();
 
     private static void updateConfigMap(HashMap<String, App> appList) throws IOException, ApiException {
         CoreV1Api api = new CoreV1Api(Config.defaultClient());
@@ -102,25 +108,49 @@ public class AppController {
         api.replaceNamespacedConfigMap(CONFIGMAP_NAME, CONFIGMAP_NAMESPACE, configMap).execute();
     }
 
-    private static void triggerRollingUpdate() throws ApiException {
+    private static void triggerRollingUpdate(String deploymentNamespace, String deploymentName) throws ApiException {
+        JsonObject annotations = new JsonObject();
+        annotations.addProperty("kubectl.kubernetes.io/restartedAt", Instant.now().toString());
+
+        JsonObject metadata = new JsonObject();
+        metadata.add("annotations", annotations);
+
+        JsonObject template = new JsonObject();
+        template.add("metadata", metadata);
+
+        JsonObject spec = new JsonObject();
+        spec.add("template", template);
+
+        JsonObject patchBody = new JsonObject();
+        patchBody.add("spec", spec);
+
+        V1Patch patch = new V1Patch(gson.toJson(patchBody));
+
         AppsV1Api appsV1Api = new AppsV1Api();
-
-        String patchStr = "{\"spec\":{\"template\":{\"metadata\":{\"annotations\":{\"kubectl.kubernetes.io/restartedAt\":\""
-                + OffsetDateTime.now() + "\"}}}}}";
-
-        V1Patch patch = new V1Patch(patchStr);
-
         try {
-            appsV1Api.patchNamespacedDeployment(DEPLOYMENT_NAME, DEPLOYMENT_NAMESPACE, patch).execute();
-            logger.info("Rolling update triggered for deployment: {}", DEPLOYMENT_NAME);
+            PatchUtils.patch(
+                    V1Deployment.class,
+                    () ->
+                            appsV1Api.patchNamespacedDeployment(deploymentName, deploymentNamespace, patch)
+                                    .buildCall(null),
+                    V1Patch.PATCH_FORMAT_STRATEGIC_MERGE_PATCH,
+                    appsV1Api.getApiClient());
+
+            logger.atInfo()
+                    .addKeyValue("deploymentNamespace", deploymentNamespace)
+                    .addKeyValue("deploymentName", deploymentName)
+                    .log("Rolling update triggered for deployment");
         } catch (ApiException e) {
-            logger.error("Failed to trigger rolling update for deployment: {}", DEPLOYMENT_NAME, e);
+            logger.atError()
+                    .addKeyValue("deploymentNamespace", deploymentNamespace)
+                    .addKeyValue("deploymentName", deploymentName)
+                    .log("Failed to trigger rolling update for deployment");
             throw e;
         }
     }
 
     private static String clientNginxDomainMap(HashMap<String, App> apps) {
-        return apps.values().stream().map(app -> "%s %s;".formatted(
+        return apps.values().stream().map(app -> "%s /app/web-bundles/%s;".formatted(
                 app.metadata().getName(), app.spec().webBundle())).collect(Collectors.joining("\n")
         );
     }
@@ -181,7 +211,8 @@ public class AppController {
                 }
 
                 updateConfigMap(apps);
-                //triggerRollingUpdate();
+                triggerRollingUpdate(BACKEND_DEPLOYMENT_NAMESPACE, BACKEND_DEPLOYMENT_NAME);
+                triggerRollingUpdate(CLIENT_DEPLOYMENT_NAMESPACE, CLIENT_DEPLOYMENT_NAME);
             }
         } catch (ApiException e) {
             logger.atError()

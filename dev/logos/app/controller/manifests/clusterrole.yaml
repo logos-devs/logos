@@ -12,5 +12,5 @@ rules:
     verbs: [ "get", "update", "patch" ]
   - apiGroups: [ "apps" ]
     resources: [ "deployments" ]
-    resourceNames: [ "backend-deployment" ]
+    resourceNames: [ "backend-deployment", "client-deployment" ]
     verbs: [ "get", "patch" ]
