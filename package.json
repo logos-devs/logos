@@ -22,7 +22,7 @@
     "@types/node": "20.14.2",
     "@webcomponents/webcomponentsjs": "2.8.0",
     "@web/dev-server": "0.4.5",
-    "aws-cdk": "2.147.3",
+    "aws-cdk": "2.148.1",
     "aws-cdk-lib": "2.147.3",
     "aws-sdk": "2.1665.0",
     "cdk-fck-nat": "1.5.2",
