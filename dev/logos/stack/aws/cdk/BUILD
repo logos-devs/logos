@@ -1,30 +1,29 @@
-load("@aspect_rules_ts//ts:defs.bzl", "ts_project")
 load("@aspect_rules_js//js:defs.bzl", "js_run_binary")
 load("@npm//:aws-cdk/package_json.bzl", cdk = "bin")
 load("@aspect_bazel_lib//lib:jq.bzl", "jq")
-load("//bzl:private/cdk.bzl", "cdk_output_jq_filter")
 
-ts_project(
+java_binary(
     name = "app",
-    srcs = glob([
-        "construct/*.ts",
-        "stack/*.ts",
-    ]) + [
-        "app.ts",
+    srcs = [
+        "AppId.java",
+        "InfrastructureModule.java",
+        "stack/EcrModule.java",
+        "stack/EksModule.java",
+        "stack/RdsModule.java",
+        "stack/VpcModule.java",
     ],
-    declaration = True,
-    resolve_json_module = True,
-    source_map = True,
-    transpiler = "tsc",
-    tsconfig = "tsconfig.json",
+    args = ["synth"],
+    main_class = "dev.logos.stack.aws.cdk.InfrastructureModule",
     deps = [
-        "//:node_modules/@aws-quickstart/eks-blueprints",
-        "//:node_modules/@types/node",
-        "//:node_modules/aws-cdk",
-        "//:node_modules/aws-cdk-lib",
-        "//:node_modules/aws-sdk",
-        "//:node_modules/constructs",
-        "//:node_modules/reflect-metadata",
+        "@maven_logos_cdk//:com_google_inject_guice",
+        "@maven_logos_cdk//:software_amazon_awscdk_aws_cdk_lib",
+        "@maven_logos_cdk//:software_amazon_awscdk_cdk_lambda_layer_kubectl_v30",
+        "@maven_logos_cdk//:software_amazon_awssdk_auth",
+        "@maven_logos_cdk//:software_amazon_awssdk_iam",
+        "@maven_logos_cdk//:software_amazon_awssdk_sso",
+        "@maven_logos_cdk//:software_amazon_awssdk_ssooidc",
+        "@maven_logos_cdk//:software_amazon_awssdk_sts",
+        "@maven_logos_cdk//:software_constructs_constructs",
     ],
 )
 
@@ -33,15 +32,7 @@ cdk.cdk_binary(
     chdir = package_name(),
     data = [
         "cdk.json",
-        ":app",
-        "//:node_modules/@aws-quickstart/eks-blueprints",
-        "//:node_modules/@types/node",
-        "//:node_modules/aws-cdk",
-        "//:node_modules/aws-cdk-lib",
-        "//:node_modules/aws-sdk",
-        "//:node_modules/constructs",
-        "//:node_modules/reflect-metadata",
-        "//:node_modules/source-map-support",
+        ":app_deploy.jar",
     ],
     tags = ["no-sandbox"],
     visibility = ["//visibility:public"],
@@ -68,31 +59,4 @@ js_run_binary(
         "no-sandbox",
     ],
     tool = ":cdk",
-)
-
-jq(
-    name = "cognito_public_host_map",
-    srcs = [":cdk_run"],
-    out = "cognito_public_host_map.json",
-    args = ["--raw-output"],
-    filter = '."logos-cognito"."logosCognitoPublicHostMap"',
-    visibility = ["//app/summer/web:__subpackages__"],
-)
-
-jq(
-    name = "cognito_server_config",
-    srcs = [":cdk_run"],
-    out = "cognito_server_config.json",
-    args = ["--raw-output"],
-    filter = '."logos-cognito"."logosCognitoServerConfig"',
-    visibility = ["//app/auth/module:__pkg__"],
-)
-
-jq(
-    name = "cognito_hosts",
-    srcs = [":cdk_run"],
-    out = "cognito_hosts.json",
-    args = ["--raw-output"],
-    filter = '."logos-cognito"."logosCognitoHosts"',
-    visibility = ["//app/auth/module:__pkg__"],
 )

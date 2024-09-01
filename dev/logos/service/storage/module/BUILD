@@ -19,6 +19,7 @@ java_library(
         "@maven_logos//:software_amazon_awssdk_regions",
         "@maven_logos//:software_amazon_awssdk_sso",
         "@maven_logos//:software_amazon_awssdk_ssooidc",
+        "@maven_logos//:software_amazon_awssdk_sts",
         "@maven_logos//:software_amazon_awssdk_utils",
     ],
 )

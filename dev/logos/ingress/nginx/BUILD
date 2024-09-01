@@ -1,15 +1,9 @@
 load("//bzl:k8s.bzl", "kubectl")
 
 kubectl(
-    name = "cert-manager",
-    manifests = [
-        "@cert_manager//file",
-    ],
-)
-
-kubectl(
     name = "nginx",
     manifests = [
+        "@cert_manager//file",
         "clusterissuer.yaml",
         "externaldns.yaml",
         "ingress.yaml",

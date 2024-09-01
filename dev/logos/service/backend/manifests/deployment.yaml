@@ -14,7 +14,7 @@ spec:
       labels:
         app: backend
     spec:
-      serviceAccountName: logos-eks-backend-service-account
+      serviceAccountName: logos-eks-stack-backend-service-account
       containers:
         - name: backend
           image: logos-ecr-backend

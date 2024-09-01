@@ -17,6 +17,7 @@ import software.amazon.awssdk.services.rds.RdsUtilities;
 import software.amazon.awssdk.services.rds.model.GenerateAuthenticationTokenRequest;
 
 import javax.sql.DataSource;
+import java.util.Arrays;
 import java.util.Optional;
 
 class RdsIamAuthHikariDataSource extends HikariDataSource {
@@ -47,19 +48,13 @@ class RdsIamAuthHikariDataSource extends HikariDataSource {
 
     @Override
     public String getPassword() {
-        var url = Driver.parseURL(getJdbcUrl(), null);
-
         /*
          * This allows the hostname to be overridden when DNS resolution is
          * not possible, such as at build-time or in dev environments. In
          * deployment, this should be set by resolving via DNS.
          */
-        String hostname = System.getenv("STORAGE_PG_BACKEND_HOST");
-        if (hostname == null) {
-            hostname = resolveEndpoint();
-        }
+        String hostname = Optional.ofNullable(System.getenv("STORAGE_PG_BACKEND_HOST")).orElse(resolveEndpoint());
 
-        assert url != null;
         return RdsUtilities.builder()
                            .region(new DefaultAwsRegionProviderChain().getRegion())
                            .build()

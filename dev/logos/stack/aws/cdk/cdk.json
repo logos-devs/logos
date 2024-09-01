@@ -1,17 +1,5 @@
 {
-  "app": "env node --experimental-specifier-resolution=node app.js",
-  "watch": {
-    "include": [
-      "**"
-    ],
-    "exclude": [
-      "cdk*.json",
-      "**/*.d.ts",
-      "**/*.js",
-      "tsconfig.json",
-      "node_modules"
-    ]
-  },
+  "app": "java -jar app_deploy.jar",
   "context": {
     "@aws-cdk/aws-lambda:recognizeLayerVersion": true,
     "@aws-cdk/core:checkSecretUsage": true,

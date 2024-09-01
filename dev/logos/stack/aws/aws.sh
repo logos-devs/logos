@@ -120,31 +120,26 @@ dev_setup() {
     bazel run @logos//dev/logos/stack/aws/cdk -- deploy --all --require-approval never
 
     ACCOUNT="$(aws sts get-caller-identity --query "Account" --output text)"
-    STACK="logos-eks"
-    ROLE_ARN="$(aws cloudformation describe-stacks \
-                        --stack-name $STACK \
-                        --query "Stacks[0].Outputs[?starts_with(OutputKey, \`logoseksConfigCommand\`)].OutputValue | [0]" \
-                        --output text \
-                        | cut -d' ' -f 9)"
+    STACK="logos-eks-stack"
 
-    echo "Updating kubeconfig for $STACK in $AWS_REGION as role $ROLE_ARN"
+    echo "Updating kubeconfig for $STACK in $AWS_REGION"
     aws eks update-kubeconfig \
-                --name logos-eks \
-                --region "$AWS_REGION" \
-                --role-arn "$ROLE_ARN"
+                --name logos-eks-stack-cluster \
+                --region "$AWS_REGION"
 
     # pg_migrate bzl rule needs the absolute path to aws cli
     sed -i 's|command: aws|command: /usr/local/bin/aws|' ~/.kube/config
 
-    EKS_STACK="logos-eks"
+    EKS_STACK_CLUSTER="logos-eks-stack-cluster"
 
     _update_bazelrc_env LOGOS_AWS_ACCOUNT_ID "$AWS_ACCOUNT_ID"
     _update_bazelrc_env LOGOS_AWS_REGION "$AWS_REGION"
-    _update_bazelrc_env LOGOS_AWS_EKS_CLUSTER "arn:aws:eks:$AWS_REGION:$AWS_ACCOUNT_ID:cluster/$EKS_STACK"
-    _update_bazelrc_env LOGOS_AWS_EKS_USER "arn:aws:eks:$AWS_REGION:$AWS_ACCOUNT_ID:cluster/$EKS_STACK"
+    _update_bazelrc_env LOGOS_AWS_EKS_CLUSTER "arn:aws:eks:$AWS_REGION:$AWS_ACCOUNT_ID:cluster/$EKS_STACK_CLUSTER"
+    _update_bazelrc_env LOGOS_AWS_EKS_USER "arn:aws:eks:$AWS_REGION:$AWS_ACCOUNT_ID:cluster/$EKS_STACK_CLUSTER"
     _update_bazelrc_env LOGOS_AWS_REGISTRY "$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com"
 
     bazel run //dev/logos/service/console
+
     await_console_pod
 
     jq --arg aws_account_id "$ACCOUNT" --arg region "$AWS_REGION" '.credHelpers |= . + {"public.ecr.aws": "ecr-login", "\($aws_account_id).dkr.ecr.\($region).amazonaws.com": "ecr-login"}' ~/.docker/config.json > ~/.docker/config.json.tmp && mv ~/.docker/config.json.tmp ~/.docker/config.json
@@ -279,7 +274,7 @@ rds_clusteradmin_password() {
   aws secretsmanager \
       get-secret-value \
       --secret-id "$(aws secretsmanager list-secrets \
-                                        --query "SecretList[?starts_with(Name, \`logosrdsdbclusterSecret\`)].Name | [0]" \
+                                        --query "SecretList[?starts_with(Name, \`logosrdsstackdbclusterSecre\`)].Name | [0]" \
                                         --output text)" \
       --query "SecretString" \
       --output text | jq -r ".password"

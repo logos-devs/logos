@@ -12,8 +12,6 @@ java_binary(
     ],
     visibility = ["//visibility:public"],
     deps = [
-        "//app/auth/module",
-        "//app/auth/service",
         "//dev/logos/app/register:module_library",
         "//dev/logos/service",
         "//dev/logos/service/backend/interceptor",
