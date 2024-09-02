@@ -10,7 +10,7 @@
     "@adobe/lit-mobx": "2.2.2",
     "@bazel/ibazel": "0.24.0",
     "@github/webauthn-json": "2.1.1",
-    "@grpc/grpc-js": "1.10.8",
+    "@grpc/grpc-js": "1.10.9",
     "@material/web": "1.5.0",
     "@rollup/plugin-commonjs": "26.0.1",
     "@rollup/plugin-html": "1.0.3",
