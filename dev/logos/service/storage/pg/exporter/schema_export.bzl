@@ -206,7 +206,6 @@ def java_storage_service(name, schema_export, tables, deps, visibility = None):
             "@logos//dev/logos/service/storage/validator",
             "@logos//dev/logos/service/storage:storage_library",
             "@logos//dev/logos/user",
-            "@maven_logos//:com_google_guava_guava",
             "@maven_logos//:com_google_inject_guice",
             "@maven_logos//:javax_annotation_javax_annotation_api",
         ],

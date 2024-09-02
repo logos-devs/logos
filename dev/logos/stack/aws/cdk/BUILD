@@ -1,6 +1,5 @@
 load("@aspect_rules_js//js:defs.bzl", "js_run_binary")
 load("@npm//:aws-cdk/package_json.bzl", cdk = "bin")
-load("@aspect_bazel_lib//lib:jq.bzl", "jq")
 
 java_binary(
     name = "app",
@@ -15,15 +14,15 @@ java_binary(
     args = ["synth"],
     main_class = "dev.logos.stack.aws.cdk.InfrastructureModule",
     deps = [
-        "@maven_logos_cdk//:com_google_inject_guice",
-        "@maven_logos_cdk//:software_amazon_awscdk_aws_cdk_lib",
-        "@maven_logos_cdk//:software_amazon_awscdk_cdk_lambda_layer_kubectl_v30",
-        "@maven_logos_cdk//:software_amazon_awssdk_auth",
-        "@maven_logos_cdk//:software_amazon_awssdk_iam",
-        "@maven_logos_cdk//:software_amazon_awssdk_sso",
-        "@maven_logos_cdk//:software_amazon_awssdk_ssooidc",
-        "@maven_logos_cdk//:software_amazon_awssdk_sts",
-        "@maven_logos_cdk//:software_constructs_constructs",
+        "@maven_logos//:com_google_inject_guice",
+        "@maven_logos//:software_amazon_awscdk_aws_cdk_lib",
+        "@maven_logos//:software_amazon_awscdk_cdk_lambda_layer_kubectl_v30",
+        "@maven_logos//:software_amazon_awssdk_auth",
+        "@maven_logos//:software_amazon_awssdk_iam",
+        "@maven_logos//:software_amazon_awssdk_sso",
+        "@maven_logos//:software_amazon_awssdk_ssooidc",
+        "@maven_logos//:software_amazon_awssdk_sts",
+        "@maven_logos//:software_constructs_constructs",
     ],
 )
 

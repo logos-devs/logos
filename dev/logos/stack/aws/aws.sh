@@ -281,7 +281,7 @@ rds_clusteradmin_password() {
 }
 
 deploy() {
-    $BAZEL build @logos//dev/logos/stack/aws
+    $BAZEL run @logos//dev/logos/stack/aws/cdk -- deploy --all --require-approval never
     $BAZEL run @logos//dev/logos/service/console
 
     dev_env
