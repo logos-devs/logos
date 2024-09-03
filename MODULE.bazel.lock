@@ -1,6 +1,6 @@
 {
   "lockFileVersion": 6,
-  "moduleFileHash": "dd4919295f565def63a10057cc1e99ef963162edea2386e6537ebc0f68ef74ef",
+  "moduleFileHash": "eb623cc79daa82e9aea368d0114f58abdefe012289d0f5e4a40650b0916769e2",
   "flags": {
     "cmdRegistries": [
       "https://bcr.bazel.build/"
@@ -340,17 +340,17 @@
             "column": 20
           },
           "imports": {
-            "npm": "npm"
+            "npm_logos": "npm_logos"
           },
           "devImports": [],
           "tags": [
             {
               "tagName": "npm_translate_lock",
               "attributeValues": {
-                "name": "npm",
+                "name": "npm_logos",
+                "generate_bzl_library_targets": true,
                 "npmrc": "@logos//:.npmrc",
                 "pnpm_lock": "@logos//:pnpm-lock.yaml",
-                "generate_bzl_library_targets": true,
                 "verify_node_modules_ignored": "@logos//:.bazelignore"
               },
               "devDependency": false,
@@ -4696,7 +4696,7 @@
     },
     "@@aspect_rules_ts~//ts:extensions.bzl%ext": {
       "general": {
-        "bzlTransitiveDigest": "zgPXZUs+xfnj4f+yMBmyFlZFCG11KX9GRq6tbnk5HNg=",
+        "bzlTransitiveDigest": "+M1ktSyu9chQg7Xm1jw7Jhksi1zcw2x28j/hnKb+M3w=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
         "envVariables": {},
@@ -4706,7 +4706,7 @@
             "ruleClassName": "http_archive_version",
             "attributes": {
               "bzlmod": true,
-              "version": "5.4.5",
+              "version": "5.5.4",
               "integrity": "",
               "build_file": "@@aspect_rules_ts~//ts:BUILD.typescript",
               "build_file_substitutions": {

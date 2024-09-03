@@ -1,5 +1,5 @@
 load("@aspect_rules_js//js:defs.bzl", "js_run_binary")
-load("@npm//:aws-cdk/package_json.bzl", cdk = "bin")
+load("@npm_logos//:aws-cdk/package_json.bzl", cdk = "bin")
 
 java_binary(
     name = "app",
@@ -34,7 +34,7 @@ cdk.cdk_binary(
     expand_args = True,
     fixed_args = [
         "--app",
-        "'JAR=\"$(location :app_deploy.jar)\"; java -jar $${JAR#bazel-out/k8-fastbuild/bin/}'"
+        "'JAR=\"$(location :app_deploy.jar)\"; java -jar $${JAR#bazel-out/k8-fastbuild/bin/}'",
     ],
     tags = ["no-sandbox"],
     visibility = ["//visibility:public"],

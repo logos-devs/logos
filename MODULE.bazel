@@ -217,13 +217,13 @@ npm = use_extension(
     #dev_dependency = True,
 )
 npm.npm_translate_lock(
-    name = "npm",
+    name = "npm_logos",
+    generate_bzl_library_targets = True,
     npmrc = "@logos//:.npmrc",
     pnpm_lock = "@logos//:pnpm-lock.yaml",
-    generate_bzl_library_targets = True,
     verify_node_modules_ignored = "@logos//:.bazelignore",
 )
-use_repo(npm, "npm")
+use_repo(npm, "npm_logos")
 
 pnpm = use_extension("@aspect_rules_js//npm:extensions.bzl", "pnpm")
 
