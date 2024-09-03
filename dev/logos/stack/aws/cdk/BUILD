@@ -28,10 +28,13 @@ java_binary(
 
 cdk.cdk_binary(
     name = "cdk",
-    chdir = package_name(),
     data = [
-        "cdk.json",
         ":app_deploy.jar",
+    ],
+    expand_args = True,
+    fixed_args = [
+        "--app",
+        "'JAR=\"$(location :app_deploy.jar)\"; java -jar $${JAR#bazel-out/k8-fastbuild/bin/}'"
     ],
     tags = ["no-sandbox"],
     visibility = ["//visibility:public"],
