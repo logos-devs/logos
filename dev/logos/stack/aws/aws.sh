@@ -138,7 +138,7 @@ dev_setup() {
     _update_bazelrc_env LOGOS_AWS_EKS_USER "arn:aws:eks:$AWS_REGION:$AWS_ACCOUNT_ID:cluster/$EKS_STACK_CLUSTER"
     _update_bazelrc_env LOGOS_AWS_REGISTRY "$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com"
 
-    bazel run //dev/logos/service/console
+    bazel run @logos//dev/logos/service/console
 
     await_console_pod
 
