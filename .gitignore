@@ -4,13 +4,10 @@
 /.eclipse/projects
 /.ijwb/.blaze/modules/.workspace.iml
 /.ijwb/.idea/libraries
+/.ijwb/.idea/workspace.xml
 /.pnpm-store
 /bazel-bin
 /bazel-logos
 /bazel-out
 /bazel-testlogs
-/cfg/*
-/jobs/*
 /node_modules/*
-/vendor/js/dist
-/.ijwb/.idea/workspace.xml
