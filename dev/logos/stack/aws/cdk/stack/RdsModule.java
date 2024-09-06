@@ -2,15 +2,12 @@ package dev.logos.stack.aws.cdk.stack;
 
 import com.google.inject.*;
 import com.google.inject.multibindings.Multibinder;
-import dev.logos.stack.aws.cdk.InfrastructureModule;
-import dev.logos.stack.aws.cdk.InfrastructureModule.RootConstructId;
 import software.amazon.awscdk.App;
 import software.amazon.awscdk.Duration;
 import software.amazon.awscdk.Stack;
 import software.amazon.awscdk.StackProps;
 import software.amazon.awscdk.services.ec2.*;
 import software.amazon.awscdk.services.rds.*;
-import software.constructs.Construct;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

@@ -13,6 +13,7 @@ java_binary(
     visibility = ["//visibility:public"],
     deps = [
         "//dev/logos/app/register:module_library",
+        "//dev/logos/module",
         "//dev/logos/service",
         "//dev/logos/service/backend/interceptor",
         "//dev/logos/service/storage:storage_library",

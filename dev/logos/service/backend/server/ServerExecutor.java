@@ -1,11 +1,11 @@
 package dev.logos.service.backend.server;
 
-import com.google.inject.Guice;
 import com.google.inject.Inject;
+import com.google.inject.Injector;
+import dev.logos.module.ModuleLoader;
 import io.grpc.Server;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -52,9 +52,15 @@ public class ServerExecutor {
         }
     }
 
-    public static void main(String[] args) throws IOException, InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException, InterruptedException {
-        ServerExecutor serverExecutor = Guice.createInjector(new ServerModule()).getInstance(ServerExecutor.class);
-        serverExecutor.start();
-        serverExecutor.blockUntilShutdown();
+    public static void main(String[] args) throws InterruptedException {
+        try {
+            Injector injector = ModuleLoader.createInjector();
+            ServerExecutor serverExecutor = injector.getInstance(ServerExecutor.class);
+            serverExecutor.start();
+            serverExecutor.blockUntilShutdown();
+        } catch (Exception e) {
+            // stack traces can get lost inside Guice.
+            e.printStackTrace();
+        }
     }
 }

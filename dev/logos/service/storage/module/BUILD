@@ -4,7 +4,7 @@ java_library(
     plugins = [
         "//dev/logos/app/register:module",
     ],
-    visibility = ["//dev/logos:__subpackages__"],
+    visibility = ["//visibility:public"],
     deps = [
         "//dev/logos/app/register:module_library",
         "//dev/logos/service/storage/pg",

@@ -1,38 +1,23 @@
 package dev.logos.stack.aws.cdk;
 
 import com.google.inject.*;
-import dev.logos.stack.aws.cdk.stack.EcrModule;
-import dev.logos.stack.aws.cdk.stack.EksModule;
-import dev.logos.stack.aws.cdk.stack.RdsModule;
-import dev.logos.stack.aws.cdk.stack.VpcModule;
+import dev.logos.app.register.registerModule;
+import dev.logos.stack.aws.cdk.stack.*;
 import software.amazon.awscdk.*;
 import software.amazon.awscdk.cxapi.CloudAssembly;
-import software.constructs.Construct;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.Set;
 
 import static java.lang.System.err;
 
+@registerModule
 public class InfrastructureModule extends AbstractModule {
-    @BindingAnnotation
-    @Retention(RetentionPolicy.RUNTIME)
-    public @interface RootConstructId {}
-
     @Provides
     @Singleton
     @RootConstructId
     String provideEksStackId() {
         return "logos";
     }
-
-//    class InfrastructureConstruct extends Construct {
-//        @Inject
-//        public InfrastructureConstruct(Construct scope, @RootConstructId String id) {
-//            super(scope, id);
-//        }
-//    }
 
     @Override
     protected void configure() {
@@ -63,22 +48,21 @@ public class InfrastructureModule extends AbstractModule {
                 .build();
     }
 
-    public static void main(String[] args) {
-
-        Injector injector = Guice.createInjector(new InfrastructureModule());
-
-        // Ensure all stacks are initialized and log them
-        Set<Stack> stacks = injector.getInstance(Key.get(new TypeLiteral<>() {}));
+    @Provides
+    CloudAssembly provideCloudAssembly(App app, Set<Stack> stacks) {
+        // Since CDK constructs its tree with references up from the children, we need to depend on the stacks even
+        // though we don't need to do anything after they're constructed. The constructor of the stacks attaches them
+        // to their parent constructs.
         for (Stack stack : stacks) {
             err.printf("CDK_STACK: %s%n", stack.getStackName());
         }
 
-        App app = injector.getInstance(App.class);
-        app.synth();
-        CloudAssembly assembly = app.synth();
-        System.out.println("Synthesis complete.");
+        return app.synth();
+    }
 
-        // Print information about the assembly
-        System.out.println("Assembly directory: " + assembly.getDirectory());
+    public static void main(String[] args) {
+        Injector injector = Guice.createInjector(new InfrastructureModule());
+        CloudAssembly assembly = injector.getInstance(CloudAssembly.class);
+        err.printf("Assembly directory: %s\n", assembly.getDirectory());
     }
 }

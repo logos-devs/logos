@@ -2,7 +2,6 @@ package dev.logos.stack.aws.cdk.stack;
 
 import com.google.inject.*;
 import com.google.inject.multibindings.Multibinder;
-import dev.logos.stack.aws.cdk.InfrastructureModule.RootConstructId;
 import software.amazon.awscdk.App;
 import software.amazon.awscdk.RemovalPolicy;
 import software.amazon.awscdk.Stack;
@@ -39,6 +38,11 @@ public class EksModule extends AbstractModule {
     @BindingAnnotation
     @Retention(RetentionPolicy.RUNTIME)
     public @interface EksStackId {
+    }
+
+    @BindingAnnotation
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface RpcServerServiceAccount {
     }
 
     @BindingAnnotation
@@ -355,9 +359,17 @@ public class EksModule extends AbstractModule {
         }
     }
 
+    @Provides
+    @Singleton
+    @RpcServerServiceAccount
+    ServiceAccount provideRpcServerServiceAccount(EksStack eksStack) {
+        return eksStack.getRpcServerServiceAccount();
+    }
+
     @Singleton
     public static class EksStack extends Stack {
         private final Cluster cluster;
+        private final ServiceAccount rpcServerServiceAccount;
 
         @Inject
         public EksStack(
@@ -424,10 +436,9 @@ public class EksModule extends AbstractModule {
             cluster.addManifest(id + "-db-ro-service-manifest", dbRoServiceManifest);
             cluster.addManifest(id + "-db-rw-service-manifest", dbRwServiceManifest);
 
-            ServiceAccount serviceAccount = cluster.addServiceAccount(id + "-backend-service-account",
+            this.rpcServerServiceAccount = cluster.addServiceAccount(id + "-backend-service-account",
                     serviceAccountOptionsBuilder.name(id + "-backend-service-account").build());
-
-            serviceAccount.addToPrincipalPolicy(serviceAccountPolicyStatementBuilder.build());
+            this.rpcServerServiceAccount.addToPrincipalPolicy(serviceAccountPolicyStatementBuilder.build());
 
             IRole role = asg.getRole();
             role.addManagedPolicy(ManagedPolicy
@@ -440,6 +451,10 @@ public class EksModule extends AbstractModule {
 
         public Cluster getCluster() {
             return cluster;
+        }
+
+        public ServiceAccount getRpcServerServiceAccount() {
+            return rpcServerServiceAccount;
         }
     }
 }

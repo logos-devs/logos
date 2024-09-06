@@ -53,28 +53,29 @@ class RdsIamAuthHikariDataSource extends HikariDataSource {
          * not possible, such as at build-time or in dev environments. In
          * deployment, this should be set by resolving via DNS.
          */
-        String hostname = Optional.ofNullable(System.getenv("STORAGE_PG_BACKEND_HOST")).orElse(resolveEndpoint());
+        String hostname = Optional.ofNullable(System.getenv("STORAGE_PG_BACKEND_HOST"))
+                .orElseGet(this::resolveEndpoint);
 
         return RdsUtilities.builder()
-                           .region(new DefaultAwsRegionProviderChain().getRegion())
-                           .build()
-                           .generateAuthenticationToken(
-                               GenerateAuthenticationTokenRequest
-                                   .builder()
-                                   .credentialsProvider(DefaultCredentialsProvider.create())
-                                   .hostname(hostname)
-                                   .port(CLUSTER_RW_PORT)
-                                   .username(getUsername())
-                                   .build());
+                .region(new DefaultAwsRegionProviderChain().getRegion())
+                .build()
+                .generateAuthenticationToken(
+                        GenerateAuthenticationTokenRequest
+                                .builder()
+                                .credentialsProvider(DefaultCredentialsProvider.create())
+                                .hostname(hostname)
+                                .port(CLUSTER_RW_PORT)
+                                .username(getUsername())
+                                .build());
     }
 }
 
 @registerModule
 public class DatabaseModule extends AbstractModule {
     static String DB_URL = Optional.ofNullable(System.getenv("STORAGE_PG_BACKEND_JDBC_URL"))
-                                   .orElse("jdbc:postgresql://localhost:15432/logos");
+            .orElse("jdbc:postgresql://localhost:15432/logos");
     static String DB_USER = Optional.ofNullable(System.getenv("STORAGE_PG_BACKEND_USER"))
-                                    .orElse("storage");
+            .orElse("storage");
 
     @Provides
     @Singleton // otherwise a new DataSource is created for each injection which results in a huge number of connections

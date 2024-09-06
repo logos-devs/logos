@@ -2,9 +2,6 @@ package dev.logos.stack.aws.cdk.stack;
 
 import com.google.inject.*;
 import com.google.inject.multibindings.Multibinder;
-import dev.logos.stack.aws.cdk.AppId;
-import dev.logos.stack.aws.cdk.InfrastructureModule;
-import dev.logos.stack.aws.cdk.InfrastructureModule.RootConstructId;
 import software.amazon.awscdk.App;
 import software.amazon.awscdk.Stack;
 import software.amazon.awscdk.StackProps;
