@@ -63,5 +63,5 @@ kubectl(
         "manifests/configmap.yaml",
         "manifests/deployment.yaml",
     ],
-    visibility = ["//dev/logos/service/backend:__pkg__"],
+    visibility = ["//dev/logos:__subpackages__"],
 )

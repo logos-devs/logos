@@ -14,3 +14,6 @@ rules:
     resources: [ "deployments" ]
     resourceNames: [ "backend-deployment", "client-deployment" ]
     verbs: [ "get", "patch" ]
+  - apiGroups: [ "networking.k8s.io" ]
+    resources: [ "ingresses" ]
+    verbs: [ "get", "list", "create", "update", "patch", "delete" ]
