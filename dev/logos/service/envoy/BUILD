@@ -12,12 +12,9 @@ oci_image(
     name = "image",
     base = "@envoy_image_old",
     entrypoint = [
-        # TODO hack! remove when we can build our own envoy in bazel
-        # TODO leaving the above, but actually we don't need this at all since this was a hack to find a way to use cookies
-        # TODO instead we're just going to put a traditional http server in to set cookies
         "/bin/bash",
         "-c",
-        "apt-get update && apt-get install -y lua-cjson && envoy --config-path /config.yaml",
+        "envoy --config-path /config.yaml",
     ],
     tars = [":image_files"],
 )
@@ -37,6 +34,5 @@ kubectl(
         "manifests/deployment.yaml",
         "manifests/service.yaml",
     ],
-    visibility = ["//dev/logos/ingress/nginx:__pkg__"],
-    deps = ["//dev/logos/service/backend"],
+    visibility = ["//dev/logos:__subpackages__"],
 )
