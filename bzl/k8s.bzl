@@ -1,45 +1,31 @@
-def _kustomization_tpl(ctx):
-    tpl = "resources:\n"
-
-    for manifest in ctx.files.manifests:
-        tpl += "- {}\n".format(manifest.short_path)
-
-    tpl += "images:\n"
-
-    for image, repository in ctx.attr.images.items():
-        image_digest = image[DefaultInfo].files.to_list()[0]
-        tpl += "  - name: {}\n".format(repository)
-        tpl += "    newName: {}\n".format("$LOGOS_AWS_REGISTRY/" + repository)
-
-    return tpl
-
 def _kubectl_impl(ctx):
     executable = ctx.actions.declare_file(ctx.attr.name)
-    runfiles = ctx.runfiles(files = ctx.files.kubectl + ctx.files.manifests + ctx.files.images)
+    runfiles = ctx.runfiles(files = ctx.files.kubectl)
 
-    manifests = "".join([
-        "- {}\n".format(manifest.short_path)
-        for manifest in ctx.files.manifests
-    ])
+    if ctx.files.manifests:
+        runfiles = runfiles.merge(ctx.runfiles(files = ctx.files.manifests + ctx.files.images))
 
-    images = "".join([
-        "  - name: {}\n".format(repository) +
-        "    newName: {}@$(cat {})\n".format(
-            "$LOGOS_AWS_REGISTRY/" + repository,
-            image[DefaultInfo].files.to_list()[0].short_path,
-        )
-        for image, repository in ctx.attr.images.items()
-    ])
+        manifests = "".join([
+            "- {}\n".format(manifest.short_path)
+            for manifest in ctx.files.manifests
+        ])
+
+        images = "".join([
+            "  - name: {}\n".format(repository) +
+            "    newName: {}@$(cat {})\n".format(
+                "$LOGOS_AWS_REGISTRY/" + repository,
+                image[DefaultInfo].files.to_list()[0].short_path,
+            )
+            for image, repository in ctx.attr.images.items()
+        ])
 
     image_pushers = []
-    image_pusher_runfiles = []
 
     for image in ctx.attr.image_pushes:
         image_pushers.append(image[DefaultInfo].files_to_run.executable.short_path)
         runfiles = runfiles.merge(image[DefaultInfo].default_runfiles)
 
     deps = []
-    deps_runfiles = []
 
     if ctx.attr.action == "apply":
         for dep in ctx.attr.deps:
@@ -49,12 +35,16 @@ def _kubectl_impl(ctx):
         for migration in ctx.attr.migrations:
             runfiles = runfiles.merge(ctx.runfiles(files = migration[DefaultInfo].files.to_list()))
 
-    ctx.actions.write(
-        output = executable,
-        content = """#!/bin/bash -eu
+    content = """#!/bin/bash -eu
 {deps}
 {image_pushers}
+""".format(
+        image_pushers = "\n".join(image_pushers),
+        deps = "\n".join(deps),
+    )
 
+    if ctx.files.manifests:
+        content += """
 cat <<EOF > kustomization.yaml
 resources:
 {manifests}
@@ -67,11 +57,13 @@ EOF
 """.format(
             manifests = manifests,
             images = images,
-            image_pushers = "\n".join(image_pushers),
-            deps = "\n".join(deps),
             kubectl = ctx.attr.kubectl.files_to_run.executable.short_path,
             action = ctx.attr.action,
-        ),
+        )
+
+    ctx.actions.write(
+        output = executable,
+        content = content,
     )
 
     return [
@@ -86,7 +78,7 @@ kubectl_rule = rule(
     implementation = _kubectl_impl,
     attrs = {
         "action": attr.string(mandatory = True),
-        "manifests": attr.label_list(allow_files = True),
+        "manifests": attr.label_list(allow_files = True, mandatory = False),
         "migrations": attr.label_list(allow_files = False),
         "deps": attr.label_list(allow_files = False),
         "images": attr.label_keyed_string_dict(allow_empty = True),
@@ -100,7 +92,7 @@ kubectl_rule = rule(
     executable = True,
 )
 
-def kubectl(name, manifests, migrations = None, deps = None, images = None, image_pushes = None, visibility = None):
+def kubectl(name, manifests = None, migrations = None, deps = None, images = None, image_pushes = None, visibility = None):
     if images == None:
         images = {}
 
