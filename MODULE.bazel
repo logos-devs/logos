@@ -155,6 +155,12 @@ maven.install(
     ],
     version_conflict_policy = "pinned",
 )
+maven.artifact(
+    artifact = "guava",
+    force_version = True,
+    group = "com.google.guava",
+    version = "33.2.1-jre",
+)
 use_repo(
     maven,
     "maven_logos",
@@ -240,11 +246,16 @@ rules_ts_ext = use_extension(
     "ext",
     dev_dependency = True,
 )
-rules_ts_ext.deps()
+rules_ts_ext.deps(
+    ts_version_from = "//:package.json",
+)
 use_repo(rules_ts_ext, "npm_typescript")
 
+# aspect_rules_swc
+bazel_dep(name = "aspect_rules_swc", version = "2.0.0")
+
 # rules_rollup
-bazel_dep(name = "aspect_rules_rollup", version = "2.0.0-rc0")
+bazel_dep(name = "aspect_rules_rollup", version = "2.0.0")
 
 rollup_ext = use_extension("@aspect_rules_rollup//rollup:extensions.bzl", "ext")
 rollup_ext.deps()
