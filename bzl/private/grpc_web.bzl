@@ -9,8 +9,9 @@ def _grpc_web_client_impl(ctx):
     ])
 
     proto_direct_sources = ctx.attr.proto[ProtoInfo].direct_sources
-    outs = []
+    output_dirs = {}
     for direct_source in proto_direct_sources:
+        outs = []
         proto_basename = direct_source.basename[:-6]  # removes extension .proto
         outs += [
             "{}_pb.d.ts".format(proto_basename),
@@ -21,13 +22,18 @@ def _grpc_web_client_impl(ctx):
                 "{}_grpc_web_pb.d.ts".format(proto_basename),
                 "{}_grpc_web_pb.js".format(proto_basename),
             ]
+        output_dirs[direct_source.dirname[len(direct_source.root.path):]] = outs
+
+    build_file_dirname = ctx.build_file_path[:ctx.build_file_path.rfind("/")]
+    ascend_dirs = "../" * len(build_file_dirname.split("/"))
 
     outputs = [
-        ctx.actions.declare_file(f)
-        for f in outs
+        ctx.actions.declare_file(ascend_dirs + proto_path + "/" + out)
+        for out in outs
+        for proto_path, outs in output_dirs.items()
     ]
 
-    outdir = ctx.bin_dir.path + "/" + ctx.build_file_path[:-6]
+    outdir = ctx.configuration.bin_dir.path + "/" + output_dirs.keys()[0]
 
     descriptors = []
     cmd_inputs = []
@@ -39,6 +45,7 @@ def _grpc_web_client_impl(ctx):
         command = """
     command -v gfind && find_="gfind" || find_="find"
 
+    mkdir -p {outdir}
     $1 {protos} \
       --descriptor_set_in=<(cat {descriptors}) \
       --plugin=protoc-gen-js=$2 \
@@ -46,9 +53,9 @@ def _grpc_web_client_impl(ctx):
       --js_out=import_style=commonjs:{outdir} \
       --grpc-web_out=import_style=commonjs+dts,mode=grpcwebtext:{outdir} \
     && pushd {outdir} \
-    && $find_ -type f -mindepth 1 -exec mv {{}} . \\; \
+    && $find_ -type f -mindepth 1 -exec cp {{}} . \\; \
     && $find_ -type d -mindepth 1 -maxdepth 1 -exec rm -r {{}} \\; \
-    && popd \
+    && popd
 """.format(
             protos = " ".join([
                 file.path.removeprefix(ctx.bin_dir.path + "/")
