@@ -1,4 +1,4 @@
-package dev.logos.stack.aws.cdk.stack;
+package dev.logos.stack.aws.module;
 
 import com.google.inject.*;
 import com.google.inject.multibindings.Multibinder;
@@ -174,8 +174,6 @@ public class EksModule extends AbstractModule {
         return AutoScalingGroupCapacityOptions.builder()
                 .instanceType(instanceType)
                 .machineImageType(MachineImageType.BOTTLEROCKET)
-//                .associatePublicIpAddress(true)
-//                .vpcSubnets(SubnetSelection.builder().subnetType(SubnetType.PUBLIC).build())
                 .minCapacity(1)
                 .maxCapacity(2)
                 .updatePolicy(UpdatePolicy.rollingUpdate());

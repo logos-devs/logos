@@ -1,4 +1,4 @@
-package dev.logos.stack.aws.cdk.stack;
+package dev.logos.stack.aws.module;
 
 import com.google.inject.BindingAnnotation;
 
@@ -7,6 +7,5 @@ import java.lang.annotation.RetentionPolicy;
 
 @BindingAnnotation
 @Retention(RetentionPolicy.RUNTIME)
-public @interface RootConstructId {
+public @interface AppId {
 }
-

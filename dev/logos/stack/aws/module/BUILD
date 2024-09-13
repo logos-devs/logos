@@ -1,14 +1,19 @@
 java_library(
-    name = "stack",
+    name = "module",
     srcs = [
+        "AppId.java",
         "EcrModule.java",
         "EksModule.java",
+        "InfrastructureModule.java",
         "RdsModule.java",
         "RootConstructId.java",
         "VpcModule.java",
     ],
+    plugins = ["//dev/logos/app/register:module"],
     visibility = ["//visibility:public"],
     deps = [
+        "//dev/logos/app/register:module_library",
+        "//dev/logos/module",
         "@maven_logos//:com_google_inject_guice",
         "@maven_logos//:software_amazon_awscdk_aws_cdk_lib",
         "@maven_logos//:software_amazon_awscdk_cdk_lambda_layer_kubectl_v30",

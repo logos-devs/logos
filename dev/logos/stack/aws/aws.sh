@@ -286,7 +286,7 @@ deploy() {
 
     dev_env
 
-    $BAZEL run @logos//dev/logos/ingress/nginx
+    $BAZEL run @logos//dev/logos
 }
 
 _psql() {

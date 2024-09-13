@@ -1,4 +1,4 @@
-package dev.logos.stack.aws.cdk.stack;
+package dev.logos.stack.aws.module;
 
 import com.google.inject.*;
 import com.google.inject.multibindings.Multibinder;

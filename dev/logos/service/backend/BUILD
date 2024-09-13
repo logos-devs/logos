@@ -38,11 +38,5 @@ kubectl(
     migrations = [
         "//dev/logos/service/storage/migrations",
     ],
-    visibility = [
-        "//dev/logos/service:__subpackages__",
-        "//dev/logos/service/ingress/nginx:__pkg__",
-    ],
-    deps = [
-        "//dev/logos/app/controller",
-    ],
+    visibility = ["//dev/logos:__subpackages__"],
 )
