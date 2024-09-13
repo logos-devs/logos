@@ -20,15 +20,11 @@ build --repo_env=CC=/usr/lib/llvm/18/bin/clang
 build --repo_env=CXX=/usr/lib/llvm/18/bin/clang++
 run --incompatible_strict_action_env
 
+common --@aspect_rules_ts//ts:skipLibCheck=honor_tsconfig
 common --incompatible_allow_tags_propagation
 
 # pulls vars set in .bazelrc.local by logos dev setup
 run --run_under='//tools:bazel-env'
-
-# rules_ts
-build --@aspect_rules_ts//ts:skipLibCheck=honor_tsconfig
-fetch --@aspect_rules_ts//ts:skipLibCheck=honor_tsconfig
-query --@aspect_rules_ts//ts:skipLibCheck=honor_tsconfig
 
 try-import %workspace%/.bazelrc.local
 try-import %workspace%/.apko/.bazelrc

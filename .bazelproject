@@ -1,6 +1,5 @@
 directories:
   .
-  -jobs
 targets:
   //dev/...
 additional_languages:
