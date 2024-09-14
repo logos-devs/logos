@@ -1,6 +1,5 @@
-import {DevEndpoint} from "./endpoint";
-import {Container, ContainerModule, interfaces, inject, multiInject, injectable} from "inversify";
-import {UnaryInterceptor} from "grpc-web";
+import {Container, ContainerModule, interfaces, injectable} from "inversify";
+import {UnaryInterceptor, StreamInterceptor} from "grpc-web";
 import getDecorators from "inversify-inject-decorators";
 
 declare global {
@@ -12,14 +11,16 @@ declare global {
 const enableDevTools = window.__GRPCWEB_DEVTOOLS__ || ((_: any) => {
 });
 
-export const
-    rootContainer = new Container(),
-    endpoint = new DevEndpoint(),
-    endpointUrl = endpoint.getURL();
+export const rootContainer = new Container();
 
 
 @injectable()
 export abstract class ClientUnaryInterceptor implements UnaryInterceptor<any, any> {
+    abstract intercept(request: any, invoker: any);
+}
+
+@injectable()
+export abstract class ClientStreamInterceptor implements StreamInterceptor<any, any> {
     abstract intercept(request: any, invoker: any);
 }
 
@@ -33,6 +34,17 @@ export abstract class AppModule extends ContainerModule {
 
     abstract configure(): void;
 
+    getAllBindings(clazz) {
+        let bindings;
+        try {
+            // https://github.com/inversify/InversifyJS/issues/1469
+            bindings = rootContainer.getAll(clazz);
+        } catch (e) {
+            bindings = [];
+        }
+        return bindings;
+    }
+
     constructor() {
         super((bind: interfaces.Bind) => {
             this.bind = bind;
@@ -41,11 +53,9 @@ export abstract class AppModule extends ContainerModule {
             this.clients.forEach(clientClass => {
                 bind(clientClass).toDynamicValue(
                     () => {
-                        const interceptors = rootContainer.getAll(ClientUnaryInterceptor);
-                        console.debug(interceptors);
-                        const client = new clientClass(endpointUrl, null, {
-                            unaryInterceptors: interceptors,
-                            streamInterceptors: interceptors,
+                        const client = new clientClass("/services/", null, {
+                            unaryInterceptors: this.getAllBindings(ClientUnaryInterceptor),
+                            streamInterceptors: this.getAllBindings(ClientStreamInterceptor),
                         });
                         enableDevTools([client]);
                         return client;
