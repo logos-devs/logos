@@ -15,9 +15,7 @@ import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.List;
+import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -63,6 +61,7 @@ public class ModuleLoader extends AbstractModule {
     private void discoverModules(ClassLoader classLoader) throws IOException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         Enumeration<URL> resources = classLoader.getResources(META_INF_DIR);
 
+        Set<String> appModules = new HashSet<>();
         while (resources.hasMoreElements()) {
             URL url = resources.nextElement();
 
@@ -74,27 +73,43 @@ public class ModuleLoader extends AbstractModule {
                     String entryName = entries.nextElement().getName();
 
                     if (entryName.startsWith(APP_MODULE_PREFIX)) {
-                        logger.atInfo().addKeyValue("jarEntry", entryName).log("Loading jar entry");
+                        logger.atInfo()
+                              .addKeyValue("appModule", entryName)
+                              .addKeyValue("jarFile", jarFile.getName())
+                              .log("Loading jar " + META_INF_DIR + " app-module entry");
 
                         try (InputStream inputStream = classLoader.getResourceAsStream(entryName)) {
                             if (inputStream != null) {
                                 try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
-                                    String line;
-                                    while ((line = reader.readLine()) != null) {
-                                        try {
-                                            Class<?> clazz = Class.forName(line, true, classLoader);
-                                            logger.atInfo().addKeyValue("module", clazz.getCanonicalName()).log("Loading module");
-                                            install((AbstractModule) clazz.getDeclaredConstructor().newInstance());
-                                        } catch (ClassNotFoundException e) {
-                                            logger.atError().setCause(e).addKeyValue("class", line).log("Error loading class");
-                                            throw new RuntimeException(e);
+                                    String appModuleClassName;
+                                    while ((appModuleClassName = reader.readLine()) != null) {
+                                        appModules.add(appModuleClassName);
+                                        logger.atInfo()
+                                              .addKeyValue("requestedModule", appModuleClassName)
+                                              .addKeyValue("requestedBy", jarFile.getName())
+                                              .log("Loading jar entry");
                                         }
                                     }
                                 }
-                            }
                         }
                     }
                 }
+            }
+        }
+
+        for (String appModule : appModules) {
+            try {
+                Class<?> clazz = Class.forName(appModule, true, classLoader);
+                logger.atInfo()
+                      .addKeyValue("module", clazz.getCanonicalName())
+                      .log("Loading module");
+                install((AbstractModule) clazz.getDeclaredConstructor().newInstance());
+            } catch (ClassNotFoundException e) {
+                logger.atError()
+                      .setCause(e)
+                      .addKeyValue("class", appModule)
+                      .log("Error loading class");
+                throw new RuntimeException(e);
             }
         }
     }

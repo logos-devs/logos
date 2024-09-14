@@ -1,6 +1,7 @@
 package dev.logos.app;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.Provider;
 import com.google.inject.multibindings.Multibinder;
 import dev.logos.service.Service;
 import io.grpc.*;
@@ -77,7 +78,8 @@ public abstract class AppModule extends AbstractModule {
     @SuppressWarnings("unchecked")
     protected <S extends AbstractStub<S>> void client(Function<ManagedChannel, S> stubFactory) {
         Class<S> stubClass = (Class<S>) stubFactory.apply(DUMMY_CHANNEL).getClass();
-        bind(stubClass).toProvider(() -> stubFactory.apply(getProvider(ManagedChannel.class).get()));
+        Provider<ManagedChannel> channelProvider = getProvider(ManagedChannel.class);
+        bind(stubClass).toProvider(() -> stubFactory.apply(channelProvider.get()));
     }
 
     @SafeVarargs
