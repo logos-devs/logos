@@ -1,6 +1,6 @@
 {
   "lockFileVersion": 6,
-  "moduleFileHash": "c93dc355d8acb0b7cbb0bf1baf4ead1056730c658e7d54248c5a914b7f6816cc",
+  "moduleFileHash": "adb685fe945aa68fe4748d4f2e402b1d5b4d0b3ae42fd8b7afcb2128c9c2da1f",
   "flags": {
     "cmdRegistries": [
       "https://bcr.bazel.build/"
@@ -372,7 +372,7 @@
               "devDependency": false,
               "location": {
                 "file": "@@//:MODULE.bazel",
-                "line": 226,
+                "line": 222,
                 "column": 23
               }
             }
@@ -386,7 +386,7 @@
           "usingModule": "<root>",
           "location": {
             "file": "@@//:MODULE.bazel",
-            "line": 235,
+            "line": 231,
             "column": 21
           },
           "imports": {
@@ -403,31 +403,30 @@
           "usingModule": "<root>",
           "location": {
             "file": "@@//:MODULE.bazel",
-            "line": 244,
+            "line": 240,
             "column": 29
           },
           "imports": {
-            "npm_typescript": "npm_typescript"
+            "npm_typescript": "npm_typescript_logos"
           },
-          "devImports": [
-            "npm_typescript"
-          ],
+          "devImports": [],
           "tags": [
             {
               "tagName": "deps",
               "attributeValues": {
+                "name": "npm_typescript_logos",
                 "ts_version_from": "//:package.json"
               },
-              "devDependency": true,
+              "devDependency": false,
               "location": {
                 "file": "@@//:MODULE.bazel",
-                "line": 249,
+                "line": 241,
                 "column": 18
               }
             }
           ],
-          "hasDevUseExtension": true,
-          "hasNonDevUseExtension": false
+          "hasDevUseExtension": false,
+          "hasNonDevUseExtension": true
         },
         {
           "extensionBzlFile": "@aspect_rules_rollup//rollup:extensions.bzl",
@@ -435,7 +434,7 @@
           "usingModule": "<root>",
           "location": {
             "file": "@@//:MODULE.bazel",
-            "line": 260,
+            "line": 256,
             "column": 27
           },
           "imports": {},
@@ -447,7 +446,7 @@
               "devDependency": false,
               "location": {
                 "file": "@@//:MODULE.bazel",
-                "line": 261,
+                "line": 257,
                 "column": 16
               }
             }
@@ -461,7 +460,7 @@
           "usingModule": "<root>",
           "location": {
             "file": "@@//:MODULE.bazel",
-            "line": 269,
+            "line": 265,
             "column": 23
           },
           "imports": {},
@@ -475,7 +474,7 @@
               "devDependency": false,
               "location": {
                 "file": "@@//:MODULE.bazel",
-                "line": 270,
+                "line": 266,
                 "column": 16
               }
             }
@@ -489,7 +488,7 @@
           "usingModule": "<root>",
           "location": {
             "file": "@@//:MODULE.bazel",
-            "line": 278,
+            "line": 274,
             "column": 20
           },
           "imports": {
@@ -512,7 +511,7 @@
               "devDependency": false,
               "location": {
                 "file": "@@//:MODULE.bazel",
-                "line": 279,
+                "line": 275,
                 "column": 9
               }
             },
@@ -529,7 +528,7 @@
               "devDependency": false,
               "location": {
                 "file": "@@//:MODULE.bazel",
-                "line": 286,
+                "line": 282,
                 "column": 9
               }
             },
@@ -545,7 +544,7 @@
               "devDependency": false,
               "location": {
                 "file": "@@//:MODULE.bazel",
-                "line": 294,
+                "line": 290,
                 "column": 9
               }
             },
@@ -559,7 +558,7 @@
               "devDependency": false,
               "location": {
                 "file": "@@//:MODULE.bazel",
-                "line": 302,
+                "line": 298,
                 "column": 9
               }
             },
@@ -573,7 +572,7 @@
               "devDependency": false,
               "location": {
                 "file": "@@//:MODULE.bazel",
-                "line": 309,
+                "line": 305,
                 "column": 9
               }
             },
@@ -591,7 +590,7 @@
               "devDependency": false,
               "location": {
                 "file": "@@//:MODULE.bazel",
-                "line": 316,
+                "line": 312,
                 "column": 9
               }
             }
@@ -605,7 +604,7 @@
           "usingModule": "<root>",
           "location": {
             "file": "@@//:MODULE.bazel",
-            "line": 333,
+            "line": 329,
             "column": 20
           },
           "imports": {
@@ -623,7 +622,7 @@
               "devDependency": false,
               "location": {
                 "file": "@@//:MODULE.bazel",
-                "line": 336,
+                "line": 332,
                 "column": 19
               }
             },
@@ -636,7 +635,7 @@
               "devDependency": false,
               "location": {
                 "file": "@@//:MODULE.bazel",
-                "line": 343,
+                "line": 339,
                 "column": 19
               }
             }
@@ -4866,7 +4865,7 @@
         "recordedDirentsInputs": {},
         "envVariables": {},
         "generatedRepoSpecs": {
-          "npm_typescript": {
+          "npm_typescript_logos": {
             "bzlFile": "@@aspect_rules_ts~//ts/private:npm_repositories.bzl",
             "ruleClassName": "http_archive_version",
             "attributes": {
