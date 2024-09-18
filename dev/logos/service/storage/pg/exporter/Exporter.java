@@ -97,12 +97,11 @@ public class Exporter {
                         for (TableDescriptor tableDescriptor : schemaDescriptor.tables()) {
                             try (OutputStream outputStream = Files.newOutputStream(
                                     Files.createDirectories(
-                                            Path.of("%s/%s/%s/".formatted(
+                                            Path.of("%s/%s/".formatted(
                                                     build_dir,
-                                                    build_package.replace(".", "/"),
-                                                    schemaDescriptor.name()
+                                                    build_package.replace(".", "/")
                                             ))
-                                    ).resolve("%s.proto".formatted(tableDescriptor.name())),
+                                    ).resolve("%s_%s.proto".formatted(schemaDescriptor.name(), tableDescriptor.name())),
                                     CREATE, WRITE)) {
 
                                 outputStream.write(exporter.codeGenerator.makeProtoService(schemaDescriptor, tableDescriptor).getBytes());

@@ -65,7 +65,7 @@ def _schema_storage_proto_impl(ctx):
     outputs = []
     for schema in ctx.attr.tables.keys():
         for table in ctx.attr.tables[schema]:
-            outputs.append(ctx.actions.declare_file("%s/%s.proto" % (schema, table)))
+            outputs.append(ctx.actions.declare_file("%s_%s.proto" % (schema, table)))
 
     tool_inputs, tool_input_manifests = ctx.resolve_tools(tools = [ctx.attr.exporter, ctx.attr.schema_export])
 
