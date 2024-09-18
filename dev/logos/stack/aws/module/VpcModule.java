@@ -28,7 +28,6 @@ public class VpcModule extends AbstractModule {
     @Override
     protected void configure() {
         super.configure();
-        bind(VpcStack.class).asEagerSingleton();
         Multibinder.newSetBinder(binder(), Stack.class).addBinding().to(VpcStack.class);
     }
 
