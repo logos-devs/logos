@@ -52,7 +52,7 @@ public class ServerExecutor {
         }
     }
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) {
         try {
             Injector injector = ModuleLoader.createInjector();
             ServerExecutor serverExecutor = injector.getInstance(ServerExecutor.class);
@@ -61,6 +61,7 @@ public class ServerExecutor {
         } catch (Exception e) {
             // stack traces can get lost inside Guice.
             e.printStackTrace();
+            System.exit(1);
         }
     }
 }
