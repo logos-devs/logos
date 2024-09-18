@@ -1,4 +1,4 @@
-package dev.logos.service.backend.interceptor;
+package dev.logos.service.backend.server;
 
 import com.google.inject.Inject;
 import dev.logos.service.Service;

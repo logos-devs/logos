@@ -5,7 +5,6 @@ import com.google.inject.Provides;
 import com.google.inject.multibindings.Multibinder;
 import dev.logos.app.register.registerModule;
 import dev.logos.service.Service;
-import dev.logos.service.backend.interceptor.GuardServerInterceptor;
 import io.grpc.*;
 import io.grpc.inprocess.InProcessChannelBuilder;
 import io.grpc.inprocess.InProcessServerBuilder;
@@ -13,6 +12,7 @@ import io.grpc.inprocess.InProcessServerBuilder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
 @registerModule
 public class ServerModule extends AbstractModule {

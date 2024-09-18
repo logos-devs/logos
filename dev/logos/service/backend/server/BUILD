@@ -3,6 +3,7 @@ java_binary(
     srcs = [
         "AuthTokenCallCredentials.java",
         "AuthTokenForwardingInterceptor.java",
+        "GuardServerInterceptor.java",
         "ServerExecutor.java",
         "ServerModule.java",
     ],
@@ -15,7 +16,6 @@ java_binary(
         "//dev/logos/app/register:module_library",
         "//dev/logos/module",
         "//dev/logos/service",
-        "//dev/logos/service/backend/interceptor",
         "//dev/logos/service/storage:storage_library",
         "//dev/logos/service/storage/module",
         "//dev/logos/user",
