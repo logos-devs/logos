@@ -27,38 +27,21 @@
     // https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-7.html#the-usedefineforclassfields-flag-and-the-declare-property-modifier
     "useDefineForClassFields": false,
     "paths": {
-      "app/*_pb": [
-        "bazel-bin/app/*_pb",
-        "app/*_pb"
+      "app/*": [
+        "bazel-bin/app/*",
+        "app/*",
+        "external/logos~/app/*"
       ],
-      "app/*_pb.js": [
-        "bazel-bin/app/*_pb.js",
-        "app/*_pb.js"
+      "dev/*": [
+        "bazel-bin/dev/*",
+        "dev/*",
+        "external/logos~/dev/*"
       ],
-      "app/*_pb.d.ts": [
-        "bazel-bin/app/*_pb.d.ts",
-        "app/*_pb.d.ts"
-      ],
-      "dev/*_pb": [
-        "bazel-bin/dev/*_pb",
-        "dev/*_pb"
-      ],
-      "dev/*_pb.js": [
-        "bazel-bin/dev/*_pb.js",
-        "dev/*_pb.js"
-      ],
-      "dev/*_pb.d.ts": [
-        "bazel-bin/dev/*_pb.d.ts",
-        "dev/*_pb.d.ts"
+      "external/*": [
+        "bazel-bin/external/*",
+        "external/*",
+        "../../external/*"
       ]
     }
-  },
-  "include": [
-    "bazel-bin/app/**/*_pb.js",
-    "bazel-bin/app/**/*_pb.d.ts",
-    "bazel-bin/dev/**/*_pb.d.ts",
-    "bazel-bin/dev/**/*_pb.js",
-    "app/**/*.ts",
-    "dev/**/*.ts"
-  ]
+  }
 }
