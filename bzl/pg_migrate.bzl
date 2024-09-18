@@ -67,7 +67,7 @@ pg_migrate_rule = rule(
         "deps": attr.label_list(),
         "kubectl": attr.label(
             cfg = "exec",
-            default = Label("//tools:kubectl"),
+            default = Label("@logos//tools:kubectl"),
             executable = True,
         ),
     },
@@ -93,7 +93,7 @@ pg_check_rule = rule(
     attrs = {
         "kubectl": attr.label(
             cfg = "exec",
-            default = Label("//tools:kubectl"),
+            default = Label("@logos//tools:kubectl"),
             executable = True,
         ),
     },
