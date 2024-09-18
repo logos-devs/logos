@@ -4,6 +4,9 @@ import com.google.inject.*;
 import dev.logos.app.register.registerModule;
 import software.amazon.awscdk.*;
 import software.amazon.awscdk.cxapi.CloudAssembly;
+import software.amazon.awssdk.regions.providers.DefaultAwsRegionProviderChain;
+import software.amazon.awssdk.services.sts.StsClient;
+import software.amazon.awssdk.services.sts.model.GetCallerIdentityRequest;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -51,13 +54,15 @@ public class InfrastructureModule extends AbstractModule {
     @Provides
     @AwsAccountId
     String provideAwsAccountId() {
-        return System.getenv("LOGOS_AWS_ACCOUNT_ID");
+        try (StsClient stsClient = StsClient.builder().build()) {
+            return stsClient.getCallerIdentity().account();
+        }
     }
 
     @Provides
     @AwsRegion
     String provideAwsRegion() {
-        return System.getenv("LOGOS_AWS_REGION");
+        return new DefaultAwsRegionProviderChain().getRegion().id();
     }
 
     @Provides
