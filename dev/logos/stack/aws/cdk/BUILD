@@ -3,13 +3,14 @@ load("@npm_logos//:aws-cdk/package_json.bzl", cdk = "bin")
 
 cdk.cdk_binary(
     name = "cdk",
+    chdir = package_name(),
     data = [
         "//dev/logos/stack/aws/synthesizer:synthesizer_deploy.jar",
     ],
     expand_args = True,
     fixed_args = [
         "--app",
-        "'JAR=\"$(location //dev/logos/stack/aws/synthesizer:synthesizer_deploy.jar)\"; java -jar $${JAR#bazel-out/k8-fastbuild/bin/}'",
+        "'java -jar ../synthesizer/synthesizer_deploy.jar'",
     ],
     tags = ["no-sandbox"],
     visibility = ["//visibility:public"],
@@ -17,13 +18,13 @@ cdk.cdk_binary(
 
 js_run_binary(
     name = "cdk_run",
-    outs = ["outputs.json"],
+    outs = ["stack.json"],
     args = [
         "deploy",
         "-v",
         "--all",
         "--outputs-file",
-        "outputs.json",
+        "stack.json",
         "--require-approval",
         "never",
     ],

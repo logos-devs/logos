@@ -1,6 +1,7 @@
+load("@aspect_rules_js//js:defs.bzl", "js_run_binary")
 load("@npm_logos//:aws-cdk/package_json.bzl", cdk = "bin")
 
-def aws_cdk_synthesizer(name, deps = None):
+def aws_cdk_synthesizer(name, deps = None, visibility = None):
     if deps == None:
         deps = []
 
@@ -12,7 +13,6 @@ def aws_cdk_synthesizer(name, deps = None):
         args = ["synth"],
         main_class = "dev.logos.stack.aws.synthesizer.Synthesizer",
         plugins = ["@logos//dev/logos/app/register:module"],
-        visibility = ["//visibility:public"],
         deps = [
             "@logos//dev/logos/module",
             "@maven_logos//:com_google_inject_guice",
@@ -20,10 +20,11 @@ def aws_cdk_synthesizer(name, deps = None):
             "@maven_logos//:org_slf4j_slf4j_simple",
             "@maven_logos//:software_amazon_awscdk_aws_cdk_lib",
         ] + deps,
+        visibility = visibility,
     )
 
-def aws(name, deps = None):
-    aws_cdk_synthesizer(name = name + "_synthesizer", deps = deps)
+def aws(name, deps = None, visibility = None):
+    aws_cdk_synthesizer(name = name + "_synthesizer", deps = deps, visibility = visibility)
 
     cdk.cdk_binary(
         name = name,
@@ -31,10 +32,35 @@ def aws(name, deps = None):
             name + "_synthesizer_deploy.jar",
         ],
         expand_args = True,
+        chdir = native.package_name(),
         fixed_args = [
             "--app",
-            "'SYNTH_JAR=\"$(location :" + name + "_synthesizer_deploy.jar)\"; java -cp \"$${SYNTH_JAR#bazel-out/k8-fastbuild/bin/}\" dev.logos.stack.aws.synthesizer.Synthesizer'",
+            "'java -cp " + name + "_synthesizer_deploy.jar dev.logos.stack.aws.synthesizer.Synthesizer'",
         ],
         tags = ["no-sandbox"],
-        visibility = ["//visibility:public"],
+        visibility = visibility,
+    )
+
+    js_run_binary(
+        name = name + "_outputs",
+        outs = ["stack.json"],
+        args = [
+            "deploy",
+            "-v",
+            "--all",
+            "--outputs-file",
+            "stack.json",
+            "--require-approval",
+            "never",
+        ],
+        log_level = "debug",
+        mnemonic = "CdkDeploy",
+        progress_message = "Deploying to AWS",
+        silent_on_success = False,
+        tags = [
+            "no-remote",
+            "no-sandbox",
+        ],
+        tool = ":" + name,
+        visibility = visibility,
     )
