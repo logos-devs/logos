@@ -33,8 +33,11 @@ _update_bazelrc_env() {
   touch "$bazelrc_local"
   echo -e "Updating $bazelrc_local with env var $var_name=$var_value"
 
-  "$SED" -i "/action_env=$var_name=/d" "$bazelrc_local" || true
+  "$SED" -i "/--action_env=$var_name=/d" "$bazelrc_local" || true
   echo "build --action_env=$var_name=$var_value" >> "$bazelrc_local"
+
+  "$SED" -i "/--host-action_env=$var_name=/d" "$bazelrc_local" || true
+  echo "build --host-action_env=$var_name=$var_value" >> "$bazelrc_local"
 }
 
 _run_with_pid() {
