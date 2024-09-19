@@ -165,22 +165,27 @@ public class AppController {
                                              .hosts(appDomains)
                                              .secretName("logos-tls-secret")))
                         .ingressClassName("nginx")
-                        .defaultBackend(new V1IngressBackend()
-                                                .service(new V1IngressServiceBackend()
-                                                                 .name("client-service")
-                                                                 .port(new V1ServiceBackendPort().number(8080))))
                         .rules(apps.values().stream().map(app -> new V1IngressRule()
                                 .host(app.metadata().getName())
                                 .http(new V1HTTPIngressRuleValue()
                                               .paths(List.of(
                                                       new V1HTTPIngressPath()
-                                                              .path("/services/")
+                                                              .path("/services/(.*)")
                                                               .pathType("Prefix")
                                                               .backend(new V1IngressBackend()
                                                                                .service(new V1IngressServiceBackend()
                                                                                                 .name("envoy-service")
                                                                                                 .port(new V1ServiceBackendPort().number(
-                                                                                                        8081))))
+                                                                                                        8081)))),
+
+                                                      new V1HTTPIngressPath()
+                                                              .path("/(.*)")
+                                                              .pathType("Prefix")
+                                                              .backend(new V1IngressBackend()
+                                                                               .service(new V1IngressServiceBackend()
+                                                                                                .name("client-service")
+                                                                                                .port(new V1ServiceBackendPort().number(
+                                                                                                        8080))))
                                               )))
                         ).toList());
 
@@ -190,10 +195,12 @@ public class AppController {
                 .metadata(new V1ObjectMeta()
                                   .name("logos-ingress")
                                   .namespace("default")
-                                  .putAnnotationsItem("cert-manager.io/cluster-issuer", "letsencrypt")
                                   .putAnnotationsItem("acme.cert-manager.io/http01-edit-in-place", "true")
+                                  .putAnnotationsItem("cert-manager.io/cluster-issuer", "letsencrypt")
                                   .putAnnotationsItem("ingress.kubernetes.io/ssl-redirect", "false")
-                                  .putAnnotationsItem("kubernetes.io/ingress.class", "nginx"))
+                                  .putAnnotationsItem("kubernetes.io/ingress.class", "nginx")
+                                  .putAnnotationsItem("nginx.ingress.kubernetes.io/rewrite-target", "/$1")
+                                  .putAnnotationsItem("nginx.ingress.kubernetes.io/use-regex", "true"))
                 .spec(ingressSpec);
 
         try {
