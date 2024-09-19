@@ -2,15 +2,14 @@ package dev.logos.stack.aws.module;
 
 import com.google.inject.*;
 import com.google.inject.multibindings.Multibinder;
-import software.amazon.awscdk.App;
-import software.amazon.awscdk.RemovalPolicy;
+import software.amazon.awscdk.*;
 import software.amazon.awscdk.Stack;
-import software.amazon.awscdk.StackProps;
 import software.amazon.awscdk.cdk.lambdalayer.kubectl.v30.KubectlV30Layer;
 import software.amazon.awscdk.services.autoscaling.AutoScalingGroup;
 import software.amazon.awscdk.services.autoscaling.UpdatePolicy;
 import software.amazon.awscdk.services.ec2.*;
 import software.amazon.awscdk.services.efs.*;
+import software.amazon.awscdk.services.efs.FileSystem;
 import software.amazon.awscdk.services.eks.*;
 import software.amazon.awscdk.services.iam.*;
 import software.amazon.awscdk.services.rds.DatabaseCluster;
@@ -24,10 +23,7 @@ import software.amazon.awssdk.services.sts.model.GetCallerIdentityResponse;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class EksModule extends AbstractModule {
     @BindingAnnotation
@@ -115,6 +111,17 @@ public class EksModule extends AbstractModule {
     public @interface WorkerNodePolicyBuilder {
     }
 
+    public static Map<String, Object> orderedMapOf(Object... keyValues) {
+        if (keyValues.length % 2 != 0) {
+            throw new IllegalArgumentException("Invalid number of arguments: keyValues length must be even");
+        }
+        Map<String, Object> map = new LinkedHashMap<>();
+        for (int i = 0; i < keyValues.length; i += 2) {
+            map.put((String) keyValues[i], keyValues[i + 1]);
+        }
+        return map;
+    }
+
     @Override
     protected void configure() {
         Multibinder.newSetBinder(binder(), Stack.class).addBinding().to(EksStack.class);
@@ -183,10 +190,10 @@ public class EksModule extends AbstractModule {
     @Singleton
     @NginxIngressHelmValues
     Map<String, Object> provideNginxIngressHelmValues() {
-        return Map.of(
-                "controller", Map.of(
-                        "service", Map.of(
-                                "annotations", Map.of(
+        return orderedMapOf(
+                "controller", orderedMapOf(
+                        "service", orderedMapOf(
+                                "annotations", orderedMapOf(
                                         "service.beta.kubernetes.io/aws-load-balancer-backend-protocol", "tcp",
                                         //"service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled", "true",
                                         "service.beta.kubernetes.io/aws-load-balancer-scheme", "internet-facing",
@@ -202,12 +209,12 @@ public class EksModule extends AbstractModule {
     @Provides
     @Singleton
     @AddonConfigs
-    List<Map<String, String>> provideAddonConfigs() {
-        return Arrays.asList(
-                Map.of("name", "vpc-cni", "version", "v1.18.3-eksbuild.2"),
-                Map.of("name", "coredns", "version", "v1.11.1-eksbuild.8"),
-                Map.of("name", "kube-proxy", "version", "v1.30.0-eksbuild.3"),
-                Map.of("name", "aws-efs-csi-driver", "version", "v2.0.7-eksbuild.1"));
+    List<Map<String, Object>> provideAddonConfigs() {
+        return List.of(
+                orderedMapOf("name", "vpc-cni", "version", "v1.18.3-eksbuild.2"),
+                orderedMapOf("name", "coredns", "version", "v1.11.1-eksbuild.8"),
+                orderedMapOf("name", "kube-proxy", "version", "v1.30.0-eksbuild.3"),
+                orderedMapOf("name", "aws-efs-csi-driver", "version", "v2.0.7-eksbuild.1"));
     }
 
     @Provides
@@ -256,22 +263,26 @@ public class EksModule extends AbstractModule {
     @Singleton
     @DbRoServiceManifest
     Map<String, Object> provideDbRoServiceManifest(DatabaseCluster dbCluster) {
-        return Map.of(
+        return orderedMapOf(
                 "kind", "Service",
                 "apiVersion", "v1",
-                "metadata", Map.of("name", "db-ro-service", "namespace", "default"),
-                "spec", Map.of("type", "ExternalName", "externalName", dbCluster.getClusterReadEndpoint().getHostname()));
+                "metadata",
+                orderedMapOf("name", "db-ro-service", "namespace", "default"),
+                "spec",
+                orderedMapOf("type", "ExternalName", "externalName", dbCluster.getClusterReadEndpoint().getHostname()));
     }
 
     @Provides
     @Singleton
     @DbRwServiceManifest
     Map<String, Object> provideDbRwServiceManifest(DatabaseCluster dbCluster) {
-        return Map.of(
+        return orderedMapOf(
                 "kind", "Service",
                 "apiVersion", "v1",
-                "metadata", Map.of("name", "db-rw-service", "namespace", "default"),
-                "spec", Map.of("type", "ExternalName", "externalName", dbCluster.getClusterEndpoint().getHostname()));
+                "metadata",
+                orderedMapOf("name", "db-rw-service", "namespace", "default"),
+                "spec",
+                orderedMapOf("type", "ExternalName", "externalName", dbCluster.getClusterEndpoint().getHostname()));
     }
 
     @Provides
@@ -357,17 +368,10 @@ public class EksModule extends AbstractModule {
         }
     }
 
-    @Provides
-    @Singleton
-    @RpcServerServiceAccount
-    ServiceAccount provideRpcServerServiceAccount(EksStack eksStack) {
-        return eksStack.getRpcServerServiceAccount();
-    }
-
     @Singleton
     public static class EksStack extends Stack {
+        public static final String RPC_SERVICE_ACCOUNT_ROLE_ARN_OUTPUT = "LogosRpcServiceAccountRoleArn";
         private final Cluster cluster;
-        private final ServiceAccount rpcServerServiceAccount;
 
         @Inject
         public EksStack(
@@ -377,7 +381,7 @@ public class EksModule extends AbstractModule {
                 @CurrentRoleArn String currentRoleArn,
                 ClusterProps.Builder clusterPropsBuilder,
                 AutoScalingGroupCapacityOptions.Builder autoScalingGroupCapacityOptionsBuilder,
-                @AddonConfigs List<Map<String, String>> addonConfigs,
+                @AddonConfigs List<Map<String, Object>> addonConfigs,
                 @NginxIngressHelmChartOptions HelmChartOptions.Builder nginxIngressHelmChartOptionsBuilder,
                 @EfsSecurityGroupBuilder SecurityGroupProps.Builder efsSecurityGroupPropsBuilder,
                 @EksFileSystemBuilder FileSystemProps.Builder fileSystemPropsBuilder,
@@ -402,11 +406,11 @@ public class EksModule extends AbstractModule {
                             .build()
             );
 
-            for (Map<String, String> addon : addonConfigs) {
+            for (Map<String, Object> addon : addonConfigs) {
                 Addon.Builder.create(this, id + "-" + addon.get("name") + "-addon")
-                        .cluster(cluster)
-                        .addonName(addon.get("name"))
-                        .addonVersion(addon.get("version"))
+                             .cluster(cluster)
+                             .addonName((String) addon.get("name"))
+                             .addonVersion((String) addon.get("version"))
                         .build();
             }
 
@@ -418,15 +422,15 @@ public class EksModule extends AbstractModule {
 
             FileSystem fileSystem = new FileSystem(this, id + "-efs", fileSystemPropsBuilder.securityGroup(efsSg).build());
 
-            cluster.addManifest(id + "-app-storage-class-manifest", Map.of(
+            cluster.addManifest(id + "-app-storage-class-manifest", orderedMapOf(
                     "kind", "StorageClass",
                     "apiVersion", "storage.k8s.io/v1",
-                    "metadata", Map.of(
+                    "metadata", orderedMapOf(
                             "name", "app-storage-class",
                             "annotations",
-                            Map.of("storageclass.kubernetes.io/is-default-class", "true")),
+                            orderedMapOf("storageclass.kubernetes.io/is-default-class", "true")),
                     "provisioner", "efs.csi.aws.com",
-                    "parameters", Map.of(
+                    "parameters", orderedMapOf(
                             "provisioningMode", "efs-ap",
                             "fileSystemId", fileSystem.getFileSystemId(),
                             "directoryPerms", "700")));
@@ -434,9 +438,17 @@ public class EksModule extends AbstractModule {
             cluster.addManifest(id + "-db-ro-service-manifest", dbRoServiceManifest);
             cluster.addManifest(id + "-db-rw-service-manifest", dbRwServiceManifest);
 
-            this.rpcServerServiceAccount = cluster.addServiceAccount(id + "-backend-service-account",
-                    serviceAccountOptionsBuilder.name(id + "-backend-service-account").build());
-            this.rpcServerServiceAccount.addToPrincipalPolicy(serviceAccountPolicyStatementBuilder.build());
+            ServiceAccount rpcServerServiceAccount = cluster.addServiceAccount(
+                    id + "-backend-service-account",
+                    serviceAccountOptionsBuilder.name(id + "-backend-service-account")
+                                                .build());
+            rpcServerServiceAccount.addToPrincipalPolicy(serviceAccountPolicyStatementBuilder.build());
+
+            new CfnOutput(this, id + "-backend-service-account-role-arn",
+                          CfnOutputProps.builder()
+                                        .exportName(RPC_SERVICE_ACCOUNT_ROLE_ARN_OUTPUT)
+                                        .value(rpcServerServiceAccount.getRole().getRoleArn())
+                                        .build());
 
             IRole role = asg.getRole();
             role.addManagedPolicy(ManagedPolicy
@@ -449,10 +461,6 @@ public class EksModule extends AbstractModule {
 
         public Cluster getCluster() {
             return cluster;
-        }
-
-        public ServiceAccount getRpcServerServiceAccount() {
-            return rpcServerServiceAccount;
         }
     }
 }
