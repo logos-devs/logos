@@ -11,11 +11,12 @@ ts_library(
     srcs = [":src"],
     visibility = ["//visibility:public"],
     deps = [
+        "//:node_modules/@material/web",
         "//:node_modules/grpc-web",
-        "//:node_modules/lit",
-        "//:node_modules/lit-html",
         "//:node_modules/inversify",
         "//:node_modules/inversify-inject-decorators",
-        "//:node_modules/@material/web",
+        "//:node_modules/lit",
+        "//:node_modules/lit-html",
+        "//:node_modules/path-to-regexp",
     ],
 )

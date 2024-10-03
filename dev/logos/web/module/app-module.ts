@@ -1,6 +1,8 @@
 import {Container, ContainerModule, interfaces, injectable} from "inversify";
 import {UnaryInterceptor, StreamInterceptor} from "grpc-web";
 import getDecorators from "inversify-inject-decorators";
+import {RouterPath} from "../components/router-path";
+
 
 declare global {
     interface Window {
@@ -31,6 +33,7 @@ type ClientConstructor = new (hostname: string, credentials: any, options: any) 
 export abstract class AppModule extends ContainerModule {
     protected bind: interfaces.Bind;
     protected clients: ClientConstructor[] = [];
+    protected _routes: RouterPath[] = [];
 
     abstract configure(): void;
 
@@ -67,6 +70,10 @@ export abstract class AppModule extends ContainerModule {
 
     protected addClient(clientClass: ClientConstructor): void {
         this.clients.push(clientClass);
+    }
+
+    protected routes(...routes: RouterPath[]) {
+        this._routes = this._routes.concat(routes);
     }
 }
 
