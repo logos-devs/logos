@@ -22,11 +22,6 @@
         <option value="com.intellij.execution.junit.TestInClassConfigurationProducer" />
         <option value="com.intellij.execution.junit.UniqueIdConfigurationProducer" />
         <option value="com.intellij.execution.junit.testDiscovery.JUnitTestDiscoveryConfigurationProducer" />
-        <option value="com.intellij.javascript.jest.JestRunConfigurationProducer" />
-        <option value="com.intellij.javascript.protractor.ProtractorRunConfigurationProducer" />
-        <option value="com.intellij.lang.javascript.buildTools.grunt.rc.GruntRunConfigurationProducer" />
-        <option value="com.intellij.lang.javascript.buildTools.gulp.rc.GulpRunConfigurationProducer" />
-        <option value="com.intellij.lang.javascript.buildTools.npm.rc.NpmRunConfigurationProducer" />
         <option value="com.jetbrains.python.run.PythonRunConfigurationProducer" />
         <option value="com.jetbrains.python.testing.PyTestsConfigurationProducer" />
         <option value="com.jetbrains.python.testing.PythonTestLegacyConfigurationProducer" />
@@ -48,15 +43,10 @@
         <option value="org.jetbrains.kotlin.idea.gradleJava.testing.native.KotlinMultiplatformNativeTestMethodGradleConfigurationProducer" />
         <option value="org.jetbrains.kotlin.idea.junit.KotlinJUnitRunConfigurationProducer" />
         <option value="org.jetbrains.kotlin.idea.junit.KotlinPatternConfigurationProducer" />
-        <option value="org.jetbrains.kotlin.idea.run.KotlinJUnitRunConfigurationProducer" />
         <option value="org.jetbrains.kotlin.idea.run.KotlinJvmTestClassGradleConfigurationProducer" />
-        <option value="org.jetbrains.kotlin.idea.run.KotlinJvmTestMethodGradleConfigurationProducer" />
         <option value="org.jetbrains.kotlin.idea.run.KotlinMultiplatformJvmTestClassGradleConfigurationProducer" />
         <option value="org.jetbrains.kotlin.idea.run.KotlinMultiplatformJvmTestMethodGradleConfigurationProducer" />
-        <option value="org.jetbrains.kotlin.idea.run.KotlinPatternConfigurationProducer" />
         <option value="org.jetbrains.kotlin.idea.run.KotlinRunConfigurationProducer" />
-        <option value="org.jetbrains.kotlin.idea.run.KotlinTestClassGradleConfigurationProducer" />
-        <option value="org.jetbrains.kotlin.idea.run.KotlinTestMethodGradleConfigurationProducer" />
         <option value="org.jetbrains.plugins.gradle.execution.GradleGroovyScriptRunConfigurationProducer" />
         <option value="org.jetbrains.plugins.gradle.execution.test.runner.AllInDirectoryGradleConfigurationProducer" />
         <option value="org.jetbrains.plugins.gradle.execution.test.runner.AllInPackageGradleConfigurationProducer" />

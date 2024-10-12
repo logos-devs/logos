@@ -1,4 +1,4 @@
-#!/bin/bash -eu
+#!/bin/bash -eux
 
 SELF="$0"
 cd "$BUILD_WORKSPACE_DIRECTORY"
@@ -8,6 +8,12 @@ AWS_REGION="${AWS_REGION:-"us-east-2"}"
 AWS_SSO_ROLE="${AWS_SSO_ROLE:-"AWSAdministratorAccess"}"
 AWS_SSO_URL="${AWS_SSO_URL:-"https://logos-dev.awsapps.com/start"}"
 BAZEL="bazel"
+
+if [ "$(uname -s)" = "Darwin" ]
+then
+    brew install gsed docker-credential-helper-ecr postgresql
+fi
+
 SED="$(command -v gsed || command -v sed)"
 
 PG_TUNNEL_HOST="127.0.0.1"
@@ -36,8 +42,8 @@ _update_bazelrc_env() {
   "$SED" -i "/--action_env=$var_name=/d" "$bazelrc_local" || true
   echo "build --action_env=$var_name=$var_value" >> "$bazelrc_local"
 
-  "$SED" -i "/--host-action_env=$var_name=/d" "$bazelrc_local" || true
-  echo "build --host-action_env=$var_name=$var_value" >> "$bazelrc_local"
+  "$SED" -i "/--host_action_env=$var_name=/d" "$bazelrc_local" || true
+  echo "build --host_action_env=$var_name=$var_value" >> "$bazelrc_local"
 }
 
 _run_with_pid() {
@@ -100,7 +106,7 @@ dev_env() {
     if [ -z "$PG_AUTH_RESOLVED_HOST" ]
     then
         await_console_pod
-        PG_AUTH_RESOLVED_HOST="$(kubectl exec "$CONSOLE_POD_NAME" -- nslookup -type=cname "$PG_AUTH_HOST" | grep "canonical name = " | cut -d' ' -f4 | sed -e 's/\.$//')"
+        PG_AUTH_RESOLVED_HOST="$(kubectl exec "$CONSOLE_POD_NAME" -- nslookup -type=cname "$PG_AUTH_HOST" | grep "canonical name = " | cut -d' ' -f4 | $SED -e 's/\.$//')"
     fi
 }
 
@@ -120,6 +126,15 @@ dev_setup() {
 
     aws sso login --no-browser
 
+    EKS_STACK_CLUSTER="logos-eks-stack-cluster"
+
+    _update_bazelrc_env LOGOS_AWS_ACCOUNT_ID "$AWS_ACCOUNT_ID"
+    _update_bazelrc_env LOGOS_AWS_REGION "$AWS_REGION"
+    _update_bazelrc_env LOGOS_AWS_EKS_CLUSTER "arn:aws:eks:$AWS_REGION:$AWS_ACCOUNT_ID:cluster/$EKS_STACK_CLUSTER"
+    _update_bazelrc_env LOGOS_AWS_EKS_USER "arn:aws:eks:$AWS_REGION:$AWS_ACCOUNT_ID:cluster/$EKS_STACK_CLUSTER"
+    _update_bazelrc_env LOGOS_AWS_REGISTRY "$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com"
+    _update_bazelrc_env STORAGE_PG_BACKEND_HOST "localhost"
+
     bazel run @logos//dev/logos/stack/aws/cdk -- deploy --all --require-approval never
 
     ACCOUNT="$(aws sts get-caller-identity --query "Account" --output text)"
@@ -131,26 +146,20 @@ dev_setup() {
                 --region "$AWS_REGION"
 
     # pg_migrate bzl rule needs the absolute path to aws cli
-    sed -i 's|command: aws|command: /usr/local/bin/aws|' ~/.kube/config
+    $SED -i "s|command: aws|command: $(command -v aws)|" ~/.kube/config
 
-    EKS_STACK_CLUSTER="logos-eks-stack-cluster"
-
-    _update_bazelrc_env LOGOS_AWS_ACCOUNT_ID "$AWS_ACCOUNT_ID"
-    _update_bazelrc_env LOGOS_AWS_REGION "$AWS_REGION"
-    _update_bazelrc_env LOGOS_AWS_EKS_CLUSTER "arn:aws:eks:$AWS_REGION:$AWS_ACCOUNT_ID:cluster/$EKS_STACK_CLUSTER"
-    _update_bazelrc_env LOGOS_AWS_EKS_USER "arn:aws:eks:$AWS_REGION:$AWS_ACCOUNT_ID:cluster/$EKS_STACK_CLUSTER"
-    _update_bazelrc_env LOGOS_AWS_REGISTRY "$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com"
+    jq --arg aws_account_id "$ACCOUNT" --arg region "$AWS_REGION" '.credHelpers |= . + {"public.ecr.aws": "ecr-login", "\($aws_account_id).dkr.ecr.\($region).amazonaws.com": "ecr-login"}' ~/.docker/config.json > ~/.docker/config.json.tmp && mv ~/.docker/config.json.tmp ~/.docker/config.json
 
     bazel run @logos//dev/logos/service/console
 
     await_console_pod
 
-    jq --arg aws_account_id "$ACCOUNT" --arg region "$AWS_REGION" '.credHelpers |= . + {"public.ecr.aws": "ecr-login", "\($aws_account_id).dkr.ecr.\($region).amazonaws.com": "ecr-login"}' ~/.docker/config.json > ~/.docker/config.json.tmp && mv ~/.docker/config.json.tmp ~/.docker/config.json
 
     rds_setup
 
     dev_env
     _update_bazelrc_env STORAGE_PG_BACKEND_HOST "$PG_AUTH_RESOLVED_HOST"
+    bazel build @logos//tools:bazel-env
 
     $BAZEL run -- @pnpm//:pnpm --dir "$BUILD_WORKSPACE_DIRECTORY" install
 }
@@ -340,6 +349,7 @@ help() {
     stderr
     exit 1
 }
+echo "$@"
 
 logos "$@"
 cleanup

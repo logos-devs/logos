@@ -34,9 +34,9 @@ exports_files(["bin/protoc-gen-js"])
 # grpc_web
 http_archive(
     name = "grpc_web",
-    sha256 = "376937b22095bdbea00f8bcd9442c1824419a99cbc37caf0967e4a0fa8b16658",
-    strip_prefix = "grpc-web-1.4.2",
-    urls = ["https://github.com/grpc/grpc-web/archive/refs/tags/1.4.2.tar.gz"],
+    #sha256 = "",
+    strip_prefix = "grpc-web-1.5.0",
+    urls = ["https://github.com/grpc/grpc-web/archive/refs/tags/1.5.0.tar.gz"],
 )
 
 #kubectl
@@ -266,10 +266,7 @@ go_sdk = use_extension("@rules_go//go:extensions.bzl", "go_sdk")
 go_sdk.download(version = "1.20.3")
 
 # rules_oci
-bazel_dep(
-    name = "rules_oci",
-    version = "1.4.0",
-)
+bazel_dep(name = "rules_oci", version = "2.0.0")
 
 oci = use_extension("@rules_oci//oci:extensions.bzl", "oci")
 oci.pull(
@@ -289,7 +286,7 @@ oci.pull(
 use_repo(oci, "envoy_image_old")
 oci.pull(
     name = "distroless_java_container",
-    #digest = "sha256:c7151ad9a6787379ccf205e14b9ef18e0757e56d789c155269fc7b5f83d2a93e",
+    digest = "sha256:a0d63b02c21219ea735ff439fea518d6887ee1de0c7e57a578d27bfa87111573",
     image = "gcr.io/distroless/java17-debian11:debug",
     platforms = ["linux/amd64"],
     # tag = "latest",

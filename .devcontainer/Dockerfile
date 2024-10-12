@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/devcontainers/base:ubuntu
+FROM --platform=linux/amd64 mcr.microsoft.com/devcontainers/base:ubuntu
 
 SHELL ["/bin/bash", "-euc"]
 
@@ -18,11 +18,15 @@ RUN apt-get install -y \
     sqitch \
     libdbd-pg-perl
 
-RUN wget https://github.com/bazelbuild/bazel/releases/download/7.0.1/bazel-7.0.1-installer-linux-x86_64.sh && \
-    sha256sum -c <(echo "7abc509b7dfad887abb0edc9f9d529426d26768c7cce56d09252e2b0482b4135  bazel-7.0.1-installer-linux-x86_64.sh") && \
-    chmod +x bazel-7.0.1-installer-linux-x86_64.sh && \
-    ./bazel-7.0.1-installer-linux-x86_64.sh && \
-    rm bazel-7.0.1-installer-linux-x86_64.sh && \
+RUN wget https://apt.llvm.org/llvm.sh && \
+    chmod +x llvm.sh && \
+    ./llvm.sh 18
+
+RUN wget https://github.com/bazelbuild/bazel/releases/download/7.1.2/bazel-7.1.2-installer-linux-x86_64.sh && \
+    sha256sum -c <(echo "7abc509b7dfad887abb0edc9f9d529426d26768c7cce56d09252e2b0482b4135  bazel-7.1.2-installer-linux-x86_64.sh") && \
+    chmod +x bazel-7.1.2-installer-linux-x86_64.sh && \
+    ./bazel-7.1.2-installer-linux-x86_64.sh && \
+    rm bazel-7.1.2-installer-linux-x86_64.sh && \
     echo "source /usr/local/lib/bazel/bin/bazel-complete.bash" >> ~/.bashrc
 
 RUN wget https://github.com/bazelbuild/buildtools/releases/download/v6.3.2/buildifier-linux-amd64 && \

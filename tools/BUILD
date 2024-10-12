@@ -1,8 +1,13 @@
 genrule(
     name = "bazel-env",
     outs = ["bazel-env.sh"],
-    cmd = """#!/bin/sh -e
+    cmd = """
+set +e +u
+
 cat > $@ <<EOF
+#!/bin/bash
+set +e +u
+
 export LOGOS_AWS_ACCOUNT_ID="$$LOGOS_AWS_ACCOUNT_ID"
 export LOGOS_AWS_REGION="$$LOGOS_AWS_REGION"
 export LOGOS_AWS_EKS_CLUSTER="$$LOGOS_AWS_EKS_CLUSTER"

@@ -29,18 +29,11 @@
     "paths": {
       "app/*": [
         "bazel-bin/app/*",
-        "app/*",
-        "external/logos~/app/*"
+        "app/*"
       ],
       "dev/*": [
         "bazel-bin/dev/*",
-        "dev/*",
-        "external/logos~/dev/*"
-      ],
-      "external/*": [
-        "bazel-bin/external/*",
-        "external/*",
-        "../../external/*"
+        "dev/*"
       ]
     }
   }

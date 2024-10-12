@@ -1,5 +1,5 @@
 {
-  "name": "logos",
+  "name": "@logos/web",
   "private": true,
   "type": "module",
   "browser": {
