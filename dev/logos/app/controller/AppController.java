@@ -195,7 +195,7 @@ public class AppController {
                 .metadata(new V1ObjectMeta()
                                   .name("logos-ingress")
                                   .namespace("default")
-                                  .putAnnotationsItem("acme.cert-manager.io/http01-edit-in-place", "true")
+                                  .putAnnotationsItem("acme.cert-manager.io/http01-edit-in-place", "false")
                                   .putAnnotationsItem("cert-manager.io/cluster-issuer", "letsencrypt")
                                   .putAnnotationsItem("ingress.kubernetes.io/ssl-redirect", "false")
                                   .putAnnotationsItem("kubernetes.io/ingress.class", "nginx")
