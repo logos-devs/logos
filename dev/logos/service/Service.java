@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 public interface Service extends BindableService {
     Logger logger = LoggerFactory.getLogger(Service.class);
@@ -24,25 +25,22 @@ public interface Service extends BindableService {
             String msg,
             Object obj
     ) {
-
         logger.atError().log(msg, obj);
         responseObserver.onError(
-                Status.INVALID_ARGUMENT
-                        .withDescription(msg)
-                        .asRuntimeException());
+                Status.INVALID_ARGUMENT.withDescription(msg).asException());
     }
 
     default <Req> Optional<Status> guard(Req request) {
         if (!allow(request, UserContext.getCurrentUser())) {
-            return Optional.of(Status.PERMISSION_DENIED.withDescription("x"));
+            return Optional.of(Status.PERMISSION_DENIED.withDescription("Permission denied"));
         }
 
         Validator validator = new Validator();
         validate(request, validator);
 
         if (!validator.isValid()) {
-            // TODO attach validation failures to status
-            return Optional.of(Status.INVALID_ARGUMENT);
+            return Optional.of(Status.INVALID_ARGUMENT.withDescription(
+                    String.join("\n", validator.getErrorMessages())));
         }
 
         return Optional.empty();
