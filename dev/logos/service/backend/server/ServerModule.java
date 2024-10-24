@@ -8,11 +8,13 @@ import dev.logos.service.Service;
 import io.grpc.*;
 import io.grpc.inprocess.InProcessChannelBuilder;
 import io.grpc.inprocess.InProcessServerBuilder;
+import org.slf4j.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Logger;
+
+import static java.lang.System.err;
 
 @registerModule
 public class ServerModule extends AbstractModule {
@@ -21,14 +23,15 @@ public class ServerModule extends AbstractModule {
     @Override
     protected void configure() {
         Multibinder
-                .newSetBinder(binder(), ServerInterceptor.class)
-                .addBinding().to(GuardServerInterceptor.class);
-
-        Multibinder
                 .newSetBinder(binder(), ClientInterceptor.class)
                 .addBinding().to(AuthTokenForwardingInterceptor.class);
 
         Multibinder.newSetBinder(binder(), Service.class);
+    }
+
+    @Provides
+    public GuardServerInterceptor provideGuardServerInterceptor(Map<String, Service> serviceMap) {
+        return new GuardServerInterceptor(serviceMap);
     }
 
     @Provides
@@ -55,9 +58,15 @@ public class ServerModule extends AbstractModule {
     }
 
     @Provides
-    public Set<Server> provideServers(Set<Service> services, Set<ServerInterceptor> interceptors) {
+    public Set<Server> provideServers(Set<Service> services, Set<ServerInterceptor> interceptors, GuardServerInterceptor guardServerInterceptor) {
         ServerBuilder<?> innerServerBuilder = InProcessServerBuilder.forName("logos-in-process");
         ServerBuilder<?> outerServerBuilder = ServerBuilder.forPort(DEFAULT_PORT);
+
+        // GuardServerInterceptor must be first so it can use context set by other interceptors, because
+        // counterintuitively interceptors are executed opposite to the order they are added. This is because each
+        // interceptor wraps the next one in the chain like an onion.
+        innerServerBuilder.intercept(guardServerInterceptor);
+        outerServerBuilder.intercept(guardServerInterceptor);
 
         for (ServerInterceptor interceptor : interceptors) {
             innerServerBuilder.intercept(interceptor);
