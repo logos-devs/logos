@@ -21,6 +21,19 @@ spec:
                   type: array
                   items:
                     type: string
+                volumes:
+                  type: array
+                  items:
+                    type: object
+                    required:
+                      - name
+                      - size
+                    properties:
+                      name:
+                        type: string
+                      size:
+                        type: string
+                        pattern: "^\\d+([KkMmGgTt]i?)?"
   scope: Namespaced
   names:
     plural: apps

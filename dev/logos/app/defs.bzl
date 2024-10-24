@@ -4,6 +4,16 @@ def _app_impl(ctx):
     executable = ctx.actions.declare_file(ctx.attr.name)
     runfiles = ctx.runfiles(files = ctx.files.kubectl + ctx.files.rpc + ctx.files.web)
 
+    volumes_yaml = ""
+    if ctx.attr.volumes:
+        volumes_yaml = "  volumes:\n"
+        for name, size in ctx.attr.volumes.items():
+            volumes_yaml += ("    - name: {name}\n" +
+                             "      size: {size}\n").format(
+                name = name,
+                size = size,
+            )
+
     ctx.actions.write(
         output = executable,
         content = """#!/bin/bash -eu
@@ -27,6 +37,7 @@ spec:
   service-jars:
     - "$RPC_JAR_FILENAME"
 {web_yaml}
+{volumes_yaml}
 EOF
 )
 
@@ -58,6 +69,7 @@ echo "BUNDLE_HASH=$BUNDLE_HASH"
             web_yaml = """
   web-bundle: "web_$BUNDLE_HASH"
 """ if ctx.files.web else "",
+            volumes_yaml = volumes_yaml if ctx.attr.volumes else "",
         ),
     )
 
@@ -87,18 +99,32 @@ app_rule = rule(
             default = Label("//tools:kubectl"),
             executable = True,
         ),
+        "volumes": attr.string_dict(),
     },
     executable = True,
 )
 
-def app(name, domain, rpc = None, web = None, visibility = None):
+def app(name, domain, stack_outputs = None, rpc = None, web = None, volumes = None, visibility = None):
+    if rpc:
+        # this allows us to put both the stack and the RPCs while bundling the stack outputs with the RPCs when deploying
+        wrapped_rpc = name + "_rpc_library"
+
+        native.java_binary(
+            name = wrapped_rpc,
+            resources = stack_outputs,
+            create_executable = False,
+            runtime_deps = [rpc],
+        )
+        rpc = wrapped_rpc
+
     for action in K8S_ACTIONS:
         app_rule(
             name = name if action == "apply" else "{}.{}".format(name, action),
             action = action,
             domain = domain,
-            rpc = rpc,
+            rpc = (rpc + "_deploy.jar") if rpc else None,
             web = web,
+            volumes = volumes,
             tags = [
                 "external",
                 "no-remote",

@@ -3,6 +3,7 @@ package dev.logos.app.controller;
 import com.google.gson.*;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
+import io.kubernetes.client.custom.Quantity;
 import io.kubernetes.client.custom.V1Patch;
 import io.kubernetes.client.openapi.ApiClient;
 import io.kubernetes.client.openapi.ApiException;
@@ -59,13 +60,26 @@ record App(
     }
 }
 
+record VolumeSpec(
+        String name,
+        String size  // We will handle this as Kubernetes Quantity in the controller
+) {
+}
+
 record AppSpec(
         @SerializedName("web-bundle")
         String webBundle,
 
         @SerializedName("service-jars")
-        List<String> serviceJars
+        List<String> serviceJars,
+
+        List<VolumeSpec> volumes
 ) {
+    public AppSpec {
+        if (volumes == null) {
+            volumes = List.of();
+        }
+    }
 }
 
 public class AppController {
@@ -156,58 +170,58 @@ public class AppController {
         NetworkingV1Api api = new NetworkingV1Api();
 
         List<String> appDomains = apps.values().stream()
-                                      .map(app -> app.metadata().getName())
-                                      .collect(Collectors.toList());
+                .map(app -> app.metadata().getName())
+                .collect(Collectors.toList());
 
         V1IngressSpec ingressSpec =
                 new V1IngressSpec()
                         .tls(List.of(new V1IngressTLS()
-                                             .hosts(appDomains)
-                                             .secretName("logos-tls-secret")))
+                                .hosts(appDomains)
+                                .secretName("logos-tls-secret")))
                         .ingressClassName("nginx")
                         .rules(apps.values().stream().map(app -> new V1IngressRule()
                                 .host(app.metadata().getName())
                                 .http(new V1HTTPIngressRuleValue()
-                                              .paths(List.of(
-                                                      new V1HTTPIngressPath()
-                                                              .path("/services/(.*)")
-                                                              .pathType("Prefix")
-                                                              .backend(new V1IngressBackend()
-                                                                               .service(new V1IngressServiceBackend()
-                                                                                                .name("envoy-service")
-                                                                                                .port(new V1ServiceBackendPort().number(
-                                                                                                        8081)))),
+                                        .paths(List.of(
+                                                new V1HTTPIngressPath()
+                                                        .path("/services/(.*)")
+                                                        .pathType("Prefix")
+                                                        .backend(new V1IngressBackend()
+                                                                .service(new V1IngressServiceBackend()
+                                                                        .name("envoy-service")
+                                                                        .port(new V1ServiceBackendPort().number(
+                                                                                8081)))),
 
-                                                      new V1HTTPIngressPath()
-                                                              .path("/(.*)")
-                                                              .pathType("Prefix")
-                                                              .backend(new V1IngressBackend()
-                                                                               .service(new V1IngressServiceBackend()
-                                                                                                .name("client-service")
-                                                                                                .port(new V1ServiceBackendPort().number(
-                                                                                                        8080))))
-                                              )))
+                                                new V1HTTPIngressPath()
+                                                        .path("/(.*)")
+                                                        .pathType("Prefix")
+                                                        .backend(new V1IngressBackend()
+                                                                .service(new V1IngressServiceBackend()
+                                                                        .name("client-service")
+                                                                        .port(new V1ServiceBackendPort().number(
+                                                                                8080))))
+                                        )))
                         ).toList());
 
         V1Ingress ingress = new V1Ingress()
                 .apiVersion("networking.k8s.io/v1")
                 .kind("Ingress")
                 .metadata(new V1ObjectMeta()
-                                  .name("logos-ingress")
-                                  .namespace("default")
-                                  .putAnnotationsItem("acme.cert-manager.io/http01-edit-in-place", "false")
-                                  .putAnnotationsItem("cert-manager.io/cluster-issuer", "letsencrypt")
-                                  .putAnnotationsItem("ingress.kubernetes.io/ssl-redirect", "false")
-                                  .putAnnotationsItem("kubernetes.io/ingress.class", "nginx")
-                                  .putAnnotationsItem("nginx.ingress.kubernetes.io/rewrite-target", "/$1")
-                                  .putAnnotationsItem("nginx.ingress.kubernetes.io/use-regex", "true"))
+                        .name("logos-ingress")
+                        .namespace("default")
+                        .putAnnotationsItem("acme.cert-manager.io/http01-edit-in-place", "false")
+                        .putAnnotationsItem("cert-manager.io/cluster-issuer", "letsencrypt")
+                        .putAnnotationsItem("ingress.kubernetes.io/ssl-redirect", "false")
+                        .putAnnotationsItem("kubernetes.io/ingress.class", "nginx")
+                        .putAnnotationsItem("nginx.ingress.kubernetes.io/rewrite-target", "/$1")
+                        .putAnnotationsItem("nginx.ingress.kubernetes.io/use-regex", "true"))
                 .spec(ingressSpec);
 
         try {
             api.replaceNamespacedIngress("logos-ingress", "default", ingress).execute();
             logger.atInfo()
-                  .addKeyValue("appCount", apps.keySet().size())
-                  .log("Updated logos-ingress resource");
+                    .addKeyValue("appCount", apps.keySet().size())
+                    .log("Updated logos-ingress resource");
 
         } catch (ApiException e) {
             if (e.getCode() == 404) {
@@ -215,13 +229,99 @@ public class AppController {
                 logger.atInfo().log("Created new logos-ingress resource");
             } else {
                 logger.atError()
-                      .addKeyValue("statusCode", e.getCode())
-                      .addKeyValue("responseBody", e.getResponseBody())
-                      .addKeyValue("responseHeaders", e.getResponseHeaders())
-                      .log("Failed to update/create logos-ingress resource");
+                        .addKeyValue("statusCode", e.getCode())
+                        .addKeyValue("responseBody", e.getResponseBody())
+                        .addKeyValue("responseHeaders", e.getResponseHeaders())
+                        .log("Failed to update/create logos-ingress resource");
                 throw e;
             }
         }
+    }
+
+    private static void createPersistentVolumeClaims(App app) throws ApiException, IOException {
+        CoreV1Api api = new CoreV1Api(Config.defaultClient());
+
+        for (VolumeSpec volume : app.spec().volumes()) {
+            V1PersistentVolumeClaim pvc = new V1PersistentVolumeClaim()
+                    .metadata(new V1ObjectMeta().name(app.metadata().getName() + "-" + volume.name()).namespace(CONFIGMAP_NAMESPACE))
+                    .spec(new V1PersistentVolumeClaimSpec()
+                            .accessModes(List.of("ReadWriteMany"))
+                            .resources(new V1VolumeResourceRequirements()
+                                    .putRequestsItem("storage", new Quantity(volume.size()))));
+
+            try {
+                api.createNamespacedPersistentVolumeClaim(CONFIGMAP_NAMESPACE, pvc).execute();
+                logger.atInfo().addKeyValue("volume", volume.name()).log("Created PVC for app: " + app.metadata().getName());
+            } catch (ApiException e) {
+                if (e.getCode() == 409) { // PVC already exists
+                    logger.atInfo().addKeyValue("volume", volume.name()).log("PVC already exists for app: " + app.metadata().getName());
+                } else {
+                    throw e;
+                }
+            }
+        }
+    }
+
+    private static void addVolumesToBackendDeployment(HashMap<String, App> apps) throws ApiException {
+        AppsV1Api appsV1Api = new AppsV1Api();
+
+        // Build the JSON patch body
+        JsonObject patchBody = new JsonObject();
+        JsonObject spec = new JsonObject();
+        JsonObject template = new JsonObject();
+        JsonObject specTemplate = new JsonObject();
+        JsonArray volumes = new JsonArray();
+        JsonArray volumeMounts = new JsonArray();
+
+        // Iterate through each app to gather volume info
+        for (App app : apps.values()) {
+            if (app.spec().volumes() != null) {
+                for (VolumeSpec volume : app.spec().volumes()) {
+                    // Add volume entry for PersistentVolumeClaim
+                    String volumeName = (app.metadata().getName() + "-" + volume.name()).replace(".", "-");
+                    JsonObject volumeJson = new JsonObject();
+                    volumeJson.addProperty("name", volumeName);
+                    JsonObject pvc = new JsonObject();
+                    pvc.addProperty("claimName", app.metadata().getName() + "-" + volume.name());
+                    volumeJson.add("persistentVolumeClaim", pvc);
+                    volumes.add(volumeJson);
+
+                    // Add corresponding volumeMount for the 'backend' container
+                    JsonObject volumeMountJson = new JsonObject();
+                    volumeMountJson.addProperty("name", volumeName);
+                    volumeMountJson.addProperty("mountPath", "/app/volumes/" + app.metadata().getName() + "/" + volume.name());
+                    volumeMounts.add(volumeMountJson);
+                }
+            }
+        }
+
+        // Patch only volumes and volumeMounts
+        specTemplate.add("volumes", volumes);
+
+        // Add volumeMounts to the 'backend' container
+        JsonObject backendContainer = new JsonObject();
+        backendContainer.addProperty("name", "backend");
+        backendContainer.add("volumeMounts", volumeMounts);
+
+        JsonArray containersArray = new JsonArray();
+        containersArray.add(backendContainer);
+
+        specTemplate.add("containers", containersArray);
+        template.add("spec", specTemplate);
+        spec.add("template", template);
+        patchBody.add("spec", spec);
+
+        // Convert the patch body to a string for V1Patch
+        String patchString = patchBody.toString();
+        V1Patch patch = new V1Patch(patchString);
+
+        // Use PatchUtils to apply a strategic merge patch to the deployment
+        PatchUtils.patch(
+                V1Deployment.class,
+                () -> appsV1Api.patchNamespacedDeployment(BACKEND_DEPLOYMENT_NAME, BACKEND_DEPLOYMENT_NAMESPACE, patch).buildCall(null),
+                V1Patch.PATCH_FORMAT_STRATEGIC_MERGE_PATCH,
+                appsV1Api.getApiClient()
+        );
     }
 
     public static void main(String[] args) throws Exception {
@@ -253,12 +353,14 @@ public class AppController {
                     case "ADDED":
                         route53ZoneCreator.createZoneIfNotExists(app.metadata().getName(), "logos-dns");
                         apps.put(app.metadata().getUid(), app);
+                        createPersistentVolumeClaims(app);
                         eventLogger.log("App added");
                         break;
 
                     case "MODIFIED":
                         route53ZoneCreator.createZoneIfNotExists(app.metadata().getName(), "logos-dns");
                         apps.put(app.metadata().getUid(), app);
+                        createPersistentVolumeClaims(app);
                         eventLogger.log("App modified");
                         break;
 
@@ -274,6 +376,7 @@ public class AppController {
                 }
 
                 updateConfigMap(apps);
+                addVolumesToBackendDeployment(apps);
                 triggerRollingUpdate(BACKEND_DEPLOYMENT_NAMESPACE, BACKEND_DEPLOYMENT_NAME);
                 triggerRollingUpdate(CLIENT_DEPLOYMENT_NAMESPACE, CLIENT_DEPLOYMENT_NAME);
                 updateIngress(apps);
