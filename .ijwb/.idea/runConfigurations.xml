@@ -22,6 +22,11 @@
         <option value="com.intellij.execution.junit.TestInClassConfigurationProducer" />
         <option value="com.intellij.execution.junit.UniqueIdConfigurationProducer" />
         <option value="com.intellij.execution.junit.testDiscovery.JUnitTestDiscoveryConfigurationProducer" />
+        <option value="com.intellij.javascript.jest.JestRunConfigurationProducer" />
+        <option value="com.intellij.javascript.protractor.ProtractorRunConfigurationProducer" />
+        <option value="com.intellij.lang.javascript.buildTools.grunt.rc.GruntRunConfigurationProducer" />
+        <option value="com.intellij.lang.javascript.buildTools.gulp.rc.GulpRunConfigurationProducer" />
+        <option value="com.intellij.lang.javascript.buildTools.npm.rc.NpmRunConfigurationProducer" />
         <option value="com.jetbrains.python.run.PythonRunConfigurationProducer" />
         <option value="com.jetbrains.python.testing.PyTestsConfigurationProducer" />
         <option value="com.jetbrains.python.testing.PythonTestLegacyConfigurationProducer" />

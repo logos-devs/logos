@@ -14,7 +14,7 @@ def module(
         resources = resources,
         visibility = visibility,
         deps = [
-            "@logos-app-auth-cognito//app/auth/cognito/module",
+            "@io_grpc_grpc_java//inprocess",
             "@logos//dev/logos/app",
             "@logos//dev/logos/app/register:module_library",
             "@logos//dev/logos/module",
