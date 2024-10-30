@@ -1,3 +1,4 @@
+/.aspect
 *.sw?
 /.DS_Store
 /.bazelrc.local

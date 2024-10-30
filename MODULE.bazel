@@ -224,6 +224,7 @@ npm.npm_translate_lock(
     generate_bzl_library_targets = True,
     npmrc = "@logos//:.npmrc",
     pnpm_lock = "@logos//:pnpm-lock.yaml",
+    update_pnpm_lock = True,
     verify_node_modules_ignored = "@logos//:.bazelignore",
 )
 use_repo(npm, "npm_logos")
