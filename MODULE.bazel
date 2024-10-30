@@ -31,6 +31,16 @@ exports_files(["bin/protoc-gen-js"])
     url = "https://github.com/protocolbuffers/protobuf-javascript/releases/download/v3.21.2/protobuf-javascript-3.21.2-osx-x86_64.tar.gz",
 )
 
+# protoc_gen_jsonschema
+http_archive(
+    name = "protoc_gen_jsonschema",
+    build_file_content = """
+exports_files(["protoc-gen-jsonschema"])
+    """,
+    integrity = "sha256-atIi87sI2CWzZ4xXFimSJ30URBHIQnOKfHjwbr603D8=",
+    url = "https://github.com/pubg/protoc-gen-jsonschema/releases/download/v0.5.0/protoc-gen-jsonschema_v0.5.0_linux_amd64.tar.gz",
+)
+
 # grpc_web
 http_archive(
     name = "grpc_web",
@@ -316,7 +326,7 @@ oci.pull(
         "linux/arm64/v8",
     ],
 )
-use_repo(oci, "distroless_python_image")
+use_repo(oci, "distroless_java_container_linux_amd64", "distroless_python_image", "distroless_python_image_linux_amd64", "distroless_python_image_linux_arm64_v8", "envoy_image_old_linux_amd64")
 
 # rules_apko
 bazel_dep(

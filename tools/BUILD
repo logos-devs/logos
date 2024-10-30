@@ -85,6 +85,20 @@ sh_binary(
     ],
 )
 
+sh_binary(
+    name = "protoc-gen-jsonschema",
+    srcs = select({
+        "@platforms//os:linux": [
+            "@protoc_gen_jsonschema//:protoc-gen-jsonschema",
+        ],
+        "//conditions:default": ["@platforms//:incompatible"],
+    }),
+    tags = ["no-sandbox"],
+    visibility = [
+        "//visibility:public",
+    ],
+)
+
 alias(
     name = "protoc-gen-grpc-web",
     actual = "@grpc_web//javascript/net/grpc/web/generator:protoc-gen-grpc-web",
