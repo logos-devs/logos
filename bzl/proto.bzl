@@ -1,6 +1,6 @@
 load("//bzl:private/grpc_web.bzl", _grpc_web_client = "grpc_web_client")
 load("//bzl:private/proto_json_schema.bzl", _proto_json_schema = "proto_json_schema")
-load("@io_grpc_grpc_java//:java_grpc_library.bzl", _java_grpc_library = "java_grpc_library")
+load("@grpc_java_bzlmod//:java_grpc_library.bzl", _java_grpc_library = "java_grpc_library")
 
 def proto_library(name, srcs, deps = None, visibility = None):
     native.proto_library(

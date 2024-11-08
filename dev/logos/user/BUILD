@@ -10,6 +10,7 @@ java_library(
         "//visibility:public",
     ],
     deps = [
-        "@io_grpc_grpc_java//context",
+        "@maven_logos//:io_grpc_grpc_api",
+        "@maven_logos//:io_grpc_grpc_context",
     ],
 )

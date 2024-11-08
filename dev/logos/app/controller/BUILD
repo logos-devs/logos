@@ -13,9 +13,9 @@ java_binary(
     ],
     main_class = "dev.logos.app.controller.AppController",
     deps = [
-        "@io_grpc_grpc_java//api",
         "@maven_logos_app_controller//:com_google_code_gson_gson",
         "@maven_logos_app_controller//:com_google_inject_guice",
+        "@maven_logos_app_controller//:io_grpc_grpc_api",
         "@maven_logos_app_controller//:io_kubernetes_client_java",
         "@maven_logos_app_controller//:io_kubernetes_client_java_api",
         "@maven_logos_app_controller//:org_slf4j_slf4j_api",

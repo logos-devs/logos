@@ -3,7 +3,7 @@ java_library(
     srcs = ["ClientFactory.java"],
     visibility = ["//visibility:public"],
     deps = [
-        "@io_grpc_grpc_java//api",
-        "@io_grpc_grpc_java//stub",
+        "@maven_logos//:io_grpc_grpc_api",
+        "@maven_logos//:io_grpc_grpc_stub",
     ],
 )

@@ -27,4 +27,3 @@ common --incompatible_allow_tags_propagation
 run --run_under='//tools:bazel-env'
 
 try-import %workspace%/.bazelrc.local
-try-import %workspace%/.apko/.bazelrc

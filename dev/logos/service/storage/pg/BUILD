@@ -7,7 +7,7 @@ java_library(
         "//visibility:public",
     ],
     deps = [
-        "@com_google_protobuf//:protobuf_java",
+        "@maven_logos//:com_google_protobuf_protobuf_java",
         "@maven_logos//:org_jdbi_jdbi3_core",
         "@maven_logos//:org_jdbi_jdbi3_postgres",
     ],

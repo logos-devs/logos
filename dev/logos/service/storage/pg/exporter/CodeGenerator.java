@@ -628,8 +628,6 @@ public class CodeGenerator {
                                              listResponseMessage,
                                              tableDescriptor.getInstanceVariableName())
                                          .build())
-
-                    // <Req extends GeneratedMessageV4, Resp extends GeneratedMessageV3> Resp response(StorageIdentifier, Req)
                     .addMethod(
                         MethodSpec.methodBuilder("response")
                                   .addAnnotation(Override.class)

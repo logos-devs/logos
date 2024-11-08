@@ -21,3 +21,14 @@ apko_image(
     tags = ["requires-network"],
     visibility = ["//dev/logos/service/envoy:__pkg__"],
 )
+
+apko_image(
+    name = "console_image",
+    architecture = "x86_64",
+    config = "console.yaml",
+    contents = "@console_image//:contents",
+    output = "oci",
+    tag = "latest",
+    tags = ["requires-network"],
+    visibility = ["//dev/logos/service/console:__pkg__"],
+)

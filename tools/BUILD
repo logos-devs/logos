@@ -60,9 +60,18 @@ sh_binary(
     ],
 )
 
-alias(
+sh_binary(
     name = "protoc",
-    actual = "@com_google_protobuf//:protoc",
+    srcs = select({
+        "@platforms//os:linux": [
+            "@protoc_linux//:bin/protoc",
+        ],
+        "@platforms//os:osx": [
+            "@protoc_osx//:bin/protoc",
+        ],
+        "//conditions:default": ["@platforms//:incompatible"],
+    }),
+    tags = ["no-sandbox"],
     visibility = [
         "//visibility:public",
     ],
@@ -71,11 +80,27 @@ alias(
 sh_binary(
     name = "protoc-gen-js",
     srcs = select({
+        "@platforms//os:linux": [
+            "@protobuf_javascript_linux//:bin/protoc-gen-js",
+        ],
         "@platforms//os:osx": [
             "@protobuf_javascript_osx//:bin/protoc-gen-js",
         ],
+        "//conditions:default": ["@platforms//:incompatible"],
+    }),
+    visibility = [
+        "//visibility:public",
+    ],
+)
+
+sh_binary(
+    name = "protoc-gen-grpc-web",
+    srcs = select({
         "@platforms//os:linux": [
-            "@protobuf_javascript_linux//:bin/protoc-gen-js",
+            "@grpc_web_linux//file",
+        ],
+        "@platforms//os:osx": [
+            "@grpc_web_osx//file",
         ],
         "//conditions:default": ["@platforms//:incompatible"],
     }),
@@ -94,14 +119,6 @@ sh_binary(
         "//conditions:default": ["@platforms//:incompatible"],
     }),
     tags = ["no-sandbox"],
-    visibility = [
-        "//visibility:public",
-    ],
-)
-
-alias(
-    name = "protoc-gen-grpc-web",
-    actual = "@grpc_web//javascript/net/grpc/web/generator:protoc-gen-grpc-web",
     visibility = [
         "//visibility:public",
     ],

@@ -196,10 +196,6 @@ def java_storage_service(name, schema_export, tables, deps, visibility = None):
         srcs = [":%s_src" % name],
         visibility = visibility,
         deps = deps + [
-            "@com_google_protobuf//java/core",
-            "@io_grpc_grpc_java//api",
-            "@io_grpc_grpc_java//protobuf",
-            "@io_grpc_grpc_java//stub",
             "@logos//dev/logos/app",
             "@logos//dev/logos/app/register:module_library",
             "@logos//dev/logos/service/storage/pg",
@@ -207,6 +203,10 @@ def java_storage_service(name, schema_export, tables, deps, visibility = None):
             "@logos//dev/logos/service/storage:storage_library",
             "@logos//dev/logos/user",
             "@maven_logos//:com_google_inject_guice",
+            "@maven_logos//:com_google_protobuf_protobuf_java",
+            "@maven_logos//:io_grpc_grpc_api",
+            "@maven_logos//:io_grpc_grpc_protobuf",
+            "@maven_logos//:io_grpc_grpc_stub",
             "@maven_logos//:javax_annotation_javax_annotation_api",
         ],
         plugins = [

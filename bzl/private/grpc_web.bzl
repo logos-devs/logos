@@ -46,7 +46,7 @@ def _grpc_web_client_impl(ctx):
     && $find_ -type f -mindepth 1 -exec mv {{}} . \\; \
     && $find_ -type d -mindepth 1 -maxdepth 1 -exec rm -r {{}} \\; \
     && popd
-""".format(  # && $find_ -type f -name '*.d.ts' -exec sed -i "s/\\(import \\* as \\w\\+ from '\\)[./a-z]\\+\\/\\([_a-z]\\+';\\)/\\1.\\/\\2/" {{}} \\; \
+""".format(
             protos = " ".join([
                 file.path.removeprefix(ctx.bin_dir.path + "/").removeprefix(ctx.label.workspace_root + "/")
                 for file in proto_direct_sources

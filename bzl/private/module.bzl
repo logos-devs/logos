@@ -14,7 +14,6 @@ def module(
         resources = resources,
         visibility = visibility,
         deps = [
-            "@io_grpc_grpc_java//inprocess",
             "@logos//dev/logos/app",
             "@logos//dev/logos/app/register:module_library",
             "@logos//dev/logos/module",
@@ -22,6 +21,7 @@ def module(
             "@logos//dev/logos/service/storage/module",
             "@logos//dev/logos/stack/aws/module",
             "@maven_logos//:com_google_inject_guice",
+            "@maven_logos//:io_grpc_grpc_inprocess",
             "@maven_logos//:software_amazon_awscdk_aws_cdk_lib",
             "@maven_logos//:software_constructs_constructs",
         ] + (deps or []),

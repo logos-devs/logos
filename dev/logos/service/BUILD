@@ -7,8 +7,8 @@ java_library(
     deps = [
         "//dev/logos/service/storage/validator",
         "//dev/logos/user",
-        "@io_grpc_grpc_java//api",
-        "@io_grpc_grpc_java//stub",
+        "@maven_logos//:io_grpc_grpc_api",
+        "@maven_logos//:io_grpc_grpc_stub",
         "@maven_logos//:org_slf4j_slf4j_api",
         "@maven_logos//:org_slf4j_slf4j_simple",
     ],

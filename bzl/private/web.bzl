@@ -15,9 +15,10 @@ import commonjs from '@rollup/plugin-commonjs';
 import includePaths from 'rollup-plugin-includepaths';
 import json from '@rollup/plugin-json';
 import html from '@rollup/plugin-html';
+import {makeHtmlAttributes} from '@rollup/plugin-html';
 import replace from '@rollup/plugin-replace';
 import nodeResolve from '@rollup/plugin-node-resolve';
-import sourcemaps from 'rollup-plugin-sourcemaps2';
+//import sourcemaps from 'rollup-plugin-sourcemaps2';
 import {typescriptPaths} from 'rollup-plugin-typescript-paths';
 import execute from "rollup-plugin-shell";
 
@@ -36,29 +37,60 @@ const allowedWarnings = {
 
 export default {
     plugins: [
-        commonjs(),
         css(),
-        nodeResolve({
-            browser: true,
-            extensions: [".tsx", ".ts", ".jsx", ".js", ".json"],
-        }),
-        includePaths({
-            paths: ["./"],
-        }),
-        replace({
-            preventAssignment: true,
-            values: {
-                'process.env.NODE_ENV': JSON.stringify('production')
-            }
-        }),
-        terser(),
+        includePaths({ paths: ["./"] }),
+        replace({ preventAssignment: true, values: { 'process.env.NODE_ENV': JSON.stringify('production') }}),
         typescriptPaths(),
         json(),
-        sourcemaps(),
+        //sourcemaps(),
         html({
             title: "",
-            publicPath: "/"
+            publicPath: "/",
+            async template({attributes, files, meta, publicPath, title}) {
+                            const scripts = (files.js || []).slice(0,1)
+                                .map(({fileName}) => {
+                                    const attrs = makeHtmlAttributes(attributes.script);
+                                    return `<script src="$${publicPath}$${fileName}"$${attrs}></script>`;
+                                })
+                                .join('\\n');
+
+                            const links = (files.css || [])
+                                .map(({fileName}) => {
+                                    const attrs = makeHtmlAttributes(attributes.link);
+                                    return `<link href="$${publicPath}$${fileName}" rel="stylesheet"$${attrs}>`;
+                                })
+                                .join('\\n');
+
+                            const metas = meta
+                                .map((input) => {
+                                    const attrs = makeHtmlAttributes(input);
+                                    return `<meta$${attrs}>`;
+                                })
+                                .join('\\n');
+
+                            return `
+            <!doctype html>
+            <html$${makeHtmlAttributes(attributes.html)}>
+              <head>
+                <title></title>
+
+                <meta charset="utf-8">
+                <meta content="width=device-width, initial-scale=1" name="viewport">
+                <meta name="apple-mobile-web-app-capable" content="yes">
+                <meta name="apple-mobile-web-app-status-bar-style" content="translucent">
+                <meta name="referrer" content="no-referrer">
+
+                $${metas}
+                <title>$${title}</title>
+                $${links}
+              </head>
+              <body>
+                $${scripts}
+              </body>
+            </html>`;
+            }
         }),
+        //terser(),
         execute({
             hook: "buildStart",
             commands: [
@@ -67,10 +99,15 @@ export default {
             ],
             sync: true
         }),
+        nodeResolve({
+            browser: true,
+            extensions: [".tsx", ".ts", ".jsx", ".js", ".json"],
+        }),
+        commonjs({ ignoreDynamicRequires: true }),
     ],
     output: {
         format: 'es',
-        sourcemap: true,
+        sourcemap: false,
     },
     onwarn(warning, warn) {
         const allowed = allowedWarnings[warning.code];
@@ -120,7 +157,7 @@ def web(name, srcs, tsconfig, rollup_config = None, deps = None):
         entry_point = "index.js",
         node_modules = "//:node_modules",
         output_dir = True,
-        sourcemap = "inline",
+        sourcemap = "false",
         visibility = ["//visibility:public"],
         deps = deps + [
             "//:node_modules/@rollup/plugin-commonjs",
@@ -132,7 +169,7 @@ def web(name, srcs, tsconfig, rollup_config = None, deps = None):
             "//:node_modules/rollup-plugin-import-css",
             "//:node_modules/rollup-plugin-includepaths",
             "//:node_modules/rollup-plugin-shell",
-            "//:node_modules/rollup-plugin-sourcemaps2",
+            #"//:node_modules/rollup-plugin-sourcemaps2",
             "//:node_modules/rollup-plugin-typescript-paths",
             "//:node_modules/typescript",
         ],
