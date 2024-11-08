@@ -38,6 +38,6 @@
     "@web/dev-server": "0.4.6",
     "rollup": "4.24.3",
     "rollup-plugin-includepaths": "0.2.4",
-    "typescript": "5.4.5"
+    "typescript": "5.6.3"
   }
 }
