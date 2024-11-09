@@ -1,6 +1,6 @@
 package dev.logos.service.storage;
 
-import com.google.protobuf.GeneratedMessageV3;
+import com.google.protobuf.GeneratedMessage;
 import dev.logos.service.Service;
 import dev.logos.service.storage.exceptions.EntityReadException;
 import dev.logos.service.storage.exceptions.EntityWriteException;
@@ -11,15 +11,15 @@ import io.grpc.stub.StreamObserver;
 import java.util.stream.Stream;
 
 public interface EntityStorageService<
-    ListRequest extends GeneratedMessageV3,
-    ListResponse extends GeneratedMessageV3,
-    CreateRequest extends GeneratedMessageV3,
-    CreateResponse extends GeneratedMessageV3,
-    UpdateRequest extends GeneratedMessageV3,
-    UpdateResponse extends GeneratedMessageV3,
-    DeleteRequest extends GeneratedMessageV3,
-    DeleteResponse extends GeneratedMessageV3,
-    Entity extends GeneratedMessageV3,
+    ListRequest extends GeneratedMessage,
+    ListResponse extends GeneratedMessage,
+    CreateRequest extends GeneratedMessage,
+    CreateResponse extends GeneratedMessage,
+    UpdateRequest extends GeneratedMessage,
+    UpdateResponse extends GeneratedMessage,
+    DeleteRequest extends GeneratedMessage,
+    DeleteResponse extends GeneratedMessage,
+    Entity extends GeneratedMessage,
     StorageIdentifier
     > extends Service {
 
@@ -35,7 +35,7 @@ public interface EntityStorageService<
         throw new UnsupportedOperationException("Not implemented.");
     }
 
-    default <Req extends GeneratedMessageV3, Resp extends GeneratedMessageV3> Resp response(StorageIdentifier ignoredId, Req ignoredRequest) {
+    default <Req extends GeneratedMessage, Resp extends GeneratedMessage> Resp response(StorageIdentifier ignoredId, Req ignoredRequest) {
         throw new UnsupportedOperationException("Not implemented.");
     }
 

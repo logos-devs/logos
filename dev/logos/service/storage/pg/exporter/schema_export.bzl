@@ -203,7 +203,7 @@ def java_storage_service(name, schema_export, tables, deps, visibility = None):
             "@logos//dev/logos/service/storage:storage_library",
             "@logos//dev/logos/user",
             "@maven_logos//:com_google_inject_guice",
-            "@maven_logos//:com_google_protobuf_protobuf_java",
+            "@com_google_protobuf//:protobuf_java",
             "@maven_logos//:io_grpc_grpc_api",
             "@maven_logos//:io_grpc_grpc_protobuf",
             "@maven_logos//:io_grpc_grpc_stub",

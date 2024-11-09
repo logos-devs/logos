@@ -41,7 +41,7 @@ fs.readFile(inputFile, 'utf8', async (err, data) => {
 
     let schema: any;
     try {
-        schema = JSON.parse(data.replace(/\./g, "_"));
+        schema = JSON.parse(data);
     } catch (parseErr) {
         console.error(`Error parsing JSON: ${parseErr.message}`);
         process.exit(1);

@@ -113,7 +113,21 @@ http_file(
 )
 
 # grpc-java
-bazel_dep(name = "grpc-java", version = "1.64.0", repo_name = "grpc_java_bzlmod")
+bazel_dep(name = "grpc-java", version = "1.67.1", repo_name = "grpc_java_bzlmod")
+git_override(
+    module_name = "grpc-java",
+    commit = "546efd79f1cf48aac7e5b6c9426d5fbfd7958fec",
+    init_submodules = True,
+    remote = "git@github.com:grpc/grpc-java",
+)
+
+bazel_dep(name = "protobuf", version = "26.0.bcr.2", repo_name = "com_google_protobuf")
+git_override(
+    module_name = "protobuf",
+    commit = "9065e12e9131e8fb619c2f2e6fc05393f3568929",
+    init_submodules = True,
+    remote = "git@github.com:protocolbuffers/protobuf",
+)
 
 # rules_jvm_external
 bazel_dep(name = "rules_jvm_external", version = "6.2")
@@ -125,7 +139,7 @@ MAVEN_SHARED = [
     # guava must be explicitly specified or two separate versions will be pulled into the classpath and cause guice errors.
     "com.google.guava:guava:33.2.1-jre",
     "com.google.inject:guice:7.0.0",
-    "io.grpc:grpc-api:1.64.0",
+    "io.grpc:grpc-api:1.67.1",
     "org.slf4j:slf4j-api:2.0.7",
     "org.slf4j:slf4j-simple:2.0.7",
     "software.amazon.awssdk:auth:" + MAVEN_AWSSDK_VERSION,
@@ -155,17 +169,17 @@ maven.install(
 maven.install(
     name = "maven_logos",
     artifacts = MAVEN_SHARED + [
-        "com.google.protobuf:protobuf-java:3.25.3",
+        "com.google.protobuf:protobuf-java:4.26.0",
         "com.squareup:javapoet:1.13.0",
         "com.zaxxer:HikariCP:5.0.1",
         "dnsjava:dnsjava:3.5.2",
-        "io.grpc:grpc-auth:1.64.0",
-        "io.grpc:grpc-core:1.64.0",
-        "io.grpc:grpc-context:1.64.0",
-        "io.grpc:grpc-netty-shaded:1.64.0",
-        "io.grpc:grpc-inprocess:1.64.0",
-        "io.grpc:grpc-protobuf:1.64.0",
-        "io.grpc:grpc-stub:1.64.0",
+        "io.grpc:grpc-auth:1.67.1",
+        "io.grpc:grpc-core:1.67.1",
+        "io.grpc:grpc-context:1.67.1",
+        "io.grpc:grpc-netty-shaded:1.67.1",
+        "io.grpc:grpc-inprocess:1.67.1",
+        "io.grpc:grpc-protobuf:1.67.1",
+        "io.grpc:grpc-stub:1.67.1",
         "javax.annotation:javax.annotation-api:1.3.2",
         "javax.json:javax.json-api:1.1.4",
         "org.apache.tomcat:annotations-api:6.0.53",
@@ -279,6 +293,7 @@ bazel_dep(name = "aspect_rules_ts", version = "3.2.1")
 rules_ts_ext = use_extension("@aspect_rules_ts//ts:extensions.bzl", "ext")
 rules_ts_ext.deps(
     name = "npm_typescript_logos",  # naming works around bug in cross-workspace deps
+    ts_integrity = "sha512-hjcS1mhfuyi4WW8IWtjP7brDrG2cuDZukyrYrSauoXGNgx0S7zceP07adYkJycEr56BOUTNPzbInooiN3fn1qw==",
     ts_version_from = "//:package.json",
 )
 use_repo(

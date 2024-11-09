@@ -3,7 +3,7 @@ package dev.logos.service.storage;
 import com.google.inject.Inject;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.Descriptors.FieldDescriptor;
-import com.google.protobuf.GeneratedMessageV3;
+import com.google.protobuf.GeneratedMessage;
 import dev.logos.service.storage.exceptions.EntityReadException;
 import dev.logos.service.storage.exceptions.EntityWriteException;
 import dev.logos.service.storage.pg.Column;
@@ -65,7 +65,7 @@ public class TableStorage<Entity, StorageIdentifier> implements EntityStorage<En
     }
 
     public StorageIdentifier create(Entity entity) throws EntityWriteException {
-        Map<FieldDescriptor, Object> fields = ((GeneratedMessageV3) entity).getAllFields();
+        Map<FieldDescriptor, Object> fields = ((GeneratedMessage) entity).getAllFields();
         List<String> fieldNames = fields.keySet().stream().map(FieldDescriptor::getName).toList();
 
         String queryStr =
@@ -85,7 +85,7 @@ public class TableStorage<Entity, StorageIdentifier> implements EntityStorage<En
     }
 
     public StorageIdentifier update(StorageIdentifier id, Entity entity) throws EntityWriteException {
-        Map<FieldDescriptor, Object> fields = ((GeneratedMessageV3) entity).getAllFields();
+        Map<FieldDescriptor, Object> fields = ((GeneratedMessage) entity).getAllFields();
         List<String> fieldNames = fields.keySet().stream().map(FieldDescriptor::getName).toList();
 
         String queryStr =

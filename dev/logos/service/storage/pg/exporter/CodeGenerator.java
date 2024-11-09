@@ -5,7 +5,7 @@ import com.google.inject.Inject;
 import com.google.inject.TypeLiteral;
 import com.google.protobuf.DescriptorProtos;
 import com.google.protobuf.DescriptorProtos.FieldDescriptorProto;
-import com.google.protobuf.GeneratedMessageV3;
+import com.google.protobuf.GeneratedMessage;
 import com.squareup.javapoet.*;
 import dev.logos.app.register.registerModule;
 import dev.logos.service.storage.EntityStorage;
@@ -632,8 +632,8 @@ public class CodeGenerator {
                         MethodSpec.methodBuilder("response")
                                   .addAnnotation(Override.class)
                                   .addModifiers(PUBLIC)
-                                  .addTypeVariable(TypeVariableName.get("Req", GeneratedMessageV3.class))
-                                  .addTypeVariable(TypeVariableName.get("Resp", GeneratedMessageV3.class))
+                                  .addTypeVariable(TypeVariableName.get("Req", GeneratedMessage.class))
+                                  .addTypeVariable(TypeVariableName.get("Resp", GeneratedMessage.class))
                                   .returns(TypeVariableName.get("Resp"))
                                   .addParameter(UUID.class, "id")
                                   .addParameter(TypeVariableName.get("Req"), "request")
