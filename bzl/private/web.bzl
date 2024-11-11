@@ -18,7 +18,7 @@ import html from '@rollup/plugin-html';
 import {makeHtmlAttributes} from '@rollup/plugin-html';
 import replace from '@rollup/plugin-replace';
 import nodeResolve from '@rollup/plugin-node-resolve';
-//import sourcemaps from 'rollup-plugin-sourcemaps2';
+import sourcemaps from 'rollup-plugin-sourcemaps2';
 import {typescriptPaths} from 'rollup-plugin-typescript-paths';
 import execute from "rollup-plugin-shell";
 
@@ -42,7 +42,7 @@ export default {
         replace({ preventAssignment: true, values: { 'process.env.NODE_ENV': JSON.stringify('production') }}),
         typescriptPaths(),
         json(),
-        //sourcemaps(),
+        sourcemaps(),
         html({
             title: "",
             publicPath: "/",
@@ -107,7 +107,7 @@ export default {
     ],
     output: {
         format: 'es',
-        sourcemap: false,
+        sourcemap: true,
     },
     onwarn(warning, warn) {
         const allowed = allowedWarnings[warning.code];
@@ -157,7 +157,7 @@ def web(name, srcs, tsconfig, rollup_config = None, deps = None):
         entry_point = "index.js",
         node_modules = "//:node_modules",
         output_dir = True,
-        sourcemap = "false",
+        sourcemap = "true",
         visibility = ["//visibility:public"],
         deps = deps + [
             "//:node_modules/@rollup/plugin-commonjs",
@@ -169,7 +169,7 @@ def web(name, srcs, tsconfig, rollup_config = None, deps = None):
             "//:node_modules/rollup-plugin-import-css",
             "//:node_modules/rollup-plugin-includepaths",
             "//:node_modules/rollup-plugin-shell",
-            #"//:node_modules/rollup-plugin-sourcemaps2",
+            "//:node_modules/rollup-plugin-sourcemaps2",
             "//:node_modules/rollup-plugin-typescript-paths",
             "//:node_modules/typescript",
         ],
