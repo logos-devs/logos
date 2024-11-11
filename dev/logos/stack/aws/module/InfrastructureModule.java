@@ -26,6 +26,11 @@ public class InfrastructureModule extends AbstractModule {
     public @interface AwsRegion {
     }
 
+    @BindingAnnotation
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface StackOutputsJson {
+    }
+
     @Provides
     @Singleton
     @RootConstructId
