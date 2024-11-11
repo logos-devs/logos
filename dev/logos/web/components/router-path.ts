@@ -1,18 +1,30 @@
-import {html, LitElement, TemplateResult} from 'lit';
-import {customElement, property, state} from 'lit/decorators.js';
-import {match} from 'path-to-regexp';
-
+import { html, LitElement, TemplateResult } from 'lit';
+import { customElement, property, state } from 'lit/decorators.js';
+import { match, MatchFunction, MatchResult } from 'path-to-regexp';
 
 @customElement('router-path')
 export class RouterPath extends LitElement {
     static routes = new Map<string, RouterPath>();
 
-    @property({type: String}) pattern: string;
-    @property({type: Object}) action?: () => Promise<unknown>;
+    @property({ type: String }) pattern: string;
+    @property({ type: Function }) content: (...params: string[]) => TemplateResult = () => html``;
+    @property({ type: Object }) action?: () => Promise<unknown>;
+
     @state() private active: boolean = false;
+    @state() private params: string[] = [];
+    private routeMatcher: MatchFunction<Record<string, string>>;
+
+    static go(path: string, state?: any) {
+        if (!path.startsWith('/')) {
+            throw new Error('Only paths within the same origin are allowed. Paths must start with a slash.');
+        }
+        history.pushState(state, "", path);
+        window.dispatchEvent(new PopStateEvent('popstate', {state}));
+    }
 
     connectedCallback() {
         super.connectedCallback();
+        this.routeMatcher = match(this.pattern, { decode: decodeURIComponent });
         this.checkRoute();
         if (RouterPath.routes.has(this.pattern)) {
             throw new Error(`Route with pattern ${this.pattern} already exists`);
@@ -21,29 +33,28 @@ export class RouterPath extends LitElement {
         window.addEventListener('popstate', this.checkRoute.bind(this));
     }
 
-    disconnectedCallback() {
+    override disconnectedCallback() {
         RouterPath.routes.delete(this.pattern);
         window.removeEventListener('popstate', this.checkRoute.bind(this));
         super.disconnectedCallback();
     }
 
     checkRoute() {
-        const didMatch = !!match(this.pattern)(window.location.pathname)
-        if (didMatch) {
+        const matchResult = this.routeMatcher(window.location.pathname);
+        this.active = !!matchResult;
+        if (this.active && matchResult) {
+            this.params = Object.values(matchResult.params);
             if (this.action) {
-                this.action().then(() => this.active = true);
+                this.action().then(() => this.requestUpdate());
             } else {
-                this.active = true;
+                this.requestUpdate();
             }
         } else {
-            this.active = false;
+            this.params = [];
         }
     }
 
     render(): TemplateResult {
-        return html`
-            ${this.active ? html`
-                <slot></slot>` : ''}
-        `;
+        return this.active ? this.content(...this.params) : html``;
     }
 }
