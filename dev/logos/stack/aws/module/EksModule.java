@@ -433,6 +433,8 @@ public class EksModule extends AbstractModule {
                     "parameters", orderedMapOf(
                             "provisioningMode", "efs-ap",
                             "fileSystemId", fileSystem.getFileSystemId(),
+                            "uid", "0",
+                            "gid", "0",
                             "directoryPerms", "700")));
 
             cluster.addManifest(id + "-db-ro-service-manifest", dbRoServiceManifest);
