@@ -26,6 +26,8 @@ java_binary(
         "@maven_logos//:io_grpc_grpc_core",
         "@maven_logos//:io_grpc_grpc_inprocess",
         "@maven_logos//:io_grpc_grpc_netty_shaded",
+        "@maven_logos//:io_grpc_grpc_protobuf",
+        "@maven_logos//:io_grpc_grpc_services",
         "@maven_logos//:io_grpc_grpc_stub",
         "@maven_logos//:org_slf4j_slf4j_api",
         "@maven_logos//:org_slf4j_slf4j_simple",

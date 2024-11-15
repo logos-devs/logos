@@ -17,10 +17,15 @@ public class GuardServerInterceptor implements ServerInterceptor {
 
     @Override
     public <ReqT, RespT> ServerCall.Listener<ReqT> interceptCall(ServerCall<ReqT, RespT> call, Metadata headers, ServerCallHandler<ReqT, RespT> next) {
-        Service service = services.get(call.getMethodDescriptor().getServiceName());
         ServerCall.Listener<ReqT> delegate = next.startCall(call, headers);
 
-        return new ForwardingServerCallListener.SimpleForwardingServerCallListener<ReqT>(delegate) {
+        String serviceName = call.getMethodDescriptor().getServiceName();
+        if (!services.containsKey(serviceName))
+            return delegate;
+
+        Service service = services.get(serviceName);
+
+        return new ForwardingServerCallListener.SimpleForwardingServerCallListener<>(delegate) {
             private boolean callClosed = false;
 
             @Override
