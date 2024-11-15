@@ -22,6 +22,10 @@ export class RouterPath extends LitElement {
         window.dispatchEvent(new PopStateEvent('popstate', {state}));
     }
 
+    createRenderRoot() {
+        return this;
+    }
+
     connectedCallback() {
         super.connectedCallback();
         this.routeMatcher = match(this.pattern, { decode: decodeURIComponent });
