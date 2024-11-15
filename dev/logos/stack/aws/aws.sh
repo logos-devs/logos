@@ -1,4 +1,4 @@
-#!/bin/bash -eux
+#!/bin/bash -eu
 
 SELF="$0"
 cd "$BUILD_WORKSPACE_DIRECTORY"
@@ -161,7 +161,7 @@ dev_setup() {
     _update_bazelrc_env STORAGE_PG_BACKEND_HOST "$PG_AUTH_RESOLVED_HOST"
     bazel build @logos//tools:bazel-env
 
-    $BAZEL run -- @pnpm//:pnpm --dir "$BUILD_WORKSPACE_DIRECTORY" install
+    $BAZEL run -- @pnpm//:pnpm --dir "$BUILD_WORKSPACE_DIRECTORY" install --lockfile-only
 }
 
 dev() {
