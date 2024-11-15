@@ -20,6 +20,12 @@ spec:
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 10
           volumeMounts:
             - name: web-bundles
               mountPath: /app/web-bundles

@@ -10,7 +10,7 @@ http_archive = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "ht
 http_file = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_file")
 
 # rules_cc
-bazel_dep(name = "rules_cc", version = "0.0.9")
+bazel_dep(name = "rules_cc", version = "0.0.13")
 
 # protoc
 http_archive(
@@ -130,7 +130,7 @@ git_override(
 )
 
 # rules_jvm_external
-bazel_dep(name = "rules_jvm_external", version = "6.2")
+bazel_dep(name = "rules_jvm_external", version = "6.3")
 
 MAVEN_AWSSDK_VERSION = "2.26.23"
 
@@ -179,6 +179,7 @@ maven.install(
         "io.grpc:grpc-netty-shaded:1.67.1",
         "io.grpc:grpc-inprocess:1.67.1",
         "io.grpc:grpc-protobuf:1.67.1",
+        "io.grpc:grpc-services:1.67.1",
         "io.grpc:grpc-stub:1.67.1",
         "javax.annotation:javax.annotation-api:1.3.2",
         "javax.json:javax.json-api:1.1.4",
@@ -349,13 +350,6 @@ oci.pull(
     # tag = "latest",
 )
 use_repo(oci, "distroless_java_container", "distroless_java_container_linux_amd64")
-oci.pull(
-    name = "console_container",
-    digest = "sha256:459be81018f0481adcf57ca0ab3e4fba19cfcc48f2280e1d672343d10dccb8a3",
-    image = "docker.io/alpine/socat",
-    # tag = "latest",
-)
-use_repo(oci, "console_container")
 oci.pull(
     name = "nginx_container",
     digest = "sha256:e06ffa63074d69b12c7f7712d7aebc4cc72d25217e55788d54160a2bd77182f4",

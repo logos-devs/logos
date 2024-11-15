@@ -30,7 +30,6 @@
     "https://bcr.bazel.build/modules/bazel_features/1.1.1/MODULE.bazel": "27b8c79ef57efe08efccbd9dd6ef70d61b4798320b8d3c134fd571f78963dbcd",
     "https://bcr.bazel.build/modules/bazel_features/1.10.0/MODULE.bazel": "f75e8807570484a99be90abcd52b5e1f390362c258bcb73106f4544957a48101",
     "https://bcr.bazel.build/modules/bazel_features/1.11.0/MODULE.bazel": "f9382337dd5a474c3b7d334c2f83e50b6eaedc284253334cf823044a26de03e8",
-    "https://bcr.bazel.build/modules/bazel_features/1.13.0/MODULE.bazel": "c14c33c7c3c730612bdbe14ebbb5e61936b6f11322ea95a6e91cd1ba962f94df",
     "https://bcr.bazel.build/modules/bazel_features/1.15.0/MODULE.bazel": "d38ff6e517149dc509406aca0db3ad1efdd890a85e049585b7234d04238e2a4d",
     "https://bcr.bazel.build/modules/bazel_features/1.17.0/MODULE.bazel": "039de32d21b816b47bd42c778e0454217e9c9caac4a3cf8e15c7231ee3ddee4d",
     "https://bcr.bazel.build/modules/bazel_features/1.18.0/MODULE.bazel": "1be0ae2557ab3a72a57aeb31b29be347bcdc5d2b1eb1e70f39e3851a7e97041a",
@@ -133,17 +132,14 @@
     "https://bcr.bazel.build/modules/rules_java/7.12.2/source.json": "b0890f9cda8ff1b8e691a3ac6037b5c14b7fd4134765a3946b89f31ea02e5884",
     "https://bcr.bazel.build/modules/rules_java/7.2.0/MODULE.bazel": "06c0334c9be61e6cef2c8c84a7800cef502063269a5af25ceb100b192453d4ab",
     "https://bcr.bazel.build/modules/rules_java/7.3.2/MODULE.bazel": "50dece891cfdf1741ea230d001aa9c14398062f2b7c066470accace78e412bc2",
-    "https://bcr.bazel.build/modules/rules_java/7.4.0/MODULE.bazel": "a592852f8a3dd539e82ee6542013bf2cadfc4c6946be8941e189d224500a8934",
     "https://bcr.bazel.build/modules/rules_java/7.6.1/MODULE.bazel": "2f14b7e8a1aa2f67ae92bc69d1ec0fa8d9f827c4e17ff5e5f02e91caa3b2d0fe",
     "https://bcr.bazel.build/modules/rules_java/7.6.5/MODULE.bazel": "481164be5e02e4cab6e77a36927683263be56b7e36fef918b458d7a8a1ebadb1",
     "https://bcr.bazel.build/modules/rules_jvm_external/5.2/MODULE.bazel": "d9351ba35217ad0de03816ef3ed63f89d411349353077348a45348b096615036",
     "https://bcr.bazel.build/modules/rules_jvm_external/5.3/MODULE.bazel": "bf93870767689637164657731849fb887ad086739bd5d360d90007a581d5527d",
     "https://bcr.bazel.build/modules/rules_jvm_external/6.0/MODULE.bazel": "37c93a5a78d32e895d52f86a8d0416176e915daabd029ccb5594db422e87c495",
-    "https://bcr.bazel.build/modules/rules_jvm_external/6.2/MODULE.bazel": "36a6e52487a855f33cb960724eb56547fa87e2c98a0474c3acad94339d7f8e99",
     "https://bcr.bazel.build/modules/rules_jvm_external/6.3/MODULE.bazel": "c998e060b85f71e00de5ec552019347c8bca255062c990ac02d051bb80a38df0",
     "https://bcr.bazel.build/modules/rules_jvm_external/6.3/source.json": "6f5f5a5a4419ae4e37c35a5bb0a6ae657ed40b7abc5a5189111b47fcebe43197",
     "https://bcr.bazel.build/modules/rules_kotlin/1.9.0/MODULE.bazel": "ef85697305025e5a61f395d4eaede272a5393cee479ace6686dba707de804d59",
-    "https://bcr.bazel.build/modules/rules_kotlin/1.9.5/MODULE.bazel": "043a16a572f610558ec2030db3ff0c9938574e7dd9f58bded1bb07c0192ef025",
     "https://bcr.bazel.build/modules/rules_kotlin/1.9.6/MODULE.bazel": "d269a01a18ee74d0335450b10f62c9ed81f2321d7958a2934e44272fe82dcef3",
     "https://bcr.bazel.build/modules/rules_kotlin/1.9.6/source.json": "2faa4794364282db7c06600b7e5e34867a564ae91bda7cae7c29c64e9466b7d5",
     "https://bcr.bazel.build/modules/rules_license/0.0.3/MODULE.bazel": "627e9ab0247f7d1e05736b59dbb1b6871373de5ad31c3011880b4133cafd4bd0",
@@ -1001,7 +997,7 @@
         "recordedFileInputs": {
           "@@//vendor/apko/envoy.lock.json": "4873f9a85702367c2cdd3e62c75f316f5247397d88524d9d3a012bfbcdf6188f",
           "@@//vendor/apko/base_cronjob.lock.json": "fbf7edbb6f962944da731e7dc944b1dcc3435de9f7d0debfcc791952a5235cc8",
-          "@@//vendor/apko/console.lock.json": "326228a39c8ec91f0d57ae817d1643f489375a3e517b8f3ee2514ba18aecd872"
+          "@@//vendor/apko/console.lock.json": "4c5fd605cded47f57465923c3ab0db4ebe0d95f0b524f88272b06a8fee366297"
         },
         "recordedDirentsInputs": {},
         "envVariables": {},
@@ -1851,20 +1847,20 @@
               "architecture": "x86_64"
             }
           },
-          "console_image_ca-certificates-bundle_x86_64_20241010-r1": {
+          "console_image_ca-certificates-bundle_x86_64_20241010-r2": {
             "bzlFile": "@@rules_apko~//apko/private:apk.bzl",
             "ruleClassName": "apk_import",
             "attributes": {
               "package_name": "ca-certificates-bundle",
-              "version": "20241010-r1",
+              "version": "20241010-r2",
               "architecture": "x86_64",
-              "url": "https://packages.wolfi.dev/os/x86_64/ca-certificates-bundle-20241010-r1.apk",
+              "url": "https://packages.wolfi.dev/os/x86_64/ca-certificates-bundle-20241010-r2.apk",
               "signature_range": "",
               "signature_checksum": "",
               "control_range": "bytes=0-332",
-              "control_checksum": "sha1-mtftyrjWCWpJ7wFkBgB3GPGJMoU=",
-              "data_range": "bytes=333-133658",
-              "data_checksum": "sha256-a2IeQET40rHlQdso+q965OZmDDcy99JAXBKCMxmYLfE="
+              "control_checksum": "sha1-iArArUgIz6QlGR28TJIcBU1KXWM=",
+              "data_range": "bytes=333-133751",
+              "data_checksum": "sha256-6PefX13dg3jP2pJguYC+sDkH3If/rfNEM3iwCA5wiu8="
             }
           },
           "console_image_wolfi-baselayout_x86_64_20230201-r15": {
@@ -1995,6 +1991,342 @@
               "data_checksum": "sha256-Oik1Pp4orwFELOAfbjEwAHQemKv/Ql8NRPwV5PaUTd4="
             }
           },
+          "console_image_krb5-conf_x86_64_1.0-r3": {
+            "bzlFile": "@@rules_apko~//apko/private:apk.bzl",
+            "ruleClassName": "apk_import",
+            "attributes": {
+              "package_name": "krb5-conf",
+              "version": "1.0-r3",
+              "architecture": "x86_64",
+              "url": "https://packages.wolfi.dev/os/x86_64/krb5-conf-1.0-r3.apk",
+              "signature_range": "bytes=0-692",
+              "signature_checksum": "sha1-5ExTpBXZ6EvHv0oyahhZlvhqCfs=",
+              "control_range": "bytes=693-1040",
+              "control_checksum": "sha1-44JvgxJGCpXrE6GLHwSuuttlkxs=",
+              "data_range": "bytes=1041-2280",
+              "data_checksum": "sha256-TCxwGLHrXXmv5fE5TXJNh4qwDu327dn4U1IbcL6v8YA="
+            }
+          },
+          "console_image_libverto_x86_64_0.3.2-r4": {
+            "bzlFile": "@@rules_apko~//apko/private:apk.bzl",
+            "ruleClassName": "apk_import",
+            "attributes": {
+              "package_name": "libverto",
+              "version": "0.3.2-r4",
+              "architecture": "x86_64",
+              "url": "https://packages.wolfi.dev/os/x86_64/libverto-0.3.2-r4.apk",
+              "signature_range": "bytes=0-692",
+              "signature_checksum": "sha1-/IXL9S1O+MwaW7KsSzz1ywEqKFQ=",
+              "control_range": "bytes=693-1048",
+              "control_checksum": "sha1-Onuac6Y+IWA7a4b8FvqX1erWDDw=",
+              "data_range": "bytes=1049-13100",
+              "data_checksum": "sha256-KLtDAs3iU0oyZ/FysePG/J+1H1ofDxHXIY7xvtZhtMc="
+            }
+          },
+          "console_image_keyutils-libs_x86_64_1.6.3-r5": {
+            "bzlFile": "@@rules_apko~//apko/private:apk.bzl",
+            "ruleClassName": "apk_import",
+            "attributes": {
+              "package_name": "keyutils-libs",
+              "version": "1.6.3-r5",
+              "architecture": "x86_64",
+              "url": "https://packages.wolfi.dev/os/x86_64/keyutils-libs-1.6.3-r5.apk",
+              "signature_range": "",
+              "signature_checksum": "",
+              "control_range": "bytes=0-363",
+              "control_checksum": "sha1-/yF2qS8gp9Mj7Nloa4J66rocXp8=",
+              "data_range": "bytes=364-10164",
+              "data_checksum": "sha256-nWVKZVFunk2MwE+Tl1f9+BHOPoS+lB0QnnkKyMLlJ84="
+            }
+          },
+          "console_image_libcom_err_x86_64_1.47.1-r1": {
+            "bzlFile": "@@rules_apko~//apko/private:apk.bzl",
+            "ruleClassName": "apk_import",
+            "attributes": {
+              "package_name": "libcom_err",
+              "version": "1.47.1-r1",
+              "architecture": "x86_64",
+              "url": "https://packages.wolfi.dev/os/x86_64/libcom_err-1.47.1-r1.apk",
+              "signature_range": "",
+              "signature_checksum": "",
+              "control_range": "bytes=0-416",
+              "control_checksum": "sha1-5BJ9nwQ8aQVWtUaLV5Orqo8+l7M=",
+              "data_range": "bytes=417-8313",
+              "data_checksum": "sha256-jMZsXRgTZlNgLQ9FcLXmDLLncTV/yQqLtOFu35pO0wU="
+            }
+          },
+          "console_image_libcrypto3_x86_64_3.4.0-r2": {
+            "bzlFile": "@@rules_apko~//apko/private:apk.bzl",
+            "ruleClassName": "apk_import",
+            "attributes": {
+              "package_name": "libcrypto3",
+              "version": "3.4.0-r2",
+              "architecture": "x86_64",
+              "url": "https://packages.wolfi.dev/os/x86_64/libcrypto3-3.4.0-r2.apk",
+              "signature_range": "",
+              "signature_checksum": "",
+              "control_range": "bytes=0-366",
+              "control_checksum": "sha1-qeva7PKFDX13luGAxPWbMrE13+s=",
+              "data_range": "bytes=367-2124822",
+              "data_checksum": "sha256-wZXehbm5eRknFh+YAU5UwKQPvhmEY0LqgfdAV+eHNHA="
+            }
+          },
+          "console_image_libssl3_x86_64_3.4.0-r2": {
+            "bzlFile": "@@rules_apko~//apko/private:apk.bzl",
+            "ruleClassName": "apk_import",
+            "attributes": {
+              "package_name": "libssl3",
+              "version": "3.4.0-r2",
+              "architecture": "x86_64",
+              "url": "https://packages.wolfi.dev/os/x86_64/libssl3-3.4.0-r2.apk",
+              "signature_range": "",
+              "signature_checksum": "",
+              "control_range": "bytes=0-371",
+              "control_checksum": "sha1-RVnxD60PwEcQWZotUcSZ27NO4A4=",
+              "data_range": "bytes=372-455236",
+              "data_checksum": "sha256-lzhycF/EM2fdoezcx5za1nxFIiT0xPY6kGrXVrNc3do="
+            }
+          },
+          "console_image_krb5-libs_x86_64_1.21.3-r2": {
+            "bzlFile": "@@rules_apko~//apko/private:apk.bzl",
+            "ruleClassName": "apk_import",
+            "attributes": {
+              "package_name": "krb5-libs",
+              "version": "1.21.3-r2",
+              "architecture": "x86_64",
+              "url": "https://packages.wolfi.dev/os/x86_64/krb5-libs-1.21.3-r2.apk",
+              "signature_range": "",
+              "signature_checksum": "",
+              "control_range": "bytes=0-520",
+              "control_checksum": "sha1-uhsBeNT5t31C9NTnZSLThdProL8=",
+              "data_range": "bytes=521-1016960",
+              "data_checksum": "sha256-zsXB7xsz65DsNHqu6T4lZgC3rbfSS5+IgntpOCpNkDk="
+            }
+          },
+          "console_image_protobuf-c_x86_64_1.5.0-r9": {
+            "bzlFile": "@@rules_apko~//apko/private:apk.bzl",
+            "ruleClassName": "apk_import",
+            "attributes": {
+              "package_name": "protobuf-c",
+              "version": "1.5.0-r9",
+              "architecture": "x86_64",
+              "url": "https://packages.wolfi.dev/os/x86_64/protobuf-c-1.5.0-r9.apk",
+              "signature_range": "",
+              "signature_checksum": "",
+              "control_range": "bytes=0-374",
+              "control_checksum": "sha1-U//zXSEE+UFGv6tisUnpUKop1Qk=",
+              "data_range": "bytes=375-22026",
+              "data_checksum": "sha256-w6wrisCYpxIm+QjwpQngAkx/zrZBPHhEzVrJbYMaVus="
+            }
+          },
+          "console_image_fstrm_x86_64_0.6.1-r2": {
+            "bzlFile": "@@rules_apko~//apko/private:apk.bzl",
+            "ruleClassName": "apk_import",
+            "attributes": {
+              "package_name": "fstrm",
+              "version": "0.6.1-r2",
+              "architecture": "x86_64",
+              "url": "https://packages.wolfi.dev/os/x86_64/fstrm-0.6.1-r2.apk",
+              "signature_range": "",
+              "signature_checksum": "",
+              "control_range": "bytes=0-359",
+              "control_checksum": "sha1-fOWMVYoHATcNva1nO6JufY5Tfuk=",
+              "data_range": "bytes=360-24058",
+              "data_checksum": "sha256-SwGqZy/odc1lDN+8hx5QpP+oa/mmEoBUTXKl1CWc6os="
+            }
+          },
+          "console_image_libuv_x86_64_1.49.2-r0": {
+            "bzlFile": "@@rules_apko~//apko/private:apk.bzl",
+            "ruleClassName": "apk_import",
+            "attributes": {
+              "package_name": "libuv",
+              "version": "1.49.2-r0",
+              "architecture": "x86_64",
+              "url": "https://packages.wolfi.dev/os/x86_64/libuv-1.49.2-r0.apk",
+              "signature_range": "",
+              "signature_checksum": "",
+              "control_range": "bytes=0-373",
+              "control_checksum": "sha1-q4BFK/kS5u7npxyBDa+3/iKnq24=",
+              "data_range": "bytes=374-117637",
+              "data_checksum": "sha256-vTtbc+XTstN5tO6SHK4jeHMgL/hFkALsno1c0BGRl00="
+            }
+          },
+          "console_image_zlib_x86_64_1.3.1-r4": {
+            "bzlFile": "@@rules_apko~//apko/private:apk.bzl",
+            "ruleClassName": "apk_import",
+            "attributes": {
+              "package_name": "zlib",
+              "version": "1.3.1-r4",
+              "architecture": "x86_64",
+              "url": "https://packages.wolfi.dev/os/x86_64/zlib-1.3.1-r4.apk",
+              "signature_range": "bytes=0-693",
+              "signature_checksum": "sha1-veZ+Gmg2Se5AoXIkNaVbG9xVPNI=",
+              "control_range": "bytes=694-1077",
+              "control_checksum": "sha1-BERCewGJVIkPpMoG7t13ter7+Go=",
+              "data_range": "bytes=1078-61438",
+              "data_checksum": "sha256-+JOPvMTzIWTLR+5cccK4AXWXO2kvBp1mH9/AGlFSD5c="
+            }
+          },
+          "console_image_libnghttp2-14_x86_64_1.64.0-r1": {
+            "bzlFile": "@@rules_apko~//apko/private:apk.bzl",
+            "ruleClassName": "apk_import",
+            "attributes": {
+              "package_name": "libnghttp2-14",
+              "version": "1.64.0-r1",
+              "architecture": "x86_64",
+              "url": "https://packages.wolfi.dev/os/x86_64/libnghttp2-14-1.64.0-r1.apk",
+              "signature_range": "",
+              "signature_checksum": "",
+              "control_range": "bytes=0-357",
+              "control_checksum": "sha1-8n8IlWyZfutWNR1GFAvf3JCFwVQ=",
+              "data_range": "bytes=358-101257",
+              "data_checksum": "sha256-/2as+VYiYYBsYsQ3Vp8J4GWwkL8rcSUF6/9ojp2Mba8="
+            }
+          },
+          "console_image_libev_x86_64_4.33-r6": {
+            "bzlFile": "@@rules_apko~//apko/private:apk.bzl",
+            "ruleClassName": "apk_import",
+            "attributes": {
+              "package_name": "libev",
+              "version": "4.33-r6",
+              "architecture": "x86_64",
+              "url": "https://packages.wolfi.dev/os/x86_64/libev-4.33-r6.apk",
+              "signature_range": "bytes=0-702",
+              "signature_checksum": "sha1-6ZgFt6PhwmoYFAA69/6inGbdJtU=",
+              "control_range": "bytes=703-1094",
+              "control_checksum": "sha1-A7oFO5lfWAO5koSxmIIusVW9920=",
+              "data_range": "bytes=1095-37605",
+              "data_checksum": "sha256-67UgNf9VPGz3z/GH4BT5oncUbjLkjqvEvxC/2JXyv2E="
+            }
+          },
+          "console_image_libstdc___x86_64_14.2.0-r5": {
+            "bzlFile": "@@rules_apko~//apko/private:apk.bzl",
+            "ruleClassName": "apk_import",
+            "attributes": {
+              "package_name": "libstdc++",
+              "version": "14.2.0-r5",
+              "architecture": "x86_64",
+              "url": "https://packages.wolfi.dev/os/x86_64/libstdc++-14.2.0-r5.apk",
+              "signature_range": "",
+              "signature_checksum": "",
+              "control_range": "bytes=0-403",
+              "control_checksum": "sha1-zzWVk54QCbRH3u/y1FfqnysfyWI=",
+              "data_range": "bytes=404-1086461",
+              "data_checksum": "sha256-zdKC5MRQuCSqaeCJKgHQgPfts3S2uxK5OGfquubJYvw="
+            }
+          },
+          "console_image_c-ares_x86_64_1.34.3-r0": {
+            "bzlFile": "@@rules_apko~//apko/private:apk.bzl",
+            "ruleClassName": "apk_import",
+            "attributes": {
+              "package_name": "c-ares",
+              "version": "1.34.3-r0",
+              "architecture": "x86_64",
+              "url": "https://packages.wolfi.dev/os/x86_64/c-ares-1.34.3-r0.apk",
+              "signature_range": "",
+              "signature_checksum": "",
+              "control_range": "bytes=0-364",
+              "control_checksum": "sha1-04YueC5O2cmOXTdu9stSWoT+ffA=",
+              "data_range": "bytes=365-136916",
+              "data_checksum": "sha256-bBwo25MrVd00v2Zl+PjbhNpNrlCl2Nr4lzWap7ryPL8="
+            }
+          },
+          "console_image_nghttp2_x86_64_1.64.0-r1": {
+            "bzlFile": "@@rules_apko~//apko/private:apk.bzl",
+            "ruleClassName": "apk_import",
+            "attributes": {
+              "package_name": "nghttp2",
+              "version": "1.64.0-r1",
+              "architecture": "x86_64",
+              "url": "https://packages.wolfi.dev/os/x86_64/nghttp2-1.64.0-r1.apk",
+              "signature_range": "",
+              "signature_checksum": "",
+              "control_range": "bytes=0-458",
+              "control_checksum": "sha1-mRU83/Z0BaBwuJ8fINRwqGY0Vvg=",
+              "data_range": "bytes=459-1081194",
+              "data_checksum": "sha256-4v6YbMiB3LGTJMQFPsb4vQvrLlvJLBvpyfyyB/PGCLw="
+            }
+          },
+          "console_image_nghttp2-dev_x86_64_1.64.0-r1": {
+            "bzlFile": "@@rules_apko~//apko/private:apk.bzl",
+            "ruleClassName": "apk_import",
+            "attributes": {
+              "package_name": "nghttp2-dev",
+              "version": "1.64.0-r1",
+              "architecture": "x86_64",
+              "url": "https://packages.wolfi.dev/os/x86_64/nghttp2-dev-1.64.0-r1.apk",
+              "signature_range": "",
+              "signature_checksum": "",
+              "control_range": "bytes=0-355",
+              "control_checksum": "sha1-9VEa0fxglHf2No9u/d1lG1fLzCA=",
+              "data_range": "bytes=356-158619",
+              "data_checksum": "sha256-8HK+uo7bqcezjhwPfD7irk1Jgz+uqvoh4u/Sgxt3wBs="
+            }
+          },
+          "console_image_xz_x86_64_5.6.3-r2": {
+            "bzlFile": "@@rules_apko~//apko/private:apk.bzl",
+            "ruleClassName": "apk_import",
+            "attributes": {
+              "package_name": "xz",
+              "version": "5.6.3-r2",
+              "architecture": "x86_64",
+              "url": "https://packages.wolfi.dev/os/x86_64/xz-5.6.3-r2.apk",
+              "signature_range": "",
+              "signature_checksum": "",
+              "control_range": "bytes=0-453",
+              "control_checksum": "sha1-xYDp6GPQ/qN5xjlAaGZ8cAmGzwA=",
+              "data_range": "bytes=454-372950",
+              "data_checksum": "sha256-c/d8fG0AFges9qszb2bg0t6tUSMsRx2XwgAS9/gQeJo="
+            }
+          },
+          "console_image_libxml2_x86_64_2.13.5-r0": {
+            "bzlFile": "@@rules_apko~//apko/private:apk.bzl",
+            "ruleClassName": "apk_import",
+            "attributes": {
+              "package_name": "libxml2",
+              "version": "2.13.5-r0",
+              "architecture": "x86_64",
+              "url": "https://packages.wolfi.dev/os/x86_64/libxml2-2.13.5-r0.apk",
+              "signature_range": "",
+              "signature_checksum": "",
+              "control_range": "bytes=0-379",
+              "control_checksum": "sha1-QoQ6csa2EcQKeAPnUPADajNXrtk=",
+              "data_range": "bytes=380-691762",
+              "data_checksum": "sha256-fI4d9ifabumGr6c58RDh26SKJ5iGZVvA06ZpgBTcFm8="
+            }
+          },
+          "console_image_bind-libs_x86_64_9.18.31-r1": {
+            "bzlFile": "@@rules_apko~//apko/private:apk.bzl",
+            "ruleClassName": "apk_import",
+            "attributes": {
+              "package_name": "bind-libs",
+              "version": "9.18.31-r1",
+              "architecture": "x86_64",
+              "url": "https://packages.wolfi.dev/os/x86_64/bind-libs-9.18.31-r1.apk",
+              "signature_range": "",
+              "signature_checksum": "",
+              "control_range": "bytes=0-522",
+              "control_checksum": "sha1-rkfTMAG4h96H39njv9z6TfELTNk=",
+              "data_range": "bytes=523-1702704",
+              "data_checksum": "sha256-a9HR1CE7ykk0yOR8HVqrT6tqcrTtaBc+7o7lu1nR/HA="
+            }
+          },
+          "console_image_bind-tools_x86_64_9.18.31-r1": {
+            "bzlFile": "@@rules_apko~//apko/private:apk.bzl",
+            "ruleClassName": "apk_import",
+            "attributes": {
+              "package_name": "bind-tools",
+              "version": "9.18.31-r1",
+              "architecture": "x86_64",
+              "url": "https://packages.wolfi.dev/os/x86_64/bind-tools-9.18.31-r1.apk",
+              "signature_range": "",
+              "signature_checksum": "",
+              "control_range": "bytes=0-513",
+              "control_checksum": "sha1-CB/sWs57ceGS/MJwlaaHXHLojjk=",
+              "data_range": "bytes=514-308277",
+              "data_checksum": "sha256-Aw10aBI2vpLIQHfHCNuVeXFrmHXI5X8A+PN3sRCQFSo="
+            }
+          },
           "console_image_libattr1_x86_64_2.5.2-r4": {
             "bzlFile": "@@rules_apko~//apko/private:apk.bzl",
             "ruleClassName": "apk_import",
@@ -2027,36 +2359,68 @@
               "data_checksum": "sha256-g+2ciPoKlIz9UHfg0vaRsaKb3pwIQTGiE/1sbTb/7o8="
             }
           },
-          "console_image_libcrypto3_x86_64_3.4.0-r1": {
-            "bzlFile": "@@rules_apko~//apko/private:apk.bzl",
-            "ruleClassName": "apk_import",
-            "attributes": {
-              "package_name": "libcrypto3",
-              "version": "3.4.0-r1",
-              "architecture": "x86_64",
-              "url": "https://packages.wolfi.dev/os/x86_64/libcrypto3-3.4.0-r1.apk",
-              "signature_range": "",
-              "signature_checksum": "",
-              "control_range": "bytes=0-365",
-              "control_checksum": "sha1-WhrG3pyG4E4lSXQKgynQ0GW9Fow=",
-              "data_range": "bytes=366-2125497",
-              "data_checksum": "sha256-9tv0go9YZxVbatEPwh89nP3GU0NJJuP1f66aQVD97No="
-            }
-          },
-          "console_image_coreutils_x86_64_9.5-r2": {
+          "console_image_coreutils_x86_64_9.5-r3": {
             "bzlFile": "@@rules_apko~//apko/private:apk.bzl",
             "ruleClassName": "apk_import",
             "attributes": {
               "package_name": "coreutils",
-              "version": "9.5-r2",
+              "version": "9.5-r3",
               "architecture": "x86_64",
-              "url": "https://packages.wolfi.dev/os/x86_64/coreutils-9.5-r2.apk",
-              "signature_range": "bytes=0-702",
-              "signature_checksum": "sha1-CwR8pBWhh3iFNB9CZrP97QKtb7A=",
-              "control_range": "bytes=703-1177",
-              "control_checksum": "sha1-Y+grZ/hiPtfs7qYX/P2yopS2I2Y=",
-              "data_range": "bytes=1178-691535",
-              "data_checksum": "sha256-5pIbLxmJtEPbxvM/xWZ44HUKlwhzqZ5pcD9J9vj+74w="
+              "url": "https://packages.wolfi.dev/os/x86_64/coreutils-9.5-r3.apk",
+              "signature_range": "",
+              "signature_checksum": "",
+              "control_range": "bytes=0-463",
+              "control_checksum": "sha1-5Eg72fWr0mn257/xq6DYXeqYMuk=",
+              "data_range": "bytes=464-717747",
+              "data_checksum": "sha256-wi3t3PsVaZ49pe9r+hhLAvxjeeq6h+BpHZVUuaC+SkA="
+            }
+          },
+          "console_image_libmd_x86_64_1.1.0-r2": {
+            "bzlFile": "@@rules_apko~//apko/private:apk.bzl",
+            "ruleClassName": "apk_import",
+            "attributes": {
+              "package_name": "libmd",
+              "version": "1.1.0-r2",
+              "architecture": "x86_64",
+              "url": "https://packages.wolfi.dev/os/x86_64/libmd-1.1.0-r2.apk",
+              "signature_range": "bytes=0-696",
+              "signature_checksum": "sha1-X2z8j12Q2SJHLssLjvOngZDkaRU=",
+              "control_range": "bytes=697-1082",
+              "control_checksum": "sha1-42j58qH26XfxI6RC6rZCLpsftlI=",
+              "data_range": "bytes=1083-30357",
+              "data_checksum": "sha256-45NlQF2ZUCiCEhMVWaIdBTnPz2TPm03ZDx8ky9PSs7I="
+            }
+          },
+          "console_image_libbsd_x86_64_0.12.2-r1": {
+            "bzlFile": "@@rules_apko~//apko/private:apk.bzl",
+            "ruleClassName": "apk_import",
+            "attributes": {
+              "package_name": "libbsd",
+              "version": "0.12.2-r1",
+              "architecture": "x86_64",
+              "url": "https://packages.wolfi.dev/os/x86_64/libbsd-0.12.2-r1.apk",
+              "signature_range": "bytes=0-701",
+              "signature_checksum": "sha1-Wv1a5k6UJrx7N2NjYS0jfd92P9U=",
+              "control_range": "bytes=702-1102",
+              "control_checksum": "sha1-91bZYJOiKNX3MFnwrFEofjZlMwc=",
+              "data_range": "bytes=1103-44954",
+              "data_checksum": "sha256-nZk1IHE6PgSjgqrwLa3gcZpCpnMxni3SjGoRsUlC+gE="
+            }
+          },
+          "console_image_netcat-openbsd_x86_64_1.226-r4": {
+            "bzlFile": "@@rules_apko~//apko/private:apk.bzl",
+            "ruleClassName": "apk_import",
+            "attributes": {
+              "package_name": "netcat-openbsd",
+              "version": "1.226-r4",
+              "architecture": "x86_64",
+              "url": "https://packages.wolfi.dev/os/x86_64/netcat-openbsd-1.226-r4.apk",
+              "signature_range": "",
+              "signature_checksum": "",
+              "control_range": "bytes=0-431",
+              "control_checksum": "sha1-yGcA4iMcFCiPDaOyHVdKxrjaTcE=",
+              "data_range": "bytes=432-30603",
+              "data_checksum": "sha256-/xC1X4wXqLgWoZ4QsBWuBUHoaoM098/cdNg8Na5ux/U="
             }
           },
           "console_image_popt_x86_64_1.19-r1": {
@@ -2123,22 +2487,6 @@
               "data_checksum": "sha256-Gv20IA8gSf0tjGGu/y+kfiEQXtOVeZg13VHOMFD20Xk="
             }
           },
-          "console_image_zlib_x86_64_1.3.1-r4": {
-            "bzlFile": "@@rules_apko~//apko/private:apk.bzl",
-            "ruleClassName": "apk_import",
-            "attributes": {
-              "package_name": "zlib",
-              "version": "1.3.1-r4",
-              "architecture": "x86_64",
-              "url": "https://packages.wolfi.dev/os/x86_64/zlib-1.3.1-r4.apk",
-              "signature_range": "bytes=0-693",
-              "signature_checksum": "sha1-veZ+Gmg2Se5AoXIkNaVbG9xVPNI=",
-              "control_range": "bytes=694-1077",
-              "control_checksum": "sha1-BERCewGJVIkPpMoG7t13ter7+Go=",
-              "data_range": "bytes=1078-61438",
-              "data_checksum": "sha256-+JOPvMTzIWTLR+5cccK4AXWXO2kvBp1mH9/AGlFSD5c="
-            }
-          },
           "console_image_rsync_x86_64_3.3.0-r1": {
             "bzlFile": "@@rules_apko~//apko/private:apk.bzl",
             "ruleClassName": "apk_import",
@@ -2155,6 +2503,86 @@
               "data_checksum": "sha256-ABkd2EmmVjtmoThyMUte7bxacgZd2F3XMpw59d/fjQw="
             }
           },
+          "console_image_skalibs_x86_64_2.14.3.0-r0": {
+            "bzlFile": "@@rules_apko~//apko/private:apk.bzl",
+            "ruleClassName": "apk_import",
+            "attributes": {
+              "package_name": "skalibs",
+              "version": "2.14.3.0-r0",
+              "architecture": "x86_64",
+              "url": "https://packages.wolfi.dev/os/x86_64/skalibs-2.14.3.0-r0.apk",
+              "signature_range": "",
+              "signature_checksum": "",
+              "control_range": "bytes=0-391",
+              "control_checksum": "sha1-9SpNnZQE4mNb8rO9mST2q24ZhNw=",
+              "data_range": "bytes=392-107287",
+              "data_checksum": "sha256-KrU0bneKsbJVaQiRpZCFjK9WbdZ19K+y+uUzPATW8RU="
+            }
+          },
+          "console_image_execline_x86_64_2.9.6.1-r1": {
+            "bzlFile": "@@rules_apko~//apko/private:apk.bzl",
+            "ruleClassName": "apk_import",
+            "attributes": {
+              "package_name": "execline",
+              "version": "2.9.6.1-r1",
+              "architecture": "x86_64",
+              "url": "https://packages.wolfi.dev/os/x86_64/execline-2.9.6.1-r1.apk",
+              "signature_range": "",
+              "signature_checksum": "",
+              "control_range": "bytes=0-697",
+              "control_checksum": "sha1-d/vobzS6/76gqtSkdLc4qhIl8GM=",
+              "data_range": "bytes=698-129216",
+              "data_checksum": "sha256-W6s9SFXhEjMAJnz7G4bDOWv7ubiMouK7AoeYaRw7TVk="
+            }
+          },
+          "console_image_s6_x86_64_2.13.1.0-r1": {
+            "bzlFile": "@@rules_apko~//apko/private:apk.bzl",
+            "ruleClassName": "apk_import",
+            "attributes": {
+              "package_name": "s6",
+              "version": "2.13.1.0-r1",
+              "architecture": "x86_64",
+              "url": "https://packages.wolfi.dev/os/x86_64/s6-2.13.1.0-r1.apk",
+              "signature_range": "",
+              "signature_checksum": "",
+              "control_range": "bytes=0-867",
+              "control_checksum": "sha1-Btugo32tcNnXvQJRUeplfod2HRA=",
+              "data_range": "bytes=868-263216",
+              "data_checksum": "sha256-UZoPJfyM4dxPp8r+s2iHM4+iHYjw5LAZHHBKkFM5HyQ="
+            }
+          },
+          "console_image_readline_x86_64_8.2.13-r1": {
+            "bzlFile": "@@rules_apko~//apko/private:apk.bzl",
+            "ruleClassName": "apk_import",
+            "attributes": {
+              "package_name": "readline",
+              "version": "8.2.13-r1",
+              "architecture": "x86_64",
+              "url": "https://packages.wolfi.dev/os/x86_64/readline-8.2.13-r1.apk",
+              "signature_range": "",
+              "signature_checksum": "",
+              "control_range": "bytes=0-377",
+              "control_checksum": "sha1-sndSkZYmuzsRfvopLZpcZLDr2zU=",
+              "data_range": "bytes=378-315936",
+              "data_checksum": "sha256-uQOv0rbW8Yf0/scRN+eZgOEO9XTJ+asWaa9vWMtEJv8="
+            }
+          },
+          "console_image_socat_x86_64_1.8.0.1-r2": {
+            "bzlFile": "@@rules_apko~//apko/private:apk.bzl",
+            "ruleClassName": "apk_import",
+            "attributes": {
+              "package_name": "socat",
+              "version": "1.8.0.1-r2",
+              "architecture": "x86_64",
+              "url": "https://packages.wolfi.dev/os/x86_64/socat-1.8.0.1-r2.apk",
+              "signature_range": "",
+              "signature_checksum": "",
+              "control_range": "bytes=0-453",
+              "control_checksum": "sha1-L6OjSrLZzmRjAkp5BuqPPHlKm9U=",
+              "data_range": "bytes=454-306020",
+              "data_checksum": "sha256-j53wDizILJbN6Ct4QI/worNs6SyiClqSSWijNk2wWoI="
+            }
+          },
           "console_image_wolfi-keys_x86_64_1-r8": {
             "bzlFile": "@@rules_apko~//apko/private:apk.bzl",
             "ruleClassName": "apk_import",
@@ -2169,22 +2597,6 @@
               "control_checksum": "sha1-YLOq6c+iCrZS7vrBuNCCQqVXu/0=",
               "data_range": "bytes=1035-2989",
               "data_checksum": "sha256-BU5bWPVBD6l68QnI5pOnx7zTm1jpj+jPMoO4nOSiv2Q="
-            }
-          },
-          "console_image_libssl3_x86_64_3.4.0-r1": {
-            "bzlFile": "@@rules_apko~//apko/private:apk.bzl",
-            "ruleClassName": "apk_import",
-            "attributes": {
-              "package_name": "libssl3",
-              "version": "3.4.0-r1",
-              "architecture": "x86_64",
-              "url": "https://packages.wolfi.dev/os/x86_64/libssl3-3.4.0-r1.apk",
-              "signature_range": "",
-              "signature_checksum": "",
-              "control_range": "bytes=0-370",
-              "control_checksum": "sha1-4x7rXjnjLt8ZHNBZO4WkWTTgYZE=",
-              "data_range": "bytes=371-455233",
-              "data_checksum": "sha256-F+LSM0yM2AwoT5G4d3R35/gj8yCOxT3MjBmI7wtgnts="
             }
           },
           "console_image_apk-tools_x86_64_2.14.4-r1": {
@@ -3021,7 +3433,7 @@
     "@@rules_oci~//oci:extensions.bzl%oci": {
       "general": {
         "bzlTransitiveDigest": "3WOfXsOIaTXIjdZhbvaa+YLDBgZYZHta89oREUli8ek=",
-        "usagesDigest": "9Zbbt5cSInNwR/p2eSixYDkKa4gs23C6nXCtnqOZoa8=",
+        "usagesDigest": "h6wQy1qpOOJGWjfmreO+/Hk8KP4up7bFmGQ/pxn4oME=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
         "envVariables": {},
@@ -3122,33 +3534,6 @@
                 "@@platforms//cpu:x86_64": "@distroless_java_container_linux_amd64"
               },
               "bzlmod_repository": "distroless_java_container",
-              "reproducible": true
-            }
-          },
-          "console_container_single": {
-            "bzlFile": "@@rules_oci~//oci/private:pull.bzl",
-            "ruleClassName": "oci_pull",
-            "attributes": {
-              "scheme": "https",
-              "registry": "index.docker.io",
-              "repository": "alpine/socat",
-              "identifier": "sha256:459be81018f0481adcf57ca0ab3e4fba19cfcc48f2280e1d672343d10dccb8a3",
-              "target_name": "console_container_single",
-              "bazel_tags": []
-            }
-          },
-          "console_container": {
-            "bzlFile": "@@rules_oci~//oci/private:pull.bzl",
-            "ruleClassName": "oci_alias",
-            "attributes": {
-              "target_name": "console_container",
-              "scheme": "https",
-              "registry": "index.docker.io",
-              "repository": "alpine/socat",
-              "identifier": "sha256:459be81018f0481adcf57ca0ab3e4fba19cfcc48f2280e1d672343d10dccb8a3",
-              "platforms": {},
-              "platform": "@@rules_oci~//oci:console_container_single",
-              "bzlmod_repository": "console_container",
               "reproducible": true
             }
           },
@@ -3644,7 +4029,6 @@
             "envoy_image_old_linux_arm64",
             "distroless_java_container",
             "distroless_java_container_linux_amd64",
-            "console_container",
             "nginx_container",
             "distroless_python_image",
             "distroless_python_image_linux_amd64",

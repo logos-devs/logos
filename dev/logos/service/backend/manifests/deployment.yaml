@@ -30,6 +30,11 @@ spec:
               value: /app/service-jars/
           ports:
             - containerPort: 8081
+          livenessProbe:
+            grpc:
+              port: 8081
+            initialDelaySeconds: 10
+            periodSeconds: 10
           volumeMounts:
             - name: config-volume
               mountPath: /app/config
