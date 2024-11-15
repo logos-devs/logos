@@ -15,6 +15,7 @@ def aws_cdk_synthesizer(name, deps = None, visibility = None):
         plugins = ["@logos//dev/logos/app/register:module"],
         deps = [
             "@logos//dev/logos/module",
+            "@logos//dev/logos/stack/aws/module",
             "@maven_logos//:com_google_inject_guice",
             "@maven_logos//:org_slf4j_slf4j_api",
             "@maven_logos//:org_slf4j_slf4j_simple",
