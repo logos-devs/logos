@@ -1,14 +1,27 @@
 load("//bzl:k8s.bzl", "kubectl")
 load("//bzl:push_image.bzl", "push_image")
+load("@aspect_bazel_lib//lib:tar.bzl", "tar")
 load("@rules_oci//oci:defs.bzl", "oci_image")
+
+tar(
+    name = "rsyncd_conf",
+    srcs = ["rsyncd.conf"],
+    mtree = [
+        "etc uid=0 gid=0 mode=0755 type=dir",
+        "etc/rsyncd.conf uid=0 gid=0 mode=0600 time=0 type=file content={}/rsyncd.conf".format(package_name()),
+    ],
+)
 
 oci_image(
     name = "image",
-    base = "@console_container",
-    entrypoint = [
-        "tail",
-        "-f",
-        "/dev/null",
+    base = "//vendor/apko:console_image",
+    #    entrypoint = [
+    #        "tail",
+    #        "-f",
+    #        "/dev/null",
+    #    ],
+    tars = [
+        ":rsyncd_conf",
     ],
 )
 

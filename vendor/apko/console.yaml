@@ -5,12 +5,20 @@ contents:
     - https://packages.wolfi.dev/os
   packages:
     - bash
+    - bind-tools
     - ca-certificates-bundle
     - coreutils
     - glibc
+    - netcat-openbsd
     - rsync
+    - socat
     - wolfi-base
     - wolfi-baselayout
+
+entrypoint:
+  type: service-bundle
+  services:
+    rsyncd: rsync --daemon --no-detach --config /etc/rsyncd.conf
 
 environment:
   PATH: /usr/sbin:/sbin:/usr/bin:/bin
