@@ -22,15 +22,6 @@ exports_files(["bin/protoc"])
     url = "https://github.com/protocolbuffers/protobuf/releases/download/v26.0/protoc-26.0-linux-x86_64.zip",
 )
 
-http_archive(
-    name = "protoc_osx",
-    build_file_content = """
-exports_files(["bin/protoc"])
-    """,
-    integrity = "sha256-JiQobPd4fFt1r2jXdm/mK/kvRZ8e53+amoza5jvShdE=",
-    url = "https://github.com/protocolbuffers/protobuf/releases/download/v26.0/protoc-26.0-osx-x86_64.zip",
-)
-
 # protobuf_javascript
 http_archive(
     name = "protobuf_javascript_linux",
@@ -39,15 +30,6 @@ exports_files(["bin/protoc-gen-js"])
     """,
     integrity = "sha256-9G19nXm98/MrdcnZx3R6h5NVbQEmE6Ciszz6fQMoKQs=",
     url = "https://github.com/protocolbuffers/protobuf-javascript/releases/download/v3.21.2/protobuf-javascript-3.21.2-linux-x86_64.tar.gz",
-)
-
-http_archive(
-    name = "protobuf_javascript_osx",
-    build_file_content = """
-exports_files(["bin/protoc-gen-js"])
-    """,
-    integrity = "sha256-W7PscnoPUOeLjx4deSv1WEB3OBjZojEBO4AgCadpmNo=",
-    url = "https://github.com/protocolbuffers/protobuf-javascript/releases/download/v3.21.2/protobuf-javascript-3.21.2-osx-x86_64.tar.gz",
 )
 
 # protoc_gen_jsonschema
@@ -68,26 +50,12 @@ http_file(
     urls = ["https://github.com/grpc/grpc-web/releases/download/1.5.0/protoc-gen-grpc-web-1.5.0-linux-x86_64"],
 )
 
-http_file(
-    name = "grpc_web_osx",
-    executable = True,
-    integrity = "sha256-H6PvkhlNBsA0SKXLqCdZ6Xc+Q9ixiIZqHx1Pwjux7Lc=",
-    urls = ["https://github.com/grpc/grpc-web/releases/download/1.5.0/protoc-gen-grpc-web-1.5.0-darwin-x86_64"],
-)
-
 #kubectl
 http_file(
     name = "kubectl_linux",
     executable = True,
     sha256 = "7fe3a762d926fb068bae32c399880e946e8caf3d903078bea9b169dcd5c17f6d",
     url = "https://dl.k8s.io/release/v1.27.1/bin/linux/amd64/kubectl",
-)
-
-http_file(
-    name = "kubectl_osx",
-    executable = True,
-    sha256 = "136f73ede0d52c7985d299432236f891515c050d58d71b4a7d39c45085020ad8",
-    url = "https://dl.k8s.io/release/v1.27.1/bin/darwin/amd64/kubectl",
 )
 
 # k8s cert-manager
@@ -103,13 +71,6 @@ http_file(
     executable = True,
     sha256 = "e53d9e8c31f4c5f683182f5323d3527aa0725f713945c6d081cf71aa548ab388",
     url = "https://github.com/kubernetes/minikube/releases/download/v1.30.1/minikube-linux-amd64",
-)
-
-http_file(
-    name = "minikube_osx",
-    executable = True,
-    sha256 = "b5938a8772c5565b5d0b795938c367c5190bf65bb51fc55fb2417cb4e1d04ef1",
-    url = "https://github.com/kubernetes/minikube/releases/download/v1.30.1/minikube-darwin-amd64",
 )
 
 # grpc-java

@@ -31,29 +31,17 @@ EOF
 
 sh_binary(
     name = "minikube",
-    srcs = select({
-        "@platforms//os:osx": [
-            "@minikube_osx//file",
-        ],
-        "@platforms//os:linux": [
-            "@minikube_linux//file",
-        ],
-        "//conditions:default": ["@platforms//:incompatible"],
-    }),
+    srcs = [
+        "@minikube_linux//file",
+    ],
     tags = ["no-sandbox"],
 )
 
 sh_binary(
     name = "kubectl",
-    srcs = select({
-        "@platforms//os:osx": [
-            "@kubectl_osx//file",
-        ],
-        "@platforms//os:linux": [
-            "@kubectl_linux//file",
-        ],
-        "//conditions:default": ["@platforms//:incompatible"],
-    }),
+    srcs = [
+        "@kubectl_linux//file"
+    ],
     tags = ["no-sandbox"],
     visibility = [
         "//visibility:public",
@@ -62,15 +50,9 @@ sh_binary(
 
 sh_binary(
     name = "protoc",
-    srcs = select({
-        "@platforms//os:linux": [
-            "@protoc_linux//:bin/protoc",
-        ],
-        "@platforms//os:osx": [
-            "@protoc_osx//:bin/protoc",
-        ],
-        "//conditions:default": ["@platforms//:incompatible"],
-    }),
+    srcs = [
+        "@protoc_linux//:bin/protoc",
+    ],
     tags = ["no-sandbox"],
     visibility = [
         "//visibility:public",
@@ -79,15 +61,9 @@ sh_binary(
 
 sh_binary(
     name = "protoc-gen-js",
-    srcs = select({
-        "@platforms//os:linux": [
-            "@protobuf_javascript_linux//:bin/protoc-gen-js",
-        ],
-        "@platforms//os:osx": [
-            "@protobuf_javascript_osx//:bin/protoc-gen-js",
-        ],
-        "//conditions:default": ["@platforms//:incompatible"],
-    }),
+    srcs = [
+        "@protobuf_javascript_linux//:bin/protoc-gen-js",
+    ],
     visibility = [
         "//visibility:public",
     ],
@@ -95,15 +71,9 @@ sh_binary(
 
 sh_binary(
     name = "protoc-gen-grpc-web",
-    srcs = select({
-        "@platforms//os:linux": [
-            "@grpc_web_linux//file",
-        ],
-        "@platforms//os:osx": [
-            "@grpc_web_osx//file",
-        ],
-        "//conditions:default": ["@platforms//:incompatible"],
-    }),
+    srcs = [
+        "@grpc_web_linux//file",
+    ],
     tags = ["no-sandbox"],
     visibility = [
         "//visibility:public",
@@ -112,12 +82,9 @@ sh_binary(
 
 sh_binary(
     name = "protoc-gen-jsonschema",
-    srcs = select({
-        "@platforms//os:linux": [
-            "@protoc_gen_jsonschema//:protoc-gen-jsonschema",
-        ],
-        "//conditions:default": ["@platforms//:incompatible"],
-    }),
+    srcs = [
+        "@protoc_gen_jsonschema//:protoc-gen-jsonschema",
+    ],
     tags = ["no-sandbox"],
     visibility = [
         "//visibility:public",
