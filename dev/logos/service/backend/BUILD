@@ -1,12 +1,25 @@
 load("@rules_oci//oci:defs.bzl", "oci_image")
-load("@rules_pkg//pkg:pkg.bzl", "pkg_tar")
+load("@aspect_bazel_lib//lib:copy_file.bzl", "copy_file")
 load("@aspect_bazel_lib//lib:tar.bzl", "tar")
 load("//bzl:k8s.bzl", "kubectl")
 load("//bzl:push_image.bzl", "push_image")
 
-pkg_tar(
+copy_file(
+    name = "cert_bundle",
+    src = "@aws_rds_cert_bundle//file",
+    out = "global-bundle.pem",
+)
+
+tar(
     name = "image_jar",
-    srcs = ["//dev/logos/service/backend/server:server_deploy.jar"],
+    srcs = [
+        ":cert_bundle",
+        "//dev/logos/service/backend/server:server_deploy.jar",
+    ],
+    mtree = [
+        "etc/ssl/certs/aws-rds-global-bundle.pem uid=0 gid=0 mode=0444 type=file content=$(location :cert_bundle)",
+        "server_deploy.jar uid=0 gid=0 mode=0444 type=file content=$(location //dev/logos/service/backend/server:server_deploy.jar)",
+    ],
 )
 
 oci_image(

@@ -263,6 +263,14 @@ use_repo(
     npm_typescript = "npm_typescript_logos",
 )
 
+# aws rds certs
+http_file(
+    name = "aws_rds_cert_bundle",
+    downloaded_file_path = "global-bundle.pem",
+    integrity = "sha256-OQ/cgT4uWOxaDe+M5kIrg9dQMomRZwUquYHY4bOxT/I=",
+    urls = ["https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem"],
+)
+
 # aspect_rules_swc
 bazel_dep(name = "aspect_rules_swc", version = "2.0.0")
 

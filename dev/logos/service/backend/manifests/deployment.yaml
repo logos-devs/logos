@@ -21,7 +21,7 @@ spec:
           imagePullPolicy: Always
           env:
             - name: STORAGE_PG_BACKEND_JDBC_URL
-              value: jdbc:postgresql://db-rw-service/logos?usessl=require #&sslmode=verify-full&sslrootcert=/etc/ssl/certs/ca-certificates.crt
+              value: jdbc:postgresql://db-rw-service/logos?usessl=require&sslmode=verify-full&sslrootcert=/etc/ssl/certs/aws-rds-global-bundle.pem
             - name: STORAGE_PG_BACKEND_USER
               value: storage
             - name: LOGOS_SERVICE_JAR_CONFIG_PATH
