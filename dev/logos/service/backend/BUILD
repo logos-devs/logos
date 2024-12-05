@@ -14,11 +14,11 @@ tar(
     name = "image_jar",
     srcs = [
         ":cert_bundle",
-        "//dev/logos/service/backend/server:server_deploy.jar",
+        #"//dev/logos/service/backend/server:server_deploy.jar",
     ],
     mtree = [
         "etc/ssl/certs/aws-rds-global-bundle.pem uid=0 gid=0 mode=0444 type=file content=$(location :cert_bundle)",
-        "server_deploy.jar uid=0 gid=0 mode=0444 type=file content=$(location //dev/logos/service/backend/server:server_deploy.jar)",
+        #"server_deploy.jar uid=0 gid=0 mode=0444 type=file content=$(location //dev/logos/service/backend/server:server_deploy.jar)",
     ],
 )
 
@@ -31,7 +31,9 @@ oci_image(
         "/server_deploy.jar",
     ],
     tars = [":image_jar"],
+    visibility = ["//visibility:public"],
 )
+# TODO use as base for an image I create in the app
 
 push_image(
     name = "image_push",
@@ -45,8 +47,9 @@ kubectl(
     image_pushes = [":image_push"],
     images = {":image.digest": "logos-ecr-backend"},
     manifests = [
-        "manifests/deployment.yaml",
-        "manifests/service.yaml",
+        "//dev/logos/stack/k8s/synthesizer:synth",
+        #        "manifests/deployment.yaml",
+        #        "manifests/service.yaml",
     ],
     migrations = [
         "//dev/logos/service/storage/migrations",

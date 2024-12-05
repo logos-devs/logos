@@ -58,11 +58,18 @@ http_file(
     url = "https://dl.k8s.io/release/v1.27.1/bin/linux/amd64/kubectl",
 )
 
+# envoy gateway
+http_file(
+    name = "envoy_gateway",
+    integrity = "sha256-svJbQGkCvUsmPykHmEhAEJeb1t7v2dS7w8zcwpht1gM=",
+    url = "https://github.com/envoyproxy/gateway/releases/download/v1.2.2/install.yaml",
+)
+
 # k8s cert-manager
 http_file(
     name = "cert_manager",
-    integrity = "sha256-KFAtCiKBUCCJeKsdgvn6xCQhvLZeNtM40UAJ/U6Ueig=",
-    url = "https://github.com/cert-manager/cert-manager/releases/download/v1.15.2/cert-manager.yaml",
+    integrity = "sha256-HVHN7NRC8fX4l4Pp4BabldNyck2iA8x13XpcTlChDOY=",
+    url = "https://github.com/cert-manager/cert-manager/releases/download/v1.16.2/cert-manager.yaml",
 )
 
 # minikube
@@ -101,6 +108,7 @@ MAVEN_SHARED = [
     "com.google.guava:guava:33.2.1-jre",
     "com.google.inject:guice:7.0.0",
     "io.grpc:grpc-api:1.67.1",
+    "io.vavr:vavr:0.10.5",
     "org.slf4j:slf4j-api:2.0.7",
     "org.slf4j:slf4j-simple:2.0.7",
     "software.amazon.awssdk:auth:" + MAVEN_AWSSDK_VERSION,
@@ -134,6 +142,7 @@ maven.install(
         "com.squareup:javapoet:1.13.0",
         "com.zaxxer:HikariCP:5.0.1",
         "dnsjava:dnsjava:3.5.2",
+        "io.envoyproxy.controlplane:api:1.0.46",
         "io.grpc:grpc-auth:1.67.1",
         "io.grpc:grpc-core:1.67.1",
         "io.grpc:grpc-context:1.67.1",
@@ -145,6 +154,8 @@ maven.install(
         "javax.annotation:javax.annotation-api:1.3.2",
         "javax.json:javax.json-api:1.1.4",
         "org.apache.tomcat:annotations-api:6.0.53",
+        "org.cdk8s:cdk8s:2.69.17",
+        "org.cdk8s:cdk8s-plus-30:2.2.8",
         "org.jdbi:jdbi3-core:3.39.1",
         "org.jdbi:jdbi3-postgres:3.35.0",
         "org.junit.jupiter:junit-jupiter-api:5.9.3",
@@ -162,7 +173,7 @@ maven.install(
         "software.amazon.awssdk:secretsmanager:" + MAVEN_AWSSDK_VERSION,
         "software.amazon.awssdk:sts:" + MAVEN_AWSSDK_VERSION,
         "software.amazon.awssdk:utils:" + MAVEN_AWSSDK_VERSION,
-        "software.constructs:constructs:10.3.0",
+        "software.constructs:constructs:10.4.2",
     ],
     fail_if_repin_required = True,
     fetch_javadoc = True,
@@ -228,6 +239,9 @@ node.toolchain(
     name = "node_20_16",
     node_version = "20.16.0",
 )
+use_repo(node, "nodejs_toolchains")
+use_repo(node, "nodejs_linux_amd64")
+use_repo(node, "nodejs_linux_arm64")
 
 bazel_dep(name = "aspect_rules_js", version = "2.1.0")
 

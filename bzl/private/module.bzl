@@ -1,15 +1,13 @@
 def module(
         name,
         srcs,
-        main_class,
         plugins = None,
         resources = None,
         visibility = None,
         deps = None):
-    native.java_binary(
+    native.java_library(
         name = name,
         srcs = srcs,
-        main_class = main_class,
         plugins = ["@logos//dev/logos/app/register:module"] + (plugins or []),
         resources = resources,
         visibility = visibility,

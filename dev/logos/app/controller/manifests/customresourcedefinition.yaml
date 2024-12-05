@@ -17,10 +17,18 @@ spec:
               properties:
                 web-bundle:
                   type: string
-                service-jars:
+                rpc-servers:
                   type: array
                   items:
-                    type: string
+                    type: object
+                    required:
+                      - domain
+                      - service-name
+                    properties:
+                      domain:
+                        type: string
+                      service-name:
+                        type: string
                 volumes:
                   type: array
                   items:

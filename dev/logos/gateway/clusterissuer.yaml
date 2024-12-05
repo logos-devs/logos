@@ -2,13 +2,17 @@ apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:
   name: letsencrypt
+  namespace: default
 spec:
   acme:
     email: certificates@logos.dev
     server: https://acme-v02.api.letsencrypt.org/directory
     privateKeySecretRef:
-      name: logos-ingress-tls
+      name: logos-gateway-tls
     solvers:
       - http01:
-          ingress:
-            ingressClassName: nginx
+          gatewayHTTPRoute:
+            parentRefs:
+              - namespace: default
+                name: logos-gateway
+                kind: Gateway

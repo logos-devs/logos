@@ -1,27 +1,35 @@
+load("@logos//dev/logos/stack/k8s:defs.bzl", "k8s_manifest")
+load("@logos//bzl:push_image.bzl", "push_image")
+load("//bzl:k8s.bzl", "kubectl")
+
 K8S_ACTIONS = ["apply", "delete", "diff", "replace"]
 
 def _app_impl(ctx):
     executable = ctx.actions.declare_file(ctx.attr.name)
-    runfiles = ctx.runfiles(files = ctx.files.kubectl + ctx.files.rpc + ctx.files.web)
+    runfiles = ctx.runfiles(files = ctx.files.kubectl + ctx.files.web)
 
-    volumes_yaml = ""
-    if ctx.attr.volumes:
-        volumes_yaml = "  volumes:\n"
-        for name, size in ctx.attr.volumes.items():
-            volumes_yaml += ("    - name: {name}\n" +
-                             "      size: {size}\n").format(
-                name = name,
-                size = size,
+    rpc_servers_yaml = ""
+    if ctx.attr.rpc_servers:
+        rpc_servers_yaml = "  rpc-servers:\n"
+        for domain, service_name in ctx.attr.rpc_servers.items():
+            rpc_servers_yaml += ("    - domain: {domain}\n" +
+                                 "      service-name: {service_name}\n").format(
+                domain = domain,
+                service_name = service_name,
             )
+
+    deps = []
+    if ctx.attr.action == "apply":
+        for dep in ctx.attr.deps:
+            deps.append(dep[DefaultInfo].files_to_run.executable.short_path)
+            runfiles = runfiles.merge(dep[DefaultInfo].default_runfiles)
 
     ctx.actions.write(
         output = executable,
         content = """#!/bin/bash -eu
+{deps}
 
 CONSOLE_POD_NAME="$({kubectl} get pods -l app=console -o jsonpath="{{.items[0].metadata.name}}")"
-
-RPC_JAR_HASH="$(shasum -a 256 {rpc} | cut -d' ' -f1)"
-RPC_JAR_FILENAME="$(basename {rpc} | sed "s|deploy|$RPC_JAR_HASH|")"
 
 forward_rsync() {{
     local local_port="$1"
@@ -54,8 +62,6 @@ sync_files () {{
 {kubectl} port-forward "$CONSOLE_POD_NAME" 11873:873 &
 await_port 11873
 
-sync_files "$(realpath {rpc})" service-jars/$RPC_JAR_FILENAME
-
 {web_sh}
 
 {kubectl} --cluster="$LOGOS_AWS_EKS_CLUSTER" --user="$LOGOS_AWS_EKS_USER" {action} -f <(cat <<EOF
@@ -65,18 +71,16 @@ metadata:
   name: {name}
   namespace: default
 spec:
-  service-jars:
-    - "$RPC_JAR_FILENAME"
 {web_yaml}
-{volumes_yaml}
+{rpc_servers_yaml}
 EOF
 )
 
 """.format(
             name = ctx.attr.domain,
+            deps = "\n".join(deps),
             kubectl = ctx.attr.kubectl.files_to_run.executable.short_path,
             action = ctx.attr.action,
-            rpc = ctx.files.rpc[0].short_path,
             web_sh = """
 WEB_HASHES="$(
     find -H {web_files} -type f | while read -r file
@@ -97,7 +101,7 @@ sync_files "$(realpath {web_files})/" web-bundles/web_$BUNDLE_HASH
             web_yaml = """
   web-bundle: "web_$BUNDLE_HASH"
 """ if ctx.files.web else "",
-            volumes_yaml = volumes_yaml if ctx.attr.volumes else "",
+            rpc_servers_yaml = rpc_servers_yaml if ctx.attr.rpc_servers else "",
         ),
     )
 
@@ -114,45 +118,67 @@ app_rule = rule(
     attrs = {
         "action": attr.string(mandatory = True, values = K8S_ACTIONS),
         "domain": attr.string(mandatory = True),
-        "rpc": attr.label(
-            mandatory = True,
-            providers = [JavaInfo],
-            allow_files = [".jar"],
-        ),
         "web": attr.label(
             allow_files = True,
         ),
+        "migrations": attr.label_list(allow_files = False),
+        "deps": attr.label_list(allow_files = False),
+        "rpc_servers": attr.string_dict(),
         "kubectl": attr.label(
             cfg = "exec",
             default = Label("//tools:kubectl"),
             executable = True,
         ),
-        "volumes": attr.string_dict(),
     },
     executable = True,
 )
 
-def app(name, domain, stack_outputs = None, rpc = None, web = None, volumes = None, visibility = None):
-    if rpc:
-        # this allows us to put both the stack and the RPCs while bundling the stack outputs with the RPCs when deploying
-        wrapped_rpc = name + "_rpc_library"
+def app(
+        name,
+        domain,
+        k8s_stack = None,
+        rpc_servers = None,
+        rpc_server_image = None,
+        manifests = None,
+        migrations = None,
+        stack_outputs = None,
+        web_client = None,
+        visibility = None):
+    if migrations == None:
+        migrations = []
 
-        native.java_binary(
-            name = wrapped_rpc,
-            resources = stack_outputs,
-            create_executable = False,
-            runtime_deps = [rpc],
+    k8s_manifest(
+        name = name + "_k8s_manifest",
+        deps = [k8s_stack],
+        visibility = visibility,
+    )
+
+    if rpc_server_image:
+        push_image(
+            name = name + "_rpc_server_image_push",
+            image = rpc_server_image,
+            remote_tags = ["latest"],
+            repository = "logos-ecr-backend",
+            visibility = visibility,
         )
-        rpc = wrapped_rpc
+
+        kubectl(
+            name = name + "_kubectl",
+            image_pushes = [name + "_rpc_server_image_push"] if rpc_server_image else [],
+            images = {":image.digest": "logos-ecr-backend"},
+            manifests = [name + "_k8s_manifest"],
+            migrations = migrations,
+            visibility = visibility,
+        )
 
     for action in K8S_ACTIONS:
         app_rule(
             name = name if action == "apply" else "{}.{}".format(name, action),
             action = action,
             domain = domain,
-            rpc = (rpc + "_deploy.jar") if rpc else None,
-            web = web,
-            volumes = volumes,
+            rpc_servers = rpc_servers,
+            deps = [":" + name + "_kubectl"] if action == "apply" else [],
+            web = web_client,
             tags = [
                 "external",
                 "no-remote",

@@ -1,6 +1,7 @@
 load(":private/module.bzl", _module = "module")
 load(":private/service.bzl", _service = "service")
 load(":private/web.bzl", _web = "web")
+load(":private/server.bzl", _server = "server")
 
 # TODO clean up these paths
 load("//dev/logos/service/storage/pg/exporter:schema_export.bzl", _schema_export = "schema_export", _schema_proto_src = "schema_proto_src", _storage_service = "java_storage_service")
@@ -14,5 +15,6 @@ pg_migrate = _pg_migrate
 schema_export = _schema_export
 schema_proto_src = _schema_proto_src
 service = _service
+server = _server
 storage_service = _storage_service
 web = _web

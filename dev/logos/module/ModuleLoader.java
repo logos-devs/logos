@@ -3,7 +3,6 @@ package dev.logos.module;
 import com.google.gson.Gson;
 import com.google.inject.AbstractModule;
 import com.google.inject.Injector;
-import com.google.inject.matcher.Matchers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,9 +25,9 @@ public class ModuleLoader extends AbstractModule {
 
     @Override
     protected void configure() {
-        URLClassLoader urlClassLoader = getURLClassLoader();
+        //URLClassLoader urlClassLoader = getURLClassLoader();
         try {
-            discoverModules(urlClassLoader);
+            discoverModules(ModuleLoader.class.getClassLoader());
         } catch (IOException | NoSuchMethodException | InvocationTargetException | InstantiationException |
                  IllegalAccessException e) {
             throw new RuntimeException(e);
@@ -74,9 +73,9 @@ public class ModuleLoader extends AbstractModule {
 
                     if (entryName.startsWith(APP_MODULE_PREFIX)) {
                         logger.atInfo()
-                              .addKeyValue("appModule", entryName)
-                              .addKeyValue("jarFile", jarFile.getName())
-                              .log("Loading jar " + META_INF_DIR + " app-module entry");
+                                .addKeyValue("appModule", entryName)
+                                .addKeyValue("jarFile", jarFile.getName())
+                                .log("Loading jar " + META_INF_DIR + " app-module entry");
 
                         try (InputStream inputStream = classLoader.getResourceAsStream(entryName)) {
                             if (inputStream != null) {
@@ -85,12 +84,12 @@ public class ModuleLoader extends AbstractModule {
                                     while ((appModuleClassName = reader.readLine()) != null) {
                                         appModules.add(appModuleClassName);
                                         logger.atInfo()
-                                              .addKeyValue("requestedModule", appModuleClassName)
-                                              .addKeyValue("requestedBy", jarFile.getName())
-                                              .log("Loading jar entry");
-                                        }
+                                                .addKeyValue("requestedModule", appModuleClassName)
+                                                .addKeyValue("requestedBy", jarFile.getName())
+                                                .log("Loading jar entry");
                                     }
                                 }
+                            }
                         }
                     }
                 }
@@ -101,14 +100,14 @@ public class ModuleLoader extends AbstractModule {
             try {
                 Class<?> clazz = Class.forName(appModule, true, classLoader);
                 logger.atInfo()
-                      .addKeyValue("module", clazz.getCanonicalName())
-                      .log("Loading module");
+                        .addKeyValue("module", clazz.getCanonicalName())
+                        .log("Loading module");
                 install((AbstractModule) clazz.getDeclaredConstructor().newInstance());
             } catch (ClassNotFoundException e) {
                 logger.atError()
-                      .setCause(e)
-                      .addKeyValue("class", appModule)
-                      .log("Error loading class");
+                        .setCause(e)
+                        .addKeyValue("class", appModule)
+                        .log("Error loading class");
                 throw new RuntimeException(e);
             }
         }

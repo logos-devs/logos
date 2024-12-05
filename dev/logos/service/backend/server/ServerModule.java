@@ -76,9 +76,9 @@ public class ServerModule extends AbstractModule {
 
     @Provides
     public Set<Server> provideServers(
-        Set<Service> services,
-        Set<ServerInterceptor> interceptors,
-        GuardServerInterceptor guardServerInterceptor
+            Set<Service> services,
+            Set<ServerInterceptor> interceptors,
+            GuardServerInterceptor guardServerInterceptor
     ) {
         ServerBuilder<?> innerServerBuilder = InProcessServerBuilder.forName("logos-in-process");
         ServerBuilder<?> outerServerBuilder = ServerBuilder.forPort(DEFAULT_PORT);

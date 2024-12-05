@@ -18,6 +18,7 @@ java_binary(
         "@maven_logos_app_controller//:io_grpc_grpc_api",
         "@maven_logos_app_controller//:io_kubernetes_client_java",
         "@maven_logos_app_controller//:io_kubernetes_client_java_api",
+        "@maven_logos_app_controller//:io_vavr_vavr",
         "@maven_logos_app_controller//:org_slf4j_slf4j_api",
         "@maven_logos_app_controller//:org_slf4j_slf4j_simple",
         "@maven_logos_app_controller//:software_amazon_awssdk_auth",

@@ -2,14 +2,14 @@ package dev.logos.stack.aws.module;
 
 import com.google.inject.*;
 import com.google.inject.multibindings.Multibinder;
-import software.amazon.awscdk.*;
 import software.amazon.awscdk.Stack;
+import software.amazon.awscdk.*;
 import software.amazon.awscdk.cdk.lambdalayer.kubectl.v30.KubectlV30Layer;
 import software.amazon.awscdk.services.autoscaling.AutoScalingGroup;
 import software.amazon.awscdk.services.autoscaling.UpdatePolicy;
 import software.amazon.awscdk.services.ec2.*;
-import software.amazon.awscdk.services.efs.*;
 import software.amazon.awscdk.services.efs.FileSystem;
+import software.amazon.awscdk.services.efs.*;
 import software.amazon.awscdk.services.eks.*;
 import software.amazon.awscdk.services.iam.*;
 import software.amazon.awscdk.services.rds.DatabaseCluster;
@@ -53,11 +53,6 @@ public class EksModule extends AbstractModule {
 
     @BindingAnnotation
     @Retention(RetentionPolicy.RUNTIME)
-    public @interface NginxIngressHelmValues {
-    }
-
-    @BindingAnnotation
-    @Retention(RetentionPolicy.RUNTIME)
     public @interface AddonConfigs {
     }
 
@@ -79,11 +74,6 @@ public class EksModule extends AbstractModule {
     @BindingAnnotation
     @Retention(RetentionPolicy.RUNTIME)
     public @interface WorkerNodePolicyActions {
-    }
-
-    @BindingAnnotation
-    @Retention(RetentionPolicy.RUNTIME)
-    public @interface NginxIngressHelmChartOptions {
     }
 
     @BindingAnnotation
@@ -133,11 +123,11 @@ public class EksModule extends AbstractModule {
     List<SubnetSelection> provideClusterSubnetSelection() {
         return List.of(
                 SubnetSelection.builder()
-                        .subnetType(SubnetType.PUBLIC)
-                        .build(),
+                               .subnetType(SubnetType.PUBLIC)
+                               .build(),
                 SubnetSelection.builder()
-                        .subnetType(SubnetType.PRIVATE_WITH_EGRESS)
-                        .build()
+                               .subnetType(SubnetType.PRIVATE_WITH_EGRESS)
+                               .build()
         );
     }
 
@@ -166,11 +156,11 @@ public class EksModule extends AbstractModule {
                                              AlbControllerOptions.Builder albControllerOptionsBuilder,
                                              @ClusterSubnetSelection List<SubnetSelection> subnetSelection) {
         return ClusterProps.builder()
-                .version(KubernetesVersion.V1_30)
-                .albController(albControllerOptionsBuilder.build())
-                .defaultCapacity(0)
-                .vpc(vpc)
-                .vpcSubnets(subnetSelection);
+                           .version(KubernetesVersion.V1_30)
+                           .albController(albControllerOptionsBuilder.build())
+                           .defaultCapacity(0)
+                           .vpc(vpc)
+                           .vpcSubnets(subnetSelection);
     }
 
     @Provides
@@ -179,31 +169,11 @@ public class EksModule extends AbstractModule {
             @WorkerNodeInstanceType InstanceType instanceType
     ) {
         return AutoScalingGroupCapacityOptions.builder()
-                .instanceType(instanceType)
-                .machineImageType(MachineImageType.BOTTLEROCKET)
-                .minCapacity(1)
-                .maxCapacity(2)
-                .updatePolicy(UpdatePolicy.rollingUpdate());
-    }
-
-    @Provides
-    @Singleton
-    @NginxIngressHelmValues
-    Map<String, Object> provideNginxIngressHelmValues() {
-        return orderedMapOf(
-                "controller", orderedMapOf(
-                        "service", orderedMapOf(
-                                "annotations", orderedMapOf(
-                                        "service.beta.kubernetes.io/aws-load-balancer-backend-protocol", "tcp",
-                                        //"service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled", "true",
-                                        "service.beta.kubernetes.io/aws-load-balancer-scheme", "internet-facing",
-                                        "service.beta.kubernetes.io/aws-load-balancer-type", "nlb",
-                                        "service.beta.kubernetes.io/aws-load-balancer-nlb-target-type", "ip"),
-                                "type", "LoadBalancer",
-                                "externalTrafficPolicy", "Local"
-                        )
-                )
-        );
+                                              .instanceType(instanceType)
+                                              .machineImageType(MachineImageType.BOTTLEROCKET)
+                                              .minCapacity(1)
+                                              .maxCapacity(2)
+                                              .updatePolicy(UpdatePolicy.rollingUpdate());
     }
 
     @Provides
@@ -219,27 +189,12 @@ public class EksModule extends AbstractModule {
 
     @Provides
     @Singleton
-    @NginxIngressHelmChartOptions
-    HelmChartOptions.Builder provideNginxIngressHelmChartOptionsBuilder(
-            @NginxIngressHelmValues Map<String, Object> values
-    ) {
-        return HelmChartOptions.builder()
-                .chart("ingress-nginx")
-                .repository("https://kubernetes.github.io/ingress-nginx")
-                .release("ingress-nginx")
-                .namespace("kube-system")
-                .version("4.10.1")
-                .values(values);
-    }
-
-    @Provides
-    @Singleton
     @EfsSecurityGroupBuilder
     SecurityGroupProps.Builder provideEfsSecurityGroupPropsBuilder(Vpc vpc) {
         return SecurityGroupProps.builder()
-                .vpc(vpc)
-                .description("Security group for EFS")
-                .allowAllOutbound(true);
+                                 .vpc(vpc)
+                                 .description("Security group for EFS")
+                                 .allowAllOutbound(true);
     }
 
     @Provides
@@ -247,14 +202,14 @@ public class EksModule extends AbstractModule {
     @EksFileSystemBuilder
     FileSystemProps.Builder provideFileSystemPropsBuilder(Vpc vpc) {
         return FileSystemProps.builder()
-                .vpc(vpc)
-                .lifecyclePolicy(LifecyclePolicy.AFTER_7_DAYS)
-                .performanceMode(PerformanceMode.GENERAL_PURPOSE)
-                .throughputMode(ThroughputMode.ELASTIC)
-                .outOfInfrequentAccessPolicy(OutOfInfrequentAccessPolicy.AFTER_1_ACCESS)
-                .lifecyclePolicy(LifecyclePolicy.AFTER_14_DAYS)
-                // TODO switch to RETAIN upon release
-                .removalPolicy(RemovalPolicy.DESTROY)
+                              .vpc(vpc)
+                              .lifecyclePolicy(LifecyclePolicy.AFTER_7_DAYS)
+                              .performanceMode(PerformanceMode.GENERAL_PURPOSE)
+                              .throughputMode(ThroughputMode.ELASTIC)
+                              .outOfInfrequentAccessPolicy(OutOfInfrequentAccessPolicy.AFTER_1_ACCESS)
+                              .lifecyclePolicy(LifecyclePolicy.AFTER_14_DAYS)
+                              // TODO switch to RETAIN upon release
+                              .removalPolicy(RemovalPolicy.DESTROY)
                 //.removalPolicy(software.amazon.awscdk.RemovalPolicy.RETAIN)
                 ;
     }
@@ -299,13 +254,13 @@ public class EksModule extends AbstractModule {
             DatabaseCluster dbCluster
     ) {
         return PolicyStatement.Builder.create()
-                .actions(Collections.singletonList("rds-db:connect"))
-                .effect(Effect.ALLOW)
-                .resources(Collections
-                        .singletonList("arn:aws:rds-db:%s:%s:dbuser:%s/storage".formatted(
-                                dbCluster.getStack().getRegion(),
-                                dbCluster.getStack().getAccount(),
-                                dbCluster.getClusterResourceIdentifier())));
+                                      .actions(Collections.singletonList("rds-db:connect"))
+                                      .effect(Effect.ALLOW)
+                                      .resources(Collections
+                                                         .singletonList("arn:aws:rds-db:%s:%s:dbuser:%s/storage".formatted(
+                                                                 dbCluster.getStack().getRegion(),
+                                                                 dbCluster.getStack().getAccount(),
+                                                                 dbCluster.getClusterResourceIdentifier())));
     }
 
     @Provides
@@ -331,9 +286,9 @@ public class EksModule extends AbstractModule {
     @WorkerNodePolicyBuilder
     PolicyStatement.Builder provideWorkerNodePolicyStatementBuilder(@WorkerNodePolicyActions List<String> actions) {
         return PolicyStatement.Builder.create()
-                .actions(actions)
-                .effect(Effect.ALLOW)
-                .resources(List.of("*"));
+                                      .actions(actions)
+                                      .effect(Effect.ALLOW)
+                                      .resources(List.of("*"));
     }
 
     @Provides
@@ -355,8 +310,8 @@ public class EksModule extends AbstractModule {
             String assumedRoleArn = identityResponse.arn();
             String sessionName = assumedRoleArn.substring(assumedRoleArn.lastIndexOf('/') + 1);
             ListRolesResponse rolesResponse = iamClient.listRoles(ListRolesRequest.builder()
-                    .pathPrefix("/aws-reserved/sso.amazonaws.com/")
-                    .build());
+                                                                                  .pathPrefix("/aws-reserved/sso.amazonaws.com/")
+                                                                                  .build());
 
             for (software.amazon.awssdk.services.iam.model.Role role : rolesResponse.roles()) {
                 if (assumedRoleArn.contains(role.roleName()) && assumedRoleArn.endsWith(sessionName)) {
@@ -382,7 +337,6 @@ public class EksModule extends AbstractModule {
                 ClusterProps.Builder clusterPropsBuilder,
                 AutoScalingGroupCapacityOptions.Builder autoScalingGroupCapacityOptionsBuilder,
                 @AddonConfigs List<Map<String, Object>> addonConfigs,
-                @NginxIngressHelmChartOptions HelmChartOptions.Builder nginxIngressHelmChartOptionsBuilder,
                 @EfsSecurityGroupBuilder SecurityGroupProps.Builder efsSecurityGroupPropsBuilder,
                 @EksFileSystemBuilder FileSystemProps.Builder fileSystemPropsBuilder,
                 @DbRoServiceManifest Map<String, Object> dbRoServiceManifest,
@@ -399,11 +353,11 @@ public class EksModule extends AbstractModule {
                     this,
                     clusterId,
                     clusterPropsBuilder.clusterName(clusterId).kubectlLayer(
-                                    new KubectlV30Layer(this, id + "-kubectl-layer"))
-                            .endpointAccess(EndpointAccess.PUBLIC_AND_PRIVATE)
-                            .authenticationMode(AuthenticationMode.API_AND_CONFIG_MAP)
-                            .mastersRole(Role.fromRoleArn(this, id + "-deployment-role", currentRoleArn))
-                            .build()
+                                               new KubectlV30Layer(this, id + "-kubectl-layer"))
+                                       .endpointAccess(EndpointAccess.PUBLIC_AND_PRIVATE)
+                                       .authenticationMode(AuthenticationMode.API_AND_CONFIG_MAP)
+                                       .mastersRole(Role.fromRoleArn(this, id + "-deployment-role", currentRoleArn))
+                                       .build()
             );
 
             for (Map<String, Object> addon : addonConfigs) {
@@ -411,11 +365,11 @@ public class EksModule extends AbstractModule {
                              .cluster(cluster)
                              .addonName((String) addon.get("name"))
                              .addonVersion((String) addon.get("version"))
-                        .build();
+                             .build();
             }
 
             AutoScalingGroup asg = cluster.addAutoScalingGroupCapacity(id + "-autoscalinggroup",
-                    autoScalingGroupCapacityOptionsBuilder.build());
+                                                                       autoScalingGroupCapacityOptionsBuilder.build());
 
             SecurityGroup efsSg = new SecurityGroup(this, id + "-efs-sg", efsSecurityGroupPropsBuilder.build());
             efsSg.addIngressRule(Peer.securityGroupId(cluster.getClusterSecurityGroupId()), Port.tcp(2049));
@@ -453,12 +407,8 @@ public class EksModule extends AbstractModule {
                                         .build());
 
             IRole role = asg.getRole();
-            role.addManagedPolicy(ManagedPolicy
-                    .fromAwsManagedPolicyName("service-role/AmazonEFSCSIDriverPolicy"));
+            role.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName("service-role/AmazonEFSCSIDriverPolicy"));
             role.addToPrincipalPolicy(workerNodePolicyStatementBuilder.build());
-
-            // TODO this might have a race condition issue, needs alb to be ready
-            cluster.addHelmChart(id + "-nginx-ingress-helm", nginxIngressHelmChartOptionsBuilder.wait(true).build());
         }
 
         public Cluster getCluster() {

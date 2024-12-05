@@ -1,6 +1,9 @@
 package dev.logos.service.storage.module;
 
-import com.google.inject.*;
+import com.google.inject.AbstractModule;
+import com.google.inject.BindingAnnotation;
+import com.google.inject.Provides;
+import com.google.inject.Singleton;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import dev.logos.app.register.registerModule;
@@ -44,15 +47,18 @@ public class DatabaseModule extends AbstractModule {
     @Provides
     @DatabaseEndpoint
     String provideDatabaseEndpoint() throws TextParseException {
-        return ((CNAMERecord) Optional.ofNullable(new Lookup(CLUSTER_RW_CNAME, Type.CNAME).run())
+        return Optional.ofNullable(new Lookup(CLUSTER_RW_CNAME, Type.CNAME).run())
                 .filter(r -> r.length > 0)
-                .orElseThrow(() -> new ProvisionException("No CNAME found for: " + CLUSTER_RW_CNAME))[0])
-                .getTarget().toString(true);
+                .map(record -> ((CNAMERecord) record[0]).getTarget().toString(true))
+                .orElse(CLUSTER_RW_CNAME);
     }
 
     @Provides
     @DatabaseJdbcUrl
     String provideDatabaseJdbcUrl(@DatabaseEndpoint String endpoint) {
+        if (endpoint.equals(CLUSTER_RW_CNAME)) {
+            return DB_URL;
+        }
         PGSimpleDataSource dataSource = new PGSimpleDataSource();
         dataSource.setUrl(DB_URL);
         dataSource.setServerNames(new String[]{endpoint});

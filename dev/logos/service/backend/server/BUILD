@@ -1,4 +1,4 @@
-java_binary(
+java_library(
     name = "server",
     srcs = [
         "AuthTokenCallCredentials.java",
@@ -7,12 +7,12 @@ java_binary(
         "ServerExecutor.java",
         "ServerModule.java",
     ],
-    main_class = "dev.logos.service.backend.server.ServerExecutor",
     plugins = [
         "//dev/logos/app/register:module",
     ],
     visibility = ["//visibility:public"],
     deps = [
+        "//dev/logos/app",
         "//dev/logos/app/register:module_library",
         "//dev/logos/module",
         "//dev/logos/service",
@@ -31,5 +31,6 @@ java_binary(
         "@maven_logos//:io_grpc_grpc_stub",
         "@maven_logos//:org_slf4j_slf4j_api",
         "@maven_logos//:org_slf4j_slf4j_simple",
+        "@maven_logos//:software_constructs_constructs",
     ],
 )

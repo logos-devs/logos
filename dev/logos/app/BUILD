@@ -7,7 +7,6 @@ java_library(
     visibility = ["//visibility:public"],
     deps = [
         "//dev/logos/service",
-        "//dev/logos/service/backend/server",
         "@maven_logos//:com_google_inject_guice",
         "@maven_logos//:io_grpc_grpc_api",
         "@maven_logos//:io_grpc_grpc_stub",
