@@ -13,7 +13,7 @@ def java_server(name, deps, resources = None, visibility = None):
         ],
     )
 
-def java_image(name, server, files = None, mtree = None, visibility = None):
+def java_image(name, server, base, files = None, mtree = None, visibility = None):
     if files == None:
         files = []
     if mtree == None:
@@ -29,11 +29,14 @@ def java_image(name, server, files = None, mtree = None, visibility = None):
 
     oci_image(
         name = name,
-        base = "@logos//dev/logos/service/backend:image",
+        base = base,
         entrypoint = [
             "java",
             "-jar",
             "/server_deploy.jar",
         ],
-        tars = [name + "_tar"] if files != None else None,
+        tars = [
+            name + "_tar",
+            "@logos//dev/logos/stack/aws/container/cert_bundle_layer:cert_bundle_layer",
+        ],
     )

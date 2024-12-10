@@ -3,6 +3,7 @@
 /.DS_Store
 /.bazelrc.local
 /.eclipse/projects
+/.ijwb/.idea/aspect/
 /.ijwb/aspect/
 /.ijwb/.blaze/modules/.workspace.iml
 /.ijwb/.idea/libraries
