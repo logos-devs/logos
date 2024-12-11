@@ -14,6 +14,7 @@ java_library(
     deps = [
         "//dev/logos/app/register:module_library",
         "//dev/logos/module",
+        "//dev/logos/stack/aws/module/annotation",
         "@maven_logos//:com_google_inject_guice",
         "@maven_logos//:software_amazon_awscdk_aws_cdk_lib",
         "@maven_logos//:software_amazon_awscdk_cdk_lambda_layer_kubectl_v30",

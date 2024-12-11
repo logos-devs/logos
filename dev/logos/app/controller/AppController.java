@@ -267,8 +267,13 @@ public class AppController {
                     "envoy-cookies-patch-policy",
                     buildEnvoyPatchPolicy(firstGatewayName)
             );
-        }
 
+            upsertCustomResource(
+                    "gateway.envoyproxy.io", "v1alpha1", "default", "backendtrafficpolicies",
+                    "default-backend-traffic-policy",
+                    buildBackendTrafficPolicy(firstGatewayName)
+            );
+        }
     }
 
     private static void updateSecurityPolicy(HashMap<String, App> apps) {
@@ -419,6 +424,29 @@ public class AppController {
                                                         )
                                                 )
                                         )
+                                )
+                        )
+                )
+        );
+    }
+
+    private static Map<String, Object> buildBackendTrafficPolicy(String gatewayName) {
+        return Map.of(
+                "apiVersion", "gateway.envoyproxy.io/v1alpha1",
+                "kind", "BackendTrafficPolicy",
+                "metadata", new V1ObjectMeta()
+                        .name("logos-backend-traffic-policy")
+                        .namespace("default"),
+                "spec", Map.of(
+                        "targetRef", Map.of(
+                                "group", "gateway.networking.k8s.io",
+                                "kind", "Gateway",
+                                "name", gatewayName,
+                                "namespace", "default"
+                        ),
+                        "timeout", Map.of(
+                                "http", Map.of(
+                                        "requestTimeout", "600s"
                                 )
                         )
                 )

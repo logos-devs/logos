@@ -8,6 +8,7 @@ java_library(
     deps = [
         "//dev/logos/app/register:module_library",
         "//dev/logos/module",
+        "//dev/logos/stack/k8s/module/annotation",
         "@maven_logos//:com_google_inject_guice",
         "@maven_logos//:org_cdk8s_cdk8s",
         "@maven_logos//:org_cdk8s_cdk8s_plus_30",

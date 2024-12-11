@@ -2,11 +2,12 @@ package dev.logos.stack.aws.module;
 
 import com.google.inject.*;
 import dev.logos.app.register.registerModule;
+import dev.logos.stack.aws.module.annotation.AwsAccountId;
+import dev.logos.stack.aws.module.annotation.AwsRegion;
 import software.amazon.awscdk.*;
 import software.amazon.awscdk.cxapi.CloudAssembly;
 import software.amazon.awssdk.regions.providers.DefaultAwsRegionProviderChain;
 import software.amazon.awssdk.services.sts.StsClient;
-import software.amazon.awssdk.services.sts.model.GetCallerIdentityRequest;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -16,20 +17,6 @@ import static java.lang.System.err;
 
 @registerModule
 public class InfrastructureModule extends AbstractModule {
-    @BindingAnnotation
-    @Retention(RetentionPolicy.RUNTIME)
-    public @interface AwsAccountId {
-    }
-
-    @BindingAnnotation
-    @Retention(RetentionPolicy.RUNTIME)
-    public @interface AwsRegion {
-    }
-
-    @BindingAnnotation
-    @Retention(RetentionPolicy.RUNTIME)
-    public @interface StackOutputsJson {
-    }
 
     @Provides
     @Singleton
@@ -50,9 +37,9 @@ public class InfrastructureModule extends AbstractModule {
     @Singleton
     App provideApp() {
         return new App(
-            AppProps.builder()
-                .defaultStackSynthesizer(DefaultStackSynthesizer.Builder.create().build())
-                .build()
+                AppProps.builder()
+                        .defaultStackSynthesizer(DefaultStackSynthesizer.Builder.create().build())
+                        .build()
         );
     }
 
@@ -74,11 +61,11 @@ public class InfrastructureModule extends AbstractModule {
     @Singleton
     StackProps provideStackProps(@AwsAccountId String awsAccountId, @AwsRegion String awsRegion) {
         return StackProps.builder()
-                .env(Environment.builder()
-                                .account(awsAccountId)
-                                .region(awsRegion)
-                        .build())
-                .build();
+                         .env(Environment.builder()
+                                         .account(awsAccountId)
+                                         .region(awsRegion)
+                                         .build())
+                         .build();
     }
 
     @Provides

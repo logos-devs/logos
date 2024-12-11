@@ -24,5 +24,5 @@ rules:
     resources: [ "persistentvolumeclaims" ]
     verbs: [ "create" ]
   - apiGroups: [ "gateway.envoyproxy.io" ]
-    resources: [ "securitypolicies", "envoypatchpolicies" ]
+    resources: [ "backendtrafficpolicies", "securitypolicies", "envoypatchpolicies" ]
     verbs: [ "get", "list", "create", "update", "patch", "delete" ]

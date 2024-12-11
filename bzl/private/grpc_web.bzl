@@ -2,12 +2,6 @@ load("@aspect_rules_js//js:defs.bzl", "js_library")
 load("@aspect_rules_js//js:providers.bzl", "js_info")
 
 def _grpc_web_client_impl(ctx):
-    tool_inputs, tool_input_manifests = ctx.resolve_tools(tools = [
-        ctx.attr.protoc,
-        ctx.attr.protoc_gen_js,
-        ctx.attr.protoc_gen_grpc_web,
-    ])
-
     outs = []
     proto_direct_sources = ctx.attr.proto[ProtoInfo].direct_sources
     for direct_source in proto_direct_sources:
@@ -61,8 +55,11 @@ def _grpc_web_client_impl(ctx):
         ],
         progress_message = "Generating grpc-web client.",
         inputs = cmd_inputs,
-        tools = tool_inputs,
-        input_manifests = tool_input_manifests,
+        tools = [
+            ctx.executable.protoc,
+            ctx.executable.protoc_gen_js,
+            ctx.executable.protoc_gen_grpc_web,
+        ],
         outputs = outputs,
     )
     return [
@@ -89,9 +86,9 @@ grpc_web_client_rule = rule(
     implementation = _grpc_web_client_impl,
     attrs = {
         "proto": attr.label(mandatory = True),
-        "protoc": attr.label(default = "@logos//tools:protoc"),
-        "protoc_gen_grpc_web": attr.label(default = "@logos//tools:protoc-gen-grpc-web"),
-        "protoc_gen_js": attr.label(default = "@logos//tools:protoc-gen-js"),
+        "protoc": attr.label(default = "@logos//tools:protoc", executable = True, cfg = "exec"),
+        "protoc_gen_grpc_web": attr.label(default = "@logos//tools:protoc-gen-grpc-web", executable = True, cfg = "exec"),
+        "protoc_gen_js": attr.label(default = "@logos//tools:protoc-gen-js", executable = True, cfg = "exec"),
         "deps": attr.label_list(),
         "grpc": attr.bool(default = True),
         "outs": attr.string_list(),

@@ -5,6 +5,7 @@ import com.google.inject.multibindings.Multibinder;
 import com.google.inject.multibindings.OptionalBinder;
 import com.google.inject.multibindings.ProvidesIntoSet;
 import dev.logos.app.register.registerModule;
+import dev.logos.stack.k8s.module.annotation.RpcServerEnv;
 import org.cdk8s.*;
 import org.cdk8s.plus30.*;
 
@@ -116,7 +117,8 @@ public class K8sModule extends AbstractModule {
             @RpcServerName Optional<String> optionalRpcServerName,
             Set<PersistentVolumeClaimMount> persistentVolumeClaimMounts,
             Set<EmptyDirMount> emptyDirMounts,
-            Set<SecretVolumeMount> secretVolumeMounts
+            Set<SecretVolumeMount> secretVolumeMounts,
+            @RpcServerEnv Map<String, EnvValue> rpcServerEnv
     ) {
         return optionalRpcServerName.map(
                 rpcServerName -> {
@@ -168,6 +170,11 @@ public class K8sModule extends AbstractModule {
                     volumes.add(Volume.fromConfigMap(chart, "config-volume",
                                                      ConfigMap.fromConfigMapName(chart, "config-volume-map", "logos-apps")));
 
+                    Map<String, EnvValue> containerEnv = new HashMap<>(rpcServerEnv);
+                    containerEnv.put("STORAGE_PG_BACKEND_JDBC_URL",
+                                     EnvValue.fromValue("jdbc:postgresql://db-rw-service/logos?usessl=require&sslmode=verify-full&sslrootcert=/etc/ssl/certs/aws-rds-global-bundle.pem"));
+                    containerEnv.put("STORAGE_PG_BACKEND_USER", EnvValue.fromValue("storage"));
+
                     return Set.of(DeploymentProps.builder()
                                                  .metadata(
                                                          ApiObjectMetadata.builder()
@@ -188,13 +195,7 @@ public class K8sModule extends AbstractModule {
                                                                        .name("backend")
                                                                        .image("logos-ecr-backend")
                                                                        .imagePullPolicy(ImagePullPolicy.ALWAYS)
-                                                                       .envVariables(
-                                                                               Map.of(
-                                                                                       "STORAGE_PG_BACKEND_JDBC_URL",
-                                                                                       EnvValue.fromValue("jdbc:postgresql://db-rw-service/logos?usessl=require&sslmode=verify-full&sslrootcert=/etc/ssl/certs/aws-rds-global-bundle.pem"),
-                                                                                       "STORAGE_PG_BACKEND_USER",
-                                                                                       EnvValue.fromValue("storage")
-                                                                               ))
+                                                                       .envVariables(containerEnv)
                                                                        .resources(
                                                                                ContainerResources.builder()
                                                                                                  .cpu(CpuResources.builder()
