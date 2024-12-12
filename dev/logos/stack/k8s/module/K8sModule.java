@@ -203,7 +203,7 @@ public class K8sModule extends AbstractModule {
                                                                                                                   .build())
                                                                                                  .memory(MemoryResources.builder()
                                                                                                                         .request(Size.mebibytes(512))
-                                                                                                                        .limit(Size.gibibytes(2))
+                                                                                                                        .limit(Size.gibibytes(6))
                                                                                                                         .build())
                                                                                                  .build())
                                                                        .volumeMounts(volumeMounts)

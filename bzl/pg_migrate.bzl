@@ -2,20 +2,24 @@ def psql(ctx):
     return """
 set -eu
 
-export HOME=$(getent passwd $(whoami) | cut -d: -f6)
-export KUBECONFIG=$HOME/.kube/config
-
-PG_TUNNEL_HOST="127.0.0.1"
-PG_TUNNEL_PORT=15432
-
 PG_AUTH_HOST="db-rw-service"
 PG_DATABASE="logos"
 PG_DB_MIGRATION_USER="root"
 
-CONSOLE_POD_NAME="pod/$({kubectl} get pods -l app=console -o jsonpath="{{.items[0].metadata.name}}")"
-{kubectl} wait --for=condition=Ready "$CONSOLE_POD_NAME"
+if [ -f /var/run/secrets/eks.amazonaws.com/serviceaccount/token ]
+then
+    PG_PORT=5432
+    PG_AUTH_RESOLVED_HOST="$(nslookup -type=cname "$PG_AUTH_HOST" | grep "canonical name = " | cut -d' ' -f4 | sed -e 's/\\.$//')"
+    PG_HOST="$PG_AUTH_RESOLVED_HOST"
+else
+    PG_HOST="127.0.0.1"
+    PG_PORT=15432
+    CONSOLE_POD_NAME="pod/$({kubectl} get pods -l app=console -o jsonpath="{{.items[0].metadata.name}}")"
+    export KUBECONFIG=$HOME/.kube/config
+    {kubectl} wait --for=condition=Ready "$CONSOLE_POD_NAME"
 
-PG_AUTH_RESOLVED_HOST="$({kubectl} exec "$CONSOLE_POD_NAME" -- nslookup -type=cname "$PG_AUTH_HOST" | grep "canonical name = " | cut -d' ' -f4 | sed -e 's/\\.$//')"
+    PG_AUTH_RESOLVED_HOST="$({kubectl} exec "$CONSOLE_POD_NAME" -- nslookup -type=cname "$PG_AUTH_HOST" | grep "canonical name = " | cut -d' ' -f4 | sed -e 's/\\.$//')"
+fi
 
 export PGPASSWORD="$(aws rds generate-db-auth-token \
                              --hostname "$PG_AUTH_RESOLVED_HOST" \
@@ -25,8 +29,8 @@ export PGPASSWORD="$(aws rds generate-db-auth-token \
 
 psql() {{
     /usr/bin/psql \
-         --host "$PG_TUNNEL_HOST" \
-         --port "$PG_TUNNEL_PORT" \
+         --host "$PG_HOST" \
+         --port "$PG_PORT" \
          -U "$PG_DB_MIGRATION_USER" \
          -v ON_ERROR_STOP=1 \
          --no-psqlrc \

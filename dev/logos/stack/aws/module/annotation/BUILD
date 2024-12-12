@@ -3,6 +3,7 @@ java_library(
     srcs = [
         "AwsAccountId.java",
         "AwsRegion.java",
+        "RpcServerDatabaseRoles.java",
         "StackOutputsJson.java",
     ],
     visibility = ["//visibility:public"],

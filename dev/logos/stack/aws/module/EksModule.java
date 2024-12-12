@@ -2,6 +2,8 @@ package dev.logos.stack.aws.module;
 
 import com.google.inject.*;
 import com.google.inject.multibindings.Multibinder;
+import com.google.inject.multibindings.ProvidesIntoSet;
+import dev.logos.stack.aws.module.annotation.RpcServerDatabaseRoles;
 import software.amazon.awscdk.Stack;
 import software.amazon.awscdk.*;
 import software.amazon.awscdk.cdk.lambdalayer.kubectl.v30.KubectlV30Layer;
@@ -24,6 +26,7 @@ import software.amazon.awssdk.services.sts.model.GetCallerIdentityResponse;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class EksModule extends AbstractModule {
     @BindingAnnotation
@@ -247,20 +250,29 @@ public class EksModule extends AbstractModule {
         return ServiceAccountOptions.builder().namespace("default");
     }
 
+    @ProvidesIntoSet
+    @RpcServerDatabaseRoles
+    String provideStorage() {
+        return "storage";
+    }
+
     @Provides
     @Singleton
     @ServiceAccountPolicyBuilder
     PolicyStatement.Builder provideServiceAccountPolicyStatementBuilder(
-            DatabaseCluster dbCluster
+            DatabaseCluster dbCluster,
+            @RpcServerDatabaseRoles Set<String> databaseRoles
     ) {
         return PolicyStatement.Builder.create()
                                       .actions(Collections.singletonList("rds-db:connect"))
                                       .effect(Effect.ALLOW)
-                                      .resources(Collections
-                                                         .singletonList("arn:aws:rds-db:%s:%s:dbuser:%s/storage".formatted(
-                                                                 dbCluster.getStack().getRegion(),
-                                                                 dbCluster.getStack().getAccount(),
-                                                                 dbCluster.getClusterResourceIdentifier())));
+                                      .resources(databaseRoles.stream()
+                                                              .map(role -> "arn:aws:rds-db:%s:%s:dbuser:%s/%s".formatted(
+                                                                      dbCluster.getStack().getRegion(),
+                                                                      dbCluster.getStack().getAccount(),
+                                                                      dbCluster.getClusterResourceIdentifier(),
+                                                                      role
+                                                              )).toList());
     }
 
     @Provides
