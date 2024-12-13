@@ -15,23 +15,19 @@ import software.amazon.awscdk.services.efs.*;
 import software.amazon.awscdk.services.eks.*;
 import software.amazon.awscdk.services.iam.*;
 import software.amazon.awscdk.services.rds.DatabaseCluster;
-import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
-import software.amazon.awssdk.services.iam.IamClient;
-import software.amazon.awssdk.services.iam.model.ListRolesRequest;
-import software.amazon.awssdk.services.iam.model.ListRolesResponse;
-import software.amazon.awssdk.services.sts.StsClient;
-import software.amazon.awssdk.services.sts.model.GetCallerIdentityRequest;
-import software.amazon.awssdk.services.sts.model.GetCallerIdentityResponse;
 
+import java.io.IOException;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class EksModule extends AbstractModule {
     @BindingAnnotation
     @Retention(RetentionPolicy.RUNTIME)
-    public @interface CurrentRoleArn {
+    public @interface MastersRoleArn {
     }
 
     @BindingAnnotation
@@ -118,6 +114,7 @@ public class EksModule extends AbstractModule {
     @Override
     protected void configure() {
         Multibinder.newSetBinder(binder(), Stack.class).addBinding().to(EksStack.class);
+        Multibinder.newSetBinder(binder(), PolicyStatement.Builder.class, ServiceAccountPolicyBuilder.class);
     }
 
     @Provides
@@ -256,8 +253,7 @@ public class EksModule extends AbstractModule {
         return "storage";
     }
 
-    @Provides
-    @Singleton
+    @ProvidesIntoSet
     @ServiceAccountPolicyBuilder
     PolicyStatement.Builder provideServiceAccountPolicyStatementBuilder(
             DatabaseCluster dbCluster,
@@ -310,31 +306,6 @@ public class EksModule extends AbstractModule {
         return "%s-eks-stack".formatted(rootConstructId);
     }
 
-    @Provides
-    @Singleton
-    @CurrentRoleArn
-    String provideCurrentRole() {
-        try (
-                IamClient iamClient = IamClient.builder().credentialsProvider(DefaultCredentialsProvider.create()).build();
-                StsClient stsClient = StsClient.builder().credentialsProvider(DefaultCredentialsProvider.create()).build()
-        ) {
-            GetCallerIdentityResponse identityResponse = stsClient.getCallerIdentity(GetCallerIdentityRequest.builder().build());
-            String assumedRoleArn = identityResponse.arn();
-            String sessionName = assumedRoleArn.substring(assumedRoleArn.lastIndexOf('/') + 1);
-            ListRolesResponse rolesResponse = iamClient.listRoles(ListRolesRequest.builder()
-                                                                                  .pathPrefix("/aws-reserved/sso.amazonaws.com/")
-                                                                                  .build());
-
-            for (software.amazon.awssdk.services.iam.model.Role role : rolesResponse.roles()) {
-                if (assumedRoleArn.contains(role.roleName()) && assumedRoleArn.endsWith(sessionName)) {
-                    return role.arn();
-                }
-            }
-
-            throw new RuntimeException("Couldn't find the true ARN of your SSO role.");
-        }
-    }
-
     @Singleton
     public static class EksStack extends Stack {
         public static final String RPC_SERVICE_ACCOUNT_ROLE_ARN_OUTPUT = "LogosRpcServiceAccountRoleArn";
@@ -345,7 +316,7 @@ public class EksModule extends AbstractModule {
                 App app,
                 StackProps props,
                 @EksStackId String id,
-                @CurrentRoleArn String currentRoleArn,
+                @MastersRoleArn String mastersRoleArn,
                 ClusterProps.Builder clusterPropsBuilder,
                 AutoScalingGroupCapacityOptions.Builder autoScalingGroupCapacityOptionsBuilder,
                 @AddonConfigs List<Map<String, Object>> addonConfigs,
@@ -354,7 +325,7 @@ public class EksModule extends AbstractModule {
                 @DbRoServiceManifest Map<String, Object> dbRoServiceManifest,
                 @DbRwServiceManifest Map<String, Object> dbRwServiceManifest,
                 @ServiceAccountOptionsBuilder ServiceAccountOptions.Builder serviceAccountOptionsBuilder,
-                @ServiceAccountPolicyBuilder PolicyStatement.Builder serviceAccountPolicyStatementBuilder,
+                @ServiceAccountPolicyBuilder Set<PolicyStatement.Builder> serviceAccountPolicyStatementBuilderSet,
                 @WorkerNodePolicyBuilder PolicyStatement.Builder workerNodePolicyStatementBuilder
 
         ) {
@@ -368,7 +339,7 @@ public class EksModule extends AbstractModule {
                                                new KubectlV30Layer(this, id + "-kubectl-layer"))
                                        .endpointAccess(EndpointAccess.PUBLIC_AND_PRIVATE)
                                        .authenticationMode(AuthenticationMode.API_AND_CONFIG_MAP)
-                                       .mastersRole(Role.fromRoleArn(this, id + "-deployment-role", currentRoleArn))
+                                       .mastersRole(Role.fromRoleArn(this, id + "-deployment-role", mastersRoleArn))
                                        .build()
             );
 
@@ -410,7 +381,10 @@ public class EksModule extends AbstractModule {
                     id + "-backend-service-account",
                     serviceAccountOptionsBuilder.name(id + "-backend-service-account")
                                                 .build());
-            rpcServerServiceAccount.addToPrincipalPolicy(serviceAccountPolicyStatementBuilder.build());
+
+            serviceAccountPolicyStatementBuilderSet.forEach(
+                    policyStatementBuilder ->
+                            rpcServerServiceAccount.addToPrincipalPolicy(policyStatementBuilder.build()));
 
             new CfnOutput(this, id + "-backend-service-account-role-arn",
                           CfnOutputProps.builder()
