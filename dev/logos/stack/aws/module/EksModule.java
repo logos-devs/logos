@@ -289,7 +289,7 @@ public class EksModule extends AbstractModule {
                 "route53:UpdateHealthCheck");
     }
 
-    @Provides
+    @ProvidesIntoSet
     @Singleton
     @WorkerNodePolicyBuilder
     PolicyStatement.Builder provideWorkerNodePolicyStatementBuilder(@WorkerNodePolicyActions List<String> actions) {
@@ -326,7 +326,7 @@ public class EksModule extends AbstractModule {
                 @DbRwServiceManifest Map<String, Object> dbRwServiceManifest,
                 @ServiceAccountOptionsBuilder ServiceAccountOptions.Builder serviceAccountOptionsBuilder,
                 @ServiceAccountPolicyBuilder Set<PolicyStatement.Builder> serviceAccountPolicyStatementBuilderSet,
-                @WorkerNodePolicyBuilder PolicyStatement.Builder workerNodePolicyStatementBuilder
+                @WorkerNodePolicyBuilder Set<PolicyStatement.Builder> workerNodePolicyStatementBuilderSet
 
         ) {
             super(app, id, props);
@@ -394,7 +394,10 @@ public class EksModule extends AbstractModule {
 
             IRole role = asg.getRole();
             role.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName("service-role/AmazonEFSCSIDriverPolicy"));
-            role.addToPrincipalPolicy(workerNodePolicyStatementBuilder.build());
+
+            workerNodePolicyStatementBuilderSet.forEach(
+                    workerNodePolicyStatementBuilder ->
+                            role.addToPrincipalPolicy(workerNodePolicyStatementBuilder.build()));
         }
 
         public Cluster getCluster() {
