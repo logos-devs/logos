@@ -190,6 +190,7 @@ public class K8sModule extends AbstractModule {
                                                                                                        "logos-eks-stack-backend-service-account"))
                                                  .volumes(volumes)
                                                  .select(true)
+                                                 .automountServiceAccountToken(true)
                                                  .containers(List.of(
                                                          ContainerProps.builder()
                                                                        .name("backend")
