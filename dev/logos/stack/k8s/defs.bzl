@@ -9,8 +9,16 @@ def k8s_manifest(name, deps, visibility = None):
 
     native.genrule(
         name = name,
-        outs = ["stack-chart.k8s.yaml"],
-        cmd = "$(location :" + name + "_synthesizer) && mv dist/* $(@D)/ && rm -rf dist",
+        outs = ["stack.k8s.yaml"],
+        cmd = "$(location :" + name + """_synthesizer) && \
+                 (first=true; for f in dist/*.yaml; do \
+                    if [ "$$first" = false ]; then \
+                        echo "---" >> $(@D)/stack.k8s.yaml; \
+                    fi; \
+                    cat "$$f" >> $(@D)/stack.k8s.yaml; \
+                    first=false; \
+                 done) && \
+                 find $(@D)/ && rm -rf dist""",
         toolchains = ["@nodejs_toolchains//:resolved_toolchain"],
         tools = [
             "@nodejs_toolchains//:resolved_toolchain",

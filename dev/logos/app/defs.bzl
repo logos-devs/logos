@@ -147,12 +147,6 @@ def app(
     if migrations == None:
         migrations = []
 
-    k8s_manifest(
-        name = name + "_k8s_manifest",
-        deps = [k8s_stack],
-        visibility = visibility,
-    )
-
     if rpc_server_image:
         push_image(
             name = name + "_rpc_server_image_push",
@@ -162,14 +156,20 @@ def app(
             visibility = visibility,
         )
 
-        kubectl(
-            name = name + "_kubectl",
-            image_pushes = [name + "_rpc_server_image_push"] if rpc_server_image else [],
-            images = {":image.digest": "logos-ecr-backend"},
-            manifests = [name + "_k8s_manifest"],
-            migrations = migrations,
-            visibility = visibility,
-        )
+    k8s_manifest(
+        name = name + "_k8s_manifest",
+        deps = [k8s_stack],
+        visibility = visibility,
+    )
+
+    kubectl(
+        name = name + "_kubectl",
+        image_pushes = [name + "_rpc_server_image_push"] if rpc_server_image else [],
+        images = {":image.digest": "logos-ecr-backend"} if rpc_server_image else {},
+        manifests = [name + "_k8s_manifest"],
+        migrations = migrations,
+        visibility = visibility,
+    )
 
     for action in K8S_ACTIONS:
         app_rule(
