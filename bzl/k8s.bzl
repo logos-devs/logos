@@ -51,8 +51,7 @@ images:
 {images}
 EOF
 
-{kubectl} kustomize --load_restrictor=LoadRestrictionsNone --cluster="$LOGOS_AWS_EKS_CLUSTER" --user="$LOGOS_AWS_EKS_USER" |
-{kubectl} --cluster="$LOGOS_AWS_EKS_CLUSTER" --user="$LOGOS_AWS_EKS_USER" {action} {server_side} -f-
+{kubectl} kustomize --load_restrictor=LoadRestrictionsNone | {kubectl} {action} {server_side} -f-
 """.format(
             manifests = manifests,
             server_side = "--server-side" if ctx.attr.server_side else "",
