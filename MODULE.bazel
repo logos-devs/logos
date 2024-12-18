@@ -82,7 +82,7 @@ http_file(
 
 # grpc-java
 bazel_dep(name = "grpc-java", version = "1.67.1", repo_name = "grpc_java_bzlmod")
-bazel_dep(name = "protobuf", version = "26.0.bcr.2", repo_name = "com_google_protobuf")
+bazel_dep(name = "protobuf", version = "29.0-rc3", repo_name = "com_google_protobuf")
 
 # rules_jvm_external
 bazel_dep(name = "rules_jvm_external", version = "6.3")

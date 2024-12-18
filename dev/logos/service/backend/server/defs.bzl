@@ -31,6 +31,8 @@ def java_image(name, server, base, files = None, mtree = None, visibility = None
         name = name,
         base = base,
         entrypoint = [
+            "dumb-init",
+            "--",
             "java",
             "-jar",
             "/server_deploy.jar",
