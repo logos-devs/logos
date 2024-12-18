@@ -82,20 +82,7 @@ http_file(
 
 # grpc-java
 bazel_dep(name = "grpc-java", version = "1.67.1", repo_name = "grpc_java_bzlmod")
-git_override(
-    module_name = "grpc-java",
-    commit = "546efd79f1cf48aac7e5b6c9426d5fbfd7958fec",
-    init_submodules = True,
-    remote = "git@github.com:grpc/grpc-java",
-)
-
 bazel_dep(name = "protobuf", version = "26.0.bcr.2", repo_name = "com_google_protobuf")
-git_override(
-    module_name = "protobuf",
-    commit = "9065e12e9131e8fb619c2f2e6fc05393f3568929",
-    init_submodules = True,
-    remote = "git@github.com:protocolbuffers/protobuf",
-)
 
 # rules_jvm_external
 bazel_dep(name = "rules_jvm_external", version = "6.3")
