@@ -18,7 +18,6 @@ build --action_env=CC=/usr/lib/llvm/18/bin/clang
 build --action_env=CXX=/usr/lib/llvm/18/bin/clang++
 build --repo_env=CC=/usr/lib/llvm/18/bin/clang
 build --repo_env=CXX=/usr/lib/llvm/18/bin/clang++
-run --incompatible_strict_action_env
 
 common --@aspect_rules_ts//ts:skipLibCheck=honor_tsconfig
 common --incompatible_allow_tags_propagation

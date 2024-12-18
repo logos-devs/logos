@@ -8,17 +8,11 @@ cat > $@ <<EOF
 #!/bin/bash
 set +e +u
 
-export LOGOS_AWS_ACCOUNT_ID="$$LOGOS_AWS_ACCOUNT_ID"
 export LOGOS_AWS_REGION="$$LOGOS_AWS_REGION"
-export LOGOS_AWS_EKS_CLUSTER="$$LOGOS_AWS_EKS_CLUSTER"
-export LOGOS_AWS_EKS_USER="$$LOGOS_AWS_EKS_USER"
 export LOGOS_AWS_REGISTRY="$$LOGOS_AWS_REGISTRY"
 export STORAGE_PG_BACKEND_HOST="$$STORAGE_PG_BACKEND_HOST"
 
-echo "LOGOS_AWS_ACCOUNT_ID=\\$$LOGOS_AWS_ACCOUNT_ID"
 echo "LOGOS_AWS_REGION=\\$$LOGOS_AWS_REGION"
-echo "LOGOS_AWS_EKS_CLUSTER=\\$$LOGOS_AWS_EKS_CLUSTER"
-echo "LOGOS_AWS_EKS_USER=\\$$LOGOS_AWS_EKS_USER"
 echo "LOGOS_AWS_REGISTRY=\\$$LOGOS_AWS_REGISTRY"
 echo "STORAGE_PG_BACKEND_HOST=\\$$STORAGE_PG_BACKEND_HOST"
 
@@ -40,7 +34,7 @@ sh_binary(
 sh_binary(
     name = "kubectl",
     srcs = [
-        "@kubectl_linux//file"
+        "@kubectl_linux//file",
     ],
     tags = ["no-sandbox"],
     visibility = [

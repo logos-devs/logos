@@ -128,10 +128,7 @@ dev_setup() {
 
     EKS_STACK_CLUSTER="logos-eks-stack-cluster"
 
-    _update_bazelrc_env LOGOS_AWS_ACCOUNT_ID "$AWS_ACCOUNT_ID"
     _update_bazelrc_env LOGOS_AWS_REGION "$AWS_REGION"
-    _update_bazelrc_env LOGOS_AWS_EKS_CLUSTER "arn:aws:eks:$AWS_REGION:$AWS_ACCOUNT_ID:cluster/$EKS_STACK_CLUSTER"
-    _update_bazelrc_env LOGOS_AWS_EKS_USER "arn:aws:eks:$AWS_REGION:$AWS_ACCOUNT_ID:cluster/$EKS_STACK_CLUSTER"
     _update_bazelrc_env LOGOS_AWS_REGISTRY "$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com"
     _update_bazelrc_env STORAGE_PG_BACKEND_HOST "localhost"
 

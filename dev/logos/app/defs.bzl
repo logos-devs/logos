@@ -64,7 +64,7 @@ await_port 11873
 
 {web_sh}
 
-{kubectl} --cluster="$LOGOS_AWS_EKS_CLUSTER" --user="$LOGOS_AWS_EKS_USER" {action} -f <(cat <<EOF
+{kubectl} {action} -f <(cat <<EOF
 apiVersion: logos.dev/v1
 kind: App
 metadata:
