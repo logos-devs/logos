@@ -16,13 +16,9 @@ import software.amazon.awscdk.services.eks.*;
 import software.amazon.awscdk.services.iam.*;
 import software.amazon.awscdk.services.rds.DatabaseCluster;
 
-import java.io.IOException;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class EksModule extends AbstractModule {
     @BindingAnnotation
