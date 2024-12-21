@@ -1,0 +1,40 @@
+syntax = 'proto3';
+
+option java_package = "app.auth.proto.cognito";
+option java_multiple_files = true;
+
+message GetCurrentUserRequest {
+}
+
+message GetCurrentUserResponse {
+  string display_name = 1;
+  bool is_authenticated = 2;
+}
+
+message GetSignInUrlRequest {
+}
+
+message GetSignInUrlResponse {
+  string sign_in_url = 1;
+}
+
+message ProcessAuthCodeRequest {
+  string auth_code = 1;
+}
+
+message ProcessAuthCodeResponse {
+  int64 expires_in = 1;
+}
+
+message LogOutRequest {
+}
+
+message LogOutResponse {
+}
+
+service CognitoService {
+  rpc GetCurrentUser(GetCurrentUserRequest) returns (GetCurrentUserResponse) {}
+  rpc GetSignInUrl(GetSignInUrlRequest) returns (GetSignInUrlResponse) {}
+  rpc LogOut(LogOutRequest) returns (LogOutResponse) {}
+  rpc ProcessAuthCode(ProcessAuthCodeRequest) returns (ProcessAuthCodeResponse) {}
+}

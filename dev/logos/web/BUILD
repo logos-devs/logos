@@ -1,3 +1,4 @@
+load("@aspect_rules_js//npm:defs.bzl", "npm_package")
 load("//bzl:ts.bzl", "ts_library")
 
 filegroup(
@@ -22,4 +23,14 @@ ts_library(
         "//:node_modules/lit",
         "//:node_modules/path-to-regexp",
     ],
+)
+
+npm_package(
+    name = "npm",
+    srcs = [
+        ":web",
+        "//:package.json",
+    ],
+    package = "@logos/web",
+    visibility = ["//visibility:public"],
 )
