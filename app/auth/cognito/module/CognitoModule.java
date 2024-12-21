@@ -77,33 +77,11 @@ public class CognitoModule extends AppModule {
         return new Gson().fromJson(
                 secretsManagerClient.getSecretValue(
                         GetSecretValueRequest.builder()
-                                .secretId(cognitoStackOutputs.cognitoClientCredentialsSecretArn())
-                                .build()
+                                             .secretId(cognitoStackOutputs.cognitoClientCredentialsSecretArn())
+                                             .build()
                 ).secretString(),
                 CognitoClientCredentialsSecret.class
         );
-    }
-
-    @Provides
-    UserPoolProps.Builder userPoolPropsBuilder() {
-        return UserPoolProps.builder()
-                .signInCaseSensitive(false)
-                .selfSignUpEnabled(true)
-                .signInAliases(
-                        SignInAliases.builder()
-                                .email(true)
-                                .phone(true)
-                                .build())
-                .keepOriginal(
-                        KeepOriginalAttrs.builder()
-                                .email(true)
-                                .phone(true)
-                                .build())
-                .mfaSecondFactor(
-                        MfaSecondFactor.builder()
-                                .sms(true)
-                                .otp(true)
-                                .build());
     }
 
     @Provides
@@ -117,25 +95,25 @@ public class CognitoModule extends AppModule {
             @CognitoAllowedLogoutUrl Set<String> logoutUrls
     ) {
         return UserPoolClientProps.builder()
-                .generateSecret(true)
-                .accessTokenValidity(Duration.hours(8))
-                .idTokenValidity(Duration.hours(8))
-                .oAuth(OAuthSettings.builder()
-                        .callbackUrls(callbackUrls.stream().toList())
-                        .logoutUrls(logoutUrls.stream().toList())
-                        .flows(OAuthFlows.builder()
-                                .authorizationCodeGrant(true)
-                                .build())
-                        .scopes(List.of(OAuthScope.EMAIL,
-                                OAuthScope.OPENID,
-                                OAuthScope.PROFILE))
-                        .build());
+                                  .generateSecret(true)
+                                  .accessTokenValidity(Duration.hours(8))
+                                  .idTokenValidity(Duration.hours(8))
+                                  .oAuth(OAuthSettings.builder()
+                                                      .callbackUrls(callbackUrls.stream().toList())
+                                                      .logoutUrls(logoutUrls.stream().toList())
+                                                      .flows(OAuthFlows.builder()
+                                                                       .authorizationCodeGrant(true)
+                                                                       .build())
+                                                      .scopes(List.of(OAuthScope.EMAIL,
+                                                                      OAuthScope.OPENID,
+                                                                      OAuthScope.PROFILE))
+                                                      .build());
     }
 
     @Provides
     SignInUrlOptions.Builder signInUrlOptionsBuilder(@CognitoSignInRedirectUrl String redirectUrl) {
         return SignInUrlOptions.builder()
-                .redirectUri(redirectUrl);
+                               .redirectUri(redirectUrl);
     }
 
     @Provides
@@ -196,14 +174,14 @@ public class CognitoModule extends AppModule {
 
             Secret clientCredentialsSecret =
                     Secret.Builder.create(this, id + "-client-credentials")
-                            .secretName(id + "-client-credentials")
-                            .secretObjectValue(Map.of(
-                                    "clientId",
-                                    SecretValue.Builder.create(userPoolClient.getUserPoolClientId()).build(),
-                                    "clientSecret",
-                                    SecretValue.Builder.create(userPoolClient.getUserPoolClientSecret()).build()
-                            ))
-                            .build();
+                                  .secretName(id + "-client-credentials")
+                                  .secretObjectValue(Map.of(
+                                          "clientId",
+                                          SecretValue.Builder.create(userPoolClient.getUserPoolClientId()).build(),
+                                          "clientSecret",
+                                          SecretValue.Builder.create(userPoolClient.getUserPoolClientSecret()).build()
+                                  ))
+                                  .build();
 
             String clientCredentialsSecretArn = clientCredentialsSecret.getSecretArn();
 
@@ -213,32 +191,32 @@ public class CognitoModule extends AppModule {
                     Fn.importValue(RPC_SERVICE_ACCOUNT_ROLE_ARN_OUTPUT)
             ).attachInlinePolicy(
                     Policy.Builder.create(this, id + "-secret-access-policy")
-                            .statements(
-                                    List.of(PolicyStatement.Builder.create()
-                                            .actions(List.of("secretsmanager:GetSecretValue"))
-                                            .resources(List.of(clientCredentialsSecretArn))
-                                            .build()))
-                            .build());
+                                  .statements(
+                                          List.of(PolicyStatement.Builder.create()
+                                                                         .actions(List.of("secretsmanager:GetSecretValue"))
+                                                                         .resources(List.of(clientCredentialsSecretArn))
+                                                                         .build()))
+                                  .build());
 
             new CfnOutput(this, "CognitoClientCredentialsSecretArn", CfnOutputProps.builder()
-                    .value(clientCredentialsSecretArn)
-                    .build());
+                                                                                   .value(clientCredentialsSecretArn)
+                                                                                   .build());
 
             new CfnOutput(this, "CognitoUserPoolId", CfnOutputProps.builder()
-                    .value(userPool.getUserPoolId())
-                    .build());
+                                                                   .value(userPool.getUserPoolId())
+                                                                   .build());
 
             new CfnOutput(this, "CognitoUserPoolDomainSignInUrl", CfnOutputProps.builder()
-                    .value(userPoolDomain.signInUrl(userPoolClient, signInUrlOptionsBuilder.build()))
-                    .build());
+                                                                                .value(userPoolDomain.signInUrl(userPoolClient, signInUrlOptionsBuilder.build()))
+                                                                                .build());
 
             new CfnOutput(this, "CognitoUserPoolDomainBaseUrl", CfnOutputProps.builder()
-                    .value(userPoolDomain.baseUrl())
-                    .build());
+                                                                              .value(userPoolDomain.baseUrl())
+                                                                              .build());
 
             new CfnOutput(this, "CognitoUserPoolDomainRedirectUrl", CfnOutputProps.builder()
-                    .value(signInUrlOptions.getRedirectUri())
-                    .build());
+                                                                                  .value(signInUrlOptions.getRedirectUri())
+                                                                                  .build());
         }
     }
 }

@@ -44,9 +44,9 @@ public class CognitoServerInterceptor implements ServerInterceptor {
     private static final String COGNITO_IDENTITY_POOL_URL_TEMPLATE = "https://cognito-idp.{region}.amazonaws.com/{userPoolId}/.well-known/jwks.json";
 
     private final Cache<String, PublicKey> keyCache = CacheBuilder.newBuilder()
-            .expireAfterWrite(1, TimeUnit.HOURS)
-            .maximumSize(100)
-            .build();
+                                                                  .expireAfterWrite(1, TimeUnit.HOURS)
+                                                                  .maximumSize(100)
+                                                                  .build();
 
     private final String userPoolId;
     private final String region;
@@ -67,10 +67,10 @@ public class CognitoServerInterceptor implements ServerInterceptor {
         internalRequestHeaders.merge(requestHeaders);
 
         Optional<String> idToken = Optional.ofNullable(requestHeaders.get(AUTHORIZATION_METADATA_KEY))
-                .filter(authHeader -> authHeader.startsWith("Bearer "))
-                .map(authHeader -> authHeader.substring("Bearer ".length()))
-                .or(() -> Optional.ofNullable(requestHeaders.get(COOKIE_METADATA_KEY))
-                        .flatMap(this::extractIdTokenFromCookies));
+                                           .filter(authHeader -> authHeader.startsWith("Bearer "))
+                                           .map(authHeader -> authHeader.substring("Bearer ".length()))
+                                           .or(() -> Optional.ofNullable(requestHeaders.get(COOKIE_METADATA_KEY))
+                                                             .flatMap(this::extractIdTokenFromCookies));
 
         if (idToken.isPresent()) {
             String token = idToken.get();
@@ -101,10 +101,15 @@ public class CognitoServerInterceptor implements ServerInterceptor {
             }.getType());
             String kid = headerMap.get("kid");
 
+            Optional<PublicKey> optionalPublicKey = getPublicKey(kid, userPoolId, region);
+            if (optionalPublicKey.isEmpty()) {
+                return new AnonymousUser();
+            }
+
             Jws<Claims> claims = Jwts.parser()
-                    .verifyWith(getPublicKey(kid, userPoolId, region))
-                    .build()
-                    .parseSignedClaims(token);
+                                     .verifyWith(optionalPublicKey.get())
+                                     .build()
+                                     .parseSignedClaims(token);
 
             return new AuthenticatedUser(token, claims.getPayload());
         } catch (ExpiredJwtException | IOException | NoSuchAlgorithmException | InvalidKeySpecException e) {
@@ -113,11 +118,11 @@ public class CognitoServerInterceptor implements ServerInterceptor {
         }
     }
 
-    private PublicKey getPublicKey(String kid, String userPoolId, String region)
+    private Optional<PublicKey> getPublicKey(String kid, String userPoolId, String region)
             throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
         PublicKey cachedKey = keyCache.getIfPresent(kid);
         if (cachedKey != null) {
-            return cachedKey;
+            return Optional.of(cachedKey);
         }
 
         String url = COGNITO_IDENTITY_POOL_URL_TEMPLATE.replace("{region}", region).replace("{userPoolId}", userPoolId);
@@ -139,15 +144,16 @@ public class CognitoServerInterceptor implements ServerInterceptor {
 
                     // Cache the key with a time-based expiration
                     keyCache.put(kid, publicKey);
-                    return publicKey;
+                    return Optional.of(publicKey);
                 }
             }
         } catch (JsonSyntaxException e) {
-            throw new IOException("Error parsing the JWK response", e);
+            logger.log(Level.SEVERE, "Error parsing the JWK response", e);
         } catch (IllegalArgumentException e) {
-            throw new InvalidKeySpecException("Invalid key specification", e);
+            logger.log(Level.SEVERE, "Invalid key specification", e);
         }
 
-        throw new IllegalArgumentException("No key found in JWK set for kid: " + kid);
+        logger.log(Level.SEVERE, "No key found in JWK set for kid: " + kid);
+        return Optional.empty();
     }
 }
