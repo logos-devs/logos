@@ -15,6 +15,11 @@ public class AnonymousUser extends User {
     }
 
     @Override
+    public String getEmail() throws NotAuthenticated {
+        throw new NotAuthenticated("Anonymous user does not have an email");
+    }
+
+    @Override
     public String getToken() throws NotAuthenticated {
         throw new NotAuthenticated("Anonymous user does not have a token");
     }
