@@ -47,6 +47,7 @@ public class K8sModule extends AbstractModule {
     protected void configure() {
         OptionalBinder.newOptionalBinder(binder(), Key.get(String.class, RpcServerName.class));
         Multibinder.newSetBinder(binder(), PersistentVolumeClaimMount.class);
+        Multibinder.newSetBinder(binder(), ExistingVolumeClaimMount.class);
         Multibinder.newSetBinder(binder(), EmptyDirMount.class);
         Multibinder.newSetBinder(binder(), SecretVolumeMount.class);
     }
@@ -85,6 +86,7 @@ public class K8sModule extends AbstractModule {
         return new App();
     }
 
+
     @Provides
     @Singleton
     @RpcServices
@@ -116,6 +118,7 @@ public class K8sModule extends AbstractModule {
             @InitialRpcServerChart Chart chart,
             @RpcServerName Optional<String> optionalRpcServerName,
             Set<PersistentVolumeClaimMount> persistentVolumeClaimMounts,
+            Set<ExistingVolumeClaimMount> existingVolumeClaimMounts,
             Set<EmptyDirMount> emptyDirMounts,
             Set<SecretVolumeMount> secretVolumeMounts,
             @RpcServerEnv Map<String, EnvValue> rpcServerEnv
@@ -133,6 +136,17 @@ public class K8sModule extends AbstractModule {
                         volumes.add(volume);
 
                         persistentVolumeClaimMount.volumeMountBuilders().forEach(volumeMountBuilder -> {
+                            VolumeMount mount = volumeMountBuilder.volume(volume).build();
+                            volumeMounts.add(mount);
+                        });
+                    }
+
+                    for (ExistingVolumeClaimMount existingVolumeClaimMount : existingVolumeClaimMounts) {
+                        String pvcName = existingVolumeClaimMount.claimName();
+                        Volume volume = Volume.fromPersistentVolumeClaim(chart, pvcName + "-mount", PersistentVolumeClaim.fromClaimName(chart, pvcName, pvcName));
+                        volumes.add(volume);
+
+                        existingVolumeClaimMount.volumeMountBuilders().forEach(volumeMountBuilder -> {
                             VolumeMount mount = volumeMountBuilder.volume(volume).build();
                             volumeMounts.add(mount);
                         });
@@ -223,6 +237,9 @@ public class K8sModule extends AbstractModule {
 
     public record PersistentVolumeClaimMount(PersistentVolumeClaimProps.Builder persistentVolumeClaimPropsBuilder,
                                              List<VolumeMount.Builder> volumeMountBuilders) {
+    }
+
+    public record ExistingVolumeClaimMount(String claimName, List<VolumeMount.Builder> volumeMountBuilders) {
     }
 
     public record EmptyDirMount(EmptyDirVolumeOptions.Builder emptyDirVolumeOptionsBuilder,

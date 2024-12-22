@@ -31,9 +31,9 @@ def _app_impl(ctx):
 
 CONSOLE_POD_NAME="$({kubectl} get pods -l app=console -o jsonpath="{{.items[0].metadata.name}}")"
 
-forward_rsync() {{
-    local local_port="$1"
-    local pod="$2"
+forward_local_port() {{
+    local pod="$1"
+    local local_port="$2"
     local port="$3"
     shift 3
 
@@ -50,17 +50,23 @@ await_port() {{
     done
 }}
 
-sync_files () {{
+sync_files() {{
     local src="$1"
     local dest="$2"
     shift 2
 
-    rsync -rv --progress -p --chmod=Fu=rw,Du=rwx,Fg=r,Dg=rx,Fo=r,Do=rx --port=11873 "$src" localhost::"$dest"
-}}
+    if [ -d /mnt/web-bundles ]; then
+        echo "Using local mount for sync"
+        dest="/mnt/web-bundles/$dest"
+    else
+        echo "Using port-forward for sync"
+        forward_local_port "$CONSOLE_POD_NAME" 11873 873
+        {kubectl} port-forward "$CONSOLE_POD_NAME" 11873:873 &
+        await_port 11873
+    fi
 
-# forward rsync port into the pod
-{kubectl} port-forward "$CONSOLE_POD_NAME" 11873:873 &
-await_port 11873
+    rsync -av --progress -p --chmod=Fu=rw,Du=rwx,Fg=r,Dg=rx,Fo=r,Do=rx "$src" "$dest"
+}}
 
 {web_sh}
 
