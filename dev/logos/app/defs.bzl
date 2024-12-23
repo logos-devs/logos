@@ -58,14 +58,16 @@ sync_files() {{
     if [ -d /mnt/web-bundles ]; then
         echo "Using local mount for sync"
         dest="/mnt/web-bundles/$dest"
+        port=""
     else
         echo "Using port-forward for sync"
         forward_local_port "$CONSOLE_POD_NAME" 11873 873
-        {kubectl} port-forward "$CONSOLE_POD_NAME" 11873:873 &
+        port="--port=11873"
         await_port 11873
+        dest="localhost::$dest"
     fi
 
-    rsync -av --progress -p --chmod=Fu=rw,Du=rwx,Fg=r,Dg=rx,Fo=r,Do=rx "$src" "$dest"
+    rsync -av --progress -p --chmod=Fu=rw,Du=rwx,Fg=r,Dg=rx,Fo=r,Do=rx $port "$src" "$dest"
 }}
 
 {web_sh}

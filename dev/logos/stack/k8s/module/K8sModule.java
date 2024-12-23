@@ -20,6 +20,11 @@ import static java.util.Objects.requireNonNull;
 public class K8sModule extends AbstractModule {
     @BindingAnnotation
     @Retention(RetentionPolicy.RUNTIME)
+    public @interface RpcServer {
+    }
+
+    @BindingAnnotation
+    @Retention(RetentionPolicy.RUNTIME)
     public @interface RpcServerChart {
     }
 
@@ -50,6 +55,9 @@ public class K8sModule extends AbstractModule {
         Multibinder.newSetBinder(binder(), ExistingVolumeClaimMount.class);
         Multibinder.newSetBinder(binder(), EmptyDirMount.class);
         Multibinder.newSetBinder(binder(), SecretVolumeMount.class);
+
+        OptionalBinder.newOptionalBinder(binder(), Key.get(ContainerProps.Builder.class, RpcServer.class))
+                      .setDefault().toInstance(ContainerProps.builder());
     }
 
     @ProvidesIntoSet
@@ -91,24 +99,26 @@ public class K8sModule extends AbstractModule {
     @Singleton
     @RpcServices
     Set<ServiceProps.Builder> provideService(@InitialRpcServerChart Chart chart, @RpcServerName Optional<String> optionalRpcServerName) {
-        return optionalRpcServerName.map(rpcServerName -> Set.of(ServiceProps.builder()
-                                                                             .metadata(
-                                                                                     ApiObjectMetadata.builder()
-                                                                                                      .name(rpcServerName + "-service")
-                                                                                                      .labels(Map.of("app", "backend"))
-                                                                                                      .build())
-                                                                             .type(ServiceType.NODE_PORT)
-                                                                             .ports(List.of(ServicePort.builder()
-                                                                                                       .port(8081)
-                                                                                                       .protocol(Protocol.TCP)
-                                                                                                       .build()))
-                                                                             .selector(
-                                                                                     Pods.select(
-                                                                                             chart,
-                                                                                             "backend-pods",
-                                                                                             PodsSelectOptions.builder()
-                                                                                                              .labels(Map.of("app", "backend"))
-                                                                                                              .build())))).orElseGet(Set::of);
+        return optionalRpcServerName.map(
+                rpcServerName -> Set.of(
+                        ServiceProps.builder()
+                                    .metadata(
+                                            ApiObjectMetadata.builder()
+                                                             .name(rpcServerName + "-service")
+                                                             .labels(Map.of("app", "backend"))
+                                                             .build())
+                                    .type(ServiceType.NODE_PORT)
+                                    .ports(List.of(ServicePort.builder()
+                                                              .port(8081)
+                                                              .protocol(Protocol.TCP)
+                                                              .build()))
+                                    .selector(
+                                            Pods.select(
+                                                    chart,
+                                                    "backend-pods",
+                                                    PodsSelectOptions.builder()
+                                                                     .labels(Map.of("app", "backend"))
+                                                                     .build())))).orElseGet(Set::of);
     }
 
     @Provides
@@ -121,6 +131,7 @@ public class K8sModule extends AbstractModule {
             Set<ExistingVolumeClaimMount> existingVolumeClaimMounts,
             Set<EmptyDirMount> emptyDirMounts,
             Set<SecretVolumeMount> secretVolumeMounts,
+            @RpcServer ContainerProps.Builder rpcServerContainerPropsBuilder,
             @RpcServerEnv Map<String, EnvValue> rpcServerEnv
     ) {
         return optionalRpcServerName.map(
@@ -189,6 +200,20 @@ public class K8sModule extends AbstractModule {
                                      EnvValue.fromValue("jdbc:postgresql://db-rw-service/logos?usessl=require&sslmode=verify-full&sslrootcert=/etc/ssl/certs/aws-rds-global-bundle.pem"));
                     containerEnv.put("STORAGE_PG_BACKEND_USER", EnvValue.fromValue("storage"));
 
+                    rpcServerContainerPropsBuilder
+                            .name("backend")
+                            .image("logos-ecr-backend")
+                            .imagePullPolicy(ImagePullPolicy.ALWAYS)
+                            .envVariables(containerEnv)
+                            .volumeMounts(volumeMounts)
+                            .ports(List.of(ContainerPort.builder().number(8081).build()))
+                            // TODO : switch to non-root after fixing EFS permissions
+                            .securityContext(ContainerSecurityContextProps.builder().ensureNonRoot(false).build())
+                            .liveness(Probe.fromTcpSocket(TcpSocketProbeOptions.builder() // should be a grpc check instead
+                                                                               .port(8081)
+                                                                               .initialDelaySeconds(Duration.seconds(10))
+                                                                               .periodSeconds(Duration.seconds(10))
+                                                                               .build()));
                     return Set.of(DeploymentProps.builder()
                                                  .metadata(
                                                          ApiObjectMetadata.builder()
@@ -205,32 +230,8 @@ public class K8sModule extends AbstractModule {
                                                  .volumes(volumes)
                                                  .select(true)
                                                  .automountServiceAccountToken(true)
-                                                 .containers(List.of(
-                                                         ContainerProps.builder()
-                                                                       .name("backend")
-                                                                       .image("logos-ecr-backend")
-                                                                       .imagePullPolicy(ImagePullPolicy.ALWAYS)
-                                                                       .envVariables(containerEnv)
-                                                                       .resources(
-                                                                               ContainerResources.builder()
-                                                                                                 .cpu(CpuResources.builder()
-                                                                                                                  .request(Cpu.millis(200))
-                                                                                                                  .build())
-                                                                                                 .memory(MemoryResources.builder()
-                                                                                                                        .request(Size.mebibytes(512))
-                                                                                                                        .limit(Size.gibibytes(6))
-                                                                                                                        .build())
-                                                                                                 .build())
-                                                                       .volumeMounts(volumeMounts)
-                                                                       .ports(List.of(ContainerPort.builder().number(8081).build()))
-                                                                       .securityContext(ContainerSecurityContextProps.builder().ensureNonRoot(false).build())
-                                                                       .liveness(Probe.fromTcpSocket(TcpSocketProbeOptions.builder() // should be a grpc check instead
-                                                                                                                          .port(8081)
-                                                                                                                          .initialDelaySeconds(Duration.seconds(10))
-                                                                                                                          .periodSeconds(Duration.seconds(10))
-                                                                                                                          .build()))
-                                                                       .build()
-                                                 )));
+                                                 .containers(List.of(rpcServerContainerPropsBuilder.build())
+                                                 ));
                 }
         ).orElseGet(Set::of);
     }
