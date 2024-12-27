@@ -9,14 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public final class SchemaDescriptor implements ExportedIdentifier {
-    private final String name;
-    private final List<TableDescriptor> tables;
-
-    public SchemaDescriptor(String name, List<TableDescriptor> tables) {
-        this.name = name;
-        this.tables = tables;
-    }
+public record SchemaDescriptor(String name, List<TableDescriptor> tables) implements ExportedIdentifier {
 
     public static List<SchemaDescriptor> extract(Connection connection, Map<String, List<String>> selectedTables) throws SQLException {
         List<SchemaDescriptor> schemaDescriptors = new ArrayList<>();
@@ -65,29 +58,6 @@ public final class SchemaDescriptor implements ExportedIdentifier {
         }
 
         return schemaDescriptors;
-    }
-
-    @Override
-    public String name() {
-        return name;
-    }
-
-    public List<TableDescriptor> tables() {
-        return tables;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == this) return true;
-        if (obj == null || obj.getClass() != this.getClass()) return false;
-        var that = (SchemaDescriptor) obj;
-        return Objects.equals(this.name, that.name) &&
-                Objects.equals(this.tables, that.tables);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(name, tables);
     }
 
     @Override

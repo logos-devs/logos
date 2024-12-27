@@ -5,12 +5,12 @@ cdk.cdk_binary(
     name = "cdk",
     chdir = package_name(),
     data = [
-        "//dev/logos/stack/aws/synthesizer:synthesizer_deploy.jar",
+        "//dev/logos/stack/aws/synthesizer",
     ],
     expand_args = True,
     fixed_args = [
         "--app",
-        "'java -jar ../synthesizer/synthesizer_deploy.jar'",
+        "$$(realpath ../synthesizer/synthesizer)",
     ],
     tags = ["no-sandbox"],
     visibility = ["//visibility:public"],

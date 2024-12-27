@@ -15,6 +15,8 @@ java_binary(
         "//dev/logos/service/storage:storage_library",
         "//dev/logos/service/storage/module",
         "//dev/logos/service/storage/pg",
+        "//dev/logos/service/storage/pg/exporter/module",
+        "//dev/logos/service/storage/pg/exporter/module/annotation",
         "//dev/logos/service/storage/validator",
         "//dev/logos/user",
         "@com_google_protobuf//:protobuf_java",

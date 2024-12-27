@@ -10,10 +10,10 @@ def _schema_export_impl(ctx):
     ctx.actions.run_shell(
         # required to pass db connection params to exporter's DatabaseModule
         use_default_shell_env = True,
-        command = """java -classpath {exporter} dev.logos.service.storage.pg.exporter.Exporter -- json {bin_dir} {output_package} '{tables}'
+        command = """{exporter} -- json {bin_dir} {output_package} '{tables}'
 """.format(
             bin_dir = ctx.bin_dir.path,
-            exporter = ctx.file.exporter.path,
+            exporter = ctx.executable.exporter.path,
             output_package = ctx.build_file_path.replace("/BUILD", "").replace("/", "."),
             schema_export_json = schema_export_json.path,
             tables = json.encode(ctx.attr.tables),
@@ -35,8 +35,9 @@ schema_export_rule = rule(
     implementation = _schema_export_impl,
     attrs = {
         "exporter": attr.label(
-            default = Label("//dev/logos/service/storage/pg/exporter:exporter_deploy.jar"),
-            allow_single_file = True,
+            default = Label("//dev/logos/service/storage/pg/exporter"),
+            executable = True,
+            cfg = "exec",
         ),
         "migrations": attr.label_list(allow_files = False),
         "deps": attr.label_list(allow_files = True),
@@ -74,10 +75,10 @@ def _schema_storage_proto_impl(ctx):
         use_default_shell_env = True,
         command = """
 set -eu
-java -classpath {exporter} dev.logos.service.storage.pg.exporter.Exporter -- proto {bin_dir} {output_package} "$(cat {schema_export_json})"
+{exporter} -- proto {bin_dir} {output_package} "$(cat {schema_export_json})"
 """.format(
             bin_dir = ctx.bin_dir.path,
-            exporter = ctx.file.exporter.path,
+            exporter = ctx.executable.exporter.path,
             output_package = ctx.build_file_path.replace("/BUILD", "").replace("/", "."),
             schema_export_json = ctx.file.schema_export.path,
         ),
@@ -98,8 +99,9 @@ schema_proto_src_rule = rule(
     implementation = _schema_storage_proto_impl,
     attrs = {
         "exporter": attr.label(
-            default = Label("//dev/logos/service/storage/pg/exporter:exporter_deploy.jar"),
-            allow_single_file = True,
+            default = Label("//dev/logos/service/storage/pg/exporter"),
+            executable = True,
+            cfg = "exec",
         ),
         "schema_export": attr.label(allow_single_file = True),
         "tables": attr.string_list_dict(mandatory = True),
@@ -143,10 +145,10 @@ def _java_storage_service_impl(ctx):
 set -e
 shopt -s globstar extglob
 
-java -classpath {exporter} dev.logos.service.storage.pg.exporter.Exporter -- java {bin_dir} {output_package} "$(cat {schema_export_json})"
+{exporter} -- java {bin_dir} {output_package} "$(cat {schema_export_json})"
 """.format(
             bin_dir = ctx.bin_dir.path,
-            exporter = ctx.file.exporter.path,
+            exporter = ctx.executable.exporter.path,
             output_package = ctx.build_file_path.replace("/BUILD", "").replace("/", "."),
             schema_export_json = ctx.file.schema_export.path,
         ),
@@ -167,8 +169,9 @@ java_storage_service_rule = rule(
     implementation = _java_storage_service_impl,
     attrs = {
         "exporter": attr.label(
-            default = Label("//dev/logos/service/storage/pg/exporter:exporter_deploy.jar"),
-            allow_single_file = True,
+            default = Label("//dev/logos/service/storage/pg/exporter"),
+            executable = True,
+            cfg = "exec",
         ),
         "schema_export": attr.label(allow_single_file = True),
         "tables": attr.string_list_dict(mandatory = True),
@@ -208,6 +211,7 @@ def java_storage_service(name, schema_export, tables, deps, visibility = None):
             "@maven_logos//:io_grpc_grpc_protobuf",
             "@maven_logos//:io_grpc_grpc_stub",
             "@maven_logos//:javax_annotation_javax_annotation_api",
+            "@maven_logos//:org_jdbi_jdbi3_core",
         ],
         plugins = [
             "@logos//dev/logos/app/register:module",

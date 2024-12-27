@@ -8,10 +8,11 @@ build --action_env=STORAGE_PG_BACKEND_HOST
 build --action_env=STORAGE_PG_BACKEND_PASSWORD
 build --action_env=STORAGE_PG_BACKEND_JDBC_URL
 
-build --java_language_version=17
-build --java_runtime_version=remotejdk_17
-build --tool_java_language_version=17
-build --tool_java_runtime_version=remotejdk_17
+build --java_toolchain=//:java_toolchain
+build --java_language_version=21
+build --java_runtime_version=remotejdk_21
+build --tool_java_language_version=21
+build --tool_java_runtime_version=remotejdk_21
 
 build --sandbox_default_allow_network=false
 build --action_env=CC=/usr/lib/llvm/18/bin/clang

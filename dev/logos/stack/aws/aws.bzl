@@ -29,14 +29,12 @@ def aws(name, deps = None, visibility = None):
 
     cdk.cdk_binary(
         name = name,
-        data = [
-            name + "_synthesizer_deploy.jar",
-        ],
+        data = [name + "_synthesizer"],
         expand_args = True,
         chdir = native.package_name(),
         fixed_args = [
             "--app",
-            "'java -cp " + name + "_synthesizer_deploy.jar dev.logos.stack.aws.synthesizer.Synthesizer'",
+            "$$(realpath " + name + "_synthesizer)",
         ],
         tags = ["no-sandbox"],
         visibility = visibility,
