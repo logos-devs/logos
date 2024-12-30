@@ -8,6 +8,7 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
+import dev.logos.module.ModuleLoader;
 import dev.logos.service.storage.module.DatabaseModule;
 import dev.logos.service.storage.pg.exporter.module.ExportModule;
 import dev.logos.service.storage.pg.exporter.module.annotation.BuildDir;
@@ -144,7 +145,7 @@ public class Exporter {
         String buildPackage = args[3];
         String targetJson = args[4]; // either a list of schemas, or a dict-list of schemas and tables
 
-        Injector injector = Guice.createInjector(new DatabaseModule(), new ExportModule(buildDir, buildPackage));
+        Injector injector = ModuleLoader.createInjector(new ExportModule(buildDir, buildPackage));
         Exporter exporter = injector.getInstance(Exporter.class);
 
         switch (exportType) {

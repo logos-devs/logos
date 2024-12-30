@@ -1,4 +1,4 @@
-java_binary(
+java_library(
     name = "exporter",
     srcs = [
         "CodeGenerator.java",
@@ -8,13 +8,14 @@ java_binary(
         "SchemaDescriptor.java",
         "TableDescriptor.java",
     ],
-    main_class = "dev.logos.service.storage.pg.exporter.Exporter",
     visibility = ["//visibility:public"],
     deps = [
         "//dev/logos/app/register:module_library",
+        "//dev/logos/module",
         "//dev/logos/service/storage:storage_library",
         "//dev/logos/service/storage/module",
         "//dev/logos/service/storage/pg",
+        "//dev/logos/service/storage/pg/exporter/mapper",
         "//dev/logos/service/storage/pg/exporter/module",
         "//dev/logos/service/storage/pg/exporter/module/annotation",
         "//dev/logos/service/storage/validator",

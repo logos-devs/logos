@@ -34,11 +34,7 @@ def _schema_export_impl(ctx):
 schema_export_rule = rule(
     implementation = _schema_export_impl,
     attrs = {
-        "exporter": attr.label(
-            default = Label("//dev/logos/service/storage/pg/exporter"),
-            executable = True,
-            cfg = "exec",
-        ),
+        "exporter": attr.label(executable = True, cfg = "exec"),
         "migrations": attr.label_list(allow_files = False),
         "deps": attr.label_list(allow_files = True),
         "tables": attr.string_list_dict(mandatory = True),
@@ -48,7 +44,13 @@ schema_export_rule = rule(
     ],
 )
 
-def schema_export(name, tables, visibility = None, deps = None, migrations = None):
+def schema_export(name, tables, visibility = None, mappers = None, migrations = None):
+    native.java_binary(
+        name = name + "_exporter",
+        main_class = "dev.logos.service.storage.pg.exporter.Exporter",
+        runtime_deps = (mappers or []) + ["@logos//dev/logos/service/storage/pg/exporter"],
+    )
+
     schema_export_rule(
         name = name,
         tables = tables,
@@ -57,7 +59,7 @@ def schema_export(name, tables, visibility = None, deps = None, migrations = Non
             "no-remote",
             "requires-network",
         ],
-        deps = deps,
+        exporter = ":" + name + "_exporter",
         migrations = migrations,
         visibility = visibility,
     )
@@ -111,9 +113,16 @@ schema_proto_src_rule = rule(
     ],
 )
 
-def schema_proto_src(name, schema_export, tables, visibility = None):
+def schema_proto_src(name, schema_export, tables, mappers = None, visibility = None):
+    native.java_binary(
+        name = name + "_exporter",
+        main_class = "dev.logos.service.storage.pg.exporter.Exporter",
+        runtime_deps = (mappers or []) + ["@logos//dev/logos/service/storage/pg/exporter"],
+    )
+
     schema_proto_src_rule(
         name = name,
+        exporter = ":" + name + "_exporter",
         schema_export = schema_export,
         tables = tables,
         tags = [
@@ -169,7 +178,6 @@ java_storage_service_rule = rule(
     implementation = _java_storage_service_impl,
     attrs = {
         "exporter": attr.label(
-            default = Label("//dev/logos/service/storage/pg/exporter"),
             executable = True,
             cfg = "exec",
         ),
@@ -181,9 +189,16 @@ java_storage_service_rule = rule(
     ],
 )
 
-def java_storage_service(name, schema_export, tables, deps, visibility = None):
+def java_storage_service(name, schema_export, tables, deps, mappers = None, visibility = None):
+    native.java_binary(
+        name = name + "_exporter",
+        main_class = "dev.logos.service.storage.pg.exporter.Exporter",
+        runtime_deps = (mappers or []) + ["@logos//dev/logos/service/storage/pg/exporter"],
+    )
+
     java_storage_service_rule(
         name = name + "_src",
+        exporter = ":" + name + "_exporter",
         schema_export = schema_export,
         tables = tables,
         tags = [

@@ -2,7 +2,10 @@ package dev.logos.module;
 
 import com.google.gson.Gson;
 import com.google.inject.AbstractModule;
+import com.google.inject.Guice;
 import com.google.inject.Injector;
+import com.google.inject.Module;
+import com.google.inject.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,9 +76,9 @@ public class ModuleLoader extends AbstractModule {
 
                     if (entryName.startsWith(APP_MODULE_PREFIX)) {
                         logger.atInfo()
-                                .addKeyValue("appModule", entryName)
-                                .addKeyValue("jarFile", jarFile.getName())
-                                .log("Loading jar " + META_INF_DIR + " app-module entry");
+                              .addKeyValue("appModule", entryName)
+                              .addKeyValue("jarFile", jarFile.getName())
+                              .log("Loading jar " + META_INF_DIR + " app-module entry");
 
                         try (InputStream inputStream = classLoader.getResourceAsStream(entryName)) {
                             if (inputStream != null) {
@@ -84,9 +87,9 @@ public class ModuleLoader extends AbstractModule {
                                     while ((appModuleClassName = reader.readLine()) != null) {
                                         appModules.add(appModuleClassName);
                                         logger.atInfo()
-                                                .addKeyValue("requestedModule", appModuleClassName)
-                                                .addKeyValue("requestedBy", jarFile.getName())
-                                                .log("Loading jar entry");
+                                              .addKeyValue("requestedModule", appModuleClassName)
+                                              .addKeyValue("requestedBy", jarFile.getName())
+                                              .log("Loading jar entry");
                                     }
                                 }
                             }
@@ -100,14 +103,14 @@ public class ModuleLoader extends AbstractModule {
             try {
                 Class<?> clazz = Class.forName(appModule, true, classLoader);
                 logger.atInfo()
-                        .addKeyValue("module", clazz.getCanonicalName())
-                        .log("Loading module");
+                      .addKeyValue("module", clazz.getCanonicalName())
+                      .log("Loading module");
                 install((AbstractModule) clazz.getDeclaredConstructor().newInstance());
             } catch (ClassNotFoundException e) {
                 logger.atError()
-                        .setCause(e)
-                        .addKeyValue("class", appModule)
-                        .log("Error loading class");
+                      .setCause(e)
+                      .addKeyValue("class", appModule)
+                      .log("Error loading class");
                 throw new RuntimeException(e);
             }
         }
@@ -135,7 +138,13 @@ public class ModuleLoader extends AbstractModule {
         }
     }
 
-    public static Injector createInjector() {
-        return com.google.inject.Guice.createInjector(new ModuleLoader());
+    public static Injector createInjector(Module... modules) {
+        return createInjector(Stage.DEVELOPMENT, modules);
+    }
+
+    public static Injector createInjector(Stage stage, Module... modules) {
+        ArrayList<Module> moduleList = new ArrayList<>(Arrays.asList(modules));
+        moduleList.add(new ModuleLoader());
+        return Guice.createInjector(stage, moduleList);
     }
 }

@@ -12,11 +12,13 @@ import dev.logos.service.storage.EntityStorage;
 import dev.logos.service.storage.EntityStorageService;
 import dev.logos.service.storage.TableStorage;
 import dev.logos.service.storage.pg.*;
+import dev.logos.service.storage.pg.exporter.mapper.PgTypeMapper;
 import dev.logos.service.storage.pg.exporter.module.annotation.BuildDir;
 import dev.logos.service.storage.pg.exporter.module.annotation.BuildPackage;
 import dev.logos.service.storage.validator.Validator;
 import dev.logos.user.User;
 import io.grpc.stub.StreamObserver;
+import org.jdbi.v3.core.statement.Query;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -29,19 +31,24 @@ import java.util.UUID;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import static dev.logos.service.storage.pg.Identifier.snakeToCamelCase;
+import static java.util.Objects.requireNonNull;
 import static javax.lang.model.element.Modifier.*;
 
 public class CodeGenerator {
     private final String buildDir;
     private final String buildPackage;
+    private final Map<String, PgTypeMapper> pgColumnTypeMappers;
 
     @Inject
     public CodeGenerator(
             @BuildDir String buildDir,
-            @BuildPackage String buildPackage
+            @BuildPackage String buildPackage,
+            Map<String, PgTypeMapper> pgColumnTypeMappers
     ) {
         this.buildDir = buildDir;
         this.buildPackage = buildPackage;
+        this.pgColumnTypeMappers = pgColumnTypeMappers;
     }
 
     private static final String[] JAVA_KEYWORDS = {"abstract", "continue", "for", "new", "switch", "assert", "default",
@@ -122,22 +129,29 @@ public class CodeGenerator {
                                                               .stream()
                                                               .map(columnDescriptor -> {
                                                                   String columnName = columnDescriptor.name();
-                                                                  CodeBlock resultSetFieldGetter = CodeBlock.of(
-                                                                          "%sresultSet.$N($S)".formatted(columnDescriptor.getJavaCast()),
-                                                                          columnDescriptor.resultSetFieldGetter(),
-                                                                          columnName);
-
+                                                                  String setterName = snakeToCamelCase(columnDescriptor.name());
+                                                                  PgTypeMapper typeMapper = getPgTypeMapper(columnDescriptor.type());
                                                                   return CodeBlock.of(
-                                                                          "if (resultSet.getObject($S) != null) { builder.$N($L); }\n",
+                                                                          "if (resultSet.getObject($S) != null) { builder.$N($L); }",
                                                                           columnName,
-                                                                          columnDescriptor.protobufFieldSetter(),
-                                                                          columnDescriptor.protobufTypeConverter(resultSetFieldGetter));
-                                                              }).collect(CodeBlock.joining(";")))
+                                                                          "%s%s%s".formatted(
+                                                                                  typeMapper.protoFieldRepeated() ? "addAll" : "set",
+                                                                                  setterName.substring(0, 1).toUpperCase(),
+                                                                                  setterName.substring(1)
+                                                                          ),
+                                                                          typeMapper.pgToProto(
+                                                                                  CodeBlock.of(
+                                                                                          "$L resultSet.$N($S)",
+                                                                                          typeMapper.resultSetFieldCast(),
+                                                                                          typeMapper.resultSetFieldGetter(),
+                                                                                          columnName)));
+                                                              }).collect(CodeBlock.joining("\n")))
                                                  .add("return builder.build()")
                                                  .build())
                                 .build())
                 .addTypes(columnClasses);
 
+        // Relation.getColumns
         MethodSpec.Builder getColumnsMethodBuilder =
                 MethodSpec.methodBuilder("getColumns")
                           .addModifiers(PUBLIC)
@@ -149,7 +163,12 @@ public class CodeGenerator {
 
         int columnIndex = 0;
         for (ColumnDescriptor columnDescriptor : columnDescriptors) {
-            ClassName columnClassName = columnDescriptor.getClassName(tableDescriptor.getClassName().simpleName());
+            String className = snakeToCamelCase(columnDescriptor.name());
+            if (className.equals(tableDescriptor.getClassName().simpleName())) {
+                className = className + "_";
+            }
+
+            ClassName columnClassName = ClassName.bestGuess(className);
             tableClassBuilder.addField(
                     FieldSpec.builder(columnClassName, columnDescriptor.getInstanceVariableName(), PUBLIC, STATIC, FINAL)
                              .initializer("new $T()", columnClassName)
@@ -158,25 +177,33 @@ public class CodeGenerator {
             if (columnIndex > 0) {
                 mapOfBuilder.add(",");
             }
-            mapOfBuilder.add("$T.entry($S, (Column)$L)", Map.class, columnDescriptor.name(),
+
+            mapOfBuilder.add("\n  $T.entry($S, (Column) $L)", Map.class, columnDescriptor.name(),
                              columnDescriptor.getInstanceVariableName());
             columnIndex++;
         }
 
-        mapOfBuilder.add(");");
+        mapOfBuilder.add("\n);");
 
         getColumnsMethodBuilder.addCode(mapOfBuilder.build());
 
         tableClassBuilder.addMethod(getColumnsMethodBuilder.build());
 
-        // Generate bindFields method for the class
+        // Relation.bindFields
         MethodSpec.Builder bindFieldsMethod = MethodSpec.methodBuilder("bindFields")
                                                         .addModifiers(PUBLIC)
                                                         .addParameter(Map.class, "fields")
-                                                        .addParameter(ClassName.get(org.jdbi.v3.core.statement.Query.class), "query");
+                                                        .addParameter(ClassName.get(Query.class), "query");
 
         for (ColumnDescriptor columnDescriptor : columnDescriptors) {
-            bindFieldsMethod.addCode(columnDescriptor.bindField("fields", "query"));
+            String columnType = columnDescriptor.type();
+            if (!pgColumnTypeMappers.containsKey(columnType)) {
+                throw new RuntimeException("There is no PgTypeMapper bound for type: " + columnType);
+            }
+
+            PgTypeMapper typeMapper = pgColumnTypeMappers.get(columnType);
+            CodeBlock typeMapperCodeBlock = typeMapper.protoToPg("query", "fields", columnDescriptor.name());
+            bindFieldsMethod.addCode(typeMapperCodeBlock + "\n");
         }
 
         tableClassBuilder.addMethod(bindFieldsMethod.build());
@@ -187,7 +214,6 @@ public class CodeGenerator {
     public TypeSpec makeColumnClass(TableDescriptor tableDescriptor,
                                     ColumnDescriptor columnDescriptor) {
         String columnIdentifier = columnDescriptor.name();
-        String columnType = columnDescriptor.type();
 
         String columnClassNameStr = Identifier.snakeToCamelCase(columnIdentifier);
         if (columnClassNameStr.equals(tableDescriptor.getClassName().simpleName())) {
@@ -284,15 +310,24 @@ public class CodeGenerator {
                 """.formatted(entityName);
     }
 
+    PgTypeMapper getPgTypeMapper(String type) {
+        if (!pgColumnTypeMappers.containsKey(type)) {
+            throw new RuntimeException("There is no PgTypeMapper bound for type: " + type);
+        }
+
+        return pgColumnTypeMappers.get(type);
+    }
+
     private String protoEntityMessage(String entityName, List<ColumnDescriptor> columnDescriptors) {
         String fields = String.join("\n    ",
                                     IntStream.range(0, columnDescriptors.size())
                                              .mapToObj(i -> {
                                                  ColumnDescriptor columnDescriptor = columnDescriptors.get(i);
+                                                 PgTypeMapper typeMapper = getPgTypeMapper(columnDescriptor.type());
 
                                                  return "%s%s %s = %s;".formatted(
-                                                         columnDescriptor.isArray() ? "repeated " : "",
-                                                         columnDescriptor.getProtobufTypeName(),
+                                                         typeMapper.protoFieldRepeated() ? "repeated " : "",
+                                                         typeMapper.protoFieldTypeKeyword(),
                                                          columnDescriptor.name(),
                                                          i + 1
                                                  );
@@ -437,14 +472,16 @@ public class CodeGenerator {
                                                  .mapToObj(i -> {
                                                      ColumnDescriptor columnDescriptor = tableDescriptor.columns()
                                                                                                         .get(i);
+                                                     String columnType = columnDescriptor.type();
+                                                     PgTypeMapper typeMapper = getPgTypeMapper(columnType);
+
                                                      FieldDescriptorProto.Builder fieldDescriptorProto = FieldDescriptorProto
                                                              .newBuilder()
                                                              .setName(columnDescriptor.name())
-                                                             .setType(
-                                                                     columnDescriptor.getProtobufType())
+                                                             .setType(getPgTypeMapper(columnDescriptor.type()).getProtoFieldType())
                                                              .setNumber(i + 1);
 
-                                                     if (columnDescriptor.isArray()) {
+                                                     if (typeMapper.protoFieldRepeated()) {
                                                          fieldDescriptorProto = fieldDescriptorProto.setLabel(
                                                                  FieldDescriptorProto.Label.LABEL_REPEATED);
                                                      }
@@ -494,9 +531,9 @@ public class CodeGenerator {
                          .build();
     }
 
-    private MethodSpec makeEntityGetter(String methodName, ClassName entityMessage, ClassName createRequestMessage, ClassName updateRequestMessage) {
+    private MethodSpec makeEntityGetter(ClassName entityMessage, ClassName createRequestMessage, ClassName updateRequestMessage) {
         TypeVariableName requestType = TypeVariableName.get("Request");
-        return MethodSpec.methodBuilder(methodName)
+        return MethodSpec.methodBuilder("entity")
                          .addModifiers(PUBLIC)
                          .addTypeVariable(requestType)
                          .addParameter(requestType, "request")
@@ -513,14 +550,13 @@ public class CodeGenerator {
 
     // <Request> StorageIdentifier id(Request request);
     private MethodSpec makeIdGetter(
-            String methodName,
             ClassName storageIdentifier,
             ClassName updateRequestMessage,
             ClassName deleteRequestMessage) {
 
         TypeVariableName requestType = TypeVariableName.get("Request");
 
-        return MethodSpec.methodBuilder(methodName)
+        return MethodSpec.methodBuilder("id")
                          .addModifiers(PUBLIC)
                          .addTypeVariable(requestType)
                          .addParameter(requestType, "request")
@@ -617,8 +653,8 @@ public class CodeGenerator {
                         .addMethod(makeRpcHandler(createRequestMessage, createResponseMessage, "create"))
                         .addMethod(makeRpcHandler(updateRequestMessage, updateResponseMessage, "update"))
                         .addMethod(makeRpcHandler(deleteRequestMessage, deleteResponseMessage, "delete"))
-                        .addMethod(makeEntityGetter("entity", entityMessage, createRequestMessage, updateRequestMessage))
-                        .addMethod(makeIdGetter("id", storageIdentifier, updateRequestMessage, deleteRequestMessage))
+                        .addMethod(makeEntityGetter(entityMessage, createRequestMessage, updateRequestMessage))
+                        .addMethod(makeIdGetter(storageIdentifier, updateRequestMessage, deleteRequestMessage))
 
                         // ListResponse response(Stream<Entity>, ListRequest)
                         .addMethod(MethodSpec.methodBuilder("response")
