@@ -204,7 +204,7 @@ begin
     begin
         select id
         into _project_id
-        from migration.project
+        from migrations.project
         where name = _project_name;
 
         select n.nspname, p.proname
