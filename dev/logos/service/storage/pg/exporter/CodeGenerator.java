@@ -16,6 +16,7 @@ import dev.logos.service.storage.pg.exporter.mapper.PgTypeMapper;
 import dev.logos.service.storage.pg.exporter.module.annotation.BuildDir;
 import dev.logos.service.storage.pg.exporter.module.annotation.BuildPackage;
 import dev.logos.service.storage.validator.Validator;
+import dev.logos.user.NotAuthenticated;
 import dev.logos.user.User;
 import io.grpc.stub.StreamObserver;
 import org.jdbi.v3.core.statement.Query;
@@ -535,6 +536,7 @@ public class CodeGenerator {
         TypeVariableName requestType = TypeVariableName.get("Request");
         return MethodSpec.methodBuilder("entity")
                          .addModifiers(PUBLIC)
+                         .addException(NotAuthenticated.class)
                          .addTypeVariable(requestType)
                          .addParameter(requestType, "request")
                          .returns(entityMessage)

@@ -11,21 +11,21 @@ import io.grpc.stub.StreamObserver;
 import java.util.stream.Stream;
 
 public interface EntityStorageService<
-    ListRequest extends GeneratedMessage,
-    ListResponse extends GeneratedMessage,
-    CreateRequest extends GeneratedMessage,
-    CreateResponse extends GeneratedMessage,
-    UpdateRequest extends GeneratedMessage,
-    UpdateResponse extends GeneratedMessage,
-    DeleteRequest extends GeneratedMessage,
-    DeleteResponse extends GeneratedMessage,
-    Entity extends GeneratedMessage,
-    StorageIdentifier
-    > extends Service {
+        ListRequest extends GeneratedMessage,
+        ListResponse extends GeneratedMessage,
+        CreateRequest extends GeneratedMessage,
+        CreateResponse extends GeneratedMessage,
+        UpdateRequest extends GeneratedMessage,
+        UpdateResponse extends GeneratedMessage,
+        DeleteRequest extends GeneratedMessage,
+        DeleteResponse extends GeneratedMessage,
+        Entity extends GeneratedMessage,
+        StorageIdentifier
+        > extends Service {
 
     EntityStorage<Entity, StorageIdentifier> getStorage();
 
-    Select.Builder query(ListRequest listRequest);
+    Select.Builder query(ListRequest listRequest) throws EntityReadException;
 
     <Request> Entity entity(Request ignoredRequest);
 
@@ -45,7 +45,7 @@ public interface EntityStorageService<
             responseObserver.onCompleted();
         } catch (EntityReadException | EntityWriteException e) {
             responseObserver.onError(
-                Status.UNAVAILABLE.withCause(e).asRuntimeException());
+                    Status.UNAVAILABLE.withCause(e).asRuntimeException());
         }
     }
 
@@ -63,16 +63,16 @@ public interface EntityStorageService<
 
     default void create(CreateRequest createRequest, StreamObserver<CreateResponse> responseObserver) {
         request(createRequest, responseObserver, () ->
-            response(getStorage().create(entity(createRequest)), createRequest));
+                response(getStorage().create(entity(createRequest)), createRequest));
     }
 
     default void update(UpdateRequest updateRequest, StreamObserver<UpdateResponse> responseObserver) {
         request(updateRequest, responseObserver, () ->
-            response(getStorage().update(id(updateRequest), entity(updateRequest)), updateRequest));
+                response(getStorage().update(id(updateRequest), entity(updateRequest)), updateRequest));
     }
 
     default void delete(DeleteRequest deleteRequest, StreamObserver<DeleteResponse> responseObserver) {
         request(deleteRequest, responseObserver, () ->
-            response(getStorage().delete(id(deleteRequest)), deleteRequest));
+                response(getStorage().delete(id(deleteRequest)), deleteRequest));
     }
 }

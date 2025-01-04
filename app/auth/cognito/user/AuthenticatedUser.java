@@ -9,15 +9,21 @@ import static java.util.Objects.requireNonNull;
 
 // TODO: rename to CognitoUser
 public class AuthenticatedUser extends User {
+    private final String id;
     private final String name;
     private final String email;
     private final String token;
 
     public AuthenticatedUser(String token, Claims claims) {
-        err.println(claims);
+        this.id = requireNonNull(claims.get("sub", String.class));
         this.email = requireNonNull(claims.get("email", String.class));
         this.name = requireNonNull(claims.get("name", String.class));
         this.token = token;
+    }
+
+    @Override
+    public String getId() throws NotAuthenticated {
+        return this.id;
     }
 
     @Override

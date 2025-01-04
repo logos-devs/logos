@@ -6,6 +6,8 @@ public abstract class User {
 
     public abstract boolean isAuthenticated();
 
+    public abstract String getId() throws NotAuthenticated;
+
     public abstract String getEmail() throws NotAuthenticated;
 
     public abstract String getToken() throws NotAuthenticated;
