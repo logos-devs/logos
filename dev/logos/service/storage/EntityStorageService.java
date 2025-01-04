@@ -5,6 +5,7 @@ import dev.logos.service.Service;
 import dev.logos.service.storage.exceptions.EntityReadException;
 import dev.logos.service.storage.exceptions.EntityWriteException;
 import dev.logos.service.storage.pg.Select;
+import dev.logos.user.NotAuthenticated;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 
@@ -27,7 +28,7 @@ public interface EntityStorageService<
 
     Select.Builder query(ListRequest listRequest) throws EntityReadException;
 
-    <Request> Entity entity(Request ignoredRequest);
+    <Request> Entity entity(Request ignoredRequest) throws NotAuthenticated;
 
     <Request> StorageIdentifier id(Request request);
 
@@ -43,14 +44,15 @@ public interface EntityStorageService<
         try {
             responseObserver.onNext(handler.handle());
             responseObserver.onCompleted();
-        } catch (EntityReadException | EntityWriteException e) {
+        } catch (EntityReadException | EntityWriteException | NotAuthenticated e) {
+            onFailedRequest(responseObserver, e.getMessage(), e);
             responseObserver.onError(
                     Status.UNAVAILABLE.withCause(e).asRuntimeException());
         }
     }
 
     interface RequestHandler<Response> {
-        Response handle() throws EntityReadException, EntityWriteException;
+        Response handle() throws EntityReadException, EntityWriteException, NotAuthenticated;
     }
 
     default void list(ListRequest listRequest, StreamObserver<ListResponse> responseObserver) {
