@@ -276,7 +276,7 @@ use_repo(
 http_file(
     name = "aws_rds_cert_bundle",
     downloaded_file_path = "global-bundle.pem",
-    integrity = "sha256-OQ/cgT4uWOxaDe+M5kIrg9dQMomRZwUquYHY4bOxT/I=",
+    sha256 = "eb0f4a60ff3face9f464c983a1ba9a8564f1295eba3661937c91a184c7f7a587",
     urls = ["https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem"],
 )
 
