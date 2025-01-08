@@ -1,6 +1,10 @@
 package dev.logos.service.storage.pg;
 
+import java.util.regex.Pattern;
+
 public class Filter {
+    public static Pattern SINGLE_QUOTE_RE = Pattern.compile("'");
+
     Column column;
     Op operation;
     String value;
@@ -71,7 +75,7 @@ public class Filter {
                 "%s %s%s",
                 this.column,
                 this.operation,
-                this.value == null ? "" : " " + this.value
+                this.value == null ? "" : " '" + SINGLE_QUOTE_RE.matcher(this.value).replaceAll("''") + "'"
         );
     }
 }

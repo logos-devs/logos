@@ -2,10 +2,12 @@ package dev.logos.user;
 
 import io.grpc.Context;
 
+import java.util.Optional;
+
 public class UserContext {
     public static final Context.Key<User> USER_CONTEXT_KEY = Context.key("user");
 
-    public static User getCurrentUser() {
-        return USER_CONTEXT_KEY.get();
+    public static Optional<User> getCurrentUser() {
+        return Optional.ofNullable(USER_CONTEXT_KEY.get());
     }
 }

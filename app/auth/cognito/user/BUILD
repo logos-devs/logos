@@ -1,7 +1,7 @@
 java_library(
     name = "user",
     srcs = [
-        "AuthenticatedUser.java",
+        "CognitoUser.java",
     ],
     visibility = [
         "//visibility:public",

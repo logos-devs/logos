@@ -1,7 +1,6 @@
 java_library(
     name = "user",
     srcs = [
-        "AnonymousUser.java",
         "NotAuthenticated.java",
         "User.java",
         "UserContext.java",

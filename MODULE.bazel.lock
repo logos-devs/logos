@@ -3508,7 +3508,7 @@
     "@@rules_oci~//oci:extensions.bzl%oci": {
       "general": {
         "bzlTransitiveDigest": "FJtC2DOJU8GvsIgEgnWQ3C532knFJyJ+IU2LZDH9pEc=",
-        "usagesDigest": "h6wQy1qpOOJGWjfmreO+/Hk8KP4up7bFmGQ/pxn4oME=",
+        "usagesDigest": "onGNb1t3QyZOyYX90NAyiUcPLmiX8UoBkEW5VkT6C/o=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
         "envVariables": {},
@@ -3589,8 +3589,8 @@
             "attributes": {
               "scheme": "https",
               "registry": "gcr.io",
-              "repository": "distroless/java17-debian11",
-              "identifier": "sha256:a0d63b02c21219ea735ff439fea518d6887ee1de0c7e57a578d27bfa87111573",
+              "repository": "distroless/java21-debian12",
+              "identifier": "sha256:536c8d7926e96d4c769c471a96e8b59a255d7cb1b4ca1ed1bedee7fff1e5d6c8",
               "platform": "linux/amd64",
               "target_name": "distroless_java_container_linux_amd64",
               "bazel_tags": []
@@ -3603,8 +3603,8 @@
               "target_name": "distroless_java_container",
               "scheme": "https",
               "registry": "gcr.io",
-              "repository": "distroless/java17-debian11",
-              "identifier": "sha256:a0d63b02c21219ea735ff439fea518d6887ee1de0c7e57a578d27bfa87111573",
+              "repository": "distroless/java21-debian12",
+              "identifier": "sha256:536c8d7926e96d4c769c471a96e8b59a255d7cb1b4ca1ed1bedee7fff1e5d6c8",
               "platforms": {
                 "@@platforms//cpu:x86_64": "@distroless_java_container_linux_amd64"
               },

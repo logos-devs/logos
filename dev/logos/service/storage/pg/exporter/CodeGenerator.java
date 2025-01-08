@@ -193,7 +193,9 @@ public class CodeGenerator {
         // Relation.bindFields
         MethodSpec.Builder bindFieldsMethod = MethodSpec.methodBuilder("bindFields")
                                                         .addModifiers(PUBLIC)
-                                                        .addParameter(Map.class, "fields")
+                                                        .addParameter(ParameterizedTypeName.get(ClassName.get(Map.class),
+                                                                                                ClassName.get(String.class),
+                                                                                                ClassName.get(Object.class)), "fields")
                                                         .addParameter(ClassName.get(Query.class), "query");
 
         for (ColumnDescriptor columnDescriptor : columnDescriptors) {
@@ -203,8 +205,9 @@ public class CodeGenerator {
             }
 
             PgTypeMapper typeMapper = pgColumnTypeMappers.get(columnType);
-            CodeBlock typeMapperCodeBlock = typeMapper.protoToPg("query", "fields", columnDescriptor.name());
-            bindFieldsMethod.addCode(typeMapperCodeBlock + "\n");
+            String columnName = columnDescriptor.name();
+            CodeBlock typeMapperCodeBlock = typeMapper.protoToPg("query", "fields", columnName);
+            bindFieldsMethod.addCode("if (fields.containsKey($S)) { $L\n }", columnName, typeMapperCodeBlock);
         }
 
         tableClassBuilder.addMethod(bindFieldsMethod.build());
@@ -532,19 +535,27 @@ public class CodeGenerator {
                          .build();
     }
 
+    MethodSpec makePreSaveMethod(ClassName entityMessage) {
+        return MethodSpec.methodBuilder("preSave")
+                         .addModifiers(PUBLIC)
+                         .addParameter(entityMessage, "entity")
+                         .returns(entityMessage)
+                         .addStatement("return $L", "entity")
+                         .build();
+    }
+
     private MethodSpec makeEntityGetter(ClassName entityMessage, ClassName createRequestMessage, ClassName updateRequestMessage) {
         TypeVariableName requestType = TypeVariableName.get("Request");
         return MethodSpec.methodBuilder("entity")
                          .addModifiers(PUBLIC)
-                         .addException(NotAuthenticated.class)
                          .addTypeVariable(requestType)
                          .addParameter(requestType, "request")
                          .returns(entityMessage)
                          .beginControlFlow("if (request instanceof $T)", createRequestMessage)
-                         .addStatement("return (($T)request).getEntity()", createRequestMessage)
+                         .addStatement("return preSave((($T)request).getEntity())", createRequestMessage)
                          .endControlFlow()
                          .beginControlFlow("if (request instanceof $T)", updateRequestMessage)
-                         .addStatement("return (($T)request).getEntity()", updateRequestMessage)
+                         .addStatement("return preSave((($T)request).getEntity())", updateRequestMessage)
                          .endControlFlow()
                          .addStatement("throw new $T($S)", RuntimeException.class, "Unexpected request type")
                          .build();
@@ -575,7 +586,18 @@ public class CodeGenerator {
                          .build();
     }
 
-    private MethodSpec makeValidateMethod(ClassName requestMessage) {
+    private MethodSpec makeValidateRequestMethod(ClassName requestMessage, boolean validateEntity) {
+        MethodSpec.Builder method = MethodSpec.methodBuilder("validate")
+                                              .addModifiers(PROTECTED)
+                                              .addParameter(requestMessage, "request")
+                                              .addParameter(ClassName.get(Validator.class), "validator");
+        if (validateEntity) {
+            method.addStatement("validate(entity(request), validator);");
+        }
+        return method.build();
+    }
+
+    private MethodSpec makeValidateEntityMethod(ClassName requestMessage) {
         return MethodSpec.methodBuilder("validate")
                          .addModifiers(PROTECTED)
                          .addParameter(requestMessage, "request")
@@ -655,6 +677,7 @@ public class CodeGenerator {
                         .addMethod(makeRpcHandler(createRequestMessage, createResponseMessage, "create"))
                         .addMethod(makeRpcHandler(updateRequestMessage, updateResponseMessage, "update"))
                         .addMethod(makeRpcHandler(deleteRequestMessage, deleteResponseMessage, "delete"))
+                        .addMethod(makePreSaveMethod(entityMessage))
                         .addMethod(makeEntityGetter(entityMessage, createRequestMessage, updateRequestMessage))
                         .addMethod(makeIdGetter(storageIdentifier, updateRequestMessage, deleteRequestMessage))
 
@@ -686,44 +709,22 @@ public class CodeGenerator {
                                           .addStatement("return (Resp) $T.newBuilder().build()", createResponseMessage)
                                           .endControlFlow()
                                           .addStatement("return null")
-                                          .build()
+                                          .build());
 
-                        )
-//                    .addMethod(MethodSpec.methodBuilder("response")
-//                                         .addModifiers(PUBLIC)
-//                                         .addParameter(ClassName.get(UUID.class), "id")
-//                                         .addParameter(createRequestMessage, "request")
-//                                         .returns(createResponseMessage)
-//                                         .addStatement("return $T.newBuilder().setId($T.uuidToBytestring(id)).build()",
-//                                                       createResponseMessage,
-//                                                       Converter.class)
-//                                         .build())
-//                    .addMethod(MethodSpec.methodBuilder("response")
-//                                         .addModifiers(PUBLIC)
-//                                         .addParameter(ClassName.get(UUID.class), "id")
-//                                         .addParameter(updateRequestMessage, "request")
-//                                         .returns(updateResponseMessage)
-//                                         .addStatement("return $T.newBuilder().setId($T.uuidToBytestring(id)).build()",
-//                                                       updateResponseMessage,
-//                                                       Converter.class)
-//                                         .build())
-//                    .addMethod(MethodSpec.methodBuilder("response")
-//                                         .addModifiers(PUBLIC)
-//                                         .addParameter(ClassName.get(UUID.class), "id")
-//                                         .addParameter(deleteRequestMessage, "request")
-//                                         .returns(deleteResponseMessage)
-//                                         .addStatement("return $T.newBuilder().setId($T.uuidToBytestring(id)).build()",
-//                                                       deleteResponseMessage,
-//                                                       Converter.class)
-//                                         .build())
-                ;
+        storageServiceClassSpec.addMethod(makeAllowMethod(listRequestMessage))
+                               .addMethod(makeValidateRequestMethod(listRequestMessage, false));
 
-        for (ClassName message : List.of(listRequestMessage, createRequestMessage, updateRequestMessage,
-                                         deleteRequestMessage)) {
-            storageServiceClassSpec
-                    .addMethod(makeAllowMethod(message))
-                    .addMethod(makeValidateMethod(message));
-        }
+        storageServiceClassSpec.addMethod(makeAllowMethod(createRequestMessage))
+                               .addMethod(makeValidateRequestMethod(createRequestMessage, true));
+
+        storageServiceClassSpec.addMethod(makeAllowMethod(updateRequestMessage))
+                               .addMethod(makeValidateRequestMethod(updateRequestMessage, true));
+
+        storageServiceClassSpec.addMethod(makeAllowMethod(deleteRequestMessage))
+                               .addMethod(makeValidateRequestMethod(deleteRequestMessage, false));
+
+        // entity-level validator that applies to creates and updates
+        storageServiceClassSpec.addMethod(makeValidateEntityMethod(entityMessage));
 
         JavaFile.builder(packageName, storageServiceClassSpec.build())
                 .addStaticImport(
@@ -784,5 +785,4 @@ public class CodeGenerator {
                 .build()
                 .writeToPath(Path.of(buildDir));
     }
-
 }

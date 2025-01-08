@@ -2,13 +2,17 @@ package dev.logos.user;
 
 
 public abstract class User {
+    public static User get() {
+        return UserContext.getCurrentUser().orElseThrow();
+    }
+
     public abstract String getDisplayName();
 
     public abstract boolean isAuthenticated();
 
-    public abstract String getId() throws NotAuthenticated;
+    public abstract String getId();
 
-    public abstract String getEmail() throws NotAuthenticated;
+    public abstract String getEmail();
 
-    public abstract String getToken() throws NotAuthenticated;
+    public abstract String getToken();
 }

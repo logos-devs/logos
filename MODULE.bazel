@@ -322,9 +322,11 @@ oci.pull(
 use_repo(oci, "envoy_image_old", "envoy_image_old_linux_amd64", "envoy_image_old_linux_arm64")
 oci.pull(
     name = "distroless_java_container",
-    digest = "sha256:a0d63b02c21219ea735ff439fea518d6887ee1de0c7e57a578d27bfa87111573",
-    image = "gcr.io/distroless/java17-debian11:debug",
-    platforms = ["linux/amd64"],
+    digest = "sha256:536c8d7926e96d4c769c471a96e8b59a255d7cb1b4ca1ed1bedee7fff1e5d6c8",
+    image = "gcr.io/distroless/java21-debian12:debug",
+    platforms = [
+        "linux/amd64",
+    ],
     # tag = "latest",
 )
 use_repo(oci, "distroless_java_container", "distroless_java_container_linux_amd64")

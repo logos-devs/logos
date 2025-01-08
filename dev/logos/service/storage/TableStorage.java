@@ -21,9 +21,13 @@ import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static java.lang.System.err;
 
 
 public class TableStorage<Entity, StorageIdentifier> implements EntityStorage<Entity, StorageIdentifier> {
@@ -64,8 +68,13 @@ public class TableStorage<Entity, StorageIdentifier> implements EntityStorage<En
     }
 
     public StorageIdentifier create(Entity entity) throws EntityWriteException {
-        Map<FieldDescriptor, Object> fields = ((GeneratedMessage) entity).getAllFields();
-        List<String> fieldNames = fields.keySet().stream().map(FieldDescriptor::getName).toList();
+        Map<String, Object> fields = ((GeneratedMessage) entity).getAllFields()
+                                                                .entrySet()
+                                                                .stream()
+                                                                .collect(Collectors.toMap(
+                                                                        e -> e.getKey().getName(),
+                                                                        Map.Entry::getValue));
+        Set<String> fieldNames = fields.keySet();
 
         String queryStr =
                 String.format("insert into %s (%s) values (%s) returning id",
@@ -84,8 +93,13 @@ public class TableStorage<Entity, StorageIdentifier> implements EntityStorage<En
     }
 
     public StorageIdentifier update(StorageIdentifier id, Entity entity) throws EntityWriteException {
-        Map<FieldDescriptor, Object> fields = ((GeneratedMessage) entity).getAllFields();
-        List<String> fieldNames = fields.keySet().stream().map(FieldDescriptor::getName).toList();
+        Map<String, Object> fields = ((GeneratedMessage) entity).getAllFields()
+                                                                .entrySet()
+                                                                .stream()
+                                                                .collect(Collectors.toMap(
+                                                                        e -> e.getKey().getName(),
+                                                                        Map.Entry::getValue));
+        Set<String> fieldNames = fields.keySet();
 
         String queryStr =
                 String.format("update %s set %s where id = :id returning id",

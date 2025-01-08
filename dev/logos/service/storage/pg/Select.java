@@ -14,10 +14,10 @@ public class Select {
     private final Long offset;
     private final List<OrderBy> orderBy;
 
-    public static Builder select(Column ... columns) {
+    public static Builder select(Column... columns) {
         Builder builder = builder();
         builder.columns = columns;
-        return builder();
+        return builder;
     }
 
     public static class Builder {
@@ -61,7 +61,7 @@ public class Select {
             return this;
         }
 
-        public Builder where(Filter ... where) {
+        public Builder where(Filter... where) {
             this.where = List.of(where);
             return this;
         }
@@ -69,9 +69,9 @@ public class Select {
         public Builder where(Column column, Filter.Op op) {
             this.where = List.of(
                     Filter.builder()
-                            .column(column)
-                            .op(op)
-                            .build());
+                          .column(column)
+                          .op(op)
+                          .build());
             return this;
         }
 
@@ -87,9 +87,9 @@ public class Select {
         public Builder orderBy(Column column, SortOrder sortOrder) {
             this.orderBy
                     .add(OrderBy.builder()
-                            .column(column)
-                            .direction(sortOrder)
-                            .build());
+                                .column(column)
+                                .direction(sortOrder)
+                                .build());
             return this;
         }
 
@@ -118,10 +118,6 @@ public class Select {
 
         if (this.columns.length > 0) {
             queryParts.add(Arrays.stream(this.columns).map(column -> column.quotedIdentifier).collect(Collectors.joining(", ")));
-        }
-
-        for (Column column : this.columns) {
-            queryParts.add(column.toString());
         }
 
         queryParts.add(String.format("from %s", this.from));

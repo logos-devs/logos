@@ -1,6 +1,8 @@
 package dev.logos.service.storage.pg;
 
 
+import static dev.logos.service.storage.pg.Filter.filter;
+
 public abstract class Column extends Identifier {
     public static final Column STAR = new Column("*", "*", null) {
     };
@@ -17,5 +19,20 @@ public abstract class Column extends Identifier {
 
     public String getStorageType() {
         return storageType;
+    }
+
+    /*
+    EQ("="),
+    GT(">"),
+    LT("<"),
+    GTE(">="),
+    LTE("<="),
+    NE("<>"),
+    IS_NULL("is null"),
+    CONTAINS("@>");
+     */
+
+    public Filter eq(String value) {
+        return filter(this).op(Filter.Op.EQ).value(value).build();
     }
 }

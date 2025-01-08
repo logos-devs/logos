@@ -17,7 +17,6 @@ ts_project(
     visibility = ["//visibility:public"],
     deps = [
         "//:node_modules/@logos/web",
-        "//:node_modules/@spectrum-web-components/action-menu",
         "//:node_modules/@spectrum-web-components/button",
         "//:node_modules/@spectrum-web-components/icons-workflow",
         "//:node_modules/@spectrum-web-components/menu",

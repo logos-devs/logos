@@ -1,20 +1,17 @@
-import {MdFilledTextField} from "@material/web/textfield/filled-text-field";
-import "@material/web/button/filled-button";
-import "@material/web/iconbutton/icon-button";
-import "@material/web/icon/icon";
-import "@material/web/labs/card/filled-card";
-import "@material/web/textfield/filled-text-field";
+import "@spectrum-web-components/textfield/sp-textfield.js";
+import "@spectrum-web-components/button/sp-button.js";
+import "@spectrum-web-components/action-button/sp-action-button.js";
+import "@spectrum-web-components/icons-workflow/icons/sp-icon-cancel.js";
+import "@spectrum-web-components/icons-workflow/icons/sp-icon-add.js";
 import {
     Constructable,
     EntityMutationRequest,
     EntityMutationResponse
-} from "dev/logos/web/storage/client";
-import {EntityCreatedEvent} from "dev/logos/web/storage/event";
+} from "../client";
+import {EntityCreatedEvent} from "../event";
 import {css, html, LitElement, TemplateResult} from "lit";
-
 import {queryAll, state} from "lit/decorators.js";
 import {when} from "lit/directives/when.js";
-
 
 type EntityCreateStorageServicePromiseClient<CreateRequest, CreateResponse> = {
     create: (request: CreateRequest) => Promise<CreateResponse>
@@ -31,32 +28,22 @@ export abstract class CreateEntity<
     protected abstract entityClass: Constructable<Entity>;
 
     @state() private editing: boolean = false;
-    @queryAll("md-filled-text-field") private fields: MdFilledTextField[];
+    @queryAll("sp-textfield") private fields: any[];
 
     static styles = [css`
         h2, h3 {
             text-align: center;
         }
 
-        md-filled-card {
-            margin-bottom: 1em;
-        }
-
-        md-icon-button#cancel {
+        sp-action-button#cancel {
             position: absolute;
             right: 0.5em;
             top: 0.5em;
         }
 
-        md-filled-text-field {
+        sp-textfield {
             display: block;
             margin: 0.5em;
-        }
-
-        md-icon-button#cancel {
-            position: absolute;
-            right: 0.5em;
-            top: 0.5em;
         }
 
         :host {
@@ -64,16 +51,6 @@ export abstract class CreateEntity<
             margin-top: 1em;
             display: flex;
             flex-direction: row-reverse;
-        }
-
-        md-icon-button#cancel {
-            position: absolute;
-            right: 0.5em;
-            top: 0.5em;
-        }
-
-        md-filled-card {
-            width: 100%;
         }
     `];
 
@@ -100,22 +77,29 @@ export abstract class CreateEntity<
         return html`
             ${when(this.editing,
                     () => html`
-                        <md-filled-card>
-                            <h3>Add RSS Feed</h3>
-
-                            <md-icon-button id="cancel" @click=${() => this.editing = false}>
-                                <md-icon>cancel</md-icon>
-                            </md-icon-button>
+                        <div>
+                            <sp-action-button
+                                    id="cancel"
+                                    quiet
+                                    @click=${() => this.editing = false}>
+                                <sp-icon-cancel slot="icon"></sp-icon-cancel>
+                            </sp-action-button>
 
                             ${this.renderFields()}
 
-                            <md-filled-button @click=${this.handleSave}>Save</md-filled-button>
-                        </md-filled-card>
+                            <sp-button
+                                    variant="cta"
+                                    @click=${this.handleSave}>
+                                Save
+                            </sp-button>
+                        </div>
                     `,
                     () => html`
-                        <md-icon-button @click=${() => this.editing = true}>
-                            <md-icon>add</md-icon>
-                        </md-icon-button>
+                        <sp-action-button
+                                quiet
+                                @click=${() => this.editing = true}>
+                            <sp-icon-add slot="icon"></sp-icon-add>
+                        </sp-action-button>
                     `
             )}
         `;

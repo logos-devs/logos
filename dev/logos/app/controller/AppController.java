@@ -357,7 +357,6 @@ public class AppController {
                                                                         "inline_string", """
                                                                                 function envoy_on_request(request_handle)
                                                                                     local cookies = request_handle:headers():get("cookie")
-                                                                                    request_handle:logCritical("on_request")
                                                                                 
                                                                                     if cookies then
                                                                                         local start = 1
@@ -393,7 +392,6 @@ public class AppController {
                                                                                 
                                                                                 function envoy_on_response(response_handle)
                                                                                     local set_cookies = response_handle:headers():get("logos-set-cookies")
-                                                                                    response_handle:logCritical("set_cookies: " .. (set_cookies or "nil"))
                                                                                 
                                                                                     if set_cookies then
                                                                                         local start = 1

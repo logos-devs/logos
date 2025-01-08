@@ -13,15 +13,9 @@ import {CognitoServicePromiseClient} from "../../proto/cognito_grpc_web_pb";
 import {lazyInject} from '@logos/web/module/app-module';
 import {when} from "lit/directives/when.js";
 
-import '@spectrum-web-components/action-menu/sp-action-menu.js';
 import '@spectrum-web-components/icons-workflow/icons/sp-icon-login.js';
 import '@spectrum-web-components/icons-workflow/icons/sp-icon-real-time-customer-profile.js';
 import '@spectrum-web-components/button/sp-button.js';
-import '@spectrum-web-components/menu/sp-menu.js';
-import '@spectrum-web-components/menu/sp-menu-group.js';
-import '@spectrum-web-components/menu/sp-menu-item.js';
-import '@spectrum-web-components/menu/sp-menu-divider.js';
-import '@spectrum-web-components/overlay/sp-overlay.js';
 
 import '../module/auth-module';
 
@@ -72,21 +66,7 @@ export class ProfileButton extends LitElement {
     render(): TemplateResult {
         return html`
             ${when(this.isAuthenticated, () => html`
-                <sp-action-menu
-                        label="Account"
-                        placement="bottom-end"
-                        style="margin-inline-start: auto;"
-                        quiet
-                >
-                    <sp-icon-real-time-customer-profile slot="icon"></sp-icon-real-time-customer-profile>
-                    <sp-menu-item>Account Settings</sp-menu-item>
-                    <sp-menu-item>My Profile</sp-menu-item>
-                    <sp-menu-divider></sp-menu-divider>
-                    <sp-menu-item>Share</sp-menu-item>
-                    <sp-menu-divider></sp-menu-divider>
-                    <sp-menu-item>Help</sp-menu-item>
-                    <sp-menu-item>Sign Out</sp-menu-item>
-                </sp-action-menu>
+                <slot></slot>
             `, () => html`
                 <sp-top-nav-item @click=${(ev) => this.signInUrl || ev.preventDefault()}
                                  href=${this.signInUrl}

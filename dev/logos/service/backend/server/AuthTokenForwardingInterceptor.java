@@ -6,6 +6,7 @@ import dev.logos.user.User;
 import dev.logos.user.UserContext;
 import io.grpc.*;
 
+import java.util.Optional;
 import java.util.logging.Logger;
 
 public class AuthTokenForwardingInterceptor implements ClientInterceptor {
@@ -18,14 +19,10 @@ public class AuthTokenForwardingInterceptor implements ClientInterceptor {
 
     @Override
     public <ReqT, RespT> ClientCall<ReqT, RespT> interceptCall(MethodDescriptor<ReqT, RespT> method, CallOptions callOptions, Channel next) {
-        User user = UserContext.getCurrentUser();
+        Optional<User> user = UserContext.getCurrentUser();
 
-        if (user.isAuthenticated()) {
-            try {
-                callOptions = callOptions.withCallCredentials(new AuthTokenCallCredentials(user.getToken()));
-            } catch (NotAuthenticated ignored) {
-                logger.severe("User.isAuthenticated() returned true but user.getToken() threw NotAuthenticated");
-            }
+        if (user.isPresent()) {
+            callOptions = callOptions.withCallCredentials(new AuthTokenCallCredentials(user.get().getToken()));
         }
 
         return next.newCall(method, callOptions);

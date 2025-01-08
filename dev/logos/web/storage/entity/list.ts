@@ -1,4 +1,4 @@
-import {Constructable, EntityReadRequest, EntityReadResponse} from "dev/logos/web/storage/client";
+import {Constructable, EntityReadRequest, EntityReadResponse} from "../client";
 import {html, LitElement, TemplateResult} from "lit";
 import {state} from "lit/decorators.js";
 import {map} from "lit/directives/map.js";

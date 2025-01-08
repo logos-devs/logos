@@ -14,10 +14,16 @@ dependencies:
   '@grpc/grpc-js':
     specifier: 1.10.8
     version: 1.10.8
+  '@spectrum-web-components/action-button':
+    specifier: 1.0.0
+    version: 1.0.0
   '@spectrum-web-components/action-menu':
     specifier: 1.0.0
     version: 1.0.0
   '@spectrum-web-components/button':
+    specifier: 1.0.0
+    version: 1.0.0
+  '@spectrum-web-components/card':
     specifier: 1.0.0
     version: 1.0.0
   '@spectrum-web-components/icons-workflow':
@@ -36,6 +42,9 @@ dependencies:
     specifier: 1.0.0
     version: 1.0.0
   '@spectrum-web-components/reactive-controllers':
+    specifier: 1.0.0
+    version: 1.0.0
+  '@spectrum-web-components/textfield':
     specifier: 1.0.0
     version: 1.0.0
   '@webcomponents/webcomponentsjs':
@@ -631,6 +640,16 @@ packages:
     dev: true
     optional: true
 
+  /@spectrum-web-components/action-button@1.0.0:
+    resolution: {integrity: sha512-eVcMghDSKLysNH7oOL+LVutHMZ6ywADfTzA3SW4av7rqYhEyOb+066Pjva49NBtFbAp6lBA85YEh5a9l9QCntA==}
+    dependencies:
+      '@spectrum-web-components/base': 1.0.3
+      '@spectrum-web-components/button': 1.0.0
+      '@spectrum-web-components/icon': 1.0.3
+      '@spectrum-web-components/icons-ui': 1.0.3
+      '@spectrum-web-components/shared': 1.0.3
+    dev: false
+
   /@spectrum-web-components/action-button@1.0.3:
     resolution: {integrity: sha512-kX20OLTqcZjHRriVFcMBPuCy+G70hYeElX4B4C/7EeYVik39VNPYFJvcyKsngCEe/g8yfowVKVTKUpQdbOF/+g==}
     dependencies:
@@ -644,12 +663,28 @@ packages:
   /@spectrum-web-components/action-menu@1.0.0:
     resolution: {integrity: sha512-E9FIF14TfiqOiGXMZIc5ZrMbss9s9lNnfg6WJmJCYC6MmTGhJ6Z/O7OzpGtejZh0DPPE5TpX779ubArARDHmyw==}
     dependencies:
-      '@spectrum-web-components/action-button': 1.0.3
+      '@spectrum-web-components/action-button': 1.0.0
       '@spectrum-web-components/base': 1.0.3
       '@spectrum-web-components/icon': 1.0.3
       '@spectrum-web-components/icons-workflow': 1.0.0
       '@spectrum-web-components/picker': 1.0.0
       '@spectrum-web-components/shared': 1.0.3
+    dev: false
+
+  /@spectrum-web-components/asset@0.1.5:
+    resolution: {integrity: sha512-qdPpl6pdkAdyGfJiw+doRKwhbqp0aXi/aDk39a7Wk6HqTN4TCokYu8z5LT1SS6zstEGeAI42wmQ5FF/g4ZY/JA==}
+    dependencies:
+      '@spectrum-web-components/base': 0.1.3
+      tslib: 2.8.1
+    dev: false
+
+  /@spectrum-web-components/base@0.1.3:
+    resolution: {integrity: sha512-Tg7EeAF9lzrgnW4tTXeGUvhFBuNd1PW2xt4xhhRdhsFmv8y+OL0I9J9ywOepXT0KNF34bYE/gwObeBO9WN5AYA==}
+    dependencies:
+      '@spectrum-web-components/theme': 0.6.3
+      lit-element: 2.5.1
+      lit-html: 1.4.1
+      tslib: 2.8.1
     dev: false
 
   /@spectrum-web-components/base@1.0.3:
@@ -683,6 +718,29 @@ packages:
       '@spectrum-web-components/shared': 1.0.3
     dev: false
 
+  /@spectrum-web-components/card@1.0.0:
+    resolution: {integrity: sha512-iTRjPORE8XPcuHp4sn5DijIWNR4VYIj+Dxm1X4dZ/XW1CUCt0DUVl8jJa7G1DYiEIEBXsd+ZJzVeUhNHAbiT9A==}
+    deprecated: This version has been deprecated
+    dependencies:
+      '@spectrum-web-components/asset': 0.1.5
+      '@spectrum-web-components/base': 0.1.3
+      '@spectrum-web-components/checkbox': 0.5.4
+      '@spectrum-web-components/icons-workflow': 0.3.6
+      '@spectrum-web-components/quick-actions': 0.1.3
+      '@spectrum-web-components/shared': 0.7.4
+      tslib: 2.8.1
+    dev: false
+
+  /@spectrum-web-components/checkbox@0.5.4:
+    resolution: {integrity: sha512-bZ45E0duD3t4V8rail73WsMuIzDiYvFeGEBGQ7CsttHJd3lsMTCLNeT3+pFG5qhC8Nz5ns3oWV/EBrsExQLMBg==}
+    dependencies:
+      '@spectrum-web-components/base': 0.1.3
+      '@spectrum-web-components/icon': 0.6.3
+      '@spectrum-web-components/icons-ui': 0.3.3
+      '@spectrum-web-components/shared': 0.7.4
+      tslib: 2.8.1
+    dev: false
+
   /@spectrum-web-components/clear-button@1.0.3:
     resolution: {integrity: sha512-WqEzr6b67HCSF1iczFT9KN0POgObhQJOWmaBBF8L/i5k35xmGV7bpyz2PB0yLxpMj5yx5Cge+BmyqW70LGE8mQ==}
     dependencies:
@@ -711,11 +769,35 @@ packages:
       '@spectrum-web-components/shared': 1.0.3
     dev: false
 
+  /@spectrum-web-components/help-text@1.0.3:
+    resolution: {integrity: sha512-LJcQKKGHqm6S7/Usq1fTwi7RBeobNXK4kfadfflOmNqbdPfYTlFl9VIZt96bvrdWtQLRkWpJDLX1atifWbCdiA==}
+    dependencies:
+      '@spectrum-web-components/base': 1.0.3
+      '@spectrum-web-components/icons-workflow': 1.0.3
+      '@spectrum-web-components/shared': 1.0.3
+    dev: false
+
+  /@spectrum-web-components/icon@0.6.3:
+    resolution: {integrity: sha512-UcJb7SOr5UTYO3+oj7A5jbS3vWghSqhWXyyS7FLwvNzVkjnc+gK/4wper3gQubk95slnXobs3/uJZ82YJcBL/A==}
+    dependencies:
+      '@spectrum-web-components/base': 0.1.3
+      '@spectrum-web-components/iconset': 0.2.5
+      tslib: 2.8.1
+    dev: false
+
   /@spectrum-web-components/icon@1.0.3:
     resolution: {integrity: sha512-2VlpVKu1qabBBuEoLHztRD45MZw8ZW20/378RAoP4uORb1Aia64KsWKpqWWjAFd9DFN9mAaO/Lukfnh6eS/NBw==}
     dependencies:
       '@spectrum-web-components/base': 1.0.3
       '@spectrum-web-components/iconset': 1.0.3
+    dev: false
+
+  /@spectrum-web-components/icons-ui@0.3.3:
+    resolution: {integrity: sha512-/6MrwVSlYI/1XZ/rjBNanLEGPhXfulVLT9aInOSh3DRx+4X2fqA+2lk2swq9LEu8X1Dg5I1Kc04xnNR3X+3RXw==}
+    dependencies:
+      '@spectrum-web-components/base': 0.1.3
+      '@spectrum-web-components/iconset': 0.2.5
+      tslib: 2.8.1
     dev: false
 
   /@spectrum-web-components/icons-ui@1.0.3:
@@ -726,11 +808,33 @@ packages:
       '@spectrum-web-components/iconset': 1.0.3
     dev: false
 
+  /@spectrum-web-components/icons-workflow@0.3.6:
+    resolution: {integrity: sha512-00oUmspwDeuD7tE3imJrMIBTt/Yl6mcDY571pWhDsVpAA9HuM1WL8JYXAN+XUaYKGdV5UlaTZqzqDY6lt8EohA==}
+    dependencies:
+      '@spectrum-web-components/base': 0.1.3
+      '@spectrum-web-components/iconset': 0.2.5
+      tslib: 2.8.1
+    dev: false
+
   /@spectrum-web-components/icons-workflow@1.0.0:
     resolution: {integrity: sha512-jLTafFaAaXBiWHo0vmGGjWDgvlnbzXgVhVEHOxmH+pmleIFdL+ppKh/DN/IxLlTHdLhi/ckxHKdlc+AahJOmUw==}
     dependencies:
       '@spectrum-web-components/base': 1.0.3
       '@spectrum-web-components/icon': 1.0.3
+    dev: false
+
+  /@spectrum-web-components/icons-workflow@1.0.3:
+    resolution: {integrity: sha512-/5OW9nQ68bCKCO6eJNC75mxeIg355Sb5kB+EiDgTbuvVKKvifmf9faa266ZmMsM908TOFatmC9ywu7VHlAMULQ==}
+    dependencies:
+      '@spectrum-web-components/base': 1.0.3
+      '@spectrum-web-components/icon': 1.0.3
+    dev: false
+
+  /@spectrum-web-components/iconset@0.2.5:
+    resolution: {integrity: sha512-ie8s6Zv1GySPUa4TERvPp0d315OZyR5Sq3/C0QrFlt9BB6vk8b4iJOkgoJlPY0yrL00ZTjz+G4S0UJsj6ml1Iw==}
+    dependencies:
+      '@spectrum-web-components/base': 0.1.3
+      tslib: 2.8.1
     dev: false
 
   /@spectrum-web-components/iconset@1.0.3:
@@ -743,7 +847,7 @@ packages:
     resolution: {integrity: sha512-yFwhVGk7knJ2fxomZp65mJQWXXa2MoHKbZl7Hh8fATaeMOQFhY8BDeJ7u9CdgaWaruKzz7AkmnS3TtcX4qEAbQ==}
     dependencies:
       '@lit-labs/observers': 2.0.4
-      '@spectrum-web-components/action-button': 1.0.3
+      '@spectrum-web-components/action-button': 1.0.0
       '@spectrum-web-components/base': 1.0.3
       '@spectrum-web-components/divider': 1.0.3
       '@spectrum-web-components/icon': 1.0.3
@@ -765,7 +869,7 @@ packages:
     dependencies:
       '@floating-ui/dom': 1.6.12
       '@floating-ui/utils': 0.2.8
-      '@spectrum-web-components/action-button': 1.0.3
+      '@spectrum-web-components/action-button': 1.0.0
       '@spectrum-web-components/base': 1.0.3
       '@spectrum-web-components/reactive-controllers': 1.0.0
       '@spectrum-web-components/shared': 1.0.3
@@ -817,6 +921,14 @@ packages:
       '@spectrum-web-components/shared': 1.0.3
     dev: false
 
+  /@spectrum-web-components/quick-actions@0.1.3:
+    resolution: {integrity: sha512-lQ529q9B+qqgbhPWiU2fUx0xbbQUS5KjQDwbqTosrlKyvXQ+qtZmdiULs6+oe2uD7rZ3iJbOOyywgFlVIakANg==}
+    deprecated: package deprecated
+    dependencies:
+      '@spectrum-web-components/base': 0.1.3
+      tslib: 2.8.1
+    dev: false
+
   /@spectrum-web-components/reactive-controllers@1.0.0:
     resolution: {integrity: sha512-1ghFFLQAqvbCWulS0FDE/mNKOjNdVgeTzvftn0Cz01I/fGYPNPHHao3alqfu61Pkcm2z8KOLd88selbRhUuPzQ==}
     dependencies:
@@ -830,6 +942,14 @@ packages:
       lit: 3.2.1
     dev: false
 
+  /@spectrum-web-components/shared@0.7.4:
+    resolution: {integrity: sha512-qTyZnhRtOlhp2ORZFc0jYdmd2Ph+RuRHvYN35bMiYl/RNZkfmcEbG2HyXcYBMuzs5Q5CYKsZXTzI4FiRjbKqFA==}
+    dependencies:
+      '@spectrum-web-components/base': 0.1.3
+      focus-visible: 5.2.1
+      tslib: 2.8.1
+    dev: false
+
   /@spectrum-web-components/shared@1.0.3:
     resolution: {integrity: sha512-dzorrYe8+KlBro88DBOiSCtqP3WLQYFJ8Ad6RO16cQiWBYHhQw5pZ15alQHOvbuaUJo1YbEw02uCO1PObL48Hw==}
     dependencies:
@@ -838,11 +958,34 @@ packages:
       focus-visible: 5.2.1
     dev: false
 
+  /@spectrum-web-components/styles@0.6.1:
+    resolution: {integrity: sha512-SaUmuBhgkqDcQGeUP8EVnSctGpx+Pauw+F7V6w7NCQLL3enIjp6ZPSIqDWjJLc8JkYe9qqoDFOrhczDzOhOuFA==}
+    dev: false
+
   /@spectrum-web-components/styles@1.0.3:
     resolution: {integrity: sha512-Ogkw3sxdUyKFr4GAd4Liwyb/fol3E6iotKm1BP4vO4qfuU/ANUC6JE6HXq25oflSandJsomUu7oK40jbxoRMCA==}
     dependencies:
       '@spectrum-web-components/base': 1.0.3
       lit: 3.2.1
+    dev: false
+
+  /@spectrum-web-components/textfield@1.0.0:
+    resolution: {integrity: sha512-jCfqN1Jr29WU7JXdpWEYykncrkRpatlthJ1iXqb3sG3oQiQWPi9jGM4V1gpkMnpNRx7BVaPoMxJhhdUFSLT8LQ==}
+    dependencies:
+      '@spectrum-web-components/base': 1.0.3
+      '@spectrum-web-components/help-text': 1.0.3
+      '@spectrum-web-components/icon': 1.0.3
+      '@spectrum-web-components/icons-ui': 1.0.3
+      '@spectrum-web-components/icons-workflow': 1.0.0
+      '@spectrum-web-components/shared': 1.0.3
+    dev: false
+
+  /@spectrum-web-components/theme@0.6.3:
+    resolution: {integrity: sha512-PjKAMv+wXROdvcmJAW3nD9EKj+3ELroQLuPvx4DQ/FscgoM7ht2XcR0pcdSsNuT5xlJFLD3lwCtFmpH7rUjwUQ==}
+    dependencies:
+      '@spectrum-web-components/base': 0.1.3
+      '@spectrum-web-components/styles': 0.6.1
+      tslib: 2.8.1
     dev: false
 
   /@spectrum-web-components/theme@1.0.3:
@@ -1710,7 +1853,7 @@ packages:
     dependencies:
       semver: 7.6.3
       shelljs: 0.8.5
-      typescript: 5.8.0-dev.20241220
+      typescript: 5.8.0-dev.20250104
     dev: true
 
   /ee-first@1.1.1:
@@ -2504,12 +2647,22 @@ packages:
     resolution: {integrity: sha512-Xq9nH7KlWZmXAtodXDDRE7vs6DU1gTU8zYDHDiWLSip45Egwq3plLHzPn27NgvzL2r1LMPC1vdqh98sQxtqj4A==}
     dev: false
 
+  /lit-element@2.5.1:
+    resolution: {integrity: sha512-ogu7PiJTA33bEK0xGu1dmaX5vhcRjBXCFexPja0e7P7jqLhTpNKYRPmE+GmiCaRVAbiQKGkUgkh/i6+bh++dPQ==}
+    dependencies:
+      lit-html: 1.4.1
+    dev: false
+
   /lit-element@4.1.1:
     resolution: {integrity: sha512-HO9Tkkh34QkTeUmEdNYhMT8hzLid7YlMlATSi1q4q17HE5d9mrrEHJ/o8O2D0cMi182zK1F3v7x0PWFjrhXFew==}
     dependencies:
       '@lit-labs/ssr-dom-shim': 1.2.0
       '@lit/reactive-element': 2.0.4
       lit-html: 3.2.1
+    dev: false
+
+  /lit-html@1.4.1:
+    resolution: {integrity: sha512-B9btcSgPYb1q4oSOb/PrOT6Z/H+r6xuNzfH4lFli/AWhYwdtrgQkQWBbIc6mdnf6E2IL3gDXdkkqNktpU0OZQA==}
     dev: false
 
   /lit-html@3.2.1:
@@ -3376,8 +3529,8 @@ packages:
     hasBin: true
     dev: true
 
-  /typescript@5.8.0-dev.20241220:
-    resolution: {integrity: sha512-+Ub5hKcNqrDJ/MWTrMCjy4HZivAggL6MtkgRqu8YaPg/Ghu6CY57SDD0fcTn/AClb3zxDATm+ilNq3fnPrnx7Q==}
+  /typescript@5.8.0-dev.20250104:
+    resolution: {integrity: sha512-xFBxTr8+Eew7d2yBN+I9Y51oceO90SKonhzcz+WQoDEIFJ5VPZm/Hb4bGgmUAcKqx/6YwyJC/5kxWfEI5hVmBA==}
     engines: {node: '>=14.17'}
     hasBin: true
     dev: true

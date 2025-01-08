@@ -1,17 +1,15 @@
-import {MdFilledTextField} from "@material/web/textfield/filled-text-field";
-import "@material/web/button/filled-button";
-import "@material/web/iconbutton/icon-button";
-import "@material/web/icon/icon";
-import "@material/web/labs/card/filled-card";
-import "@material/web/textfield/filled-text-field";
+import "@spectrum-web-components/textfield/sp-textfield.js";
+import "@spectrum-web-components/button/sp-button.js";
+import "@spectrum-web-components/action-button/sp-action-button.js";
+import "@spectrum-web-components/icons-workflow/icons/sp-icon-cancel.js";
+import "@spectrum-web-components/card/sp-card.js";
 import {
     Constructable,
     EntityMutationRequest,
     EntityMutationResponse
-} from "dev/logos/web/storage/client";
-import {EntityDeletedEvent, EntityUpdatedEvent} from "dev/logos/web/storage/event";
+} from "../client";
+import {EntityDeletedEvent, EntityUpdatedEvent} from "../event";
 import {css, html, LitElement, TemplateResult} from "lit";
-
 import {property, queryAll, state} from "lit/decorators.js";
 import {choose} from "lit/directives/choose.js";
 import {styleMap} from "lit/directives/style-map.js";
@@ -40,7 +38,7 @@ export abstract class EditEntity<
     DeleteResponse extends EntityMutationResponse,
 > extends LitElement {
     @property({type: Object}) entity: Entity;
-    @queryAll("md-filled-text-field") private fields: MdFilledTextField[];
+    @queryAll("sp-textfield") private fields: any[];
     @state() private state: EntityEditorState = EntityEditorState.VIEWING;
 
     protected abstract updateRequestClass: Constructable<UpdateRequest>;
@@ -52,25 +50,19 @@ export abstract class EditEntity<
             text-align: center;
         }
 
-        md-filled-card {
+        sp-card {
             margin-bottom: 1em;
         }
 
-        md-icon-button#cancel {
+        sp-action-button#cancel {
             position: absolute;
             right: 0.5em;
             top: 0.5em;
         }
 
-        md-filled-text-field {
+        sp-textfield {
             display: block;
             margin: 0.5em;
-        }
-
-        md-icon-button#cancel {
-            position: absolute;
-            right: 0.5em;
-            top: 0.5em;
         }
 
         img#favicon {
@@ -81,7 +73,7 @@ export abstract class EditEntity<
             border-bottom-left-radius: 12px;
         }
 
-        md-filled-card {
+        sp-card {
             flex-direction: row;
         }
 
@@ -147,32 +139,44 @@ export abstract class EditEntity<
 
     render() {
         return html`
-            <md-filled-card
-                    @click=${ev => {
-                        if (this.state == EntityEditorState.VIEWING) {
-                            this.state = EntityEditorState.EDITING
-                        }
-                        ev.stopPropagation();
-                    }}
-                    style=${styleMap({flexDirection: this.state == EntityEditorState.VIEWING ? 'row' : 'column'})}>
-                ${choose(this.state, [
-                    [EntityEditorState.VIEWING, () => this.renderView(this.entity)],
-                    [EntityEditorState.EDITING, () => html`
-                        <md-icon-button id="cancel" @click=${ev => {
-                            this.state = EntityEditorState.VIEWING;
-                            ev.stopPropagation();
-                        }}>
-                            <md-icon>cancel</md-icon>
-                        </md-icon-button>
+            <div @click=${ev => {
+                if (this.state == EntityEditorState.VIEWING) {
+                    this.state = EntityEditorState.EDITING
+                }
+                ev.stopPropagation();
+            }}
+                 style=${styleMap({flexDirection: this.state == EntityEditorState.VIEWING ? 'row' : 'column'})}>
+                <div slot="footer">
+                    ${choose(this.state, [
+                        [EntityEditorState.VIEWING, () => this.renderView(this.entity)],
+                        [EntityEditorState.EDITING, () => html`
+                            <sp-action-button
+                                    id="cancel"
+                                    quiet
+                                    @click=${ev => {
+                                        this.state = EntityEditorState.VIEWING;
+                                        ev.stopPropagation();
+                                    }}>
+                                <sp-icon-cancel slot="icon"></sp-icon-cancel>
+                            </sp-action-button>
 
-                        <h3>Edit ${this.getDisplayName(this.entity)}</h3>
-                        ${this.renderFields(this.entity)}
+                            <h3>Edit ${this.getDisplayName(this.entity)}</h3>
+                            ${this.renderFields(this.entity)}
 
-                        <md-filled-button @click=${this.handleDelete}>Delete</md-filled-button>
-                        <md-filled-button @click=${this.handleSave}>Save</md-filled-button>
-                    `]
-                ])}
-            </md-filled-card>
+                            <sp-button
+                                    variant="negative"
+                                    @click=${this.handleDelete}>
+                                Delete
+                            </sp-button>
+                            <sp-button
+                                    variant="cta"
+                                    @click=${this.handleSave}>
+                                Save
+                            </sp-button>
+                        `]
+                    ])}
+                </div>
+            </div>
         `;
     }
 }

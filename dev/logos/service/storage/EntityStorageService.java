@@ -6,10 +6,10 @@ import dev.logos.service.storage.exceptions.EntityReadException;
 import dev.logos.service.storage.exceptions.EntityWriteException;
 import dev.logos.service.storage.pg.Select;
 import dev.logos.user.NotAuthenticated;
-import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 
 import java.util.stream.Stream;
+
 
 public interface EntityStorageService<
         ListRequest extends GeneratedMessage,
@@ -46,8 +46,6 @@ public interface EntityStorageService<
             responseObserver.onCompleted();
         } catch (EntityReadException | EntityWriteException | NotAuthenticated e) {
             onFailedRequest(responseObserver, e.getMessage(), e);
-            responseObserver.onError(
-                    Status.UNAVAILABLE.withCause(e).asRuntimeException());
         }
     }
 

@@ -1,14 +1,13 @@
 package app.auth.cognito.interceptor.cognito;
 
 import app.auth.cognito.module.data.CognitoStackOutputs;
-import app.auth.cognito.user.AuthenticatedUser;
+import app.auth.cognito.user.CognitoUser;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import com.google.inject.Inject;
 import dev.logos.stack.aws.module.annotation.AwsRegion;
-import dev.logos.user.AnonymousUser;
 import dev.logos.user.User;
 import io.grpc.*;
 import io.jsonwebtoken.Claims;
@@ -34,7 +33,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static dev.logos.user.UserContext.USER_CONTEXT_KEY;
-import static java.lang.System.err;
 import static java.util.Objects.requireNonNull;
 
 public class CognitoServerInterceptor implements ServerInterceptor {
@@ -62,7 +60,6 @@ public class CognitoServerInterceptor implements ServerInterceptor {
     @Override
     public <ReqT, RespT> ServerCall.Listener<ReqT> interceptCall(ServerCall<ReqT, RespT> call, final Metadata requestHeaders, ServerCallHandler<ReqT, RespT> next) {
         Context ctx = Context.current();
-        User user = new AnonymousUser();
         Metadata internalRequestHeaders = new Metadata();
         internalRequestHeaders.merge(requestHeaders);
 
@@ -74,11 +71,14 @@ public class CognitoServerInterceptor implements ServerInterceptor {
 
         if (idToken.isPresent()) {
             String token = idToken.get();
-            user = authenticateUser(token);
-            internalRequestHeaders.put(AUTHORIZATION_METADATA_KEY, "Bearer " + token);
+            Optional<User> user = authenticateUser(token);
+            if (user.isPresent()) {
+                internalRequestHeaders.put(AUTHORIZATION_METADATA_KEY, "Bearer " + token);
+                ctx = ctx.withValue(USER_CONTEXT_KEY, user.get());
+            }
         }
 
-        return Contexts.interceptCall(ctx.withValue(USER_CONTEXT_KEY, user), call, internalRequestHeaders, next);
+        return Contexts.interceptCall(ctx, call, internalRequestHeaders, next);
     }
 
     private Optional<String> extractIdTokenFromCookies(String cookieHeader) {
@@ -93,7 +93,7 @@ public class CognitoServerInterceptor implements ServerInterceptor {
         return Optional.empty();
     }
 
-    private User authenticateUser(String token) {
+    private Optional<User> authenticateUser(String token) {
         try {
             String headerJson = new String(Base64.getUrlDecoder().decode(token.split("\\.")[0]), StandardCharsets.UTF_8);
             Gson gson = new Gson();
@@ -103,7 +103,7 @@ public class CognitoServerInterceptor implements ServerInterceptor {
 
             Optional<PublicKey> optionalPublicKey = getPublicKey(kid, userPoolId, region);
             if (optionalPublicKey.isEmpty()) {
-                return new AnonymousUser();
+                return Optional.empty();
             }
 
             Jws<Claims> claims = Jwts.parser()
@@ -111,10 +111,10 @@ public class CognitoServerInterceptor implements ServerInterceptor {
                                      .build()
                                      .parseSignedClaims(token);
 
-            return new AuthenticatedUser(token, claims.getPayload());
+            return Optional.of(new CognitoUser(token, claims.getPayload()));
         } catch (ExpiredJwtException | IOException | NoSuchAlgorithmException | InvalidKeySpecException e) {
             logger.log(Level.SEVERE, "Failed to authenticate", e);
-            return new AnonymousUser();
+            return Optional.empty();
         }
     }
 

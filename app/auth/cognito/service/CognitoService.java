@@ -46,7 +46,7 @@ public class CognitoService extends CognitoServiceGrpc.CognitoServiceImplBase im
     }
 
     @Override
-    public <Req> boolean allow(Req request, User ignoredUser) {
+    public <Req> boolean allow(Req request) {
         return request instanceof ProcessAuthCodeRequest ||
                 request instanceof GetSignInUrlRequest ||
                 request instanceof GetCurrentUserRequest;
@@ -61,12 +61,16 @@ public class CognitoService extends CognitoServiceGrpc.CognitoServiceImplBase im
 
     @Override
     public void getCurrentUser(GetCurrentUserRequest request, StreamObserver<GetCurrentUserResponse> responseObserver) {
-        User user = UserContext.getCurrentUser();
-        responseObserver.onNext(
-                GetCurrentUserResponse.newBuilder()
-                        .setDisplayName(user.getDisplayName())
-                        .setIsAuthenticated(user.isAuthenticated())
-                        .build());
+        GetCurrentUserResponse.Builder responseBuilder = GetCurrentUserResponse.newBuilder();
+        UserContext.getCurrentUser().ifPresentOrElse(
+                (User user) -> responseBuilder.setDisplayName(user.getDisplayName())
+                                              .setIsAuthenticated(user.isAuthenticated()),
+                () -> responseObserver.onNext(
+                        GetCurrentUserResponse.newBuilder()
+                                              .setDisplayName("Anonymous")
+                                              .setIsAuthenticated(false)
+                                              .build()));
+        responseObserver.onNext(responseBuilder.build());
         responseObserver.onCompleted();
     }
 
@@ -78,13 +82,13 @@ public class CognitoService extends CognitoServiceGrpc.CognitoServiceImplBase im
             Context.current().withValue(
                     CookieServerInterceptor.COOKIE_KEY,
                     String.join("|",
-                            "logosIdToken=%s; Path=/; Domain=%s; Secure; HttpOnly; SameSite=None; Max-Age=28800".formatted(tokens.id_token, this.authenticationCookieDomain)//,
+                                "logosIdToken=%s; Path=/; Domain=%s; Secure; HttpOnly; SameSite=None; Max-Age=28800".formatted(tokens.id_token, this.authenticationCookieDomain)//,
                     )
             ).wrap(() -> {
                 responseObserver.onNext(
                         ProcessAuthCodeResponse.newBuilder()
-                                .setExpiresIn(tokens.expires_in)
-                                .build());
+                                               .setExpiresIn(tokens.expires_in)
+                                               .build());
                 responseObserver.onCompleted();
             }).run();
         } catch (IOException e) {
@@ -104,9 +108,9 @@ public class CognitoService extends CognitoServiceGrpc.CognitoServiceImplBase im
                 new BasicNameValuePair("redirect_uri", cognitoStackOutputs.cognitoUserPoolDomainRedirectUrl())
         )));
         tokenRequest.setConfig(RequestConfig.custom()
-                .setConnectTimeout(10 * 1000)
-                .setConnectionRequestTimeout(10 * 1000)
-                .build());
+                                            .setConnectTimeout(10 * 1000)
+                                            .setConnectionRequestTimeout(10 * 1000)
+                                            .build());
 
         try (CloseableHttpClient client = HttpClients.createDefault();
              CloseableHttpResponse tokenResponse = client.execute(tokenRequest)) {
