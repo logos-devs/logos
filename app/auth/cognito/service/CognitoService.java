@@ -65,11 +65,9 @@ public class CognitoService extends CognitoServiceGrpc.CognitoServiceImplBase im
         UserContext.getCurrentUser().ifPresentOrElse(
                 (User user) -> responseBuilder.setDisplayName(user.getDisplayName())
                                               .setIsAuthenticated(user.isAuthenticated()),
-                () -> responseObserver.onNext(
-                        GetCurrentUserResponse.newBuilder()
-                                              .setDisplayName("Anonymous")
-                                              .setIsAuthenticated(false)
-                                              .build()));
+                () -> responseBuilder.setDisplayName("Anonymous")
+                                     .setIsAuthenticated(false)
+        );
         responseObserver.onNext(responseBuilder.build());
         responseObserver.onCompleted();
     }

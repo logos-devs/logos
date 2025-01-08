@@ -57,7 +57,7 @@ sync_files() {{
 
     if [ -d /mnt/web-bundles ]; then
         echo "Using local mount for sync"
-        dest="/mnt/web-bundles/$dest"
+        dest="/mnt/$dest"
         port=""
     else
         echo "Using port-forward for sync"
