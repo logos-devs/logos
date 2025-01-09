@@ -58,6 +58,9 @@ public class K8sModule extends AbstractModule {
 
         OptionalBinder.newOptionalBinder(binder(), Key.get(ContainerProps.Builder.class, RpcServer.class))
                       .setDefault().toInstance(ContainerProps.builder());
+
+        OptionalBinder.newOptionalBinder(binder(), Key.get(DeploymentProps.Builder.class, RpcServer.class))
+                      .setDefault().toInstance(DeploymentProps.builder());
     }
 
     @ProvidesIntoSet
@@ -132,6 +135,7 @@ public class K8sModule extends AbstractModule {
             Set<EmptyDirMount> emptyDirMounts,
             Set<SecretVolumeMount> secretVolumeMounts,
             @RpcServer ContainerProps.Builder rpcServerContainerPropsBuilder,
+            @RpcServer DeploymentProps.Builder rpcServerDeploymentPropsBuilder,
             @RpcServerEnv Map<String, EnvValue> rpcServerEnv
     ) {
         return optionalRpcServerName.map(
@@ -214,24 +218,24 @@ public class K8sModule extends AbstractModule {
                                                                                .initialDelaySeconds(Duration.seconds(10))
                                                                                .periodSeconds(Duration.seconds(10))
                                                                                .build()));
-                    return Set.of(DeploymentProps.builder()
-                                                 .metadata(
-                                                         ApiObjectMetadata.builder()
-                                                                          .name(rpcServerName + "-deployment")
-                                                                          .labels(Map.of("app", "backend"))
-                                                                          .build())
-                                                 .podMetadata(ApiObjectMetadata.builder()
-                                                                               .labels(Map.of("app", "backend"))
-                                                                               .build())
-                                                 .replicas(1)
-                                                 .serviceAccount(ServiceAccount.fromServiceAccountName(chart,
-                                                                                                       "logos-eks-stack-backend-service-account",
-                                                                                                       "logos-eks-stack-backend-service-account"))
-                                                 .volumes(volumes)
-                                                 .select(true)
-                                                 .automountServiceAccountToken(true)
-                                                 .containers(List.of(rpcServerContainerPropsBuilder.build())
-                                                 ));
+                    return Set.of(rpcServerDeploymentPropsBuilder
+                                          .metadata(
+                                                  ApiObjectMetadata.builder()
+                                                                   .name(rpcServerName + "-deployment")
+                                                                   .labels(Map.of("app", "backend"))
+                                                                   .build())
+                                          .podMetadata(ApiObjectMetadata.builder()
+                                                                        .labels(Map.of("app", "backend"))
+                                                                        .build())
+                                          .replicas(1)
+                                          .serviceAccount(ServiceAccount.fromServiceAccountName(chart,
+                                                                                                "logos-eks-stack-backend-service-account",
+                                                                                                "logos-eks-stack-backend-service-account"))
+                                          .volumes(volumes)
+                                          .select(true)
+                                          .automountServiceAccountToken(true)
+                                          .containers(List.of(rpcServerContainerPropsBuilder.build())
+                                          ));
                 }
         ).orElseGet(Set::of);
     }
