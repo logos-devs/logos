@@ -12,6 +12,8 @@ import java.util.stream.Stream;
 
 
 public interface EntityStorageService<
+        GetRequest extends GeneratedMessage,
+        GetResponse extends GeneratedMessage,
         ListRequest extends GeneratedMessage,
         ListResponse extends GeneratedMessage,
         CreateRequest extends GeneratedMessage,
@@ -26,19 +28,11 @@ public interface EntityStorageService<
 
     EntityStorage<Entity, StorageIdentifier> getStorage();
 
-    Select.Builder query(ListRequest listRequest) throws EntityReadException;
+    <Request> Select.Builder query(Request request);
 
     <Request> Entity entity(Request ignoredRequest) throws NotAuthenticated;
 
     <Request> StorageIdentifier id(Request request);
-
-    default ListResponse response(Stream<Entity> ignoredEntityStream, ListRequest ignoredRequest) {
-        throw new UnsupportedOperationException("Not implemented.");
-    }
-
-    default <Req extends GeneratedMessage, Resp extends GeneratedMessage> Resp response(StorageIdentifier ignoredId, Req ignoredRequest) {
-        throw new UnsupportedOperationException("Not implemented.");
-    }
 
     default <Request, Response> void request(Request request, StreamObserver<Response> responseObserver, RequestHandler<Response> handler) {
         try {
@@ -49,8 +43,20 @@ public interface EntityStorageService<
         }
     }
 
+    <Request, Response> Response response(Stream<Entity> entityStream, Request request);
+
+    <Request, Response> Response response(StorageIdentifier id, Request request);
+
     interface RequestHandler<Response> {
         Response handle() throws EntityReadException, EntityWriteException, NotAuthenticated;
+    }
+
+    default void get(GetRequest getRequest, StreamObserver<GetResponse> responseObserver) {
+        request(getRequest, responseObserver, () -> {
+            try (Stream<Entity> entryGetStream = getStorage().query(id(getRequest), query(getRequest))) {
+                return response(entryGetStream, getRequest);
+            }
+        });
     }
 
     default void list(ListRequest listRequest, StreamObserver<ListResponse> responseObserver) {

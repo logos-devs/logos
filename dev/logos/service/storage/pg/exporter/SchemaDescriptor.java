@@ -38,7 +38,20 @@ public record SchemaDescriptor(String name, List<TableDescriptor> tables) implem
                 List<ColumnDescriptor> columnDescriptors = new ArrayList<>();
 
                 PreparedStatement columnQueryStmt = connection.prepareStatement(
-                        "select column_name, udt_name::regtype::text as data_type from information_schema.columns where table_schema = ? and table_name = ?");
+                        """
+                                SELECT
+                                    column_name,
+                                    CASE
+                                        WHEN domain_name IS NOT NULL THEN
+                                            CONCAT_WS('.', NULLIF(NULLIF(domain_schema, 'public'), 'pg_catalog'), domain_name)
+                                        ELSE
+                                            CONCAT_WS('.', NULLIF(NULLIF(udt_schema, 'public'), 'pg_catalog'), udt_name)
+                                    END as data_type
+                                FROM information_schema.columns
+                                WHERE table_schema = ?
+                                AND table_name = ?
+                                """
+                );
                 columnQueryStmt.setString(1, schema);
                 columnQueryStmt.setString(2, table);
                 ResultSet columnResultSet = columnQueryStmt.executeQuery();

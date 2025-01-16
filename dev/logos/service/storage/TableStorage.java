@@ -1,8 +1,6 @@
 package dev.logos.service.storage;
 
 import com.google.inject.Inject;
-import com.google.protobuf.ByteString;
-import com.google.protobuf.Descriptors.FieldDescriptor;
 import com.google.protobuf.GeneratedMessage;
 import dev.logos.service.storage.exceptions.EntityReadException;
 import dev.logos.service.storage.exceptions.EntityWriteException;
@@ -10,24 +8,19 @@ import dev.logos.service.storage.pg.Relation;
 import dev.logos.service.storage.pg.Select;
 import org.jdbi.v3.core.Handle;
 import org.jdbi.v3.core.Jdbi;
+import org.jdbi.v3.core.mapper.MappingException;
 import org.jdbi.v3.core.mapper.reflect.FieldMapper;
 import org.jdbi.v3.core.statement.Query;
+import org.jdbi.v3.core.statement.StatementContext;
 
 import javax.sql.DataSource;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.time.LocalDate;
-import java.time.OffsetDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
+import java.sql.ResultSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static java.lang.System.err;
 
 
 public class TableStorage<Entity, StorageIdentifier> implements EntityStorage<Entity, StorageIdentifier> {
@@ -56,13 +49,26 @@ public class TableStorage<Entity, StorageIdentifier> implements EntityStorage<En
         this.storageIdentifierClass = storageIdentifierClass;
     }
 
+    private Entity entityMapper(ResultSet rs, StatementContext ctx) {
+        try {
+            return relation.toProtobuf(rs);
+        } catch (EntityReadException e) {
+            throw new MappingException(e);
+        }
+    }
+
+    public Stream<Entity> query(StorageIdentifier id, Select.Builder selectBuilder) {
+        selectBuilder.where(relation.getColumns().get("id").eq(id.toString()));
+        return query(selectBuilder);
+    }
+
     // TODO : write a mapper which uses the proto reflection API. The members
     //  of this class are not the ones which correspond to field names.
-    public Stream<Entity> query(Select.Builder selectBuilder) throws EntityReadException {
+    public Stream<Entity> query(Select.Builder selectBuilder) {
         Handle handle = jdbi.open();
         handle.registerRowMapper(FieldMapper.factory(entityClass));
         return handle.createQuery(selectBuilder.build().toString())
-                     .map((rs, ctx) -> relation.<Entity>toProtobuf(rs))
+                     .map(this::entityMapper)
                      .stream()
                      .onClose(handle::close);
     }

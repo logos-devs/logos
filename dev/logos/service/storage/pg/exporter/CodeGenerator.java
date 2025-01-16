@@ -3,21 +3,17 @@ package dev.logos.service.storage.pg.exporter;
 import com.google.inject.AbstractModule;
 import com.google.inject.Inject;
 import com.google.inject.TypeLiteral;
-import com.google.protobuf.DescriptorProtos;
-import com.google.protobuf.DescriptorProtos.FieldDescriptorProto;
-import com.google.protobuf.GeneratedMessage;
 import com.squareup.javapoet.*;
 import dev.logos.app.register.registerModule;
 import dev.logos.service.storage.EntityStorage;
 import dev.logos.service.storage.EntityStorageService;
 import dev.logos.service.storage.TableStorage;
+import dev.logos.service.storage.exceptions.EntityReadException;
 import dev.logos.service.storage.pg.*;
 import dev.logos.service.storage.pg.exporter.mapper.PgTypeMapper;
 import dev.logos.service.storage.pg.exporter.module.annotation.BuildDir;
 import dev.logos.service.storage.pg.exporter.module.annotation.BuildPackage;
 import dev.logos.service.storage.validator.Validator;
-import dev.logos.user.NotAuthenticated;
-import dev.logos.user.User;
 import io.grpc.stub.StreamObserver;
 import org.jdbi.v3.core.statement.Query;
 
@@ -29,11 +25,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static dev.logos.service.storage.pg.Identifier.snakeToCamelCase;
-import static java.util.Objects.requireNonNull;
 import static javax.lang.model.element.Modifier.*;
 
 public class CodeGenerator {
@@ -118,37 +114,44 @@ public class CodeGenerator {
                         MethodSpec
                                 .methodBuilder("toProtobuf")
                                 .addModifiers(PUBLIC)
-                                .addException(SQLException.class)
+                                .addException(EntityReadException.class)
                                 .addParameter(ResultSet.class, "resultSet")
                                 .returns(resultProtoClassName)
                                 .addStatement(
                                         CodeBlock.builder()
-                                                 .add("$T.Builder builder = $T.newBuilder();\n",
-                                                      resultProtoClassName,
-                                                      resultProtoClassName)
-                                                 .add(columnDescriptors
-                                                              .stream()
-                                                              .map(columnDescriptor -> {
-                                                                  String columnName = columnDescriptor.name();
-                                                                  String setterName = snakeToCamelCase(columnDescriptor.name());
-                                                                  PgTypeMapper typeMapper = getPgTypeMapper(columnDescriptor.type());
-                                                                  return CodeBlock.of(
-                                                                          "if (resultSet.getObject($S) != null) { builder.$N($L); }",
-                                                                          columnName,
-                                                                          "%s%s%s".formatted(
-                                                                                  typeMapper.protoFieldRepeated() ? "addAll" : "set",
-                                                                                  setterName.substring(0, 1).toUpperCase(),
-                                                                                  setterName.substring(1)
-                                                                          ),
-                                                                          typeMapper.pgToProto(
-                                                                                  CodeBlock.of(
-                                                                                          "$L resultSet.$N($S)",
-                                                                                          typeMapper.resultSetFieldCast(),
-                                                                                          typeMapper.resultSetFieldGetter(),
-                                                                                          columnName)));
-                                                              }).collect(CodeBlock.joining("\n")))
-                                                 .add("return builder.build()")
-                                                 .build())
+                                                 .beginControlFlow("try")
+                                                 .add(
+                                                         CodeBlock.builder()
+                                                                  .add("$T.Builder builder = $T.newBuilder();\n",
+                                                                       resultProtoClassName,
+                                                                       resultProtoClassName)
+                                                                  .add(columnDescriptors
+                                                                               .stream()
+                                                                               .map(columnDescriptor -> {
+                                                                                   String columnName = columnDescriptor.name();
+                                                                                   String setterName = snakeToCamelCase(columnDescriptor.name());
+                                                                                   PgTypeMapper typeMapper = getPgTypeMapper(columnDescriptor.type());
+                                                                                   return CodeBlock.of(
+                                                                                           "if (resultSet.getObject($S) != null) { builder.$N($L); }",
+                                                                                           columnName,
+                                                                                           "%s%s%s".formatted(
+                                                                                                   typeMapper.protoFieldRepeated() ? "addAll" : "set",
+                                                                                                   setterName.substring(0, 1).toUpperCase(),
+                                                                                                   setterName.substring(1)
+                                                                                           ),
+                                                                                           typeMapper.pgToProto(
+                                                                                                   CodeBlock.of(
+                                                                                                           "$L resultSet.$N($S)",
+                                                                                                           typeMapper.resultSetFieldCast(),
+                                                                                                           typeMapper.resultSetFieldGetter(),
+                                                                                                           columnName)));
+                                                                               }).collect(CodeBlock.joining("\n")))
+                                                                  .add("return builder.build()")
+                                                                  .build()).build()
+                                )
+                                .nextControlFlow("catch ($T e)", SQLException.class)
+                                .addStatement("throw new $T(e)", EntityReadException.class)
+                                .endControlFlow()
                                 .build())
                 .addTypes(columnClasses);
 
@@ -238,13 +241,39 @@ public class CodeGenerator {
                        .build();
     }
 
-    private String protoHeader(String packageName) {
+    private String protoHeader(SchemaDescriptor schemaDescriptor, TableDescriptor tableDescriptor) {
+        String packageName = buildPackage + "." + schemaDescriptor.name();
+        String imports = tableDescriptor
+                .columns()
+                .stream()
+                .flatMap(columnDescriptor -> pgColumnTypeMappers.get(columnDescriptor.type()).protoImports().stream())
+                .map(importPath -> importPath.replaceAll("\"", ""))
+                .map("import \"%s\";\n"::formatted).collect(Collectors.joining());
+
         return """
                 syntax = "proto3";
                 
                 option java_package = "%s";
                 option java_multiple_files = true;
-                """.formatted(packageName);
+                
+                %s
+                """.formatted(packageName, imports);
+    }
+
+    private String protoGetRequestMessage(String entityName) {
+        return """
+                message Get%sRequest {
+                    bytes id = 1;
+                }
+                """.formatted(entityName);
+    }
+
+    private String protoGetResponseMessage(String entityName) {
+        return """
+                message Get%sResponse {
+                    %s entity = 1;
+                }
+                """.formatted(entityName, entityName);
     }
 
     private String protoListRequestMessage(String entityName) {
@@ -346,15 +375,14 @@ public class CodeGenerator {
 
     private String protoService(String entityName) {
         return """
-                service %sStorageService {
-                    rpc Create(Create%sRequest) returns (Create%sResponse);
-                    rpc Update(Update%sRequest) returns (Update%sResponse);
-                    rpc Delete(Delete%sRequest) returns (Delete%sResponse);
-                    rpc List(List%sRequest) returns (List%sResponse);
+                service %1$sStorageService {
+                    rpc Create(Create%1$sRequest) returns (Create%1$sResponse);
+                    rpc Update(Update%1$sRequest) returns (Update%1$sResponse);
+                    rpc Delete(Delete%1$sRequest) returns (Delete%1$sResponse);
+                    rpc Get(Get%1$sRequest) returns (Get%1$sResponse);
+                    rpc List(List%1$sRequest) returns (List%1$sResponse);
                 }
-                """.formatted(entityName, entityName, entityName, entityName,
-                              entityName, entityName, entityName, entityName,
-                              entityName);
+                """.formatted(entityName);
     }
 
     public String makeProtoService(SchemaDescriptor schemaDescriptor, TableDescriptor tableDescriptor) {
@@ -362,9 +390,11 @@ public class CodeGenerator {
 
         return String.join("\n",
                            List.of(
-                                   protoHeader(buildPackage + "." + schemaDescriptor.name()),
+                                   protoHeader(schemaDescriptor, tableDescriptor),
                                    protoCreateRequestMessage(tableSimpleName),
                                    protoCreateResponseMessage(tableSimpleName),
+                                   protoGetRequestMessage(tableSimpleName),
+                                   protoGetResponseMessage(tableSimpleName),
                                    protoUpdateRequestMessage(tableSimpleName),
                                    protoUpdateResponseMessage(tableSimpleName),
                                    protoDeleteRequestMessage(tableSimpleName),
@@ -374,153 +404,6 @@ public class CodeGenerator {
                                    protoEntityMessage(tableSimpleName, tableDescriptor.columns()),
                                    protoService(tableSimpleName)
                            ));
-    }
-
-    public DescriptorProtos.FileDescriptorProto makeResultProtoFileDescriptor(SchemaDescriptor schemaDescriptor, TableDescriptor tableDescriptor) {
-
-        ClassName tableClassName = tableDescriptor.getClassName();
-        String tableSimpleName = tableClassName.simpleName();
-
-        FieldDescriptorProto identifierField = FieldDescriptorProto
-                .newBuilder()
-                .setName("id")
-                .setType(FieldDescriptorProto.Type.TYPE_BYTES)
-                .setNumber(1)
-                .build();
-
-        FieldDescriptorProto entityField =
-                FieldDescriptorProto
-                        .newBuilder()
-                        .setName("entity")
-                        .setType(FieldDescriptorProto.Type.TYPE_MESSAGE)
-                        .setTypeName(tableSimpleName)
-                        .setNumber(2)
-                        .build();
-
-        return DescriptorProtos.FileDescriptorProto
-                .newBuilder()
-                .setName(buildPackage.replace(".",
-                                              "/") + "/" + schemaDescriptor.name() + "/" + tableDescriptor.name() + ".proto")
-                .setSyntax("proto3")
-                .setOptions(
-                        DescriptorProtos.FileOptions
-                                .newBuilder()
-                                .setJavaPackage(buildPackage + "." + schemaDescriptor.name())
-                                .setJavaMultipleFiles(true))
-                .addMessageType(
-                        DescriptorProtos.DescriptorProto
-                                .newBuilder()
-                                .setName("Create" + tableSimpleName + "Request")
-                                .addField(identifierField)
-                                .addField(entityField))
-                .addMessageType(
-                        DescriptorProtos.DescriptorProto
-                                .newBuilder()
-                                .setName("Create" + tableSimpleName + "Response")
-                                .addField(identifierField))
-                .addMessageType(
-                        DescriptorProtos.DescriptorProto
-                                .newBuilder()
-                                .setName("Update" + tableSimpleName + "Request")
-                                .addField(identifierField)
-                                .addField(entityField))
-                .addMessageType(
-                        DescriptorProtos.DescriptorProto
-                                .newBuilder()
-                                .setName("Update" + tableSimpleName + "Response")
-                                .addField(identifierField))
-                .addMessageType(
-                        DescriptorProtos.DescriptorProto
-                                .newBuilder()
-                                .setName("Delete" + tableSimpleName + "Request")
-                                .addField(identifierField))
-                .addMessageType(
-                        DescriptorProtos.DescriptorProto
-                                .newBuilder()
-                                .setName("Delete" + tableSimpleName + "Response")
-                                .addField(identifierField))
-                .addMessageType(
-                        DescriptorProtos.DescriptorProto
-                                .newBuilder()
-                                .setName("List" + tableSimpleName + "Request")
-                                .addField(
-                                        FieldDescriptorProto
-                                                .newBuilder()
-                                                .setName("limit")
-                                                .setType(FieldDescriptorProto.Type.TYPE_INT64)
-                                                .setNumber(1))
-                                .addField(
-                                        FieldDescriptorProto
-                                                .newBuilder()
-                                                .setName("offset")
-                                                .setType(FieldDescriptorProto.Type.TYPE_INT64)
-                                                .setNumber(2)))
-                .addMessageType(
-                        DescriptorProtos.DescriptorProto
-                                .newBuilder()
-                                .setName("List" + tableSimpleName + "Response")
-                                .addField(
-                                        FieldDescriptorProto
-                                                .newBuilder()
-                                                .setName("results")
-                                                .setType(FieldDescriptorProto.Type.TYPE_MESSAGE)
-                                                .setTypeName(tableSimpleName)
-                                                .setLabel(FieldDescriptorProto.Label.LABEL_REPEATED)
-                                                .setNumber(1)))
-                .addMessageType(
-                        DescriptorProtos.DescriptorProto
-                                .newBuilder()
-                                .setName(tableSimpleName)
-                                .addAllField(
-                                        IntStream.range(0, tableDescriptor.columns().size())
-                                                 .mapToObj(i -> {
-                                                     ColumnDescriptor columnDescriptor = tableDescriptor.columns()
-                                                                                                        .get(i);
-                                                     String columnType = columnDescriptor.type();
-                                                     PgTypeMapper typeMapper = getPgTypeMapper(columnType);
-
-                                                     FieldDescriptorProto.Builder fieldDescriptorProto = FieldDescriptorProto
-                                                             .newBuilder()
-                                                             .setName(columnDescriptor.name())
-                                                             .setType(getPgTypeMapper(columnDescriptor.type()).getProtoFieldType())
-                                                             .setNumber(i + 1);
-
-                                                     if (typeMapper.protoFieldRepeated()) {
-                                                         fieldDescriptorProto = fieldDescriptorProto.setLabel(
-                                                                 FieldDescriptorProto.Label.LABEL_REPEATED);
-                                                     }
-
-                                                     return fieldDescriptorProto.build();
-                                                 }).toList()))
-                .addService(
-                        DescriptorProtos.ServiceDescriptorProto
-                                .newBuilder()
-                                .setName(tableSimpleName + "StorageService")
-                                .addMethod(
-                                        DescriptorProtos.MethodDescriptorProto
-                                                .newBuilder()
-                                                .setName("List")
-                                                .setInputType("List" + tableSimpleName + "Request")
-                                                .setOutputType("List" + tableSimpleName + "Response"))
-                                .addMethod(
-                                        DescriptorProtos.MethodDescriptorProto
-                                                .newBuilder()
-                                                .setName("Create")
-                                                .setInputType("Create" + tableSimpleName + "Request")
-                                                .setOutputType("Create" + tableSimpleName + "Response"))
-                                .addMethod(
-                                        DescriptorProtos.MethodDescriptorProto
-                                                .newBuilder()
-                                                .setName("Update")
-                                                .setInputType("Update" + tableSimpleName + "Request")
-                                                .setOutputType("Update" + tableSimpleName + "Response"))
-                                .addMethod(
-                                        DescriptorProtos.MethodDescriptorProto
-                                                .newBuilder()
-                                                .setName("Delete")
-                                                .setInputType("Delete" + tableSimpleName + "Request")
-                                                .setOutputType("Delete" + tableSimpleName + "Response"))
-                ).build();
     }
 
     MethodSpec makeRpcHandler(ClassName requestMessage, ClassName responseMessage, String methodName) {
@@ -544,7 +427,7 @@ public class CodeGenerator {
                          .build();
     }
 
-    private MethodSpec makeEntityGetter(ClassName entityMessage, ClassName createRequestMessage, ClassName updateRequestMessage) {
+    private MethodSpec makeEntityGetter(ClassName entityMessage, ClassName getRequestMessage, ClassName createRequestMessage, ClassName updateRequestMessage) {
         TypeVariableName requestType = TypeVariableName.get("Request");
         return MethodSpec.methodBuilder("entity")
                          .addModifiers(PUBLIC)
@@ -564,6 +447,7 @@ public class CodeGenerator {
     // <Request> StorageIdentifier id(Request request);
     private MethodSpec makeIdGetter(
             ClassName storageIdentifier,
+            ClassName getRequestMessage,
             ClassName updateRequestMessage,
             ClassName deleteRequestMessage) {
 
@@ -574,6 +458,10 @@ public class CodeGenerator {
                          .addTypeVariable(requestType)
                          .addParameter(requestType, "request")
                          .returns(storageIdentifier)
+                         .beginControlFlow("if (request instanceof $T)", getRequestMessage)
+                         .addStatement("$T getRequest = ($T) request", getRequestMessage, getRequestMessage)
+                         .addStatement("return $T.bytestringToUuid(getRequest.getId())", Converter.class)
+                         .endControlFlow()
                          .beginControlFlow("if (request instanceof $T)", updateRequestMessage)
                          .addStatement("$T updateRequest = ($T) request", updateRequestMessage, updateRequestMessage)
                          .addStatement("return $T.bytestringToUuid(updateRequest.getId())", Converter.class)
@@ -605,16 +493,6 @@ public class CodeGenerator {
                          .build();
     }
 
-    private static MethodSpec makeAllowMethod(ClassName requestMessage) {
-        return MethodSpec.methodBuilder("allow")
-                         .addModifiers(PROTECTED)
-                         .addParameter(requestMessage, "request")
-                         .addParameter(ClassName.get(User.class), "user")
-                         .returns(boolean.class)
-                         .addStatement("return false")
-                         .build();
-    }
-
     public void makeStorageServiceBaseClass(SchemaDescriptor schemaDescriptor, TableDescriptor tableDescriptor) throws IOException {
         String packageName = buildPackage + "." + schemaDescriptor.name();
         ClassName tableClassName = tableDescriptor.getClassName();
@@ -635,6 +513,10 @@ public class CodeGenerator {
                 String.format("%s.List%sRequest", packageName, tableClassName));
         ClassName listResponseMessage = ClassName.bestGuess(
                 String.format("%s.List%sResponse", packageName, tableClassName));
+        ClassName getRequestMessage = ClassName.bestGuess(
+                String.format("%s.Get%sRequest", packageName, tableClassName));
+        ClassName getResponseMessage = ClassName.bestGuess(
+                String.format("%s.Get%sResponse", packageName, tableClassName));
         ClassName updateRequestMessage = ClassName.bestGuess(
                 String.format("%s.Update%sRequest", packageName, tableClassName));
         ClassName updateResponseMessage = ClassName.bestGuess(
@@ -656,6 +538,8 @@ public class CodeGenerator {
                                            .build())
                         .addSuperinterface(ParameterizedTypeName.get(
                                 ClassName.get(EntityStorageService.class),
+                                getRequestMessage,
+                                getResponseMessage,
                                 listRequestMessage,
                                 listResponseMessage,
                                 createRequestMessage,
@@ -673,54 +557,62 @@ public class CodeGenerator {
                                              .returns(entityStorageClass)
                                              .addStatement("return this.storage")
                                              .build())
+                        .addMethod(makeRpcHandler(getRequestMessage, getResponseMessage, "get"))
                         .addMethod(makeRpcHandler(listRequestMessage, listResponseMessage, "list"))
                         .addMethod(makeRpcHandler(createRequestMessage, createResponseMessage, "create"))
                         .addMethod(makeRpcHandler(updateRequestMessage, updateResponseMessage, "update"))
                         .addMethod(makeRpcHandler(deleteRequestMessage, deleteResponseMessage, "delete"))
                         .addMethod(makePreSaveMethod(entityMessage))
-                        .addMethod(makeEntityGetter(entityMessage, createRequestMessage, updateRequestMessage))
-                        .addMethod(makeIdGetter(storageIdentifier, updateRequestMessage, deleteRequestMessage))
+                        .addMethod(makeEntityGetter(entityMessage, getRequestMessage, createRequestMessage, updateRequestMessage))
+                        .addMethod(makeIdGetter(storageIdentifier, getRequestMessage, updateRequestMessage, deleteRequestMessage))
 
-                        // ListResponse response(Stream<Entity>, ListRequest)
+                        // GetResponse response(Stream<Entity>, GetRequest)
                         .addMethod(MethodSpec.methodBuilder("response")
                                              .addModifiers(PUBLIC)
+                                             .returns(TypeVariableName.get("Response"))
+                                             .addTypeVariable(TypeVariableName.get("Request"))
+                                             .addTypeVariable(TypeVariableName.get("Response"))
                                              .addParameter(
                                                      ParameterizedTypeName.get(ClassName.get(Stream.class),
                                                                                entityMessage),
-                                                     String.format("%sListStream",
-                                                                   tableDescriptor.getInstanceVariableName()))
-                                             .addParameter(listRequestMessage, "request")
-                                             .returns(listResponseMessage)
-                                             .addStatement(
-                                                     "return $T.newBuilder().addAllResults($LListStream.toList()).build()",
-                                                     listResponseMessage,
-                                                     tableDescriptor.getInstanceVariableName())
-                                             .build())
+                                                     "%sStream".formatted(tableDescriptor.getInstanceVariableName()))
+                                             .addParameter(TypeVariableName.get("Request"), "request")
+                                             .addStatement("""
+                                                                   return switch(request) {
+                                                                       case $T r -> ($T)$T.newBuilder().setEntity($LStream.findFirst().get()).build();
+                                                                       case $T r -> ($T)$T.newBuilder().addAllResults($LStream.toList()).build();
+                                                                       default -> throw new $T("Unexpected request type");
+                                                                   }
+                                                                   """,
+                                                           getRequestMessage,
+                                                           TypeVariableName.get("Response"),
+                                                           getResponseMessage,
+                                                           tableDescriptor.getInstanceVariableName(),
+                                                           listRequestMessage,
+                                                           TypeVariableName.get("Response"),
+                                                           listResponseMessage,
+                                                           tableDescriptor.getInstanceVariableName(),
+                                                           RuntimeException.class).build())
                         .addMethod(
                                 MethodSpec.methodBuilder("response")
                                           .addAnnotation(Override.class)
                                           .addModifiers(PUBLIC)
-                                          .addTypeVariable(TypeVariableName.get("Req", GeneratedMessage.class))
-                                          .addTypeVariable(TypeVariableName.get("Resp", GeneratedMessage.class))
-                                          .returns(TypeVariableName.get("Resp"))
+                                          .addTypeVariable(TypeVariableName.get("Request"))
+                                          .addTypeVariable(TypeVariableName.get("Response"))
+                                          .returns(TypeVariableName.get("Response"))
                                           .addParameter(UUID.class, "id")
-                                          .addParameter(TypeVariableName.get("Req"), "request")
+                                          .addParameter(TypeVariableName.get("Request"), "request")
                                           .beginControlFlow("if (request instanceof $T)", createRequestMessage)
-                                          .addStatement("return (Resp) $T.newBuilder().build()", createResponseMessage)
+                                          .addStatement("return (Response) $T.newBuilder().build()", createResponseMessage)
                                           .endControlFlow()
                                           .addStatement("return null")
                                           .build());
 
-        storageServiceClassSpec.addMethod(makeAllowMethod(listRequestMessage))
-                               .addMethod(makeValidateRequestMethod(listRequestMessage, false));
+        ;
 
-        storageServiceClassSpec.addMethod(makeAllowMethod(createRequestMessage))
-                               .addMethod(makeValidateRequestMethod(createRequestMessage, true));
-
-        storageServiceClassSpec.addMethod(makeAllowMethod(updateRequestMessage))
-                               .addMethod(makeValidateRequestMethod(updateRequestMessage, true));
-
-        storageServiceClassSpec.addMethod(makeAllowMethod(deleteRequestMessage))
+        storageServiceClassSpec.addMethod(makeValidateRequestMethod(listRequestMessage, false))
+                               .addMethod(makeValidateRequestMethod(createRequestMessage, true))
+                               .addMethod(makeValidateRequestMethod(updateRequestMessage, true))
                                .addMethod(makeValidateRequestMethod(deleteRequestMessage, false));
 
         // entity-level validator that applies to creates and updates

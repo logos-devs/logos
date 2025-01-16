@@ -4,10 +4,12 @@ import com.google.protobuf.DescriptorProtos.FieldDescriptorProto;
 import com.squareup.javapoet.CodeBlock;
 
 import java.util.List;
+import java.util.Set;
 
 public abstract class PgTypeMapper {
     private final List<String> pgTypes;
-    private final FieldDescriptorProto.Type protoFieldType;
+    private FieldDescriptorProto.Type protoFieldType;
+    private String protoFieldTypeStr;
     private final String resultSetFieldGetter;
 
     public PgTypeMapper(
@@ -17,6 +19,16 @@ public abstract class PgTypeMapper {
     ) {
         this.pgTypes = pgTypes;
         this.protoFieldType = protoFieldType;
+        this.resultSetFieldGetter = resultSetFieldGetter;
+    }
+
+    public PgTypeMapper(
+            List<String> pgTypes,
+            String protoFieldTypeStr,
+            String resultSetFieldGetter
+    ) {
+        this.pgTypes = pgTypes;
+        this.protoFieldTypeStr = protoFieldTypeStr;
         this.resultSetFieldGetter = resultSetFieldGetter;
     }
 
@@ -53,7 +65,13 @@ public abstract class PgTypeMapper {
     }
 
     public String protoFieldTypeKeyword() {
-        return getProtoFieldType().name().substring("TYPE_".length()).toLowerCase();
+        if (protoFieldType != null) {
+            return getProtoFieldType().name().substring("TYPE_".length()).toLowerCase();
+        } else if (protoFieldTypeStr != null) {
+            return protoFieldTypeStr;
+        } else {
+            throw new IllegalStateException("No protoFieldType or protoFieldTypeStr provided.");
+        }
     }
 
     public String resultSetFieldGetter() {
@@ -69,4 +87,8 @@ public abstract class PgTypeMapper {
     }
 
     public abstract CodeBlock protoToPg(String queryVariable, String fieldVariable, String fieldName);
+
+    public Set<String> protoImports() {
+        return Set.of();
+    }
 }

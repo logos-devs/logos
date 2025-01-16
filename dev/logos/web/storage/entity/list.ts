@@ -41,7 +41,7 @@ export abstract class ListEntity<
                  @entity-updated=${this.loadResults}
                  @entity-deleted=${this.loadResults}>
 
-                ${map(this.entityList, this.renderEdit)}
+                ${map(this.entityList, this.renderEdit.bind(this))}
                 ${this.renderCreate()}
             </div>
         `;

@@ -8,14 +8,13 @@ java_library(
         "EntityStorage.java",
         "EntityStorageService.java",
         "TableStorage.java",
-        "exceptions/EntityReadException.java",
-        "exceptions/EntityWriteException.java",
     ],
     visibility = [
         "//visibility:public",
     ],
     deps = [
         "//dev/logos/service",
+        "//dev/logos/service/storage/exceptions",
         "//dev/logos/service/storage/pg",
         "//dev/logos/service/storage/validator",
         "//dev/logos/user",

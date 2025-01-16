@@ -193,7 +193,9 @@ def java_storage_service(name, schema_export, tables, deps, mappers = None, visi
     native.java_binary(
         name = name + "_exporter",
         main_class = "dev.logos.service.storage.pg.exporter.Exporter",
-        runtime_deps = (mappers or []) + ["@logos//dev/logos/service/storage/pg/exporter"],
+        runtime_deps = (mappers or []) + [
+            "@logos//dev/logos/service/storage/pg/exporter",
+        ],
     )
 
     java_storage_service_rule(
@@ -214,17 +216,19 @@ def java_storage_service(name, schema_export, tables, deps, mappers = None, visi
         srcs = [":%s_src" % name],
         visibility = visibility,
         deps = deps + [
+            "@com_google_protobuf//:protobuf_java",
             "@logos//dev/logos/app",
             "@logos//dev/logos/app/register:module_library",
+            "@logos//dev/logos/service/storage/exceptions",
             "@logos//dev/logos/service/storage/pg",
             "@logos//dev/logos/service/storage/validator",
             "@logos//dev/logos/service/storage:storage_library",
             "@logos//dev/logos/user",
             "@maven_logos//:com_google_inject_guice",
-            "@com_google_protobuf//:protobuf_java",
             "@maven_logos//:io_grpc_grpc_api",
             "@maven_logos//:io_grpc_grpc_protobuf",
             "@maven_logos//:io_grpc_grpc_stub",
+            "@maven_logos//:io_vavr_vavr",
             "@maven_logos//:javax_annotation_javax_annotation_api",
             "@maven_logos//:org_jdbi_jdbi3_core",
         ],

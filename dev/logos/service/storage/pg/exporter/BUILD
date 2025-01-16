@@ -13,6 +13,7 @@ java_library(
         "//dev/logos/app/register:module_library",
         "//dev/logos/module",
         "//dev/logos/service/storage:storage_library",
+        "//dev/logos/service/storage/exceptions",
         "//dev/logos/service/storage/module",
         "//dev/logos/service/storage/pg",
         "//dev/logos/service/storage/pg/exporter/mapper",

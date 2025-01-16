@@ -22,6 +22,16 @@ public interface Service extends BindableService {
     default void onFailedRequest(
             StreamObserver<?> responseObserver,
             String msg,
+            Throwable e
+    ) {
+        logger.atError().setCause(e).log(msg);
+        responseObserver.onError(
+                Status.INVALID_ARGUMENT.withDescription(msg).asException());
+    }
+
+    default void onFailedRequest(
+            StreamObserver<?> responseObserver,
+            String msg,
             Object obj
     ) {
         logger.atError().log(msg, obj);

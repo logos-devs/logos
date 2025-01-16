@@ -80,7 +80,7 @@ public class ExportModule extends AbstractModule {
                                             queryVariable, fieldName, fieldVariable, fieldName);
                     }
                 },
-                new PgTypeMapper(List.of("timestamp", "timestamp with time zone"), TYPE_STRING, "getString") {
+                new PgTypeMapper(List.of("timestamp", "timestamptz"), TYPE_STRING, "getString") {
                     @Override
                     public CodeBlock protoToPg(String queryVariable, String fieldVariable, String fieldName) {
                         return CodeBlock.of("$L.bind($S, $T.parse((String) $L.get($S), $T.ofPattern(\"yyyy-MM-dd HH:mm:ss.SSSSSSX\")));",
@@ -94,7 +94,7 @@ public class ExportModule extends AbstractModule {
                                             queryVariable, fieldName, fieldVariable, fieldName);
                     }
                 },
-                new PgTypeMapper(List.of("boolean"), TYPE_BOOL, "getBoolean") {
+                new PgTypeMapper(List.of("bool"), TYPE_BOOL, "getBoolean") {
                     @Override
                     public CodeBlock protoToPg(String queryVariable, String fieldVariable, String fieldName) {
                         return CodeBlock.of("$L.bind($S, (Boolean) $L.get($S));",
