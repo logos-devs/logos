@@ -18,7 +18,7 @@ export abstract class ListEntity<
     protected abstract listRequestClass: Constructable<ListRequest>;
     @state() private entityList: Entity[] = [];
 
-    protected abstract renderEdit(entity: Entity): TemplateResult;
+    protected abstract renderEntity(entity: Entity): TemplateResult;
 
     protected abstract renderCreate(): TemplateResult;
 
@@ -35,13 +35,18 @@ export abstract class ListEntity<
         );
     }
 
+    protected renderResults(): TemplateResult {
+        return html`
+            ${map(this.entityList, this.renderEntity.bind(this))}
+        `;
+    }
+
     override render() {
         return html`
             <div @entity-created=${this.loadResults}
                  @entity-updated=${this.loadResults}
                  @entity-deleted=${this.loadResults}>
-
-                ${map(this.entityList, this.renderEdit.bind(this))}
+                ${this.renderResults()}
                 ${this.renderCreate()}
             </div>
         `;
