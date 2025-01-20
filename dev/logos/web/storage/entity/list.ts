@@ -45,7 +45,8 @@ export abstract class ListEntity<
         return html`
             <div @entity-created=${this.loadResults}
                  @entity-updated=${this.loadResults}
-                 @entity-deleted=${this.loadResults}>
+                 @entity-deleted=${this.loadResults}
+                 style="height:100%; width: 100%;">
                 ${this.renderResults()}
                 ${this.renderCreate()}
             </div>
