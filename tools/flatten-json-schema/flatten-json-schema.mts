@@ -12,6 +12,7 @@ const outputFile = process.argv[3];
 // Helper function to recursively embed references
 function embedRefs(schema: any, defs: any): any {
     if (schema && typeof schema === 'object') {
+        delete schema['pattern'];
         schema.additionalProperties = false;
 
         if (schema.$ref) {
