@@ -92,7 +92,7 @@ bazel_dep(name = "protobuf", version = "29.0-rc3", repo_name = "com_google_proto
 # rules_jvm_external
 bazel_dep(name = "rules_jvm_external", version = "6.3")
 
-MAVEN_AWSSDK_VERSION = "2.26.23"
+MAVEN_AWSSDK_VERSION = "2.30.7"
 
 MAVEN_SHARED = [
     "com.google.code.gson:gson:2.10.1",
@@ -160,7 +160,7 @@ maven.install(
         "software.amazon.awscdk:aws-cdk-lib:2.155.0",
         "software.amazon.awscdk:cdk-lambda-layer-kubectl-v30:2.0.1",
         "software.amazon.awssdk:cognitoidentityprovider:" + MAVEN_AWSSDK_VERSION,
-        "software.amazon.awssdk:cognitoidentityprovider:2.26.23",
+        "software.amazon.awssdk:cognitoidentityprovider:" + MAVEN_AWSSDK_VERSION,
         "software.amazon.awssdk:ec2:" + MAVEN_AWSSDK_VERSION,
         "software.amazon.awssdk:iam:" + MAVEN_AWSSDK_VERSION,
         "software.amazon.awssdk:rds:" + MAVEN_AWSSDK_VERSION,
