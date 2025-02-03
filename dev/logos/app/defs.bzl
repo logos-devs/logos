@@ -27,8 +27,6 @@ def _app_impl(ctx):
     ctx.actions.write(
         output = executable,
         content = """#!/bin/bash -eu
-{deps}
-
 CONSOLE_POD_NAME="$({kubectl} get pods -l app=console -o jsonpath="{{.items[0].metadata.name}}")"
 
 forward_local_port() {{
@@ -71,6 +69,7 @@ sync_files() {{
 }}
 
 {web_sh}
+{deps}
 
 {kubectl} {action} -f <(cat <<EOF
 apiVersion: logos.dev/v1

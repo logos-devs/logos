@@ -180,7 +180,9 @@ public class EksModule extends AbstractModule {
                 orderedMapOf("name", "vpc-cni", "version", "v1.18.3-eksbuild.2"),
                 orderedMapOf("name", "coredns", "version", "v1.11.1-eksbuild.8"),
                 orderedMapOf("name", "kube-proxy", "version", "v1.30.0-eksbuild.3"),
-                orderedMapOf("name", "aws-efs-csi-driver", "version", "v2.0.7-eksbuild.1"));
+                orderedMapOf("name", "aws-ebs-csi-driver", "version", "v1.38.1-eksbuild.2"),
+                orderedMapOf("name", "aws-efs-csi-driver", "version", "v2.0.7-eksbuild.1")
+        );
     }
 
     @Provides
@@ -370,6 +372,20 @@ public class EksModule extends AbstractModule {
                             "gid", "0",
                             "directoryPerms", "700")));
 
+            cluster.addManifest(id + "-ebs-app-storage-class-manifest", orderedMapOf(
+                    "kind", "StorageClass",
+                    "apiVersion", "storage.k8s.io/v1",
+                    "metadata", orderedMapOf(
+                            "name", "app-ebs-storage-class",
+                            "annotations",
+                            orderedMapOf("storageclass.kubernetes.io/is-default-class", "false")),
+                    "provisioner", "ebs.csi.aws.com",
+                    "parameters", orderedMapOf(
+                            "type", "gp3",
+                            "encrypted", "true",
+                            "csi.storage.k8s.io/fstype", "ext4"
+                    )));
+
             cluster.addManifest(id + "-db-ro-service-manifest", dbRoServiceManifest);
             cluster.addManifest(id + "-db-rw-service-manifest", dbRwServiceManifest);
 
@@ -390,6 +406,7 @@ public class EksModule extends AbstractModule {
 
             IRole role = asg.getRole();
             role.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName("service-role/AmazonEFSCSIDriverPolicy"));
+            role.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName("service-role/AmazonEBSCSIDriverPolicy"));
 
             workerNodePolicyStatementBuilderSet.forEach(
                     workerNodePolicyStatementBuilder ->
