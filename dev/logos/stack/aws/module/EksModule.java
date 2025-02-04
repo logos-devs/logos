@@ -380,6 +380,7 @@ public class EksModule extends AbstractModule {
                             "annotations",
                             orderedMapOf("storageclass.kubernetes.io/is-default-class", "false")),
                     "provisioner", "ebs.csi.aws.com",
+                    "volumeBindingMode", "WaitForFirstConsumer",
                     "parameters", orderedMapOf(
                             "type", "gp3",
                             "encrypted", "true",
