@@ -368,8 +368,8 @@ public class EksModule extends AbstractModule {
                     "parameters", orderedMapOf(
                             "provisioningMode", "efs-ap",
                             "fileSystemId", fileSystem.getFileSystemId(),
-                            "uid", "0",
-                            "gid", "0",
+                            "uid", "1000",
+                            "gid", "1000",
                             "directoryPerms", "700")));
 
             cluster.addManifest(id + "-ebs-app-storage-class-manifest", orderedMapOf(

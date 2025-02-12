@@ -211,8 +211,11 @@ public class K8sModule extends AbstractModule {
                             .envVariables(containerEnv)
                             .volumeMounts(volumeMounts)
                             .ports(List.of(ContainerPort.builder().number(8081).build()))
-                            // TODO : switch to non-root after fixing EFS permissions
-                            .securityContext(ContainerSecurityContextProps.builder().ensureNonRoot(false).build())
+                            .securityContext(ContainerSecurityContextProps.builder()
+                                                                          .ensureNonRoot(true)
+                                                                          .user(1000)
+                                                                          .group(1000)
+                                                                          .build())
                             .liveness(Probe.fromTcpSocket(TcpSocketProbeOptions.builder() // should be a grpc check instead
                                                                                .port(8081)
                                                                                .initialDelaySeconds(Duration.seconds(10))

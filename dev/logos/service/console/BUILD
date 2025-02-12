@@ -8,21 +8,14 @@ tar(
     srcs = ["rsyncd.conf"],
     mtree = [
         "etc uid=0 gid=0 mode=0755 type=dir",
-        "etc/rsyncd.conf uid=0 gid=0 mode=0600 time=0 type=file content={}/rsyncd.conf".format(package_name()),
+        "etc/rsyncd.conf uid=0 gid=0 mode=0600 time=0 type=file content=$(location :rsyncd.conf)",
     ],
 )
 
 oci_image(
     name = "image",
     base = "//vendor/apko:console_image",
-    #    entrypoint = [
-    #        "tail",
-    #        "-f",
-    #        "/dev/null",
-    #    ],
-    tars = [
-        ":rsyncd_conf",
-    ],
+    tars = [":rsyncd_conf"],
 )
 
 push_image(

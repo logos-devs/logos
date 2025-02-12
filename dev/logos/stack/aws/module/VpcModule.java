@@ -65,8 +65,8 @@ public class VpcModule extends AbstractModule {
     @NatMachineImage
     LookupMachineImage.Builder provideNatInstanceMachineImage() {
         return LookupMachineImage.Builder.create()
-                .name("fck-nat-amzn2-*-arm64-ebs")
-                .owners(List.of("568608671756"));
+                                         .name("fck-nat-al2023-*-arm64-ebs")
+                                         .owners(List.of("568608671756"));
     }
 
     /**
@@ -85,7 +85,7 @@ public class VpcModule extends AbstractModule {
      * Provides the NAT instance provider builder.
      *
      * @param machineImageBuilder The machine image builder for NAT instances
-     * @param instanceType The instance type for NAT instances
+     * @param instanceType        The instance type for NAT instances
      * @return A NatInstanceProviderV2.Builder configured with the provided machine image and instance type
      */
     @Provides
@@ -95,8 +95,8 @@ public class VpcModule extends AbstractModule {
             @NatInstanceType InstanceType instanceType
     ) {
         return NatInstanceProviderV2.Builder.create()
-                .instanceType(instanceType)
-                .machineImage(machineImageBuilder.build());
+                                            .instanceType(instanceType)
+                                            .machineImage(machineImageBuilder.build());
     }
 
     /**
@@ -158,13 +158,13 @@ public class VpcModule extends AbstractModule {
             NatInstanceProviderV2 natInstanceProvider = natInstanceProviderBuilder.build();
 
             vpc = new Vpc(this, "%s-vpc".formatted(id),
-                    vpcPropsBuilder.natGatewayProvider(natInstanceProvider).build()
+                          vpcPropsBuilder.natGatewayProvider(natInstanceProvider).build()
             );
 
             for (ISubnet subnet : vpc.getPublicSubnets()) {
                 Tags.of(subnet).add("kubernetes.io/role/elb", "1");
             }
-            
+
             for (ISubnet subnet : vpc.getPrivateSubnets()) {
                 Tags.of(subnet).add("kubernetes.io/role/internal-elb", "1");
             }
