@@ -146,6 +146,7 @@ def app(
         k8s_stack = None,
         rpc_servers = None,
         rpc_server_image = None,
+        sidecar_container_images = None,
         manifests = None,
         migrations = None,
         stack_outputs = None,
@@ -153,15 +154,31 @@ def app(
         visibility = None):
     if migrations == None:
         migrations = []
+    if sidecar_container_images == None:
+        sidecar_container_images = {}
 
+    image_pushes = []
     if rpc_server_image:
+        rpc_server_push_name = name + "_rpc_server_image_push"
         push_image(
-            name = name + "_rpc_server_image_push",
+            name = rpc_server_push_name,
             image = rpc_server_image,
             remote_tags = ["latest"],
             repository = "logos-ecr-backend",
             visibility = visibility,
         )
+        image_pushes.append(rpc_server_push_name)
+
+    for i, container_repository in enumerate(sidecar_container_images.keys()):
+        sidecar_container_push_name = name + "_sidecar_container_image_push_{}".format(i)
+        sidecar_container_image = sidecar_container_images[container_repository]
+        push_image(
+            name = sidecar_container_push_name,
+            image = sidecar_container_image,
+            repository = container_repository,
+            visibility = visibility,
+        )
+        image_pushes.append(sidecar_container_push_name)
 
     k8s_manifest(
         name = name + "_k8s_manifest",
@@ -169,10 +186,20 @@ def app(
         visibility = visibility,
     )
 
+    images = {}
+    if rpc_server_image:
+        images[rpc_server_image + ".digest"] = "logos-ecr-backend"
+
+    for container_repository, sidecar_container_image in sidecar_container_images.items():
+        if ":" not in sidecar_container_image:
+            sidecar_container_image = sidecar_container_image + ":" + sidecar_container_image.rsplit("/", 1)[1]
+
+        images[sidecar_container_image + ".digest"] = container_repository
+
     kubectl(
         name = name + "_kubectl",
-        image_pushes = [name + "_rpc_server_image_push"] if rpc_server_image else [],
-        images = {":image.digest": "logos-ecr-backend"} if rpc_server_image else {},
+        image_pushes = image_pushes,
+        images = images,
         manifests = [name + "_k8s_manifest"],
         migrations = migrations,
         visibility = visibility,

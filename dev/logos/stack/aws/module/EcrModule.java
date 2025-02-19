@@ -50,10 +50,15 @@ public class EcrModule extends AbstractModule {
     public @interface EcrStackId {
     }
 
+    @BindingAnnotation
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface ContainerImageRepositories {
+    }
+
     @Override
     protected void configure() {
         // Set up multibinder for repository names
-        Multibinder<String> repoNamesBinder = Multibinder.newSetBinder(binder(), String.class);
+        Multibinder<String> repoNamesBinder = Multibinder.newSetBinder(binder(), String.class, ContainerImageRepositories.class);
         repoNamesBinder.addBinding().toInstance("logos-ecr-app-controller");
         repoNamesBinder.addBinding().toInstance("logos-ecr-backend");
         repoNamesBinder.addBinding().toInstance("logos-ecr-client");
@@ -74,7 +79,7 @@ public class EcrModule extends AbstractModule {
     @Provides
     @Singleton
     Map<String, RepositoryProps.Builder> provideRepositoryProps(
-            Set<String> repoNames
+            @ContainerImageRepositories Set<String> repoNames
     ) {
         Map<String, RepositoryProps.Builder> result = new HashMap<>();
         for (String repoName : repoNames) {
@@ -109,7 +114,7 @@ public class EcrModule extends AbstractModule {
                 final App scope,
                 final @EcrStackId String id,
                 final StackProps props,
-                Set<String> repoNames,
+                @ContainerImageRepositories Set<String> repoNames,
                 Map<String, RepositoryProps.Builder> repoPropsBuilders
         ) {
             super(scope, id, props);
