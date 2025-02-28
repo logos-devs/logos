@@ -63,3 +63,4 @@ spec:
             - --provider=aws
             - --registry=txt
             - --log-level=debug
+            - --aws-zone-type=public

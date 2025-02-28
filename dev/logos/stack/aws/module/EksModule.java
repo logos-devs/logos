@@ -279,6 +279,8 @@ public class EksModule extends AbstractModule {
                 "route53:CreateHostedZone",
                 "route53:DeleteHealthCheck",
                 "route53:DeleteHostedZone",
+                "route53:DeleteResourceRecordSets",
+                "route53:GetChange",
                 "route53:GetHealthCheck",
                 "route53:GetHostedZone",
                 "route53:ListHostedZones",
