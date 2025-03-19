@@ -49,12 +49,7 @@ public class ExportModule extends AbstractModule {
                                             queryVariable, fieldName, fieldVariable, fieldName);
                     }
                 },
-                new PgTypeMapper(List.of("real"), TYPE_FLOAT, "getFloat") {
-                    @Override
-                    public CodeBlock pgToProto(CodeBlock innerCall) {
-                        return CodeBlock.of("%L.floatValue()", innerCall);
-                    }
-
+                new PgTypeMapper(List.of("float8", "real"), TYPE_FLOAT, "getFloat") {
                     @Override
                     public CodeBlock protoToPg(String queryVariable, String fieldVariable, String fieldName) {
                         return CodeBlock.of("$L.bind($S, (Float) $L.get($S));",
