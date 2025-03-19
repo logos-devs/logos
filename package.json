@@ -51,6 +51,6 @@
     "cdk8s-cli": "2.200.1",
     "rollup": "4.34.8",
     "rollup-plugin-includepaths": "0.2.4",
-    "typescript": "5.7.3"
+    "typescript": "5.7.2"
   }
 }

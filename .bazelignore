@@ -1,3 +1,4 @@
+.eclipse
 node_modules
 bazel-bin
 bazel-genfiles

@@ -137,8 +137,8 @@ devDependencies:
     specifier: 0.2.4
     version: 0.2.4
   typescript:
-    specifier: 5.7.3
-    version: 5.7.3
+    specifier: 5.7.2
+    version: 5.7.2
 
 packages:
 
@@ -1422,6 +1422,7 @@ packages:
       yaml: 2.7.0
       yargs: 15.4.1
     transitivePeerDependencies:
+      - debug
       - supports-color
     dev: true
 
@@ -1434,6 +1435,7 @@ packages:
     dependencies:
       cdk8s: 2.69.46(constructs@10.4.2)
       constructs: 10.4.2
+      minimatch: 3.1.2
     dev: true
     bundledDependencies:
       - minimatch
@@ -1445,6 +1447,11 @@ packages:
       constructs: ^10
     dependencies:
       constructs: 10.4.2
+      fast-json-patch: 3.1.1
+      follow-redirects: 1.15.9
+      yaml: 2.7.0
+    transitivePeerDependencies:
+      - debug
     dev: true
     bundledDependencies:
       - fast-json-patch
@@ -1789,7 +1796,7 @@ packages:
     dependencies:
       semver: 7.7.1
       shelljs: 0.8.5
-      typescript: 5.9.0-dev.20250226
+      typescript: 5.9.0-dev.20250315
     dev: true
 
   /ee-first@1.1.1:
@@ -1879,6 +1886,10 @@ packages:
       micromatch: 4.0.8
     dev: true
 
+  /fast-json-patch@3.1.1:
+    resolution: {integrity: sha512-vf6IHUX2SBcA+5/+4883dsIjpBTqmfBjmYiWK1savxQmFk4JfBMLa7ynTYOs1Rolp/T1betJxHiGD3g1Mn8lUQ==}
+    dev: true
+
   /fast-uri@3.0.3:
     resolution: {integrity: sha512-aLrHthzCjH5He4Z2H9YZ+v6Ujb9ocRuW6ZzkJQOrTxleEijANq4v1TsaPaVG1PZcuurEzrLcWRyYBYXD5cEiaw==}
     dev: true
@@ -1944,6 +1955,16 @@ packages:
   /focus-visible@5.2.1:
     resolution: {integrity: sha512-8Bx950VD1bWTQJEH/AM6SpEk+SU55aVnp4Ujhuuxy3eMEBCRwBnTBnVXr9YAPvZL3/CNjCa8u4IWfNmEO53whA==}
     dev: false
+
+  /follow-redirects@1.15.9:
+    resolution: {integrity: sha512-gew4GsXizNgdoRyqmyfMHyAmXsZDk6mHkSxZFCzW9gwlbtOW44CDtYavM+y+72qD/Vq2l550kMF52DT8fOLJqQ==}
+    engines: {node: '>=4.0'}
+    peerDependencies:
+      debug: '*'
+    peerDependenciesMeta:
+      debug:
+        optional: true
+    dev: true
 
   /for-each@0.3.3:
     resolution: {integrity: sha512-jqYfLp7mo9vIyQf8ykW2v7A+2N4QjeCeI5+Dz9XraiO1ign81wjiH7Fb9vSOWvQfNtmSa4H2RoQTrrXivdUZmw==}
@@ -2400,7 +2421,7 @@ packages:
       semver: 7.7.1
       semver-intersect: 1.5.0
       stream-json: 1.9.1
-      typescript: 5.7.3
+      typescript: 5.7.2
       workerpool: 6.5.1
       yargs: 17.7.2
     transitivePeerDependencies:
@@ -2458,7 +2479,7 @@ packages:
       semver-intersect: 1.5.0
       sort-json: 2.0.1
       spdx-license-list: 6.9.0
-      typescript: 5.7.3
+      typescript: 5.7.2
       yargs: 17.7.2
     transitivePeerDependencies:
       - supports-color
@@ -3442,14 +3463,14 @@ packages:
     hasBin: true
     dev: true
 
-  /typescript@5.7.3:
-    resolution: {integrity: sha512-84MVSjMEHP+FQRPy3pX9sTVV/INIex71s9TL2Gm5FG/WG1SqXeKyZ0k7/blY/4FdOzI12CBy1vGc4og/eus0fw==}
+  /typescript@5.7.2:
+    resolution: {integrity: sha512-i5t66RHxDvVN40HfDd1PsEThGNnlMCMT3jMUuoh9/0TaqWevNontacunWyN02LA9/fIbEWlcHZcgTKb9QoaLfg==}
     engines: {node: '>=14.17'}
     hasBin: true
     dev: true
 
-  /typescript@5.9.0-dev.20250226:
-    resolution: {integrity: sha512-5mIqZ5ilcOYPZ+EXcOo5hpXJt51N7fPlkjxX5e9hbM+Ao7gd+t+XN5trQk3iWyvBNEPMn7950rAE0Kxl4thnCA==}
+  /typescript@5.9.0-dev.20250315:
+    resolution: {integrity: sha512-sSVWMHsHReoq9HHif4xQMoRt2l9z65dssRplQJciY1rgDb1mv/Ql817xf5FC14qHZkbSlLrs30NtEBCdHdRdrA==}
     engines: {node: '>=14.17'}
     hasBin: true
     dev: true
