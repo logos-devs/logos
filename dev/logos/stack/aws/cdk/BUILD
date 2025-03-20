@@ -28,6 +28,7 @@ js_run_binary(
         "--require-approval",
         "never",
     ],
+    exec_properties = {"cdk_lock": "1"},
     log_level = "debug",
     mnemonic = "CdkDeploy",
     progress_message = "Deploying to AWS",

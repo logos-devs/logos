@@ -23,6 +23,8 @@ genrule(
     name = "synth",
     outs = ["stack-chart.k8s.yaml"],
     cmd = "$(location :synthesizer) && mv dist/* $(@D)/ && rm -rf dist",
+    exec_properties = {"cdk_lock": "1"},
+    tags = ["no-sandbox"],
     tools = [":synthesizer"],
     visibility = ["//visibility:public"],
 )

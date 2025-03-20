@@ -2,6 +2,8 @@ package dev.logos.stack.aws.module;
 
 import com.google.inject.*;
 import com.google.inject.multibindings.Multibinder;
+import com.google.inject.multibindings.OptionalBinder;
+import com.google.inject.multibindings.ProvidesIntoOptional;
 import com.google.inject.multibindings.ProvidesIntoSet;
 import dev.logos.stack.aws.module.annotation.RpcServerDatabaseRoles;
 import software.amazon.awscdk.Stack;
@@ -15,6 +17,13 @@ import software.amazon.awscdk.services.efs.*;
 import software.amazon.awscdk.services.eks.*;
 import software.amazon.awscdk.services.iam.*;
 import software.amazon.awscdk.services.rds.DatabaseCluster;
+import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
+import software.amazon.awssdk.services.iam.IamClient;
+import software.amazon.awssdk.services.iam.model.ListRolesRequest;
+import software.amazon.awssdk.services.iam.model.ListRolesResponse;
+import software.amazon.awssdk.services.sts.StsClient;
+import software.amazon.awssdk.services.sts.model.GetCallerIdentityRequest;
+import software.amazon.awssdk.services.sts.model.GetCallerIdentityResponse;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -111,6 +120,40 @@ public class EksModule extends AbstractModule {
     protected void configure() {
         Multibinder.newSetBinder(binder(), Stack.class).addBinding().to(EksStack.class);
         Multibinder.newSetBinder(binder(), PolicyStatement.Builder.class, ServiceAccountPolicyBuilder.class);
+        OptionalBinder.newOptionalBinder(binder(), Key.get(String.class, MastersRoleArn.class));
+    }
+
+    @ProvidesIntoOptional(ProvidesIntoOptional.Type.DEFAULT)
+    @Singleton
+    @MastersRoleArn
+    String provideMastersRoleArn() {
+        try (
+                DefaultCredentialsProvider defaultCredentialsProvider = DefaultCredentialsProvider.create();
+                IamClient iamClient = IamClient.builder()
+                                               .credentialsProvider(defaultCredentialsProvider)
+                                               .build();
+                StsClient stsClient = StsClient.builder()
+                                               .credentialsProvider(defaultCredentialsProvider)
+                                               .build()
+        ) {
+            GetCallerIdentityResponse identityResponse = stsClient.getCallerIdentity(
+                    GetCallerIdentityRequest.builder().build());
+
+            String assumedRoleArn = identityResponse.arn();
+            String sessionName = assumedRoleArn.substring(assumedRoleArn.lastIndexOf('/') + 1);
+            ListRolesResponse rolesResponse = iamClient.listRoles(
+                    ListRolesRequest.builder()
+                                    .pathPrefix("/aws-reserved/sso.amazonaws.com/")
+                                    .build());
+
+            for (software.amazon.awssdk.services.iam.model.Role role : rolesResponse.roles()) {
+                if (assumedRoleArn.contains(role.roleName()) && assumedRoleArn.endsWith(sessionName)) {
+                    return role.arn();
+                }
+            }
+
+            throw new RuntimeException("Couldn't find the true ARN of your SSO role.");
+        }
     }
 
     @Provides

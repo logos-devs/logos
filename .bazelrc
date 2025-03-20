@@ -1,6 +1,3 @@
-build --incompatible_strict_action_env
-run --incompatible_strict_action_env
-
 build --shell_executable=/bin/bash
 
 build --action_env=STORAGE_PG_BACKEND_USER
@@ -8,22 +5,37 @@ build --action_env=STORAGE_PG_BACKEND_HOST
 build --action_env=STORAGE_PG_BACKEND_PASSWORD
 build --action_env=STORAGE_PG_BACKEND_JDBC_URL
 
-build --java_toolchain=//:java_toolchain
+build --action_env=AWS_WEB_IDENTITY_TOKEN_FILE
+build --action_env=AWS_ROLE_ARN
+build --action_env=HOME
+build --action_env=LOGOS_AWS_ACCOUNT_ID
+build --action_env=LOGOS_AWS_EKS_CLUSTER
+build --action_env=LOGOS_AWS_EKS_USER
+build --action_env=LOGOS_AWS_REGION
+build --action_env=LOGOS_AWS_REGISTRY
+
+build --host_action_env=AWS_WEB_IDENTITY_TOKEN_FILE
+build --host_action_env=AWS_ROLE_ARN
+build --host_action_env=HOME
+build --host_action_env=LOGOS_AWS_ACCOUNT_ID
+build --host_action_env=LOGOS_AWS_EKS_CLUSTER
+build --host_action_env=LOGOS_AWS_EKS_USER
+build --host_action_env=LOGOS_AWS_REGION
+build --host_action_env=LOGOS_AWS_REGISTRY
+
+build --java_toolchain=@logos//:java_toolchain
 build --java_language_version=21
 build --java_runtime_version=remotejdk_21
+
+build --local_resources=cdk_lock=1
+
 build --tool_java_language_version=21
 build --tool_java_runtime_version=remotejdk_21
 
 build --sandbox_default_allow_network=false
-build --action_env=CC=/usr/lib/llvm/18/bin/clang
-build --action_env=CXX=/usr/lib/llvm/18/bin/clang++
-build --repo_env=CC=/usr/lib/llvm/18/bin/clang
-build --repo_env=CXX=/usr/lib/llvm/18/bin/clang++
+run --run_under='@logos//tools:bazel-env'
 
-common --@aspect_rules_ts//ts:skipLibCheck=honor_tsconfig
 common --incompatible_allow_tags_propagation
-
-# pulls vars set in .bazelrc.local by logos dev setup
-run --run_under='//tools:bazel-env'
+common --@aspect_rules_ts//ts:skipLibCheck=honor_tsconfig
 
 try-import %workspace%/.bazelrc.local

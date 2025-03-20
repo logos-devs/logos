@@ -13,7 +13,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static java.lang.System.err;
 import static java.util.Objects.requireNonNull;
 
 
@@ -40,6 +39,7 @@ public class K8sModule extends AbstractModule {
         Multibinder.newSetBinder(binder(), ExistingVolumeClaimMount.class);
         Multibinder.newSetBinder(binder(), EmptyDirMount.class);
         Multibinder.newSetBinder(binder(), SecretVolumeMount.class);
+        Multibinder.newSetBinder(binder(), RpcServer.class);
     }
 
     @Provides
