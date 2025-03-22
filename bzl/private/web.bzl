@@ -10,17 +10,22 @@ def rollup_config_file(name):
         cmd = """
 cat > $@ << 'EOF'
 import terser from '@rollup/plugin-terser';
-import css from "rollup-plugin-import-css";
 import commonjs from '@rollup/plugin-commonjs';
 import includePaths from 'rollup-plugin-includepaths';
 import json from '@rollup/plugin-json';
 import html from '@rollup/plugin-html';
 import {makeHtmlAttributes} from '@rollup/plugin-html';
+import postcss from 'rollup-plugin-postcss';
+import postcssImport from 'postcss-import';
 import replace from '@rollup/plugin-replace';
 import nodeResolve from '@rollup/plugin-node-resolve';
 import sourcemaps from 'rollup-plugin-sourcemaps2';
 import {typescriptPaths} from 'rollup-plugin-typescript-paths';
 import execute from "rollup-plugin-shell";
+import { createRequire } from 'node:module';
+import path from 'node:path';
+
+const require = createRequire(import.meta.url);
 
 const allowedWarnings = {
     'THIS_IS_UNDEFINED': [
@@ -37,7 +42,33 @@ const allowedWarnings = {
 
 export default {
     plugins: [
-        css(),
+        postcss({
+          plugins: [
+            postcssImport({
+              resolve: (id, basedir) => {
+                // Pass through external URLs (CDNs)
+                if (id.startsWith('http://') || id.startsWith('https://')) {
+                  return id;
+                }
+                // Handle module imports (e.g., @adobe/spectrum-web-components/dist/...)
+                if (!id.startsWith('.') && id.match(/\\.css$$/)) {
+                  try {
+                    return require.resolve(id);
+                  } catch (e) {
+                    // Not a module, try relative resolution below
+                  }
+                }
+                // Resolve relative imports (e.g., 'core-global.css') from basedir
+                const fullPath = path.resolve(basedir, id);
+                try {
+                  return require.resolve(fullPath);
+                } catch (e) {
+                  throw new Error(`Failed to resolve CSS import "$${id}" from "$${basedir}": $${e.message}`);
+                }
+              },
+            })
+          ]
+        }),
         includePaths({ paths: ["./"] }),
         replace({ preventAssignment: true, values: { 'process.env.NODE_ENV': JSON.stringify('production') }}),
         typescriptPaths(),
@@ -166,7 +197,9 @@ def web(name, srcs, tsconfig, rollup_config = None, deps = None):
             "//:node_modules/@rollup/plugin-node-resolve",
             "//:node_modules/@rollup/plugin-replace",
             "//:node_modules/@rollup/plugin-terser",
-            "//:node_modules/rollup-plugin-import-css",
+            "//:node_modules/postcss",
+            "//:node_modules/postcss-import",
+            "//:node_modules/rollup-plugin-postcss",
             "//:node_modules/rollup-plugin-includepaths",
             "//:node_modules/rollup-plugin-shell",
             "//:node_modules/rollup-plugin-sourcemaps2",
