@@ -4,6 +4,7 @@ java_library(
     visibility = ["//dev/logos/service/storage/pg:__subpackages__"],
     deps = [
         "//dev/logos/service/storage/pg",
+        "//dev/logos/service/storage/pg/exporter/codegen",
         "//dev/logos/service/storage/pg/exporter/mapper",
         "//dev/logos/service/storage/pg/exporter/module/annotation",
         "@com_google_protobuf//:protobuf_java",

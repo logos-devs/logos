@@ -3,13 +3,19 @@ package dev.logos.service.storage.pg.exporter;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
 import dev.logos.module.ModuleLoader;
-import dev.logos.service.storage.module.DatabaseModule;
+import dev.logos.service.storage.pg.exporter.codegen.column.ColumnGenerator;
+import dev.logos.service.storage.pg.exporter.codegen.module.StorageModuleGenerator;
+import dev.logos.service.storage.pg.exporter.codegen.proto.ProtoGenerator;
+import dev.logos.service.storage.pg.exporter.codegen.schema.SchemaGenerator;
+import dev.logos.service.storage.pg.exporter.codegen.service.StorageServiceBaseGenerator;
+import dev.logos.service.storage.pg.exporter.codegen.table.TableGenerator;
+import dev.logos.service.storage.pg.exporter.descriptor.SchemaDescriptor;
+import dev.logos.service.storage.pg.exporter.descriptor.TableDescriptor;
 import dev.logos.service.storage.pg.exporter.module.ExportModule;
 import dev.logos.service.storage.pg.exporter.module.annotation.BuildDir;
 import dev.logos.service.storage.pg.exporter.module.annotation.BuildPackage;
@@ -22,9 +28,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.nio.file.StandardOpenOption.CREATE;
@@ -34,88 +38,42 @@ import static java.nio.file.StandardOpenOption.WRITE;
 public class Exporter {
     private final String buildDir;
     private final String buildPackage;
-    private final CodeGenerator codeGenerator;
     private final DataSource dataSource;
+    private final SchemaGenerator schemaGenerator;
+    private final TableGenerator tableGenerator;
+    private final ColumnGenerator columnGenerator;
+    private final ProtoGenerator protoGenerator;
+    private final StorageServiceBaseGenerator storageServiceBaseGenerator;
+    private final StorageModuleGenerator storageModuleGenerator;
+    private final Gson gson = new GsonBuilder().create();
 
     @Inject
     public Exporter(
             @BuildDir String buildDir,
             @BuildPackage String buildPackage,
-            CodeGenerator codeGenerator,
-            DataSource dataSource
-
+            DataSource dataSource,
+            SchemaGenerator schemaGenerator,
+            TableGenerator tableGenerator,
+            ColumnGenerator columnGenerator,
+            ProtoGenerator protoGenerator,
+            StorageServiceBaseGenerator storageServiceBaseGenerator,
+            StorageModuleGenerator storageModuleGenerator
     ) {
         this.buildDir = buildDir;
         this.buildPackage = buildPackage;
-        this.codeGenerator = codeGenerator;
         this.dataSource = dataSource;
+        this.schemaGenerator = schemaGenerator;
+        this.tableGenerator = tableGenerator;
+        this.columnGenerator = columnGenerator;
+        this.protoGenerator = protoGenerator;
+        this.storageServiceBaseGenerator = storageServiceBaseGenerator;
+        this.storageModuleGenerator = storageModuleGenerator;
     }
 
     private enum ExportType {
         JSON,
         PROTO,
         JAVA
-    }
-
-    public String dumpSchemaDescriptorsToJson(List<SchemaDescriptor> schemaDescriptors) {
-        Gson gson = new GsonBuilder().create();
-        return gson.toJson(schemaDescriptors);
-    }
-
-    public List<SchemaDescriptor> loadSchemaDescriptorsFromJson(String json) {
-        Gson gson = new Gson();
-        Type schemaDescriptorListType = new TypeToken<List<SchemaDescriptor>>() {
-        }.getType();
-        return gson.fromJson(json, schemaDescriptorListType);
-    }
-
-    public void generateJava(String tablesJson) throws IOException {
-        List<SchemaDescriptor> schemaDescriptors;
-        schemaDescriptors = loadSchemaDescriptorsFromJson(tablesJson);
-        for (SchemaDescriptor schemaDescriptor : schemaDescriptors) {
-            List<TypeSpec> tableClasses = new ArrayList<>();
-
-            for (TableDescriptor tableDescriptor : schemaDescriptor.tables()) {
-                codeGenerator.makeStorageServiceBaseClass(schemaDescriptor, tableDescriptor);
-                codeGenerator.makeStorageModule(schemaDescriptor, tableDescriptor);
-
-                TypeSpec tableClass = codeGenerator.makeTableClass(
-                        schemaDescriptor,
-                        tableDescriptor,
-                        tableDescriptor.columns()
-                                       .stream()
-                                       .map(columnDescriptor -> codeGenerator.makeColumnClass(tableDescriptor, columnDescriptor))
-                                       .collect(Collectors.toList()),
-                        tableDescriptor.columns());
-
-                tableClasses.add(tableClass);
-            }
-
-            JavaFile.builder(buildPackage,
-                             codeGenerator.makeSchemaClass(schemaDescriptor, tableClasses))
-                    .build().writeToPath(Path.of(buildDir));
-        }
-    }
-
-    public void generateProto(String tablesJson) throws IOException {
-        List<SchemaDescriptor> schemaDescriptors;
-        schemaDescriptors = loadSchemaDescriptorsFromJson(tablesJson);
-
-        for (SchemaDescriptor schemaDescriptor : schemaDescriptors) {
-            for (TableDescriptor tableDescriptor : schemaDescriptor.tables()) {
-                try (OutputStream outputStream = Files.newOutputStream(
-                        Files.createDirectories(
-                                Path.of("%s/%s/".formatted(
-                                        buildDir,
-                                        buildPackage.replace(".", "/")
-                                ))
-                        ).resolve("%s_%s.proto".formatted(schemaDescriptor.name(), tableDescriptor.name())),
-                        CREATE, WRITE)) {
-
-                    outputStream.write(codeGenerator.makeProtoService(schemaDescriptor, tableDescriptor).getBytes());
-                }
-            }
-        }
     }
 
     public void exportJson(String tablesJson) throws SQLException, IOException {
@@ -134,7 +92,66 @@ public class Exporter {
                     ).resolve("schema_export.json"),
                     CREATE, WRITE)) {
 
-                outputStream.write(dumpSchemaDescriptorsToJson(schemaDescriptors).getBytes());
+                outputStream.write(gson.toJson(schemaDescriptors).getBytes());
+            }
+        }
+    }
+
+    public List<SchemaDescriptor> loadSchemaDescriptorsFromJson(String json) {
+        Type schemaDescriptorListType = new TypeToken<List<SchemaDescriptor>>() {
+        }.getType();
+        return gson.fromJson(json, schemaDescriptorListType);
+    }
+
+    public void generateJava(String tablesJson) throws IOException {
+        List<SchemaDescriptor> schemaDescriptors;
+        schemaDescriptors = loadSchemaDescriptorsFromJson(tablesJson);
+        for (SchemaDescriptor schemaDescriptor : schemaDescriptors) {
+            LinkedHashMap<String, TypeSpec> tableClasses = new LinkedHashMap<>();
+
+            for (TableDescriptor tableDescriptor : schemaDescriptor.tables()) {
+                JavaFile storageServiceBaseClass = storageServiceBaseGenerator.generate(buildPackage, schemaDescriptor, tableDescriptor);
+                storageServiceBaseClass.writeToPath(Path.of(buildDir));
+
+                JavaFile storageModuleClass = storageModuleGenerator.generate(buildPackage, schemaDescriptor, tableDescriptor);
+                storageModuleClass.writeToPath(Path.of(buildDir));
+
+                TypeSpec tableClass = tableGenerator.generate(
+                        buildPackage,
+                        schemaDescriptor,
+                        tableDescriptor,
+                        tableDescriptor.columns()
+                                       .stream()
+                                       .map(columnDescriptor -> columnGenerator.generate(tableDescriptor, columnDescriptor))
+                                       .collect(Collectors.toList()),
+                        tableDescriptor.columns());
+
+                tableClasses.put(tableDescriptor.getInstanceVariableName(), tableClass);
+            }
+
+            JavaFile.builder(buildPackage, schemaGenerator.generate(schemaDescriptor, tableClasses))
+                    .build()
+                    .writeToPath(Path.of(buildDir));
+        }
+    }
+
+    public void generateProto(String tablesJson) throws IOException {
+        List<SchemaDescriptor> schemaDescriptors;
+        schemaDescriptors = loadSchemaDescriptorsFromJson(tablesJson);
+
+        for (SchemaDescriptor schemaDescriptor : schemaDescriptors) {
+            for (TableDescriptor tableDescriptor : schemaDescriptor.tables()) {
+                try (OutputStream outputStream = Files.newOutputStream(
+                        Files.createDirectories(
+                                Path.of("%s/%s/".formatted(
+                                        buildDir,
+                                        buildPackage.replace(".", "/")
+                                ))
+                        ).resolve("%s_%s.proto".formatted(schemaDescriptor.name(), tableDescriptor.name())),
+                        CREATE, WRITE)) {
+
+                    outputStream.write(protoGenerator.generate(buildPackage, schemaDescriptor, tableDescriptor).getBytes());
+                }
             }
         }
     }

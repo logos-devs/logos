@@ -1,4 +1,4 @@
-package dev.logos.service.storage.pg.exporter;
+package dev.logos.service.storage.pg.exporter.descriptor;
 
 public record ColumnDescriptor(String name, String type) implements ExportedIdentifier {
 

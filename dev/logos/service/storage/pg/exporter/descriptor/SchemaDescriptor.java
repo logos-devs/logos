@@ -1,4 +1,4 @@
-package dev.logos.service.storage.pg.exporter;
+package dev.logos.service.storage.pg.exporter.descriptor;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -7,7 +7,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 public record SchemaDescriptor(String name, List<TableDescriptor> tables) implements ExportedIdentifier {
 

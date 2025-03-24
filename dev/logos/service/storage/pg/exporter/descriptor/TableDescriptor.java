@@ -1,7 +1,6 @@
-package dev.logos.service.storage.pg.exporter;
+package dev.logos.service.storage.pg.exporter.descriptor;
 
 import java.util.List;
-import java.util.Objects;
 
 public record TableDescriptor(String name, List<ColumnDescriptor> columns) implements ExportedIdentifier {
     @Override
