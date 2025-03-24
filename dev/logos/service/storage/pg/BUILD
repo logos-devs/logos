@@ -1,14 +1,35 @@
+load("@rules_java//java:defs.bzl", "java_library")
+
 java_library(
     name = "pg",
-    srcs = glob([
-        "*.java",
-    ]),
-    visibility = [
-        "//visibility:public",
+    srcs = [
+        "Column.java",
+        "Converter.java",
+        "Filter.java",
+        "Identifier.java",
+        "OrderBy.java",
+        "QualifierFunctionCall.java",
+        "Relation.java",
+        "Result.java",
+        "Schema.java",
+        "Select.java",
+        "SortOrder.java",
+        "StorageServiceQualifierExtension.java",
     ],
+    visibility = ["//visibility:public"],
     deps = [
+        "//dev/logos/service",
+        "//dev/logos/service/storage:storage_library",
         "//dev/logos/service/storage/exceptions",
+        "//dev/logos/service/storage/validator",
+        "//dev/logos/user",
         "@com_google_protobuf//:protobuf_java",
+        "@maven_logos//:com_google_code_gson_gson",
+        "@maven_logos//:com_google_guava_guava",
+        "@maven_logos//:com_google_inject_guice",
+        "@maven_logos//:io_grpc_grpc_api",
+        "@maven_logos//:io_grpc_grpc_stub",
+        "@maven_logos//:jakarta_inject_jakarta_inject_api",
         "@maven_logos//:org_jdbi_jdbi3_core",
         "@maven_logos//:org_jdbi_jdbi3_postgres",
     ],

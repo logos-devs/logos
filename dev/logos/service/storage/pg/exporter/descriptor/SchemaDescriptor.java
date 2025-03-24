@@ -6,11 +6,22 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+public record SchemaDescriptor(String name, List<TableDescriptor> tables) implements ExportedIdentifier {public record SchemaDescriptor(
+    String name, 
+    List<TableDescriptor> tables,
+    Map<String, List<QualifierDescriptor>> qualifiers
+) implements ExportedIdentifier {
 
-public record SchemaDescriptor(String name, List<TableDescriptor> tables) implements ExportedIdentifier {
-
-    public static List<SchemaDescriptor> extract(Connection connection, Map<String, List<String>> selectedTables) throws SQLException {
+    /**
+     * Creates a new schema descriptor without qualifiers.
+     */
+    public SchemaDescriptor(String name, List<TableDescriptor> tables) {
+        this(name, tables, Map.of());
+    }    public static List<SchemaDescriptor> extract(Connection connection, Map<String, List<String>> selectedTables) throws SQLException {
         List<SchemaDescriptor> schemaDescriptors = new ArrayList<>();
 
         for (String schema : selectedTables.keySet()) {
@@ -66,14 +77,115 @@ public record SchemaDescriptor(String name, List<TableDescriptor> tables) implem
                 tableDescriptors.add(new TableDescriptor(table, columnDescriptors));
             }
 
-            schemaDescriptors.add(new SchemaDescriptor(schemaResultSet.getString("schema_name"), tableDescriptors));
-        }
+            schemaDescriptors.add(new SchemaDescriptor(schemaResultSet.getString("schema_name"), tableDescriptors));                
+                // Add qualifier extraction
+                List<QualifierDescriptor> tableQualifiers = extractQualifiers(connection, schema, table);
+                if (!tableQualifiers.isEmpty()) {
+                    Map<String, List<QualifierDescriptor>> qualifierMap = new HashMap<>();
+                    qualifierMap.put(table, tableQualifiers);
+                    schemaDescriptors.add(new SchemaDescriptor(
+                        schemaResultSet.getString("schema_name"), 
+                        tableDescriptors,
+                        qualifierMap
+                    ));
+                    return schemaDescriptors;
+                }
+            }
+
+            schemaDescriptors.add(new SchemaDescriptor(schemaResultSet.getString("schema_name"), tableDescriptors));        }
 
         return schemaDescriptors;
     }
 
-    @Override
-    public String toString() {
+    @Override        return schemaDescriptors;
+    }
+    
+    /**
+     * Extracts qualifier functions for the specified table.
+     */
+    private static List<QualifierDescriptor> extractQualifiers(
+            Connection connection, 
+            String schema,
+            String table) throws SQLException {
+        
+        // SQL to find qualifier functions by row type parameter
+        String sql = """
+            SELECT 
+                p.proname as function_name,
+                pg_catalog.pg_get_function_arguments(p.oid) as arguments
+            FROM 
+                pg_catalog.pg_proc p
+                JOIN pg_catalog.pg_namespace n ON p.pronamespace = n.oid
+                JOIN pg_catalog.pg_type t ON t.typname = ?
+                JOIN pg_catalog.pg_namespace tn ON t.typnamespace = tn.oid AND tn.nspname = ?
+            WHERE 
+                n.nspname = ?
+                AND pg_catalog.pg_get_function_result(p.oid) = 'boolean'
+                AND array_position(p.proargtypes, t.oid) = 0  -- First parameter is the row type
+            ORDER BY 
+                p.proname;
+            """;
+            
+        List<QualifierDescriptor> qualifiers = new ArrayList<>();
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, table);       // Table name (type name)
+            stmt.setString(2, schema);      // Schema for the table type
+            stmt.setString(3, schema);      // Schema for the function
+            
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    String functionName = rs.getString("function_name");
+                    String arguments = rs.getString("arguments");
+                    
+                    // Parse arguments to get parameter list (excluding row type)
+                    List<QualifierParameterDescriptor> params = parseParameters(arguments, schema, table);
+                    
+                    qualifiers.add(new QualifierDescriptor(functionName, params));
+                }
+            }
+        }
+        
+        return qualifiers;
+    }
+    
+    /**
+     * Parses PostgreSQL function argument string into parameter descriptors.
+     */
+    private static List<QualifierParameterDescriptor> parseParameters(
+            String arguments, String schema, String table) {
+        List<QualifierParameterDescriptor> result = new ArrayList<>();
+        
+        // Arguments string looks like: "row_param schema.table, param1 type1, param2 type2"
+        // Split by comma first
+        String[] params = arguments.split(",");
+        
+        // Skip first parameter which is the row type
+        for (int i = 1; i < params.length; i++) {
+            String param = params[i].trim();
+            
+            // Parameter format: "name type" possibly with default value "= something"
+            // Split by whitespace but only for the first space
+            int firstSpace = param.indexOf(' ');
+            if (firstSpace > 0) {
+                String paramName = param.substring(0, firstSpace).trim();
+                
+                // Extract type
+                String paramType = param.substring(firstSpace + 1);
+                
+                // Remove default value if present
+                int defaultValueIndex = paramType.indexOf('=');
+                if (defaultValueIndex > 0) {
+                    paramType = paramType.substring(0, defaultValueIndex).trim();
+                }
+                
+                result.add(new QualifierParameterDescriptor(paramName, paramType));
+            }
+        }
+        
+        return result;
+    }
+
+    @Override    public String toString() {
         return "SchemaDescriptor[" +
                 "name=" + name + ", " +
                 "tables=" + tables + ']';

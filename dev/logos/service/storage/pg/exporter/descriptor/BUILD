@@ -3,6 +3,8 @@ java_library(
     srcs = [
         "ColumnDescriptor.java",
         "ExportedIdentifier.java",
+        "QualifierDescriptor.java",
+        "QualifierParameterDescriptor.java",
         "SchemaDescriptor.java",
         "TableDescriptor.java",
     ],

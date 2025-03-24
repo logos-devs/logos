@@ -66,8 +66,35 @@ public class TableStorage<Entity, StorageIdentifier> implements EntityStorage<En
     //  of this class are not the ones which correspond to field names.
     public Stream<Entity> query(Select.Builder selectBuilder) {
         Handle handle = jdbi.open();
+        handle.registerRowMapper(FieldMapper.factory(entityClass));    // TODO : write a mapper which uses the proto reflection API. The members
+    //  of this class are not the ones which correspond to field names.
+    public Stream<Entity> query(Select.Builder selectBuilder) {
+        Handle handle = jdbi.open();
         handle.registerRowMapper(FieldMapper.factory(entityClass));
-        return handle.createQuery(selectBuilder.build().toString())
+        
+        // Build the SQL query
+        Select select = selectBuilder.build();
+        String sql = select.toString();
+        Query query = handle.createQuery(sql);
+        
+        // Bind any qualifier parameters
+        Map<String, Object> qualifierParams = select.getQualifierParameters();
+        if (!qualifierParams.isEmpty()) {
+            for (Map.Entry<String, Object> entry : qualifierParams.entrySet()) {
+                query.bind(entry.getKey(), entry.getValue());
+            }
+        }        // Bind any qualifier parameters
+        Map<String, Object> qualifierParams = select.getQualifierParameters();
+        if (!qualifierParams.isEmpty()) {
+            for (Map.Entry<String, Object> entry : qualifierParams.entrySet()) {
+                query.bind(entry.getKey(), entry.getValue());
+            }
+        }
+        
+        return query
+                     .map(this::entityMapper)
+                     .stream()
+                     .onClose(handle::close);        return handle.createQuery(selectBuilder.build().toString())
                      .map(this::entityMapper)
                      .stream()
                      .onClose(handle::close);
