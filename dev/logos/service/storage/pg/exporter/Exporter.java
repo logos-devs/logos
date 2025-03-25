@@ -11,14 +11,13 @@ import dev.logos.module.ModuleLoader;
 import dev.logos.service.storage.pg.exporter.codegen.column.ColumnGenerator;
 import dev.logos.service.storage.pg.exporter.codegen.module.StorageModuleGenerator;
 import dev.logos.service.storage.pg.exporter.codegen.proto.ProtoGenerator;
-import dev.logos.service.storage.pg.exporter.codegen.schema.SchemaGenerator;import dev.logos.service.storage.pg.exporter.codegen.module.StorageModuleGenerator;
-import dev.logos.service.storage.pg.exporter.codegen.proto.ProtoGenerator;
 import dev.logos.service.storage.pg.exporter.codegen.proto.QualifierProtoGenerator;
-import dev.logos.service.storage.pg.exporter.codegen.schema.SchemaGenerator;import dev.logos.service.storage.pg.exporter.codegen.service.StorageServiceBaseGenerator;
+import dev.logos.service.storage.pg.exporter.codegen.schema.SchemaGenerator;
+import dev.logos.service.storage.pg.exporter.codegen.service.StorageServiceBaseGenerator;
 import dev.logos.service.storage.pg.exporter.codegen.table.TableGenerator;
-import dev.logos.service.storage.pg.exporter.descriptor.SchemaDescriptor;import dev.logos.service.storage.pg.exporter.codegen.table.TableGenerator;
 import dev.logos.service.storage.pg.exporter.descriptor.QualifierDescriptor;
-import dev.logos.service.storage.pg.exporter.descriptor.SchemaDescriptor;import dev.logos.service.storage.pg.exporter.descriptor.TableDescriptor;
+import dev.logos.service.storage.pg.exporter.descriptor.SchemaDescriptor;
+import dev.logos.service.storage.pg.exporter.descriptor.TableDescriptor;
 import dev.logos.service.storage.pg.exporter.module.ExportModule;
 import dev.logos.service.storage.pg.exporter.module.annotation.BuildDir;
 import dev.logos.service.storage.pg.exporter.module.annotation.BuildPackage;
@@ -45,37 +44,37 @@ public class Exporter {
     private final SchemaGenerator schemaGenerator;
     private final TableGenerator tableGenerator;
     private final ColumnGenerator columnGenerator;
-    private final ProtoGenerator protoGenerator;    private final TableGenerator tableGenerator;
-    private final ColumnGenerator columnGenerator;
     private final ProtoGenerator protoGenerator;
-    private final QualifierProtoGenerator qualifierProtoGenerator;    private final StorageServiceBaseGenerator storageServiceBaseGenerator;
+    private final QualifierProtoGenerator qualifierProtoGenerator;
+    private final StorageServiceBaseGenerator storageServiceBaseGenerator;
     private final StorageModuleGenerator storageModuleGenerator;
     private final Gson gson = new GsonBuilder().create();
+    private final Connection connection;
 
     @Inject
     public Exporter(
+            Connection connection,
             @BuildDir String buildDir,
             @BuildPackage String buildPackage,
             DataSource dataSource,
             SchemaGenerator schemaGenerator,
             TableGenerator tableGenerator,
             ColumnGenerator columnGenerator,
-            ProtoGenerator protoGenerator,            TableGenerator tableGenerator,
-            ColumnGenerator columnGenerator,
             ProtoGenerator protoGenerator,
-            QualifierProtoGenerator qualifierProtoGenerator,            StorageServiceBaseGenerator storageServiceBaseGenerator,
+            QualifierProtoGenerator qualifierProtoGenerator,
+            StorageServiceBaseGenerator storageServiceBaseGenerator,
             StorageModuleGenerator storageModuleGenerator
     ) {
+        this.connection = connection;
         this.buildDir = buildDir;
         this.buildPackage = buildPackage;
         this.dataSource = dataSource;
         this.schemaGenerator = schemaGenerator;
         this.tableGenerator = tableGenerator;
         this.columnGenerator = columnGenerator;
-        this.protoGenerator = protoGenerator;        this.tableGenerator = tableGenerator;
-        this.columnGenerator = columnGenerator;
         this.protoGenerator = protoGenerator;
-        this.qualifierProtoGenerator = qualifierProtoGenerator;        this.storageServiceBaseGenerator = storageServiceBaseGenerator;
+        this.qualifierProtoGenerator = qualifierProtoGenerator;
+        this.storageServiceBaseGenerator = storageServiceBaseGenerator;
         this.storageModuleGenerator = storageModuleGenerator;
     }
 
@@ -146,27 +145,28 @@ public class Exporter {
 
     public void generateProto(String tablesJson) throws IOException {
         List<SchemaDescriptor> schemaDescriptors;
-        schemaDescriptors = loadSchemaDescriptorsFromJson(tablesJson);    public void generateProto(String tablesJson) throws IOException {
-        List<SchemaDescriptor> schemaDescriptors;
-        schemaDescriptors = loadSchemaDescriptorsFromJson(tablesJson);
+        
+        // Convert JSON to descriptors or extract from database
+        if (tablesJson != null && !tablesJson.isEmpty()) {
+            Type mapType = new TypeToken<Map<String, List<String>>>(){}.getType();
+            Map<String, List<String>> selectedTables = new Gson().fromJson(tablesJson, mapType);
+            try {
+                schemaDescriptors = SchemaDescriptor.extract(connection, selectedTables);
+            } catch (SQLException e) {
+                throw new RuntimeException("Failed to extract schema", e);
+            }
+        } else {
+            throw new IllegalArgumentException("No tables specified for extraction");
+        }
 
         // Save schema descriptors as JSON for future use
         String schemasJson = new GsonBuilder().setPrettyPrinting().create()
                 .toJson(schemaDescriptors);
         
-        Files.writeString(Path.of(buildDir, "schemas.json"), schemasJson);        for (SchemaDescriptor schemaDescriptor : schemaDescriptors) {
-            for (TableDescriptor tableDescriptor : schemaDescriptor.tables()) {
-                try (OutputStream outputStream = Files.newOutputStream(
-                        Files.createDirectories(
-                                Path.of("%s/%s/".formatted(
-                                        buildDir,
-                                        buildPackage.replace(".", "/")
-                                ))
-                        ).resolve("%s_%s.proto".formatted(schemaDescriptor.name(), tableDescriptor.name())),
-                        CREATE, WRITE)) {
+        Files.writeString(Path.of(buildDir, "schemas.json"), schemasJson);
 
-                    outputStream.write(protoGenerator.generate(buildPackage, schemaDescriptor, tableDescriptor).getBytes());
-                }        for (SchemaDescriptor schemaDescriptor : schemaDescriptors) {
+        // Generate Proto and Java files for each table
+        for (SchemaDescriptor schemaDescriptor : schemaDescriptors) {
             for (TableDescriptor tableDescriptor : schemaDescriptor.tables()) {
                 Path protoPath = Files.createDirectories(
                         Path.of("%s/%s/".formatted(
@@ -209,11 +209,10 @@ public class Exporter {
                 }
                 
                 // Generate Java service base class
-                generateServiceBaseClass(buildPackage, schemaDescriptor, tableDescriptor);            }
+                generateServiceBaseClass(buildPackage, schemaDescriptor, tableDescriptor);
+            }
         }
     }
-
-    public static void main(String[] args) throws SQLException, IOException {    }
     
     /**
      * Insert qualifier message definitions before service definition.
@@ -297,7 +296,8 @@ public class Exporter {
         serviceBaseFile.writeTo(javaPath);
     }
 
-    public static void main(String[] args) throws SQLException, IOException {        ExportType exportType = ExportType.valueOf(args[1].toUpperCase());
+    public static void main(String[] args) throws SQLException, IOException {
+        ExportType exportType = ExportType.valueOf(args[1].toUpperCase());
         String buildDir = args[2];
         String buildPackage = args[3];
         String targetJson = args[4]; // either a list of schemas, or a dict-list of schemas and tables

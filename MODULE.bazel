@@ -376,3 +376,16 @@ apk.translate_lock(
     lock = "//vendor/apko:console.lock.json",
 )
 use_repo(apk, "console_image")
+
+# buildbuddy
+bazel_dep(name = "toolchains_buildbuddy")
+git_override(
+    module_name = "toolchains_buildbuddy",
+    commit = "3ad658cf81923ed2325870a2aadcc0c80e5792af",
+    init_submodules = True,
+    remote = "https://github.com/buildbuddy-io/buildbuddy-toolchain",
+)
+
+buildbuddy = use_extension("@toolchains_buildbuddy//:extensions.bzl", "buildbuddy")
+buildbuddy.platform(buildbuddy_container_image = "UBUNTU22_04_IMAGE")
+use_repo(buildbuddy, "buildbuddy_toolchain")

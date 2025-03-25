@@ -9,6 +9,7 @@ java_library(
         "Identifier.java",
         "OrderBy.java",
         "QualifierFunctionCall.java",
+        "QualifierSupport.java",
         "Relation.java",
         "Result.java",
         "Schema.java",
@@ -19,7 +20,6 @@ java_library(
     visibility = ["//visibility:public"],
     deps = [
         "//dev/logos/service",
-        "//dev/logos/service/storage:storage_library",
         "//dev/logos/service/storage/exceptions",
         "//dev/logos/service/storage/validator",
         "//dev/logos/user",

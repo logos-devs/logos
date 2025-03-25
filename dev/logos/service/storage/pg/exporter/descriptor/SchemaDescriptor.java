@@ -5,12 +5,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-public record SchemaDescriptor(String name, List<TableDescriptor> tables) implements ExportedIdentifier {public record SchemaDescriptor(
+
+public record SchemaDescriptor(
     String name, 
     List<TableDescriptor> tables,
     Map<String, List<QualifierDescriptor>> qualifiers
@@ -21,7 +20,9 @@ public record SchemaDescriptor(String name, List<TableDescriptor> tables) implem
      */
     public SchemaDescriptor(String name, List<TableDescriptor> tables) {
         this(name, tables, Map.of());
-    }    public static List<SchemaDescriptor> extract(Connection connection, Map<String, List<String>> selectedTables) throws SQLException {
+    }
+    
+    public static List<SchemaDescriptor> extract(Connection connection, Map<String, List<String>> selectedTables) throws SQLException {
         List<SchemaDescriptor> schemaDescriptors = new ArrayList<>();
 
         for (String schema : selectedTables.keySet()) {
@@ -34,6 +35,8 @@ public record SchemaDescriptor(String name, List<TableDescriptor> tables) implem
             }
 
             List<TableDescriptor> tableDescriptors = new ArrayList<>();
+            Map<String, List<QualifierDescriptor>> qualifierMap = new HashMap<>();
+            
             for (String table : selectedTables.get(schema)) {
                 PreparedStatement tableQueryStmt = connection.prepareStatement(
                         "select table_name from information_schema.tables where table_schema = ? and table_name = ?");
@@ -75,29 +78,22 @@ public record SchemaDescriptor(String name, List<TableDescriptor> tables) implem
                 }
 
                 tableDescriptors.add(new TableDescriptor(table, columnDescriptors));
-            }
-
-            schemaDescriptors.add(new SchemaDescriptor(schemaResultSet.getString("schema_name"), tableDescriptors));                
+                
                 // Add qualifier extraction
                 List<QualifierDescriptor> tableQualifiers = extractQualifiers(connection, schema, table);
                 if (!tableQualifiers.isEmpty()) {
-                    Map<String, List<QualifierDescriptor>> qualifierMap = new HashMap<>();
                     qualifierMap.put(table, tableQualifiers);
-                    schemaDescriptors.add(new SchemaDescriptor(
-                        schemaResultSet.getString("schema_name"), 
-                        tableDescriptors,
-                        qualifierMap
-                    ));
-                    return schemaDescriptors;
                 }
             }
 
-            schemaDescriptors.add(new SchemaDescriptor(schemaResultSet.getString("schema_name"), tableDescriptors));        }
+            schemaDescriptors.add(new SchemaDescriptor(
+                schemaResultSet.getString("schema_name"), 
+                tableDescriptors,
+                qualifierMap
+            ));
+        }
 
         return schemaDescriptors;
-    }
-
-    @Override        return schemaDescriptors;
     }
     
     /**
@@ -138,7 +134,7 @@ public record SchemaDescriptor(String name, List<TableDescriptor> tables) implem
                     String arguments = rs.getString("arguments");
                     
                     // Parse arguments to get parameter list (excluding row type)
-                    List<QualifierParameterDescriptor> params = parseParameters(arguments, schema, table);
+                    List<QualifierParameterDescriptor> params = parseParameters(arguments);
                     
                     qualifiers.add(new QualifierDescriptor(functionName, params));
                 }
@@ -151,8 +147,7 @@ public record SchemaDescriptor(String name, List<TableDescriptor> tables) implem
     /**
      * Parses PostgreSQL function argument string into parameter descriptors.
      */
-    private static List<QualifierParameterDescriptor> parseParameters(
-            String arguments, String schema, String table) {
+    private static List<QualifierParameterDescriptor> parseParameters(String arguments) {
         List<QualifierParameterDescriptor> result = new ArrayList<>();
         
         // Arguments string looks like: "row_param schema.table, param1 type1, param2 type2"
@@ -185,10 +180,11 @@ public record SchemaDescriptor(String name, List<TableDescriptor> tables) implem
         return result;
     }
 
-    @Override    public String toString() {
+    @Override
+    public String toString() {
         return "SchemaDescriptor[" +
                 "name=" + name + ", " +
-                "tables=" + tables + ']';
+                "tables=" + tables + ", " +
+                "qualifiers=" + qualifiers + ']';
     }
-
 }

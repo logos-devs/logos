@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import com.google.protobuf.GeneratedMessage;
 import dev.logos.service.storage.exceptions.EntityReadException;
 import dev.logos.service.storage.exceptions.EntityWriteException;
+import dev.logos.service.storage.pg.QualifierFunctionCall;
 import dev.logos.service.storage.pg.Relation;
 import dev.logos.service.storage.pg.Select;
 import org.jdbi.v3.core.Handle;
@@ -15,6 +16,7 @@ import org.jdbi.v3.core.statement.StatementContext;
 
 import javax.sql.DataSource;
 import java.sql.ResultSet;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
@@ -66,38 +68,30 @@ public class TableStorage<Entity, StorageIdentifier> implements EntityStorage<En
     //  of this class are not the ones which correspond to field names.
     public Stream<Entity> query(Select.Builder selectBuilder) {
         Handle handle = jdbi.open();
-        handle.registerRowMapper(FieldMapper.factory(entityClass));    // TODO : write a mapper which uses the proto reflection API. The members
-    //  of this class are not the ones which correspond to field names.
-    public Stream<Entity> query(Select.Builder selectBuilder) {
-        Handle handle = jdbi.open();
         handle.registerRowMapper(FieldMapper.factory(entityClass));
         
         // Build the SQL query
-        Select select = selectBuilder.build();
-        String sql = select.toString();
-        Query query = handle.createQuery(sql);
+        Select selectObj = selectBuilder.build();
+        String sqlQuery = selectObj.toString();
+        Query queryObj = handle.createQuery(sqlQuery);
         
-        // Bind any qualifier parameters
-        Map<String, Object> qualifierParams = select.getQualifierParameters();
-        if (!qualifierParams.isEmpty()) {
-            for (Map.Entry<String, Object> entry : qualifierParams.entrySet()) {
-                query.bind(entry.getKey(), entry.getValue());
+        // Bind any qualifier parameters if needed
+        if (selectObj.getQualifiers() != null && !selectObj.getQualifiers().isEmpty()) {
+            Map<String, Object> params = new HashMap<>();
+            for (QualifierFunctionCall call : selectObj.getQualifiers()) {
+                params.putAll(call.getParameters());
             }
-        }        // Bind any qualifier parameters
-        Map<String, Object> qualifierParams = select.getQualifierParameters();
-        if (!qualifierParams.isEmpty()) {
-            for (Map.Entry<String, Object> entry : qualifierParams.entrySet()) {
-                query.bind(entry.getKey(), entry.getValue());
+            
+            if (!params.isEmpty()) {
+                for (Map.Entry<String, Object> entry : params.entrySet()) {
+                    queryObj.bind(entry.getKey(), entry.getValue());
+                }
             }
-        }
-        
-        return query
-                     .map(this::entityMapper)
-                     .stream()
-                     .onClose(handle::close);        return handle.createQuery(selectBuilder.build().toString())
-                     .map(this::entityMapper)
-                     .stream()
-                     .onClose(handle::close);
+        }        
+        return queryObj
+                 .map(this::entityMapper)
+                 .stream()
+                 .onClose(handle::close);
     }
 
     public StorageIdentifier create(Entity entity) throws EntityWriteException {

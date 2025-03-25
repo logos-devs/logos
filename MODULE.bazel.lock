@@ -5153,6 +5153,80 @@
           ]
         ]
       }
+    },
+    "@@toolchains_buildbuddy~//:extensions.bzl%buildbuddy": {
+      "general": {
+        "bzlTransitiveDigest": "5L4eIUnuJrhMWepqfsm/SWpKCh7BdBewHIGBRepvdRQ=",
+        "usagesDigest": "V32z3o/w7IBSqEADRa4nBO7RL0oe2fvGuQOyRGerOSU=",
+        "recordedFileInputs": {},
+        "recordedDirentsInputs": {},
+        "envVariables": {},
+        "generatedRepoSpecs": {
+          "buildbuddy_toolchain": {
+            "bzlFile": "@@toolchains_buildbuddy~//:rules.bzl",
+            "ruleClassName": "_buildbuddy_toolchain",
+            "attributes": {
+              "container_image": "gcr.io/flame-public/rbe-ubuntu22-04:latest",
+              "llvm": false,
+              "java_version": "",
+              "gcc_version": "",
+              "msvc_edition": "Community",
+              "msvc_release": "2022",
+              "msvc_version": "14.39.33519",
+              "windows_kits_release": "10",
+              "windows_kits_version": "10.0.22621.0",
+              "extra_cxx_builtin_include_directories": []
+            }
+          }
+        },
+        "recordedRepoMappingEntries": [
+          [
+            "bazel_features~",
+            "bazel_features_globals",
+            "bazel_features~~version_extension~bazel_features_globals"
+          ],
+          [
+            "bazel_features~",
+            "bazel_features_version",
+            "bazel_features~~version_extension~bazel_features_version"
+          ],
+          [
+            "protobuf~",
+            "proto_bazel_features",
+            "bazel_features~"
+          ],
+          [
+            "protobuf~",
+            "rules_cc",
+            "rules_cc~"
+          ],
+          [
+            "rules_cc~",
+            "bazel_tools",
+            "bazel_tools"
+          ],
+          [
+            "rules_cc~",
+            "com_google_protobuf",
+            "protobuf~"
+          ],
+          [
+            "rules_cc~",
+            "rules_cc",
+            "rules_cc~"
+          ],
+          [
+            "toolchains_buildbuddy~",
+            "bazel_tools",
+            "bazel_tools"
+          ],
+          [
+            "toolchains_buildbuddy~",
+            "rules_cc",
+            "rules_cc~"
+          ]
+        ]
+      }
     }
   }
 }

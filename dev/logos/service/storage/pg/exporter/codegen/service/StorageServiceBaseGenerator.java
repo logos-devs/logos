@@ -5,13 +5,11 @@ import com.squareup.javapoet.*;
 import dev.logos.service.storage.EntityStorage;
 import dev.logos.service.storage.EntityStorageService;
 import dev.logos.service.storage.pg.Converter;
-import dev.logos.service.storage.pg.exporter.descriptor.SchemaDescriptor;
-import dev.logos.service.storage.pg.exporter.descriptor.TableDescriptor;import dev.logos.service.storage.pg.Converter;
 import dev.logos.service.storage.pg.Select;
-import dev.logos.service.storage.pg.StorageServiceQualifierExtension;
 import dev.logos.service.storage.pg.exporter.descriptor.QualifierDescriptor;
 import dev.logos.service.storage.pg.exporter.descriptor.SchemaDescriptor;
-import dev.logos.service.storage.pg.exporter.descriptor.TableDescriptor;import dev.logos.service.storage.validator.Validator;
+import dev.logos.service.storage.pg.exporter.descriptor.TableDescriptor;
+import dev.logos.service.storage.validator.Validator;
 import io.grpc.stub.StreamObserver;
 
 import java.io.IOException;
@@ -94,13 +92,12 @@ public class StorageServiceBaseGenerator {
                         .addMethod(makeRpcHandler(updateRequestMessage, updateResponseMessage, "update"))
                         .addMethod(makeRpcHandler(deleteRequestMessage, deleteResponseMessage, "delete"))
                         .addMethod(makePreSaveMethod(entityMessage))
-                        .addMethod(makeEntityGetter(entityMessage, getRequestMessage, createRequestMessage, updateRequestMessage))                        .addMethod(makeRpcHandler(deleteRequestMessage, deleteResponseMessage, "delete"))
-                        .addMethod(makePreSaveMethod(entityMessage))
                         .addMethod(makeEntityGetter(entityMessage, getRequestMessage, createRequestMessage, updateRequestMessage))
                         .addMethod(generateQueryMethod(tableDescriptor.name(), 
                            schemaDescriptor.qualifiers() != null && 
                            schemaDescriptor.qualifiers().containsKey(tableDescriptor.name()) &&
-                           !schemaDescriptor.qualifiers().get(tableDescriptor.name()).isEmpty()))                        .addMethod(makeIdGetter(storageIdentifier, getRequestMessage, updateRequestMessage, deleteRequestMessage))
+                           !schemaDescriptor.qualifiers().get(tableDescriptor.name()).isEmpty()))
+                        .addMethod(makeIdGetter(storageIdentifier, getRequestMessage, updateRequestMessage, deleteRequestMessage))
 
                         // GetResponse response(Stream<Entity>, GetRequest)
                         .addMethod(MethodSpec.methodBuilder("response")
@@ -154,10 +151,8 @@ public class StorageServiceBaseGenerator {
         // entity-level validator that applies to creates and updates
         storageServiceClassSpec.addMethod(makeValidateEntityMethod(entityMessage));
 
-        return JavaFile.builder(packageName, storageServiceClassSpec.build())        // entity-level validator that applies to creates and updates
-        storageServiceClassSpec.addMethod(makeValidateEntityMethod(entityMessage));
-
-        return JavaFile.builder(packageName, storageServiceClassSpec.build())                       .addStaticImport(
+        return JavaFile.builder(packageName, storageServiceClassSpec.build())
+                       .addStaticImport(
                                ClassName.bestGuess(String.format("%s.%s", targetPackage, schemaDescriptor.getClassName())),
                                tableDescriptor.getInstanceVariableName())
                        .build();
@@ -252,12 +247,6 @@ public class StorageServiceBaseGenerator {
                          .addParameter(requestMessage, "request")
                          .addParameter(ClassName.get(Validator.class), "validator")
                          .build();
-    }    private MethodSpec makeValidateEntityMethod(ClassName requestMessage) {
-        return MethodSpec.methodBuilder("validate")
-                         .addModifiers(PROTECTED)
-                         .addParameter(requestMessage, "request")
-                         .addParameter(ClassName.get(Validator.class), "validator")
-                         .build();
     }
     
     /**
@@ -292,25 +281,12 @@ public class StorageServiceBaseGenerator {
         // Add qualifier handling if table has qualifiers
         if (hasQualifiers) {
             codeBuilder.add("\n// Process qualifier functions if present\n");
-            codeBuilder.addStatement("$T.addQualifiers(builder, \"List\", request)",
-                    ClassName.get("dev.logos.service.storage.pg", "StorageServiceQualifierExtension"));
+            codeBuilder.addStatement("try {\n  java.lang.reflect.Method getQualifiersMethod = request.getClass().getMethod(\"getListQualifiersList\");\n  java.util.List<?> qualifiers = (java.util.List<?>) getQualifiersMethod.invoke(request);\n  \n  if (qualifiers != null && !qualifiers.isEmpty()) {\n    for (Object qualifier : qualifiers) {\n      // Extract qualifier name from class name\n      String qualifierName = qualifier.getClass().getSimpleName();\n      \n      // Extract parameters\n      java.util.Map<String, Object> params = new java.util.HashMap<>();\n      java.lang.reflect.Method[] methods = qualifier.getClass().getMethods();\n      \n      for (java.lang.reflect.Method method : methods) {\n        String methodName = method.getName();\n        \n        if (methodName.startsWith(\"get\") && \n            !methodName.equals(\"getClass\") &&\n            !methodName.equals(\"getDefaultInstanceForType\") &&\n            method.getParameterCount() == 0) {\n          \n          String paramName = methodName.substring(3);\n          paramName = Character.toLowerCase(paramName.charAt(0)) + paramName.substring(1);\n          \n          Object value = method.invoke(qualifier);\n          if (value != null) {\n            params.put(paramName, value);\n          }\n        }\n      }\n      \n      // Add qualifier to builder\n      builder.qualifier(qualifierName, params);\n    }\n  }\n} catch (Exception e) {\n  // No qualifiers or error processing them\n}");
         }
         codeBuilder.endControlFlow();
-        
-        // Handle update and delete requests with qualifiers
-        if (hasQualifiers) {
-            codeBuilder.beginControlFlow("else if (request instanceof UpdateRequest)");
-            codeBuilder.addStatement("$T.addQualifiers(builder, \"Update\", request)",
-                    ClassName.get("dev.logos.service.storage.pg", "StorageServiceQualifierExtension"));
-            codeBuilder.endControlFlow();
-            
-            codeBuilder.beginControlFlow("else if (request instanceof DeleteRequest)");
-            codeBuilder.addStatement("$T.addQualifiers(builder, \"Delete\", request)",
-                    ClassName.get("dev.logos.service.storage.pg", "StorageServiceQualifierExtension"));
-            codeBuilder.endControlFlow();
-        }
         
         codeBuilder.add("\nreturn builder;\n");
         
         return methodBuilder.addCode(codeBuilder.build()).build();
-    }}
+    }
+}

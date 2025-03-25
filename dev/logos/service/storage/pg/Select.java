@@ -134,11 +134,14 @@ public class Select {
      * @return Map of parameter names to values
      */
     public Map<String, Object> getQualifierParameters() {
-        Map<String, Object> params = new HashMap<>();
-        for (QualifierFunctionCall call : qualifiers) {
-            params.putAll(call.getParameters());
-        }
-        return params;
+        return QualifierSupport.getParameters(qualifiers);
+    }
+
+    /**
+     * Gets the qualifier functions added to this select.
+     */
+    public List<QualifierFunctionCall> getQualifiers() {
+        return qualifiers;
     }
 
     @Override
