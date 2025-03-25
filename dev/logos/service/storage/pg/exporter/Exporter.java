@@ -49,11 +49,9 @@ public class Exporter {
     private final StorageServiceBaseGenerator storageServiceBaseGenerator;
     private final StorageModuleGenerator storageModuleGenerator;
     private final Gson gson = new GsonBuilder().create();
-    private final Connection connection;
 
     @Inject
     public Exporter(
-            Connection connection,
             @BuildDir String buildDir,
             @BuildPackage String buildPackage,
             DataSource dataSource,
@@ -65,7 +63,6 @@ public class Exporter {
             StorageServiceBaseGenerator storageServiceBaseGenerator,
             StorageModuleGenerator storageModuleGenerator
     ) {
-        this.connection = connection;
         this.buildDir = buildDir;
         this.buildPackage = buildPackage;
         this.dataSource = dataSource;
@@ -86,8 +83,6 @@ public class Exporter {
 
     public void exportJson(String tablesJson) throws SQLException, IOException {
         try (Connection connection = dataSource.getConnection()) {
-            connection.setAutoCommit(false);
-
             List<SchemaDescriptor> schemaDescriptors;
             schemaDescriptors = SchemaDescriptor.extract(
                     connection,
@@ -145,25 +140,7 @@ public class Exporter {
 
     public void generateProto(String tablesJson) throws IOException {
         List<SchemaDescriptor> schemaDescriptors;
-        
-        // Convert JSON to descriptors or extract from database
-        if (tablesJson != null && !tablesJson.isEmpty()) {
-            Type mapType = new TypeToken<Map<String, List<String>>>(){}.getType();
-            Map<String, List<String>> selectedTables = new Gson().fromJson(tablesJson, mapType);
-            try {
-                schemaDescriptors = SchemaDescriptor.extract(connection, selectedTables);
-            } catch (SQLException e) {
-                throw new RuntimeException("Failed to extract schema", e);
-            }
-        } else {
-            throw new IllegalArgumentException("No tables specified for extraction");
-        }
-
-        // Save schema descriptors as JSON for future use
-        String schemasJson = new GsonBuilder().setPrettyPrinting().create()
-                .toJson(schemaDescriptors);
-        
-        Files.writeString(Path.of(buildDir, "schemas.json"), schemasJson);
+        schemaDescriptors = loadSchemaDescriptorsFromJson(tablesJson);
 
         // Generate Proto and Java files for each table
         for (SchemaDescriptor schemaDescriptor : schemaDescriptors) {
@@ -174,46 +151,46 @@ public class Exporter {
                                 buildPackage.replace(".", "/")
                         ))
                 ).resolve("%s_%s.proto".formatted(schemaDescriptor.name(), tableDescriptor.name()));
-                
+
                 // Generate standard Proto content
                 String standardProto = protoGenerator.generate(buildPackage, schemaDescriptor, tableDescriptor);
-                
+
                 // Check if table has qualifiers
                 List<QualifierDescriptor> qualifiers = schemaDescriptor.qualifiers()
-                        .getOrDefault(tableDescriptor.name(), List.of());
-                
+                                                                       .getOrDefault(tableDescriptor.name(), List.of());
+
                 if (!qualifiers.isEmpty()) {
                     // Generate qualifier message definitions
                     String qualifierMessages = qualifierProtoGenerator.generateQualifierMessages(qualifiers);
-                    
+
                     // Generate qualifier fields for request types
                     String listQualifiers = qualifierProtoGenerator.generateQualifierFields("List", qualifiers);
                     String updateQualifiers = qualifierProtoGenerator.generateQualifierFields("Update", qualifiers);
                     String deleteQualifiers = qualifierProtoGenerator.generateQualifierFields("Delete", qualifiers);
-                    
+
                     // Insert qualifier messages before service definition
                     standardProto = insertQualifierContent(standardProto, qualifierMessages);
-                    
+
                     // Add qualifier fields to request messages
-                    standardProto = addQualifierFieldsToMessage(standardProto, 
+                    standardProto = addQualifierFieldsToMessage(standardProto,
                             "List" + tableDescriptor.getClassName().simpleName() + "Request", listQualifiers);
-                    standardProto = addQualifierFieldsToMessage(standardProto, 
+                    standardProto = addQualifierFieldsToMessage(standardProto,
                             "Update" + tableDescriptor.getClassName().simpleName() + "Request", updateQualifiers);
-                    standardProto = addQualifierFieldsToMessage(standardProto, 
+                    standardProto = addQualifierFieldsToMessage(standardProto,
                             "Delete" + tableDescriptor.getClassName().simpleName() + "Request", deleteQualifiers);
                 }
-                
+
                 // Write Proto file
                 try (OutputStream outputStream = Files.newOutputStream(protoPath, CREATE, WRITE)) {
                     outputStream.write(standardProto.getBytes());
                 }
-                
+
                 // Generate Java service base class
                 generateServiceBaseClass(buildPackage, schemaDescriptor, tableDescriptor);
             }
         }
     }
-    
+
     /**
      * Insert qualifier message definitions before service definition.
      */
@@ -221,16 +198,16 @@ public class Exporter {
         if (qualifierMessages == null || qualifierMessages.isEmpty()) {
             return protoContent;
         }
-        
+
         // Find the service definition
         int serviceIndex = protoContent.lastIndexOf("service ");
         if (serviceIndex > 0) {
             // Insert qualifier messages before service
-            return protoContent.substring(0, serviceIndex) + 
-                   qualifierMessages + "\n\n" + 
-                   protoContent.substring(serviceIndex);
+            return protoContent.substring(0, serviceIndex) +
+                    qualifierMessages + "\n\n" +
+                    protoContent.substring(serviceIndex);
         }
-        
+
         return protoContent;
     }
 
@@ -241,19 +218,19 @@ public class Exporter {
         if (qualifierFields == null || qualifierFields.isEmpty()) {
             return protoContent;
         }
-        
+
         // Find the message definition
         String messageStart = "message " + messageName + " {";
         int messageIndex = protoContent.indexOf(messageStart);
         if (messageIndex < 0) {
             return protoContent;
         }
-        
+
         // Find the closing brace of the message
         int startPos = messageIndex + messageStart.length();
         int braceLevel = 1;
         int endIndex = -1;
-        
+
         for (int i = startPos; i < protoContent.length(); i++) {
             char c = protoContent.charAt(i);
             if (c == '{') {
@@ -266,14 +243,14 @@ public class Exporter {
                 }
             }
         }
-        
+
         if (endIndex > 0) {
             // Insert qualifier fields before closing brace
-            return protoContent.substring(0, endIndex) + 
-                   "\n" + qualifierFields + 
-                   protoContent.substring(endIndex);
+            return protoContent.substring(0, endIndex) +
+                    "\n" + qualifierFields +
+                    protoContent.substring(endIndex);
         }
-        
+
         return protoContent;
     }
 
@@ -286,13 +263,13 @@ public class Exporter {
             TableDescriptor tableDescriptor) throws IOException {
         JavaFile serviceBaseFile = storageServiceBaseGenerator.generate(
                 targetPackage, schemaDescriptor, tableDescriptor);
-                
+
         Path javaPath = Files.createDirectories(
                 Path.of("%s/%s/".formatted(
                         buildDir,
                         targetPackage.replace(".", "/")
                 )));
-                
+
         serviceBaseFile.writeTo(javaPath);
     }
 

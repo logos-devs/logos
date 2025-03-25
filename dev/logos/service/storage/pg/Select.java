@@ -28,10 +28,10 @@ public class Select {
         private Column[] columns = new Column[0];
         private String from;
         private List<Filter> where;
-        private List<QualifierFunctionCall> qualifiers;
+        private final List<QualifierFunctionCall> qualifiers;
         private Long limit;
         private Long offset;
-        private List<OrderBy> orderBy;
+        private final List<OrderBy> orderBy;
 
         public Builder() {
             this.offset = 0L;
@@ -97,12 +97,12 @@ public class Select {
                                 .build());
             return this;
         }
-        
+
         /**
          * Adds a qualifier function call to filter results.
-         * 
+         *
          * @param qualifierName Name of the qualifier function
-         * @param parameters Named parameters to pass to the qualifier
+         * @param parameters    Named parameters to pass to the qualifier
          * @return this builder
          */
         public Builder qualifier(String qualifierName, Map<String, Object> parameters) {
@@ -128,9 +128,10 @@ public class Select {
         this.offset = builder.offset;
         this.orderBy = builder.orderBy;
     }
-    
+
     /**
      * Gets all parameter values from qualifier functions that need to be bound.
+     *
      * @return Map of parameter names to values
      */
     public Map<String, Object> getQualifierParameters() {
@@ -153,26 +154,26 @@ public class Select {
             queryParts.add(Arrays.stream(this.columns).map(column -> column.quotedIdentifier).collect(Collectors.joining(", ")));
         }
 
-        queryParts.add(String.format("from %s as t", this.from));
-        
+        queryParts.add(String.format("from %s", this.from));
+
         // Combine standard WHERE clauses and qualifier function calls
         List<String> whereClauses = new ArrayList<>();
         if (!this.where.isEmpty()) {
             whereClauses.addAll(this.where.stream()
-                .map(Filter::toString)
-                .collect(Collectors.toList()));
+                                          .map(Filter::toString)
+                                          .toList());
         }
-        
+
         if (!this.qualifiers.isEmpty()) {
             whereClauses.addAll(this.qualifiers.stream()
-                .map(QualifierFunctionCall::toString)
-                .collect(Collectors.toList()));
+                                               .map(QualifierFunctionCall::toString)
+                                               .toList());
         }
-        
+
         if (!whereClauses.isEmpty()) {
             queryParts.add("where " + String.join(" and ", whereClauses));
         }
-        
+
         if (!this.orderBy.isEmpty()) {
             queryParts.add("order by " + this.orderBy.stream().map(OrderBy::toString).collect(Collectors.joining(", ")));
         }
