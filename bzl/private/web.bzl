@@ -107,7 +107,7 @@ export default {
 
                 <meta charset="utf-8">
                 <meta content="width=device-width, initial-scale=1" name="viewport">
-                <meta name="apple-mobile-web-app-capable" content="yes">
+                <meta name="mobile-web-app-capable" content="yes">
                 <meta name="apple-mobile-web-app-status-bar-style" content="translucent">
                 <meta name="referrer" content="no-referrer">
 

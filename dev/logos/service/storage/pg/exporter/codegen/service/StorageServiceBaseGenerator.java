@@ -281,7 +281,44 @@ public class StorageServiceBaseGenerator {
         // Add qualifier handling if table has qualifiers
         if (hasQualifiers) {
             codeBuilder.add("\n// Process qualifier functions if present\n");
-            codeBuilder.addStatement("try {\n  java.lang.reflect.Method getQualifiersMethod = request.getClass().getMethod(\"getListQualifiersList\");\n  java.util.List<?> qualifiers = (java.util.List<?>) getQualifiersMethod.invoke(request);\n  \n  if (qualifiers != null && !qualifiers.isEmpty()) {\n    for (Object qualifier : qualifiers) {\n      // Extract qualifier name from class name\n      String qualifierName = qualifier.getClass().getSimpleName();\n      \n      // Extract parameters\n      java.util.Map<String, Object> params = new java.util.HashMap<>();\n      java.lang.reflect.Method[] methods = qualifier.getClass().getMethods();\n      \n      for (java.lang.reflect.Method method : methods) {\n        String methodName = method.getName();\n        \n        if (methodName.startsWith(\"get\") && \n            !methodName.equals(\"getClass\") &&\n            !methodName.equals(\"getDefaultInstanceForType\") &&\n            method.getParameterCount() == 0) {\n          \n          String paramName = methodName.substring(3);\n          paramName = Character.toLowerCase(paramName.charAt(0)) + paramName.substring(1);\n          \n          Object value = method.invoke(qualifier);\n          if (value != null) {\n            params.put(paramName, value);\n          }\n        }\n      }\n      \n      // Add qualifier to builder\n      builder.qualifier(qualifierName, params);\n    }\n  }\n} catch (Exception e) {\n  // No qualifiers or error processing them\n}");
+            codeBuilder.addStatement("try {\n" +
+                    "  java.lang.reflect.Method getQualifiersMethod = request.getClass().getMethod(\"getListQualifiersList\");\n" +
+                    "  java.util.List<?> qualifiers = (java.util.List<?>) getQualifiersMethod.invoke(request);\n" +
+                    "  \n" +
+                    "  if (qualifiers != null && !qualifiers.isEmpty()) {\n" +
+                    "    for (Object qualifier : qualifiers) {\n" +
+                    "      // Extract qualifier name from class name\n" +
+                    "      String qualifierName = qualifier.getClass().getSimpleName();\n" +
+                    "      \n" +
+                    "      // Extract parameters\n" +
+                    "      java.util.Map<String, Object> params = new java.util.HashMap<>();\n" +
+                    "      java.lang.reflect.Method[] methods = qualifier.getClass().getMethods();\n" +
+                    "      \n" +
+                    "      for (java.lang.reflect.Method method : methods) {\n" +
+                    "        String methodName = method.getName();\n" +
+                    "        \n" +
+                    "        if (methodName.startsWith(\"get\") && \n" +
+                    "            !methodName.equals(\"getClass\") &&\n" +
+                    "            !methodName.equals(\"getDefaultInstanceForType\") &&\n" +
+                    "            method.getParameterCount() == 0) {\n" +
+                    "          \n" +
+                    "          String paramName = methodName.substring(3);\n" +
+                    "          paramName = Character.toLowerCase(paramName.charAt(0)) + paramName.substring(1);\n" +
+                    "          \n" +
+                    "          Object value = method.invoke(qualifier);\n" +
+                    "          if (value != null) {\n" +
+                    "            params.put(paramName, value);\n" +
+                    "          }\n" +
+                    "        }\n" +
+                    "      }\n" +
+                    "      \n" +
+                    "      // Add qualifier to builder\n" +
+                    "      builder.qualifier(qualifierName, params);\n" +
+                    "    }\n" +
+                    "  }\n" +
+                    "} catch (Exception e) {\n" +
+                    "  // No qualifiers or error processing them\n" +
+                    "}");
         }
         codeBuilder.endControlFlow();
 

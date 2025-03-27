@@ -6,6 +6,7 @@ java_library(
         "//dev/logos/service/storage/pg",
         "//dev/logos/service/storage/pg/exporter/codegen",
         "//dev/logos/service/storage/pg/exporter/codegen/proto",
+        "//dev/logos/service/storage/pg/exporter/codegen/type",
         "//dev/logos/service/storage/pg/exporter/mapper",
         "//dev/logos/service/storage/pg/exporter/module/annotation",
         "@com_google_protobuf//:protobuf_java",

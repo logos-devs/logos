@@ -15,6 +15,13 @@ public class TimestampMapper extends PgTypeMapper {
         super(List.of("timestamp", "timestamptz"), TYPE_STRING, "getString");
     }
 
+    public static DateTimeFormatterBuilder getDateTimeFormatterBuilder() {
+        return new DateTimeFormatterBuilder()
+                .appendPattern("yyyy-MM-dd HH:mm:ss")
+                .appendFraction(ChronoField.MICRO_OF_SECOND, 0, 6, true)
+                .appendPattern("x");
+    }
+
     @Override
     public CodeBlock protoToPg(String queryVariable, String fieldVariable, String fieldName) {
         return CodeBlock.of("$L.bind($S, $T.parse((String) $L.get($S), new $T()" +
