@@ -1,4 +1,11 @@
-import {Container, ContainerModule, injectable, interfaces} from "inversify";
+import {
+    Container,
+    ContainerModule,
+    injectable,
+    BindToFluentSyntax,
+    ContainerModuleLoadOptions,
+    ServiceIdentifier
+} from "inversify";
 import {StreamInterceptor, UnaryInterceptor} from "grpc-web";
 import getDecorators from "inversify-inject-decorators";
 import {RouterPath} from "../components/router-path";
@@ -28,10 +35,11 @@ export abstract class ClientStreamInterceptor implements StreamInterceptor<any, 
 
 
 type ClientConstructor = new (hostname: string, credentials: any, options: any) => any;
+type Bind = <T>(serviceIdentifier: ServiceIdentifier<T>) => BindToFluentSyntax<T>;
 
 @injectable()
 export abstract class AppModule extends ContainerModule {
-    protected bind: interfaces.Bind;
+    protected bind: <T>(serviceIdentifier: ServiceIdentifier<T>) => BindToFluentSyntax<T>;
     protected clients: ClientConstructor[] = [];
     protected _routes: RouterPath[] = [];
 
@@ -49,12 +57,12 @@ export abstract class AppModule extends ContainerModule {
     }
 
     constructor() {
-        super((bind: interfaces.Bind) => {
-            this.bind = bind;
+        super((options: ContainerModuleLoadOptions) => {
+            this.bind = options.bind;
             this.configure();
 
             this.clients.forEach(clientClass => {
-                bind(clientClass).toDynamicValue(
+                this.bind(clientClass).toDynamicValue(
                     () => {
                         const client = new clientClass("https://api." + window.location.hostname, null, {
                             unaryInterceptors: this.getAllBindings(ClientUnaryInterceptor),
