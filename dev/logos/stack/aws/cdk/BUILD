@@ -15,27 +15,3 @@ cdk.cdk_binary(
     tags = ["no-sandbox"],
     visibility = ["//visibility:public"],
 )
-
-js_run_binary(
-    name = "cdk_run",
-    outs = ["stack.json"],
-    args = [
-        "deploy",
-        "-v",
-        "--all",
-        "--outputs-file",
-        "stack.json",
-        "--require-approval",
-        "never",
-    ],
-    exec_properties = {"cdk_lock": "1"},
-    log_level = "debug",
-    mnemonic = "CdkDeploy",
-    progress_message = "Deploying to AWS",
-    silent_on_success = False,
-    tags = [
-        "no-remote",
-        "no-sandbox",
-    ],
-    tool = ":cdk",
-)

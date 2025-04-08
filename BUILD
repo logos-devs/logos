@@ -4,11 +4,18 @@ load("@aspect_bazel_lib//lib:copy_to_bin.bzl", "copy_to_bin")
 load("@rules_java//toolchains:default_java_toolchain.bzl", "DEFAULT_TOOLCHAIN_CONFIGURATION", "default_java_toolchain")
 
 default_java_toolchain(
-    name = "java_toolchain",
+    name = "corretto23_toolchain",
     configuration = DEFAULT_TOOLCHAIN_CONFIGURATION,
-    java_runtime = "@rules_java//toolchains:remotejdk_21",
-    source_version = "21",
-    target_version = "21",
+    java_runtime = "@corretto23//:jdk",
+    source_version = "23",
+    target_version = "23",
+)
+
+toolchain(
+    name = "java_toolchain",
+    toolchain = ":corretto23_toolchain",
+    toolchain_type = "@bazel_tools//tools/jdk:toolchain_type",
+    visibility = ["//visibility:public"],
 )
 
 npm_link_all_packages(name = "node_modules")

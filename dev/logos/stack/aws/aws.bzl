@@ -7,10 +7,7 @@ def aws_cdk_synthesizer(name, deps = None, visibility = None):
 
     native.java_binary(
         name = name,
-        srcs = [
-            "@logos//dev/logos/stack/aws/synthesizer:Synthesizer.java",
-        ],
-        args = ["synth"],
+        srcs = ["@logos//dev/logos/stack/aws/synthesizer:Synthesizer.java"],
         main_class = "dev.logos.stack.aws.synthesizer.Synthesizer",
         plugins = ["@logos//dev/logos/app/register:module"],
         deps = [
@@ -20,25 +17,84 @@ def aws_cdk_synthesizer(name, deps = None, visibility = None):
             "@maven_logos//:org_slf4j_slf4j_api",
             "@maven_logos//:org_slf4j_slf4j_simple",
             "@maven_logos//:software_amazon_awscdk_aws_cdk_lib",
+            "@maven_logos//:software_amazon_awssdk_ec2",
+            "@maven_logos//:software_amazon_awssdk_sso",
+            "@maven_logos//:software_amazon_awssdk_ssooidc",
+            "@maven_logos//:software_amazon_awssdk_sts",
         ] + deps,
         visibility = visibility,
+    )
+
+def _aws_stack_zip_impl(ctx):
+    stack_zip = ctx.actions.declare_file("stack.zip")
+    outputs = [stack_zip]
+
+    tool_inputs, tool_input_manifests = ctx.resolve_tools(tools = [ctx.attr.synthesizer])
+    all_inputs = depset([ctx.executable.synthesizer], transitive = [tool_inputs])
+
+    ctx.actions.run_shell(
+        use_default_shell_env = True,
+        command = """{synthesizer} {output_file}
+""".format(
+            synthesizer = ctx.executable.synthesizer.path,
+            output_file = stack_zip.path,
+            execution_requirements = {
+                "no-sandbox": "1",
+                "local": "1",
+                "no-cache": "1",
+                "no-remote": "1",
+            },
+        ),
+        inputs = all_inputs,
+        input_manifests = tool_input_manifests,
+        progress_message = "Exporting database schema",
+        outputs = outputs,
+    )
+
+    return [
+        DefaultInfo(
+            files = depset(outputs),
+        ),
+    ]
+
+aws_stack_zip_rule = rule(
+    implementation = _aws_stack_zip_impl,
+    attrs = {"synthesizer": attr.label(executable = True, cfg = "exec")},
+    toolchains = ["@bazel_tools//tools/jdk:toolchain_type"],
+)
+
+def aws_stack_zip(name, synthesizer):
+    aws_stack_zip_rule(
+        name = name,
+        synthesizer = synthesizer,
+        tags = [
+            "no-remote",
+            "no-sandbox",
+            "requires-network",
+        ],
     )
 
 def aws(name, deps = None, visibility = None):
     aws_cdk_synthesizer(name = name + "_synthesizer", deps = deps, visibility = visibility)
 
+    aws_stack_zip(
+        name = name + "_stack_zip",
+        synthesizer = ":" + name + "_synthesizer",
+    )
+
     cdk.cdk_binary(
         name = name,
         data = [
             ":" + name + "_synthesizer_deploy.jar",
+            ":" + name + "_stack_zip",
         ],
         expand_args = True,
         chdir = native.package_name(),
         fixed_args = [
             "--app",
-            "'java -jar $$(realpath " + name + "_synthesizer_deploy.jar)'",
+            "$$(rm -rf stack; mkdir stack; cd stack; unzip -qq ../stack.zip; echo stack)",
         ],
-        tags = ["no-sandbox"],
+        tags = ["no-remote", "no-sandbox", "requires-network"],
         visibility = visibility,
     )
 

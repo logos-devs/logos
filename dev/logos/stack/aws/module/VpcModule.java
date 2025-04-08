@@ -11,6 +11,7 @@ import software.amazon.awscdk.services.ec2.*;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This module creates a Virtual Private Cloud (VPC) using AWS CDK. It sets up the VPC with
@@ -91,12 +92,15 @@ public class VpcModule extends AbstractModule {
     @Provides
     @Singleton
     NatInstanceProviderV2.Builder provideNatInstanceProvider(
+            final App scope,
             @NatMachineImage LookupMachineImage.Builder machineImageBuilder,
             @NatInstanceType InstanceType instanceType
     ) {
         return NatInstanceProviderV2.Builder.create()
                                             .instanceType(instanceType)
-                                            .machineImage(machineImageBuilder.build());
+                                            .machineImage(
+                                                    MachineImage.genericLinux(Map.of("us-east-2", "ami-01509685ef74c2fc1"))
+                                            );
     }
 
     /**
@@ -107,7 +111,10 @@ public class VpcModule extends AbstractModule {
     @Provides
     @Singleton
     VpcProps.Builder provideVpcProps() {
-        return VpcProps.builder().vpcName("logos-vpc").restrictDefaultSecurityGroup(true);
+        return VpcProps.builder()
+                       .vpcName("logos-vpc")
+                       .availabilityZones(List.of("us-east-2a", "us-east-2b", "us-east-2c"))
+                       .restrictDefaultSecurityGroup(true);
     }
 
     /**
@@ -158,7 +165,7 @@ public class VpcModule extends AbstractModule {
             NatInstanceProviderV2 natInstanceProvider = natInstanceProviderBuilder.build();
 
             vpc = new Vpc(this, "%s-vpc".formatted(id),
-                          vpcPropsBuilder.natGatewayProvider(natInstanceProvider).build()
+                    vpcPropsBuilder.natGatewayProvider(natInstanceProvider).build()
             );
 
             for (ISubnet subnet : vpc.getPublicSubnets()) {

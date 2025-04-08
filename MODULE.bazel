@@ -81,9 +81,12 @@ http_file(
 )
 
 # rules_java
-bazel_dep(name = "rules_java", version = "8.6.3")
+bazel_dep(name = "rules_java", version = "8.11.0")
 
-register_toolchains("//:java_toolchain_definition")
+java_repos = use_extension("//tools:corretto.bzl", "java_repos")
+use_repo(java_repos, "corretto23", "corretto23_toolchain_config_repo")
+
+register_toolchains("@corretto23//:all", "@corretto23_toolchain_config_repo//:all")
 
 # grpc-java
 bazel_dep(name = "grpc-java", version = "1.67.1", repo_name = "grpc_java_bzlmod")

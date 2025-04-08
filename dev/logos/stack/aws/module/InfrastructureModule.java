@@ -38,7 +38,8 @@ public class InfrastructureModule extends AbstractModule {
     App provideApp() {
         return new App(
                 AppProps.builder()
-                        .defaultStackSynthesizer(DefaultStackSynthesizer.Builder.create().build())
+                        .defaultStackSynthesizer(
+                                DefaultStackSynthesizer.Builder.create().build())
                         .build()
         );
     }
@@ -77,6 +78,6 @@ public class InfrastructureModule extends AbstractModule {
             err.printf("CDK_STACK: %s%n", stack.getStackName());
         }
 
-        return app.synth();
+        return app.synth(StageSynthesisOptions.builder().validateOnSynthesis(true).build());
     }
 }
