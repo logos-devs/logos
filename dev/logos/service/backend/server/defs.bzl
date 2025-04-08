@@ -1,4 +1,5 @@
-load("@aspect_bazel_lib//lib:tar.bzl", "tar")
+load("@aspect_bazel_lib//lib:tar.bzl", "mtree_mutate", "mtree_spec", "tar")
+load("@logos//tools:corretto.bzl", "JDK_PREFIX")
 load("@rules_oci//oci:defs.bzl", "oci_image")
 
 def java_server(name, deps, resources = None, visibility = None):
@@ -34,12 +35,13 @@ def java_image(name, base, files = None, entrypoint = None, mtree = None, server
         entrypoint = entrypoint if entrypoint else [
             "dumb-init",
             "--",
-            "java",
+            "/" + JDK_PREFIX + "/bin/java",
             "-jar",
             "/server_deploy.jar",
         ],
         tars = [
             name + "_tar",
+            "@jdk_tar//file",
             "@logos//dev/logos/stack/aws/container/cert_bundle_layer:cert_bundle_layer",
         ],
         visibility = visibility,
