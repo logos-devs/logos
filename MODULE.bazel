@@ -84,7 +84,7 @@ http_file(
 bazel_dep(name = "rules_java", version = "8.11.0")
 
 java_repos = use_extension("//tools:corretto.bzl", "java_repos")
-use_repo(java_repos, "corretto23", "corretto23_toolchain_config_repo", "jdk_tar")
+use_repo(java_repos, "corretto23", "corretto23_toolchain_config_repo")
 
 register_toolchains("@corretto23//:all", "@corretto23_toolchain_config_repo//:all")
 
