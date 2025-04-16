@@ -11,7 +11,7 @@ public class OrderBy {
     }
 
     public String toString() {
-        return column.quotedIdentifier + " " + direction.name();
+        return column.quotedIdentifier + " " + direction;
     }
 
     public static Builder builder() {

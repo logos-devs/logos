@@ -154,7 +154,9 @@ public class Select {
             queryParts.add(Arrays.stream(this.columns).map(column -> column.quotedIdentifier).collect(Collectors.joining(", ")));
         }
 
-        queryParts.add(String.format("from %s", this.from));
+        if (this.from != null && !this.from.isBlank()) {
+            queryParts.add(String.format("from %s", this.from));
+        }
 
         // Combine standard WHERE clauses and qualifier function calls
         List<String> whereClauses = new ArrayList<>();
@@ -180,7 +182,7 @@ public class Select {
         if (this.limit != null) {
             queryParts.add(String.format("limit %d", this.limit));
         }
-        if (this.offset != null) {
+        if (this.offset != null && this.offset > 0) {
             queryParts.add(String.format("offset %d", this.offset));
         }
         return String.join(" ", queryParts);

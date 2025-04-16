@@ -246,12 +246,23 @@
   "moduleExtensions": {
     "//tools:corretto.bzl%java_repos": {
       "general": {
-        "bzlTransitiveDigest": "UVnY1x9fzfBV4NrNbry+2Yzu6n5TORjrfkul9u66Gr0=",
+        "bzlTransitiveDigest": "uPwHTU8x4mB5jpYlKD4c9QjcFVVEQqYDZnHQVle2sko=",
         "usagesDigest": "SaD9N9x/5gfdX2YoAlcatwIkL8keSZzeoeoMVtHxRkg=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
         "envVariables": {},
         "generatedRepoSpecs": {
+          "corretto23_jdk_tar": {
+            "bzlFile": "@@bazel_tools//tools/build_defs/repo:http.bzl",
+            "ruleClassName": "http_file",
+            "attributes": {
+              "downloaded_file_path": "corretto_23.tar.gz",
+              "sha256": "0370c1b48048e55619eff9beace91077da9ece35d4a57d0c5513cd546341c09c",
+              "urls": [
+                "https://corretto.aws/downloads/latest/amazon-corretto-23-x64-linux-jdk.tar.gz"
+              ]
+            }
+          },
           "corretto23": {
             "bzlFile": "@@bazel_tools//tools/build_defs/repo:http.bzl",
             "ruleClassName": "http_archive",
@@ -273,6 +284,11 @@
           }
         },
         "recordedRepoMappingEntries": [
+          [
+            "",
+            "bazel_tools",
+            "bazel_tools"
+          ],
           [
             "",
             "rules_java",

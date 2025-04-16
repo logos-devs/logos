@@ -34,3 +34,16 @@ java_library(
         "@maven_logos//:org_jdbi_jdbi3_postgres",
     ],
 )
+
+java_test(
+    name = "test",
+    srcs = ["SelectTest.java"],
+    test_class = "dev.logos.service.storage.pg.SelectTest",
+    deps = [
+        ":pg",
+        "//dev/logos/service/storage/exceptions",
+        "@maven_logos//:junit_junit",
+        "@maven_logos//:org_jdbi_jdbi3_core",
+        "@maven_logos//:org_mockito_mockito_core",
+    ],
+)
