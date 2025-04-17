@@ -88,8 +88,8 @@ public class ProtoGenerator {
     private String protoListRequestMessage(String entityName) {
         return """
                 message List%sRequest {
-                    int64 limit = 1;
-                    int64 offset = 2;
+                    optional int64 limit = 1;
+                    optional int64 offset = 2;
                 }
                 """.formatted(entityName);
     }

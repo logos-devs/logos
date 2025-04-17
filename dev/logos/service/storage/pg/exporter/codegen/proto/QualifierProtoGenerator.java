@@ -54,7 +54,7 @@ public class QualifierProtoGenerator {
         for (QualifierParameterDescriptor param : qualifier.parameters()) {
             PgTypeMapper typeMapper = getTypeMapper(param.type());
 
-            fieldsBuilder.append("  ")
+            fieldsBuilder.append("    ")
                          .append(typeMapper.protoFieldRepeated() ? "repeated " : "")
                          .append(typeMapper.protoFieldTypeKeyword())
                          .append(" ")

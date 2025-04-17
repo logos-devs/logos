@@ -5,20 +5,37 @@ import com.squareup.javapoet.*;
 import dev.logos.service.storage.EntityStorage;
 import dev.logos.service.storage.EntityStorageService;
 import dev.logos.service.storage.pg.Converter;
+import dev.logos.service.storage.pg.Identifier;
 import dev.logos.service.storage.pg.Select;
 import dev.logos.service.storage.pg.exporter.descriptor.QualifierDescriptor;
+import dev.logos.service.storage.pg.exporter.descriptor.QualifierParameterDescriptor;
 import dev.logos.service.storage.pg.exporter.descriptor.SchemaDescriptor;
 import dev.logos.service.storage.pg.exporter.descriptor.TableDescriptor;
+import dev.logos.service.storage.pg.exporter.mapper.PgTypeMapper;
 import dev.logos.service.storage.validator.Validator;
 import io.grpc.stub.StreamObserver;
 
 import java.io.IOException;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Stream;
 
 import static javax.lang.model.element.Modifier.*;
 
 public class StorageServiceBaseGenerator {
+    private final Map<String, PgTypeMapper> pgColumnTypeMappers;
+
+    @Inject
+    public StorageServiceBaseGenerator(Map<String, PgTypeMapper> pgColumnTypeMappers) {
+        this.pgColumnTypeMappers = pgColumnTypeMappers;
+    }
+
+    PgTypeMapper getPgTypeMapper(String type) {
+        if (!pgColumnTypeMappers.containsKey(type)) {
+            throw new RuntimeException("There is no PgTypeMapper bound for type: " + type);
+        }
+
+        return pgColumnTypeMappers.get(type);
+    }
 
     public JavaFile generate(String targetPackage,
                              SchemaDescriptor schemaDescriptor,
@@ -93,10 +110,10 @@ public class StorageServiceBaseGenerator {
                         .addMethod(makeRpcHandler(deleteRequestMessage, deleteResponseMessage, "delete"))
                         .addMethod(makePreSaveMethod(entityMessage))
                         .addMethod(makeEntityGetter(entityMessage, getRequestMessage, createRequestMessage, updateRequestMessage))
-                        .addMethod(generateQueryMethod(tableDescriptor.name(),
-                                schemaDescriptor.qualifiers() != null &&
-                                        schemaDescriptor.qualifiers().containsKey(tableDescriptor.name()) &&
-                                        !schemaDescriptor.qualifiers().get(tableDescriptor.name()).isEmpty(), listRequestMessage))
+                        .addMethod(generateQueryMethod(
+                                tableDescriptor,
+                                listRequestMessage,
+                                packageName))
                         .addMethod(makeIdGetter(storageIdentifier, getRequestMessage, updateRequestMessage, deleteRequestMessage))
 
                         // GetResponse response(Stream<Entity>, GetRequest)
@@ -249,80 +266,76 @@ public class StorageServiceBaseGenerator {
                          .build();
     }
 
-    /**
-     * Generates the query method with qualifier support.
-     */
-    private MethodSpec generateQueryMethod(String tableName, boolean hasQualifiers, ClassName listRequestMessage) {
+    public MethodSpec generateQueryMethod(
+            TableDescriptor table,
+            ClassName listRequestMessage,
+            String qualifierJavaPackage
+    ) {
         MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder("query")
                                                      .addAnnotation(Override.class)
-                                                     .addModifiers(PUBLIC)
+                                                     .addModifiers(PUBLIC, FINAL)
                                                      .addTypeVariable(TypeVariableName.get("Request"))
                                                      .addParameter(TypeVariableName.get("Request"), "request")
                                                      .returns(ClassName.get("dev.logos.service.storage.pg", "Select.Builder"));
 
-        // Build core code
         CodeBlock.Builder codeBuilder = CodeBlock.builder()
-                                                 .addStatement("$T builder = $T.builder().from($S)",
+                                                 .addStatement("$T builder = $T.builder().from($L)",
                                                          ClassName.get("dev.logos.service.storage.pg", "Select.Builder"),
                                                          ClassName.get("dev.logos.service.storage.pg", "Select"),
-                                                         tableName);
+                                                         table.getInstanceVariableName());
 
-        // Basic limit/offset handling for list requests
         codeBuilder.beginControlFlow("if (request instanceof $T listRequest)", listRequestMessage);
-        codeBuilder.addStatement("Long limit = listRequest.getLimit()");
-        codeBuilder.addStatement("Long offset = listRequest.getOffset()");
-        codeBuilder.beginControlFlow("if (limit > 0)");
-        codeBuilder.addStatement("builder.limit(limit)");
+        codeBuilder.beginControlFlow("if (listRequest.hasLimit())");
+        codeBuilder.addStatement("builder.limit(listRequest.getLimit())");
         codeBuilder.endControlFlow();
-        codeBuilder.beginControlFlow("if (offset > 0)");
-        codeBuilder.addStatement("builder.offset(offset)");
+        codeBuilder.add("\n");
+        codeBuilder.beginControlFlow("if (listRequest.hasOffset())");
+        codeBuilder.addStatement("builder.offset(listRequest.getOffset())");
         codeBuilder.endControlFlow();
+        codeBuilder.add("\n");
 
-        // Add qualifier handling if table has qualifiers
-        if (hasQualifiers) {
-            codeBuilder.add("\n// Process qualifier functions if present\n");
-            codeBuilder.addStatement("try {\n" +
-                    "  java.lang.reflect.Method getQualifiersMethod = request.getClass().getMethod(\"getListQualifiersList\");\n" +
-                    "  java.util.List<?> qualifiers = (java.util.List<?>) getQualifiersMethod.invoke(request);\n" +
-                    "  \n" +
-                    "  if (qualifiers != null && !qualifiers.isEmpty()) {\n" +
-                    "    for (Object qualifier : qualifiers) {\n" +
-                    "      // Extract qualifier name from class name\n" +
-                    "      String qualifierName = qualifier.getClass().getSimpleName();\n" +
-                    "      \n" +
-                    "      // Extract parameters\n" +
-                    "      java.util.Map<String, Object> params = new java.util.HashMap<>();\n" +
-                    "      java.lang.reflect.Method[] methods = qualifier.getClass().getMethods();\n" +
-                    "      \n" +
-                    "      for (java.lang.reflect.Method method : methods) {\n" +
-                    "        String methodName = method.getName();\n" +
-                    "        \n" +
-                    "        if (methodName.startsWith(\"get\") && \n" +
-                    "            !methodName.equals(\"getClass\") &&\n" +
-                    "            !methodName.equals(\"getDefaultInstanceForType\") &&\n" +
-                    "            method.getParameterCount() == 0) {\n" +
-                    "          \n" +
-                    "          String paramName = methodName.substring(3);\n" +
-                    "          paramName = Character.toLowerCase(paramName.charAt(0)) + paramName.substring(1);\n" +
-                    "          \n" +
-                    "          Object value = method.invoke(qualifier);\n" +
-                    "          if (value != null) {\n" +
-                    "            params.put(paramName, value);\n" +
-                    "          }\n" +
-                    "        }\n" +
-                    "      }\n" +
-                    "      \n" +
-                    "      // Add qualifier to builder\n" +
-                    "      builder.qualifier(qualifierName, params);\n" +
-                    "    }\n" +
-                    "  }\n" +
-                    "} catch (Exception e) {\n" +
-                    "  // No qualifiers or error processing them\n" +
-                    "}");
+        for (QualifierDescriptor qualifier : table.qualifierDescriptors()) {
+            String qualifierMessage = Identifier.snakeToCamelCase(qualifier.name());
+            ClassName qualifierType = ClassName.get(qualifierJavaPackage, qualifierMessage); // e.g. ByEmbeddingDistance
+            String var = qualifierMessage.substring(0, 1).toLowerCase() + qualifierMessage.substring(1);
+            String paramMapVar = var + "Params";
+            String getterListName = "get" + qualifierMessage + "List";
+
+            String messageVar = var + "Message";
+            codeBuilder.beginControlFlow(
+                    "for ($T $L : listRequest.$L())",
+                    qualifierType,
+                    messageVar,
+                    getterListName
+            );
+            codeBuilder.addStatement(
+                    "$T $L = new $T<>()",
+                    ParameterizedTypeName.get(
+                            ClassName.get(LinkedHashMap.class),
+                            ClassName.get(String.class),
+                            ClassName.get(Object.class)),
+                    paramMapVar,
+                    LinkedHashMap.class
+            );
+            for (QualifierParameterDescriptor param : qualifier.parameters()) {
+                String paramName = param.name();
+                String getterRoot = "get" + Character.toUpperCase(paramName.charAt(0)) + paramName.substring(1);
+
+                PgTypeMapper mapper = getPgTypeMapper(param.type());
+                boolean isRepeated = mapper.protoFieldRepeated();
+                String getterCall = messageVar + "." + getterRoot + (isRepeated ? "List()" : "()");
+
+                codeBuilder.addStatement("$L.put($S, $L)", paramMapVar, paramName, getterCall);
+            }
+            codeBuilder.addStatement("builder.qualifier($L.$L, $L)", table.getInstanceVariableName(), var, paramMapVar);
+            codeBuilder.endControlFlow();
         }
+
         codeBuilder.endControlFlow();
 
-        codeBuilder.add("\nreturn builder;\n");
+        // now defer to any changes this service's query method might make
+        codeBuilder.addStatement("builder = query(request, builder)");
+        codeBuilder.add("return builder;\n");
 
         return methodBuilder.addCode(codeBuilder.build()).build();
     }

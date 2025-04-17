@@ -7,6 +7,7 @@ import dev.logos.service.storage.pg.Column;
 import dev.logos.service.storage.pg.Identifier;
 import dev.logos.service.storage.pg.Relation;
 import dev.logos.service.storage.pg.exporter.descriptor.ColumnDescriptor;
+import dev.logos.service.storage.pg.exporter.descriptor.QualifierDescriptor;
 import dev.logos.service.storage.pg.exporter.descriptor.SchemaDescriptor;
 import dev.logos.service.storage.pg.exporter.descriptor.TableDescriptor;
 import dev.logos.service.storage.pg.exporter.mapper.PgTypeMapper;
@@ -42,7 +43,8 @@ public class TableGenerator {
                              SchemaDescriptor schemaDescriptor,
                              TableDescriptor tableDescriptor,
                              Iterable<TypeSpec> columnClasses,
-                             List<ColumnDescriptor> columnDescriptors) {
+                             List<ColumnDescriptor> columnDescriptors,
+                             Iterable<TypeSpec> qualifierClasses) {
 
         ClassName resultProtoClassName =
                 ClassName.get(targetPackage + "." + schemaDescriptor.name(),
@@ -53,7 +55,8 @@ public class TableGenerator {
                 .addModifiers(PUBLIC, STATIC)
                 .superclass(Relation.class)
                 .addMethod(MethodSpec.constructorBuilder()
-                                     .addStatement("super($S, $S)",
+                                     .addStatement("super($S, $S, $S)",
+                                             schemaDescriptor.name(),
                                              tableDescriptor.name(),
                                              Identifier.quoteIdentifier(
                                                      schemaDescriptor.name()) + "." + Identifier.quoteIdentifier(
@@ -163,6 +166,16 @@ public class TableGenerator {
         }
 
         tableClassBuilder.addMethod(bindFieldsMethod.build());
+
+        tableClassBuilder.addTypes(qualifierClasses);
+
+        for (QualifierDescriptor qualifierDescriptor : tableDescriptor.qualifierDescriptors()) {
+            ClassName qualifierClassName = ClassName.bestGuess(snakeToCamelCase(qualifierDescriptor.name()));
+            tableClassBuilder.addField(
+                    FieldSpec.builder(qualifierClassName, qualifierDescriptor.getInstanceVariableName(), PUBLIC, STATIC, FINAL)
+                             .initializer("new $T()", qualifierClassName)
+                             .build());
+        }
 
         return tableClassBuilder.build();
     }

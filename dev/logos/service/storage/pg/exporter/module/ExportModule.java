@@ -7,6 +7,7 @@ import dev.logos.service.storage.pg.exporter.codegen.column.ColumnGenerator;
 import dev.logos.service.storage.pg.exporter.codegen.module.StorageModuleGenerator;
 import dev.logos.service.storage.pg.exporter.codegen.proto.ProtoGenerator;
 import dev.logos.service.storage.pg.exporter.codegen.proto.QualifierProtoGenerator;
+import dev.logos.service.storage.pg.exporter.codegen.qualifier.QualifierGenerator;
 import dev.logos.service.storage.pg.exporter.codegen.schema.SchemaGenerator;
 import dev.logos.service.storage.pg.exporter.codegen.service.StorageServiceBaseGenerator;
 import dev.logos.service.storage.pg.exporter.codegen.table.TableGenerator;
@@ -53,6 +54,8 @@ public class ExportModule extends AbstractModule {
             .forEach((PgTypeMapper typeMapper) ->
                     typeMapper.getPgTypes()
                               .forEach((String pgType) -> pgTypeMapperBinder.addBinding(pgType).toInstance(typeMapper)));
+
+        bind(QualifierGenerator.class).asEagerSingleton();
     }
 
     @Provides
@@ -64,15 +67,15 @@ public class ExportModule extends AbstractModule {
     ProtoGenerator provideProtoGenerator(Map<String, PgTypeMapper> pgColumnTypeMappers) {
         return new ProtoGenerator(pgColumnTypeMappers);
     }
-    
+
     @Provides
     QualifierProtoGenerator provideQualifierProtoGenerator(Map<String, PgTypeMapper> pgColumnTypeMappers) {
         return new QualifierProtoGenerator(pgColumnTypeMappers);
     }
 
     @Provides
-    StorageServiceBaseGenerator provideStorageServiceBaseGenerator() {
-        return new StorageServiceBaseGenerator();
+    StorageServiceBaseGenerator provideStorageServiceBaseGenerator(Map<String, PgTypeMapper> pgColumnTypeMappers) {
+        return new StorageServiceBaseGenerator(pgColumnTypeMappers);
     }
 
     @Provides

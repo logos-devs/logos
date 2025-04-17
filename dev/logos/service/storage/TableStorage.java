@@ -88,6 +88,8 @@ public class TableStorage<Entity, StorageIdentifier> implements EntityStorage<En
                 }
             }
         }        
+        System.err.println(selectObj);
+
         return queryObj
                  .map(this::entityMapper)
                  .stream()

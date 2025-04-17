@@ -8,6 +8,7 @@ java_library(
         "//dev/logos/service/storage/module",
         "//dev/logos/service/storage/pg/exporter/codegen",
         "//dev/logos/service/storage/pg/exporter/codegen/proto",
+        "//dev/logos/service/storage/pg/exporter/codegen/service",
         "//dev/logos/service/storage/pg/exporter/descriptor",
         "//dev/logos/service/storage/pg/exporter/module",
         "//dev/logos/service/storage/pg/exporter/module/annotation",

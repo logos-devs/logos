@@ -1,42 +1,33 @@
 package dev.logos.service.storage.pg;
 
-import java.util.Map;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map.Entry;
 
 /**
  * Represents a call to a database function that qualifies records.
  * The function must take the row type as its first parameter and return a boolean.
  */
 public class QualifierFunctionCall {
-    private final String functionName;
-    private final Map<String, Object> parameters;
+    private final QualifierFunction function;
+    private final Relation relation;
+    private final LinkedHashMap<String, Object> parameters;
 
     /**
      * Creates a new qualifier function call.
      *
-     * @param functionName Name of the function to call
-     * @param parameters   Named parameters to pass to the function (not including the row)
+     * @param function   The function to call
+     * @param parameters Named parameters to pass to the function (not including the row)
      */
-    public QualifierFunctionCall(String functionName, Map<String, Object> parameters) {
-        if (functionName == null || functionName.isBlank()) {
-            throw new IllegalArgumentException("Function name cannot be null or blank");
-        }
-
-        this.functionName = functionName;
-        this.parameters = parameters != null ? new HashMap<>(parameters) : new HashMap<>();
-    }
-
-    /**
-     * Gets the name of the function to call.
-     */
-    public String getFunctionName() {
-        return functionName;
+    public QualifierFunctionCall(Relation relation, QualifierFunction function, LinkedHashMap<String, Object> parameters) {
+        this.function = function;
+        this.relation = relation;
+        this.parameters = parameters != null ? new LinkedHashMap<>(parameters) : new LinkedHashMap<>();
     }
 
     /**
      * Gets the parameters to pass to the function.
      */
-    public Map<String, Object> getParameters() {
+    public LinkedHashMap<String, Object> getParameters() {
         return parameters;
     }
 
@@ -45,13 +36,14 @@ public class QualifierFunctionCall {
      */
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder(functionName);
-        sb.append("(t"); // t is the table alias
+        StringBuilder sb = new StringBuilder();
+        sb.append(Identifier.quoteIdentifier(relation.schema));
+        sb.append(".").append(Identifier.quoteIdentifier(function.name));
+        sb.append("(%s".formatted(Identifier.quoteIdentifier(relation.name))); // t is the table alias
 
         if (!parameters.isEmpty()) {
-            for (Map.Entry<String, Object> entry : parameters.entrySet()) {
-                sb.append(", ");
-                sb.append(":" + entry.getKey());
+            for (Entry<String, Object> entry : parameters.entrySet()) {
+                sb.append(", :").append(entry.getKey()).append("::").append(function.parameters.get(entry.getKey()).type());
             }
         }
         sb.append(")");

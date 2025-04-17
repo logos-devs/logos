@@ -8,7 +8,7 @@ java_library(
         "SchemaDescriptor.java",
         "TableDescriptor.java",
     ],
-    visibility = ["//dev/logos/service/storage/pg/exporter:__subpackages__"],
+    visibility = ["//visibility:public"],
     deps = [
         "@maven_logos//:com_google_guava_guava",
         "@maven_logos//:com_squareup_javapoet",

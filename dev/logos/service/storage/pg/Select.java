@@ -1,16 +1,12 @@
 package dev.logos.service.storage.pg;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Select {
 
     private final Column[] columns;
-    private final String from;
+    private final Relation from;
     private final List<Filter> where;
     private final List<QualifierFunctionCall> qualifiers;
     private final Long limit;
@@ -26,7 +22,7 @@ public class Select {
     public static class Builder {
 
         private Column[] columns = new Column[0];
-        private String from;
+        private Relation from;
         private List<Filter> where;
         private final List<QualifierFunctionCall> qualifiers;
         private Long limit;
@@ -40,19 +36,13 @@ public class Select {
             this.orderBy = new ArrayList<>();
         }
 
+        public Builder columns(Column... columns) {
+            this.columns = columns;
+            return this;
+        }
+
         public Builder from(Relation relation) {
-            this.from = relation.quotedIdentifier;
-            return this;
-        }
-
-        public Builder from(String schema,
-                            String table) {
-            this.from = Identifier.quoteIdentifier(schema) + "." + Identifier.quoteIdentifier(table);
-            return this;
-        }
-
-        public Builder from(String table) {
-            this.from = Identifier.quoteIdentifier(table);
+            this.from = relation;
             return this;
         }
 
@@ -101,12 +91,15 @@ public class Select {
         /**
          * Adds a qualifier function call to filter results.
          *
-         * @param qualifierName Name of the qualifier function
-         * @param parameters    Named parameters to pass to the qualifier
+         * @param qualifier  The qualifier function to call
+         * @param parameters Named parameters to pass to the qualifier
          * @return this builder
          */
-        public Builder qualifier(String qualifierName, Map<String, Object> parameters) {
-            this.qualifiers.add(new QualifierFunctionCall(qualifierName, parameters));
+        public Builder qualifier(QualifierFunction qualifier, LinkedHashMap<String, Object> parameters) {
+            if (this.from == null) {
+                throw new IllegalStateException("Cannot add qualifier function call without a FROM clause");
+            }
+            this.qualifiers.add(new QualifierFunctionCall(this.from, qualifier, parameters));
             return this;
         }
 
@@ -130,15 +123,6 @@ public class Select {
     }
 
     /**
-     * Gets all parameter values from qualifier functions that need to be bound.
-     *
-     * @return Map of parameter names to values
-     */
-    public Map<String, Object> getQualifierParameters() {
-        return QualifierSupport.getParameters(qualifiers);
-    }
-
-    /**
      * Gets the qualifier functions added to this select.
      */
     public List<QualifierFunctionCall> getQualifiers() {
@@ -154,8 +138,8 @@ public class Select {
             queryParts.add(Arrays.stream(this.columns).map(column -> column.quotedIdentifier).collect(Collectors.joining(", ")));
         }
 
-        if (this.from != null && !this.from.isBlank()) {
-            queryParts.add(String.format("from %s", this.from));
+        if (this.from != null) {
+            queryParts.add(String.format("from %s", this.from.quotedIdentifier));
         }
 
         // Combine standard WHERE clauses and qualifier function calls

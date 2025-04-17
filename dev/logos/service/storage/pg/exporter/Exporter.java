@@ -12,6 +12,7 @@ import dev.logos.service.storage.pg.exporter.codegen.column.ColumnGenerator;
 import dev.logos.service.storage.pg.exporter.codegen.module.StorageModuleGenerator;
 import dev.logos.service.storage.pg.exporter.codegen.proto.ProtoGenerator;
 import dev.logos.service.storage.pg.exporter.codegen.proto.QualifierProtoGenerator;
+import dev.logos.service.storage.pg.exporter.codegen.qualifier.QualifierGenerator;
 import dev.logos.service.storage.pg.exporter.codegen.schema.SchemaGenerator;
 import dev.logos.service.storage.pg.exporter.codegen.service.StorageServiceBaseGenerator;
 import dev.logos.service.storage.pg.exporter.codegen.table.TableGenerator;
@@ -46,6 +47,7 @@ public class Exporter {
     private final ColumnGenerator columnGenerator;
     private final ProtoGenerator protoGenerator;
     private final QualifierProtoGenerator qualifierProtoGenerator;
+    private final QualifierGenerator qualifierGenerator;
     private final StorageServiceBaseGenerator storageServiceBaseGenerator;
     private final StorageModuleGenerator storageModuleGenerator;
     private final Gson gson = new GsonBuilder().create();
@@ -60,6 +62,7 @@ public class Exporter {
             ColumnGenerator columnGenerator,
             ProtoGenerator protoGenerator,
             QualifierProtoGenerator qualifierProtoGenerator,
+            QualifierGenerator qualifierGenerator,
             StorageServiceBaseGenerator storageServiceBaseGenerator,
             StorageModuleGenerator storageModuleGenerator
     ) {
@@ -71,6 +74,7 @@ public class Exporter {
         this.columnGenerator = columnGenerator;
         this.protoGenerator = protoGenerator;
         this.qualifierProtoGenerator = qualifierProtoGenerator;
+        this.qualifierGenerator = qualifierGenerator;
         this.storageServiceBaseGenerator = storageServiceBaseGenerator;
         this.storageModuleGenerator = storageModuleGenerator;
     }
@@ -127,7 +131,12 @@ public class Exporter {
                                        .stream()
                                        .map(columnDescriptor -> columnGenerator.generate(tableDescriptor, columnDescriptor))
                                        .collect(Collectors.toList()),
-                        tableDescriptor.columns());
+                        tableDescriptor.columns(),
+                        tableDescriptor.qualifierDescriptors()
+                                       .stream()
+                                       .map(qualifierDescriptor -> qualifierGenerator.generate(tableDescriptor, qualifierDescriptor))
+                                       .collect(Collectors.toList())
+                );
 
                 tableClasses.put(tableDescriptor.getInstanceVariableName(), tableClass);
             }
@@ -156,8 +165,7 @@ public class Exporter {
                 String standardProto = protoGenerator.generate(buildPackage, schemaDescriptor, tableDescriptor);
 
                 // Check if table has qualifiers
-                List<QualifierDescriptor> qualifiers = schemaDescriptor.qualifiers()
-                                                                       .getOrDefault(tableDescriptor.name(), List.of());
+                List<QualifierDescriptor> qualifiers = tableDescriptor.qualifierDescriptors();
 
                 if (!qualifiers.isEmpty()) {
                     // Generate qualifier message definitions
@@ -204,8 +212,8 @@ public class Exporter {
         if (serviceIndex > 0) {
             // Insert qualifier messages before service
             return protoContent.substring(0, serviceIndex) +
-                    qualifierMessages + "\n\n" +
-                    protoContent.substring(serviceIndex);
+                   qualifierMessages + "\n\n" +
+                   protoContent.substring(serviceIndex);
         }
 
         return protoContent;
@@ -247,8 +255,8 @@ public class Exporter {
         if (endIndex > 0) {
             // Insert qualifier fields before closing brace
             return protoContent.substring(0, endIndex) +
-                    "\n" + qualifierFields +
-                    protoContent.substring(endIndex);
+                   "\n" + qualifierFields +
+                   protoContent.substring(endIndex);
         }
 
         return protoContent;

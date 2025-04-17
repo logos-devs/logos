@@ -7,12 +7,30 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.sql.ResultSet;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SelectTest {
+    private final Relation testRelation = new Relation("schema", "table", "\"schema\".\"table\"") {
+        @Override
+        public Map<String, Column> getColumns() {
+            return Map.of();
+        }
+
+        @Override
+        public <Entity> Entity toProtobuf(ResultSet resultSet) throws EntityReadException {
+            return null;
+        }
+
+        @Override
+        public void bindFields(Map<String, Object> fields, Query query) {
+        }
+    };
+
+
     @Test
     public void test_selectWithNoArguments_producesValidSql() {
         assertEquals("select", Select.select().build().toString());
@@ -39,33 +57,7 @@ public class SelectTest {
     @Test
     public void test_selectFromRelation_producesValidSql() {
         assertEquals("select from \"schema\".\"table\"",
-                Select.select().from(new Relation("schema.table", "\"schema\".\"table\"") {
-                    @Override
-                    public Map<String, Column> getColumns() {
-                        return Map.of();
-                    }
-
-                    @Override
-                    public <Entity> Entity toProtobuf(ResultSet resultSet) throws EntityReadException {
-                        return null;
-                    }
-
-                    @Override
-                    public void bindFields(Map<String, Object> fields, Query query) {
-                    }
-                }).build().toString());
-    }
-
-    @Test
-    public void test_selectFromSchemaAndTable_producesValidSql() {
-        assertEquals("select from \"schema\".\"table\"",
-                Select.select().from("schema", "table").build().toString());
-    }
-
-    @Test
-    public void test_selectFromTable_producesValidSql() {
-        assertEquals("select from \"table\"",
-                Select.select().from("table").build().toString());
+                Select.select().from(this.testRelation).build().toString());
     }
 
     @Test
@@ -134,13 +126,15 @@ public class SelectTest {
 
     @Test
     public void test_selectWithQualifier_producesValidSql() {
+        LinkedHashMap<String, Object> params = new LinkedHashMap<>();
+        params.put("param1", "value1");
+        params.put("param2", 42);
         String queryStr = Select.select()
-                                .qualifier("my_qualifier", Map.of(
-                                        "param1", "value1",
-                                        "param2", 42
-                                )).build().toString();
+                                .from(testRelation)
+                                .qualifier("my_qualifier", params).build().toString();
 
-        assertEquals("select where my_qualifier(t, :param1, :param2)", queryStr);
+        assertEquals("""
+                select from "schema"."table" where "schema"."my_qualifier"("table", :param1, :param2)""", queryStr);
     }
 
     @Test
@@ -150,9 +144,9 @@ public class SelectTest {
         Column col2 = new Column("col2", "\"col2\"", "string") {
         };
 
-        assertEquals("select from \"table\" where \"col1\" = 'val' order by \"col2\" asc limit 10 offset 5",
+        assertEquals("select from \"schema\".\"table\" where \"col1\" = 'val' order by \"col2\" asc limit 10 offset 5",
                 Select.select()
-                      .from("table")
+                      .from(testRelation)
                       .where(col1.eq("val"))
                       .orderBy(col2, SortOrder.ASC)
                       .limit(10L)

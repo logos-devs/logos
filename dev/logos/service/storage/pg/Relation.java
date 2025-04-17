@@ -9,10 +9,15 @@ import java.sql.SQLException;
 import java.util.Map;
 
 public abstract class Relation extends Identifier {
+    public final String schema;
+    public final String name;
 
-    public Relation(String identifier,
+    public Relation(String schema,
+                    String identifier,
                     String quotedIdentifier) {
         super(identifier, quotedIdentifier);
+        this.schema = schema;
+        this.name = identifier;
     }
 
     public abstract Map<String, Column> getColumns();

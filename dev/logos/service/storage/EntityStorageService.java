@@ -28,6 +28,10 @@ public interface EntityStorageService<
 
     EntityStorage<Entity, StorageIdentifier> getStorage();
 
+    default <Request> Select.Builder query(Request request, Select.Builder select) {
+        return select;
+    }
+
     <Request> Select.Builder query(Request request);
 
     <Request> Entity entity(Request ignoredRequest) throws NotAuthenticated;

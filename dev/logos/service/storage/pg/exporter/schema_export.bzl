@@ -221,6 +221,7 @@ def java_storage_service(name, schema_export, tables, deps, mappers = None, visi
             "@logos//dev/logos/app/register:module_library",
             "@logos//dev/logos/service/storage/exceptions",
             "@logos//dev/logos/service/storage/pg",
+            "@logos//dev/logos/service/storage/pg/exporter/descriptor",
             "@logos//dev/logos/service/storage/validator",
             "@logos//dev/logos/service/storage:storage_library",
             "@logos//dev/logos/user",
