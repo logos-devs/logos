@@ -153,7 +153,7 @@ public class StorageServiceBaseGenerator {
                                           .addParameter(UUID.class, "id")
                                           .addParameter(TypeVariableName.get("Request"), "request")
                                           .beginControlFlow("if (request instanceof $T)", createRequestMessage)
-                                          .addStatement("return (Response) $T.newBuilder().build()", createResponseMessage)
+                                          .addStatement("return (Response) $T.newBuilder().setId($T.uuidToBytestring(id)).build()", createResponseMessage, Converter.class)
                                           .endControlFlow()
                                           .addStatement("return null")
                                           .build());
@@ -319,7 +319,7 @@ public class StorageServiceBaseGenerator {
             );
             for (QualifierParameterDescriptor param : qualifier.parameters()) {
                 String paramName = param.name();
-                String getterRoot = "get" + Character.toUpperCase(paramName.charAt(0)) + paramName.substring(1);
+                String getterRoot = "get" + Identifier.snakeToCamelCase(Character.toUpperCase(paramName.charAt(0)) + paramName.substring(1));
 
                 PgTypeMapper mapper = getPgTypeMapper(param.type());
                 boolean isRepeated = mapper.protoFieldRepeated();

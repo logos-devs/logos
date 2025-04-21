@@ -75,18 +75,23 @@ public abstract class AppModule extends AbstractModule {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    protected <S extends AbstractStub<S>> void client(Function<ManagedChannel, S> stubFactory) {
-        Class<S> stubClass = (Class<S>) stubFactory.apply(DUMMY_CHANNEL).getClass();
-        Provider<ManagedChannel> channelProvider = getProvider(ManagedChannel.class);
-        bind(stubClass).toProvider(() -> stubFactory.apply(channelProvider.get()));
-    }
-
     @SafeVarargs
-    protected final <S extends AbstractStub<S>> void clients(Function<ManagedChannel, S>... stubFactories) {
-        for (Function<ManagedChannel, S> stubFactory : stubFactories) {
+    protected final void clients(Function<ManagedChannel, ? extends AbstractStub<?>>... stubFactories) {
+        for (Function<ManagedChannel, ? extends AbstractStub<?>> stubFactory : stubFactories) {
             client(stubFactory);
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    protected void client(Function<ManagedChannel, ? extends AbstractStub<?>> stubFactory) {
+        AbstractStub<?> dummyStub = stubFactory.apply(DUMMY_CHANNEL);
+        Class<AbstractStub<?>> stubClass = (Class<AbstractStub<?>>) dummyStub.getClass();
+        Provider<ManagedChannel> channelProvider = getProvider(ManagedChannel.class);
+
+        // This cast is safe because stubFactory always produces the correct subclass for stubClass
+        Provider<? extends AbstractStub<?>> provider = () -> stubFactory.apply(channelProvider.get());
+
+        bind(stubClass).toProvider((Provider) provider);
     }
 
     protected void stack(Class<? extends Stack> stackClass) {

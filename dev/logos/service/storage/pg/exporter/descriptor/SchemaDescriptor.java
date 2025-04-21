@@ -164,7 +164,7 @@ public record SchemaDescriptor(
     @Override
     public String toString() {
         return "SchemaDescriptor[" +
-               "name=" + name + ", " +
-               "tables=" + tables + "]";
+                "name=" + name + ", " +
+                "tables=" + tables + "]";
     }
 }

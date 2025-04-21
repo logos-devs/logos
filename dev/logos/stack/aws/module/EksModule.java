@@ -212,7 +212,16 @@ public class EksModule extends AbstractModule {
                                               .machineImageType(MachineImageType.BOTTLEROCKET)
                                               .minCapacity(1)
                                               .maxCapacity(2)
-                                              .updatePolicy(UpdatePolicy.rollingUpdate());
+                                              .updatePolicy(UpdatePolicy.rollingUpdate())
+                                              .updatePolicy(UpdatePolicy.rollingUpdate())
+                                              .blockDevices(List.of(
+                                                      software.amazon.awscdk.services.autoscaling.BlockDevice.builder()
+                                                                 .deviceName("/dev/xvda")
+                                                                 .volume(software.amazon.awscdk.services.autoscaling.BlockDeviceVolume.ebs(100))
+                                                                 .build()
+                                              ))
+
+                ;
     }
 
     @Provides

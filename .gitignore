@@ -19,3 +19,4 @@
 /bazel-out
 /bazel-testlogs
 /node_modules/*
+/.idea/aws.xml
