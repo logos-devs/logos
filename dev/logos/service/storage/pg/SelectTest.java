@@ -131,10 +131,14 @@ public class SelectTest {
         params.put("param2", 42);
         String queryStr = Select.select()
                                 .from(testRelation)
-                                .qualifier("my_qualifier", params).build().toString();
+                                .qualifier(new QualifierFunction("my_qualifier", new LinkedHashMap<>(
+                                        Map.of("param1", new QualifierFunctionParameter("param1", "string"),
+                                                "param2", new QualifierFunctionParameter("param2", "integer"))
+                                )) {
+                                }, params).build().toString();
 
         assertEquals("""
-                select from "schema"."table" where "schema"."my_qualifier"("table", :param1, :param2)""", queryStr);
+                select from "schema"."table" where "schema"."my_qualifier"("table", :param1::string, :param2::integer)""", queryStr);
     }
 
     @Test

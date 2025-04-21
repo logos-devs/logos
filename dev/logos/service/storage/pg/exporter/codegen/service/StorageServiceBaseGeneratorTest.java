@@ -42,10 +42,10 @@ public class StorageServiceBaseGeneratorTest {
                               builder.offset(listRequest.getOffset());
                             }
                         
-                            for (app.test.storage.person.ByName byName : listRequest.getByNameList()) {
+                            for (app.test.storage.person.ByName byNameMessage : listRequest.getByNameList()) {
                               java.util.LinkedHashMap<java.lang.String, java.lang.Object> byNameParams = new java.util.LinkedHashMap<>();
-                              byNameParams.put("name", byName.getName());
-                              builder.qualifier("by_name", byNameParams);
+                              byNameParams.put("name", byNameMessage.getName());
+                              builder.qualifier(person.byName, byNameParams);
                             }
                           }
                           builder = query(request, builder);
