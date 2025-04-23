@@ -1,7 +1,6 @@
 package app.auth.cognito.user;
 
-import dev.logos.user.NotAuthenticated;
-import dev.logos.user.User;
+import dev.logos.auth.user.User;
 import io.jsonwebtoken.Claims;
 
 import static java.util.Objects.requireNonNull;

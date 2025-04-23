@@ -13,11 +13,11 @@ java_library(
         "//visibility:public",
     ],
     deps = [
+        "//dev/logos/auth/user",
         "//dev/logos/service",
         "//dev/logos/service/storage/exceptions",
         "//dev/logos/service/storage/pg",
         "//dev/logos/service/storage/validator",
-        "//dev/logos/user",
         "@com_google_protobuf//:protobuf_java",
         "@maven_logos//:com_google_inject_guice",
         "@maven_logos//:io_grpc_grpc_api",

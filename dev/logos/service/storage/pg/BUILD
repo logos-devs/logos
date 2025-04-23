@@ -19,10 +19,10 @@ java_library(
     ],
     visibility = ["//visibility:public"],
     deps = [
+        "//dev/logos/auth/user",
         "//dev/logos/service",
         "//dev/logos/service/storage/exceptions",
         "//dev/logos/service/storage/validator",
-        "//dev/logos/user",
         "@com_google_protobuf//:protobuf_java",
         "@maven_logos//:com_google_code_gson_gson",
         "@maven_logos//:com_google_guava_guava",

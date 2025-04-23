@@ -8,7 +8,7 @@ import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import com.google.inject.Inject;
 import dev.logos.stack.aws.module.annotation.AwsRegion;
-import dev.logos.user.User;
+import dev.logos.auth.user.User;
 import io.grpc.*;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -32,7 +32,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static dev.logos.user.UserContext.USER_CONTEXT_KEY;
+import static dev.logos.auth.user.UserContext.USER_CONTEXT_KEY;
 import static java.util.Objects.requireNonNull;
 
 public class CognitoServerInterceptor implements ServerInterceptor {

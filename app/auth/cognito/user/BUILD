@@ -7,7 +7,7 @@ java_library(
         "//visibility:public",
     ],
     deps = [
-        "@logos//dev/logos/user",
+        "@logos//dev/logos/auth/user",
         "@maven_logos//:io_jsonwebtoken_jjwt_api",
     ],
 )

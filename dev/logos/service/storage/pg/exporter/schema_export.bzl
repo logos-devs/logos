@@ -225,7 +225,7 @@ def java_storage_service(name, schema_export, tables, deps, mappers = None, visi
             "@logos//dev/logos/service/storage/pg/exporter/descriptor",
             "@logos//dev/logos/service/storage/validator",
             "@logos//dev/logos/service/storage:storage_library",
-            "@logos//dev/logos/user",
+            "@logos//dev/logos/auth/user",
             "@maven_logos//:com_google_inject_guice",
             "@maven_logos//:io_grpc_grpc_api",
             "@maven_logos//:io_grpc_grpc_protobuf",

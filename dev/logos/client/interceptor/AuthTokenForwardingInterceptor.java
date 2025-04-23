@@ -1,8 +1,8 @@
 package dev.logos.client.interceptor;
 
 import com.google.inject.Inject;
-import dev.logos.user.User;
-import dev.logos.user.UserContext;
+import dev.logos.auth.user.User;
+import dev.logos.auth.user.UserContext;
 import io.grpc.*;
 
 import java.util.Optional;

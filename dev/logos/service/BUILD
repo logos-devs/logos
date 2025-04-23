@@ -5,8 +5,8 @@ java_library(
         "//visibility:public",
     ],
     deps = [
+        "//dev/logos/auth/user",
         "//dev/logos/service/storage/validator",
-        "//dev/logos/user",
         "@maven_logos//:io_grpc_grpc_api",
         "@maven_logos//:io_grpc_grpc_stub",
         "@maven_logos//:org_slf4j_slf4j_api",

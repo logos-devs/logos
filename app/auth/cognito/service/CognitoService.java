@@ -8,8 +8,8 @@ import app.auth.proto.cognito.*;
 import com.google.gson.Gson;
 import com.google.inject.Inject;
 import dev.logos.service.Service;
-import dev.logos.user.User;
-import dev.logos.user.UserContext;
+import dev.logos.auth.user.User;
+import dev.logos.auth.user.UserContext;
 import io.grpc.Context;
 import io.grpc.stub.StreamObserver;
 import org.apache.http.client.config.RequestConfig;
@@ -80,7 +80,7 @@ public class CognitoService extends CognitoServiceGrpc.CognitoServiceImplBase im
             Context.current().withValue(
                     CookieServerInterceptor.COOKIE_KEY,
                     String.join("|",
-                                "logosIdToken=%s; Path=/; Domain=%s; Secure; HttpOnly; SameSite=None; Max-Age=28800".formatted(tokens.id_token, this.authenticationCookieDomain)//,
+                            "logosIdToken=%s; Path=/; Domain=%s; Secure; HttpOnly; SameSite=None; Max-Age=28800".formatted(tokens.id_token, this.authenticationCookieDomain)//,
                     )
             ).wrap(() -> {
                 responseObserver.onNext(

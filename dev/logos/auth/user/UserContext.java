@@ -1,4 +1,4 @@
-package dev.logos.user;
+package dev.logos.auth.user;
 
 import io.grpc.Context;
 

@@ -5,7 +5,7 @@ import dev.logos.service.Service;
 import dev.logos.service.storage.exceptions.EntityReadException;
 import dev.logos.service.storage.exceptions.EntityWriteException;
 import dev.logos.service.storage.pg.Select;
-import dev.logos.user.NotAuthenticated;
+import dev.logos.auth.user.NotAuthenticated;
 import io.grpc.stub.StreamObserver;
 
 import java.util.stream.Stream;
