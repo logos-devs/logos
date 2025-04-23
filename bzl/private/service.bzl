@@ -4,6 +4,7 @@ def service(name, srcs, deps = None, visibility = None, **kwargs):
         srcs = srcs,
         visibility = visibility,
         deps = [
+            "@logos//dev/logos/client/module",
             "@logos//dev/logos/service",
             "@logos//dev/logos/service/storage/pg",
             "@logos//dev/logos/service/storage/validator",

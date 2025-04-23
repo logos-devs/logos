@@ -1,5 +1,6 @@
 load("@aspect_bazel_lib//lib:tar.bzl", "mtree_mutate", "mtree_spec", "tar")
 load("@rules_oci//oci:defs.bzl", "oci_image")
+load("@logos//tools:corretto.bzl", "JDK_PREFIX")
 
 def java_server(name, deps, resources = None, visibility = None):
     native.java_binary(
@@ -13,7 +14,7 @@ def java_server(name, deps, resources = None, visibility = None):
         ],
     )
 
-def java_image(name, base, files = None, entrypoint = None, mtree = None, server = None, visibility = None):
+def java_container(name, base, entrypoint_jar, files = None, mtree = None, visibility = None):
     if files == None:
         files = []
     if mtree == None:
@@ -21,17 +22,23 @@ def java_image(name, base, files = None, entrypoint = None, mtree = None, server
 
     tar(
         name = name + "_tar",
-        srcs = files + ([server + "_deploy.jar"] if server else []),
-        mtree = mtree + ([
-            "server_deploy.jar uid=0 gid=0 mode=0444 type=file content=$(location " + server + "_deploy.jar)",
-        ] if server else []),
+        srcs = files + [entrypoint_jar],
+        mtree = mtree + [
+            "entrypoint_deploy.jar uid=0 gid=0 mode=0444 type=file content=$(location " + entrypoint_jar + ")",
+        ],
         visibility = visibility,
     )
 
     oci_image(
         name = name,
         base = base,
-        entrypoint = entrypoint,
+        entrypoint = [
+            "/usr/sbin/dumb-init",
+            "--",
+            "/{}/bin/java".format(JDK_PREFIX),
+            "-jar",
+            "/entrypoint_deploy.jar",
+        ],
         tars = [
             name + "_tar",
             "@logos//dev/logos/stack/aws/container/cert_bundle_layer:cert_bundle_layer",

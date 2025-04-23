@@ -103,6 +103,7 @@ MAVEN_SHARED = [
     "com.google.guava:guava:33.2.1-jre",
     "com.google.inject:guice:7.0.0",
     "io.grpc:grpc-api:1.67.1",
+    "io.grpc:grpc-netty-shaded:1.67.1",
     "io.grpc:grpc-testing:1.67.1",
     "io.vavr:vavr:0.10.5",
     "org.slf4j:slf4j-api:2.0.7",

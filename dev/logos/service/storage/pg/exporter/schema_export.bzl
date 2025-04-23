@@ -143,6 +143,7 @@ def _java_storage_service_impl(ctx):
             table_title_case = table.replace("_", " ").title().replace(" ", "")
             outputs.append(ctx.actions.declare_file("%s.java" % schema_title_case))
             outputs.append(ctx.actions.declare_file("%s/%s/StorageModule.java" % (schema, table)))
+            outputs.append(ctx.actions.declare_file("%s/%s/%sTableStorage.java" % (schema, table, table_title_case)))
             outputs.append(ctx.actions.declare_file("%s/%sStorageServiceBase.java" % (schema, table_title_case)))
 
     tool_inputs, tool_input_manifests = ctx.resolve_tools(tools = [ctx.attr.exporter, ctx.attr.schema_export])

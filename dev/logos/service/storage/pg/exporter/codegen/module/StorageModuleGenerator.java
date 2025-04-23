@@ -1,6 +1,7 @@
 package dev.logos.service.storage.pg.exporter.codegen.module;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.Singleton;
 import com.google.inject.TypeLiteral;
 import com.squareup.javapoet.*;
 import dev.logos.app.register.registerModule;
@@ -26,6 +27,9 @@ public class StorageModuleGenerator {
 
         ClassName entityClassName = ClassName.bestGuess(
                 targetPackage + "." + schemaDescriptor.name() + "." + tableDescriptor.getClassName());
+        ClassName tableStorageClassName = ClassName.bestGuess(
+                packageName + "." + tableDescriptor.getClassName() + "TableStorage");
+
         String tableInstanceVariableName = tableDescriptor.getInstanceVariableName();
 
         return JavaFile
@@ -37,25 +41,18 @@ public class StorageModuleGenerator {
                                 .addMethod(MethodSpec.methodBuilder("configure")
                                                      .addAnnotation(Override.class)
                                                      .addModifiers(PROTECTED)
+                                                     .addStatement("bind($T.class).in($T.class)",
+                                                             tableStorageClassName,
+                                                             Singleton.class)
                                                      .addStatement(
-                                                             String.format(
-                                                                     "bind(new $T(){}).toInstance(new $T(%s, $T.class, $T.class))",
-                                                                     tableInstanceVariableName),
+                                                             "bind(new $T(){}).to($T.class)",
                                                              ParameterizedTypeName.get(
                                                                      ClassName.get(TypeLiteral.class),
                                                                      ParameterizedTypeName.get(
                                                                              ClassName.get(EntityStorage.class),
                                                                              entityClassName,
-                                                                             ClassName.get(UUID.class)
-                                                                     )
-                                                             ),
-                                                             ParameterizedTypeName.get(
-                                                                     ClassName.get(TableStorage.class),
-                                                                     entityClassName,
-                                                                     ClassName.get(UUID.class)
-                                                             ),
-                                                             entityClassName,
-                                                             ClassName.get(UUID.class))
+                                                                             ClassName.get(UUID.class))),
+                                                             tableStorageClassName)
                                                      .addStatement("super.configure()")
                                                      .build())
                                 .build()

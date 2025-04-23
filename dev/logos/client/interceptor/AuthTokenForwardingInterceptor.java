@@ -1,7 +1,6 @@
-package dev.logos.service.backend.server;
+package dev.logos.client.interceptor;
 
 import com.google.inject.Inject;
-import dev.logos.user.NotAuthenticated;
 import dev.logos.user.User;
 import dev.logos.user.UserContext;
 import io.grpc.*;

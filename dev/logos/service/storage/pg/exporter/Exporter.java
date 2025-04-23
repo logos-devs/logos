@@ -15,6 +15,7 @@ import dev.logos.service.storage.pg.exporter.codegen.proto.QualifierProtoGenerat
 import dev.logos.service.storage.pg.exporter.codegen.qualifier.QualifierGenerator;
 import dev.logos.service.storage.pg.exporter.codegen.schema.SchemaGenerator;
 import dev.logos.service.storage.pg.exporter.codegen.service.StorageServiceBaseGenerator;
+import dev.logos.service.storage.pg.exporter.codegen.storage.TableStorageGenerator;
 import dev.logos.service.storage.pg.exporter.codegen.table.TableGenerator;
 import dev.logos.service.storage.pg.exporter.descriptor.QualifierDescriptor;
 import dev.logos.service.storage.pg.exporter.descriptor.SchemaDescriptor;
@@ -50,6 +51,7 @@ public class Exporter {
     private final QualifierGenerator qualifierGenerator;
     private final StorageServiceBaseGenerator storageServiceBaseGenerator;
     private final StorageModuleGenerator storageModuleGenerator;
+    private final TableStorageGenerator tableStorageGenerator;
     private final Gson gson = new GsonBuilder().create();
 
     @Inject
@@ -64,7 +66,8 @@ public class Exporter {
             QualifierProtoGenerator qualifierProtoGenerator,
             QualifierGenerator qualifierGenerator,
             StorageServiceBaseGenerator storageServiceBaseGenerator,
-            StorageModuleGenerator storageModuleGenerator
+            StorageModuleGenerator storageModuleGenerator,
+            TableStorageGenerator tableStorageGenerator
     ) {
         this.buildDir = buildDir;
         this.buildPackage = buildPackage;
@@ -77,6 +80,7 @@ public class Exporter {
         this.qualifierGenerator = qualifierGenerator;
         this.storageServiceBaseGenerator = storageServiceBaseGenerator;
         this.storageModuleGenerator = storageModuleGenerator;
+        this.tableStorageGenerator = tableStorageGenerator;
     }
 
     private enum ExportType {
@@ -122,6 +126,9 @@ public class Exporter {
 
                 JavaFile storageModuleClass = storageModuleGenerator.generate(buildPackage, schemaDescriptor, tableDescriptor);
                 storageModuleClass.writeToPath(Path.of(buildDir));
+
+                JavaFile tableStorageClass = tableStorageGenerator.generate(buildPackage, schemaDescriptor, tableDescriptor);
+                tableStorageClass.writeToPath(Path.of(buildDir));
 
                 TypeSpec tableClass = tableGenerator.generate(
                         buildPackage,
@@ -212,8 +219,8 @@ public class Exporter {
         if (serviceIndex > 0) {
             // Insert qualifier messages before service
             return protoContent.substring(0, serviceIndex) +
-                   qualifierMessages + "\n\n" +
-                   protoContent.substring(serviceIndex);
+                    qualifierMessages + "\n\n" +
+                    protoContent.substring(serviceIndex);
         }
 
         return protoContent;
@@ -255,8 +262,8 @@ public class Exporter {
         if (endIndex > 0) {
             // Insert qualifier fields before closing brace
             return protoContent.substring(0, endIndex) +
-                   "\n" + qualifierFields +
-                   protoContent.substring(endIndex);
+                    "\n" + qualifierFields +
+                    protoContent.substring(endIndex);
         }
 
         return protoContent;

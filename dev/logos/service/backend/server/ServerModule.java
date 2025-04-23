@@ -32,28 +32,13 @@ public class ServerModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        Multibinder
-                .newSetBinder(binder(), ClientInterceptor.class)
-                .addBinding().to(AuthTokenForwardingInterceptor.class);
-
         Multibinder.newSetBinder(binder(), Service.class);
+        Multibinder.newSetBinder(binder(), ServerInterceptor.class);
     }
 
     @Provides
     public GuardServerInterceptor provideGuardServerInterceptor(Map<String, Service> serviceMap) {
         return new GuardServerInterceptor(serviceMap);
-    }
-
-    @Provides
-    public ManagedChannel provideManagedChannel(Set<ClientInterceptor> clientInterceptors) {
-        /* TODO select in-process vs network channel with offload logic */
-        InProcessChannelBuilder channelBuilder = InProcessChannelBuilder.forName("logos-in-process");
-
-        for (ClientInterceptor interceptor : clientInterceptors) {
-            channelBuilder.intercept(interceptor);
-        }
-
-        return channelBuilder.build();
     }
 
     @Provides

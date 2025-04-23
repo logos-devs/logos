@@ -75,24 +75,24 @@ public class K8sModule extends AbstractModule {
     Set<ServiceProps.Builder> provideService(@RpcServerChart Chart chart, Set<RpcServer> rpcServers) {
         return rpcServers.stream()
                          .map(rpcServer ->
-                                      ServiceProps.builder()
-                                                  .metadata(
-                                                          ApiObjectMetadata.builder()
-                                                                           .name(rpcServer.rpcServerName() + "-service")
-                                                                           .labels(Map.of("app", "backend"))
-                                                                           .build())
-                                                  .type(ServiceType.NODE_PORT)
-                                                  .ports(List.of(ServicePort.builder()
-                                                                            .port(8081)
-                                                                            .protocol(Protocol.TCP)
-                                                                            .build()))
-                                                  .selector(
-                                                          Pods.select(
-                                                                  chart,
-                                                                  "backend-pods",
-                                                                  PodsSelectOptions.builder()
-                                                                                   .labels(Map.of("app", "backend"))
-                                                                                   .build())))
+                                 ServiceProps.builder()
+                                             .metadata(
+                                                     ApiObjectMetadata.builder()
+                                                                      .name(rpcServer.rpcServerName() + "-service")
+                                                                      .labels(Map.of("app", "backend"))
+                                                                      .build())
+                                             .type(ServiceType.NODE_PORT)
+                                             .ports(List.of(ServicePort.builder()
+                                                                       .port(8081)
+                                                                       .protocol(Protocol.TCP)
+                                                                       .build()))
+                                             .selector(
+                                                     Pods.select(
+                                                             chart,
+                                                             "backend-pods",
+                                                             PodsSelectOptions.builder()
+                                                                              .labels(Map.of("app", "backend"))
+                                                                              .build())))
                          .collect(Collectors.toSet());
     }
 
@@ -144,11 +144,11 @@ public class K8sModule extends AbstractModule {
 
             for (SecretVolumeMount secretVolumeMount : rpcServer.secretVolumeMounts()) {
                 Volume volume = Volume.fromSecret(chart,
-                                                  secretVolumeMount.secretName() + "-volume",
-                                                  Secret.fromSecretName(
-                                                          chart,
-                                                          secretVolumeMount.secretName() + "-ref",
-                                                          secretVolumeMount.secretName()));
+                        secretVolumeMount.secretName() + "-volume",
+                        Secret.fromSecretName(
+                                chart,
+                                secretVolumeMount.secretName() + "-ref",
+                                secretVolumeMount.secretName()));
                 volumes.put(secretVolumeMount.secretName(), volume);
 
                 secretVolumeMount.volumeMountBuilders().forEach(volumeMountBuilder -> {
@@ -158,14 +158,14 @@ public class K8sModule extends AbstractModule {
             }
 
             volumes.put("configmap-logos-apps",
-                        Volume.fromConfigMap(chart, "config-volume",
-                                             ConfigMap.fromConfigMapName(chart,
-                                                                         "config-volume-map",
-                                                                         "logos-apps")));
+                    Volume.fromConfigMap(chart, "config-volume",
+                            ConfigMap.fromConfigMapName(chart,
+                                    "config-volume-map",
+                                    "logos-apps")));
 
             Map<String, EnvValue> containerEnv = new HashMap<>(rpcServer.rpcServerEnv());
             containerEnv.put("STORAGE_PG_BACKEND_JDBC_URL",
-                             EnvValue.fromValue("jdbc:postgresql://db-rw-service/logos?usessl=require&sslmode=verify-full&sslrootcert=/etc/ssl/certs/aws-rds-global-bundle.pem"));
+                    EnvValue.fromValue("jdbc:postgresql://db-rw-service/logos?usessl=require&sslmode=verify-full&sslrootcert=/etc/ssl/certs/aws-rds-global-bundle.pem"));
             containerEnv.put("STORAGE_PG_BACKEND_USER", EnvValue.fromValue("storage"));
 
             List<ContainerProps> containers = new ArrayList<>();
@@ -189,18 +189,22 @@ public class K8sModule extends AbstractModule {
                                                                          .periodSeconds(Duration.seconds(10))
                                                                          .build())).build());
 
-            rpcServer.sidecarPropsBuilders().forEach(
-                    sidecar -> containers.add(sidecar.containerPropsBuilder().volumeMounts(
-                            Stream.concat(
-                                    sidecar.containerPropsBuilder().build().getVolumeMounts().stream(),
-                                    sidecar.existingVolumeClaimMounts().stream().flatMap(existingVolumeClaimMount -> {
-                                        String pvcName = rpcServer.rpcServerName() + existingVolumeClaimMount.claimName();
-                                        return existingVolumeClaimMount.volumeMountBuilders().stream().map(
-                                                volumeMountBuilder -> volumeMountBuilder.volume(volumes.get(pvcName)).build()
-                                        );
-                                    })
-                            ).collect(Collectors.toList())
-                    ).build()));
+            rpcServer.sidecars().forEach(
+                    sidecar -> containers.add(sidecar.containerPropsBuilder()
+                                                     .imagePullPolicy(ImagePullPolicy.ALWAYS)
+                                                     .envVariables(containerEnv)
+                                                     .volumeMounts(
+                                                             Stream.concat(
+                                                                     Stream.ofNullable(sidecar.containerPropsBuilder().build().getVolumeMounts())
+                                                                           .flatMap(Collection::stream),
+                                                                     sidecar.existingVolumeClaimMounts().stream().flatMap(existingVolumeClaimMount -> {
+                                                                         String pvcName = rpcServer.rpcServerName() + existingVolumeClaimMount.claimName();
+                                                                         return existingVolumeClaimMount.volumeMountBuilders().stream().map(
+                                                                                 volumeMountBuilder -> volumeMountBuilder.volume(volumes.get(pvcName)).build()
+                                                                         );
+                                                                     })
+                                                             ).collect(Collectors.toList())
+                                                     ).build()));
 
             return rpcServer.deploymentPropsBuilder()
                             .metadata(
@@ -214,8 +218,8 @@ public class K8sModule extends AbstractModule {
                             .replicas(1)
                             .securityContext(PodSecurityContextProps.builder().fsGroup(1000).build())
                             .serviceAccount(ServiceAccount.fromServiceAccountName(chart,
-                                                                                  "logos-eks-stack-backend-service-account",
-                                                                                  "logos-eks-stack-backend-service-account"))
+                                    "logos-eks-stack-backend-service-account",
+                                    "logos-eks-stack-backend-service-account"))
                             .volumes(volumes.values().stream().toList())
                             .select(true)
                             .automountServiceAccountToken(true)
@@ -227,7 +231,7 @@ public class K8sModule extends AbstractModule {
             String rpcServerName,
             DeploymentProps.Builder deploymentPropsBuilder,
             ContainerProps.Builder containerPropsBuilder,
-            List<Sidecar> sidecarPropsBuilders,
+            List<Sidecar> sidecars,
             Map<String, EnvValue> rpcServerEnv,
             List<PersistentVolumeClaimMount> persistentVolumeClaimMounts,
             List<ExistingVolumeClaimMount> existingVolumeClaimMounts,

@@ -159,6 +159,9 @@ def app(
 
     image_pushes = []
     if rpc_server_image:
+        if ":" not in rpc_server_image:
+            rpc_server_image = rpc_server_image + ":" + rpc_server_image.rsplit("/", 1)[1]
+
         rpc_server_push_name = name + "_rpc_server_image_push"
         push_image(
             name = rpc_server_push_name,

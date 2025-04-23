@@ -64,36 +64,43 @@ public class TableStorage<Entity, StorageIdentifier> implements EntityStorage<En
         return query(selectBuilder);
     }
 
-    // TODO : write a mapper which uses the proto reflection API. The members
-    //  of this class are not the ones which correspond to field names.
     public Stream<Entity> query(Select.Builder selectBuilder) {
-        Handle handle = jdbi.open();
-        handle.registerRowMapper(FieldMapper.factory(entityClass));
-        
-        // Build the SQL query
         Select selectObj = selectBuilder.build();
-        String sqlQuery = selectObj.toString();
-        Query queryObj = handle.createQuery(sqlQuery);
-        
-        // Bind any qualifier parameters if needed
+
+        Map<String, Object> params = null;
         if (selectObj.getQualifiers() != null && !selectObj.getQualifiers().isEmpty()) {
-            Map<String, Object> params = new HashMap<>();
+            params = new HashMap<>();
             for (QualifierFunctionCall call : selectObj.getQualifiers()) {
                 params.putAll(call.getParameters());
             }
-            
-            if (!params.isEmpty()) {
-                for (Map.Entry<String, Object> entry : params.entrySet()) {
-                    queryObj.bind(entry.getKey(), entry.getValue());
-                }
+        }
+
+        String sqlQuery = selectObj.toString();
+        return query(sqlQuery, params);
+    }
+
+    public Stream<Entity> query(String sqlQuery) {
+        return query(sqlQuery, null);
+    }
+
+    // TODO : write a mapper which uses the proto reflection API. The members
+    //  of this class are not the ones which correspond to field names.
+    public Stream<Entity> query(String sqlQuery, Map<String, Object> params) {
+        Handle handle = jdbi.open();
+        handle.registerRowMapper(FieldMapper.factory(entityClass));
+
+        Query queryObj = handle.createQuery(sqlQuery);
+
+        if (params != null && !params.isEmpty()) {
+            for (Map.Entry<String, Object> entry : params.entrySet()) {
+                queryObj.bind(entry.getKey(), entry.getValue());
             }
-        }        
-        System.err.println(selectObj);
+        }
 
         return queryObj
-                 .map(this::entityMapper)
-                 .stream()
-                 .onClose(handle::close);
+                .map(this::entityMapper)
+                .stream()
+                .onClose(handle::close);
     }
 
     public StorageIdentifier create(Entity entity) throws EntityWriteException {
@@ -107,9 +114,9 @@ public class TableStorage<Entity, StorageIdentifier> implements EntityStorage<En
 
         String queryStr =
                 String.format("insert into %s (%s) values (%s) returning id",
-                              relation.quotedIdentifier,
-                              String.join(",", fieldNames),
-                              String.join(",", fieldNames.stream().map(s -> ":" + s).toList()));
+                        relation.quotedIdentifier,
+                        String.join(",", fieldNames),
+                        String.join(",", fieldNames.stream().map(s -> ":" + s).toList()));
 
         try (Handle handle = jdbi.open()) {
             Query query = handle.createQuery(queryStr);
@@ -132,8 +139,8 @@ public class TableStorage<Entity, StorageIdentifier> implements EntityStorage<En
 
         String queryStr =
                 String.format("update %s set %s where id = :id returning id",
-                              relation.quotedIdentifier,
-                              String.join(",", fieldNames.stream().map(s -> s + " = :" + s).toList()));
+                        relation.quotedIdentifier,
+                        String.join(",", fieldNames.stream().map(s -> s + " = :" + s).toList()));
 
         try (Handle handle = jdbi.open()) {
             Query query = handle.createQuery(queryStr);
