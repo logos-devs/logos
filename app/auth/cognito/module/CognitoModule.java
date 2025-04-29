@@ -60,8 +60,9 @@ public class CognitoModule extends AppModule {
         services(CognitoService.class);
         interceptors(CookieServerInterceptor.class, CognitoServerInterceptor.class);
 
-        OptionalBinder.newOptionalBinder(binder(), CognitoDomainOptions.Builder.class).setDefault().toInstance(
-                CognitoDomainOptions.builder().domainPrefix("logos"));
+        OptionalBinder.newOptionalBinder(binder(), CognitoDomainOptions.Builder.class)
+                      .setDefault()
+                      .toInstance(CognitoDomainOptions.builder().domainPrefix("logos"));
     }
 
     @Provides
@@ -98,15 +99,19 @@ public class CognitoModule extends AppModule {
                                   .generateSecret(true)
                                   .accessTokenValidity(Duration.hours(8))
                                   .idTokenValidity(Duration.hours(8))
+                                  .authFlows(AuthFlow.builder()
+                                                     .userPassword(true)
+                                                     .build())
                                   .oAuth(OAuthSettings.builder()
                                                       .callbackUrls(callbackUrls.stream().toList())
                                                       .logoutUrls(logoutUrls.stream().toList())
                                                       .flows(OAuthFlows.builder()
                                                                        .authorizationCodeGrant(true)
                                                                        .build())
-                                                      .scopes(List.of(OAuthScope.EMAIL,
-                                                                      OAuthScope.OPENID,
-                                                                      OAuthScope.PROFILE))
+                                                      .scopes(List.of(
+                                                              OAuthScope.EMAIL,
+                                                              OAuthScope.OPENID,
+                                                              OAuthScope.PROFILE))
                                                       .build());
     }
 

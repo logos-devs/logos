@@ -1,18 +1,16 @@
 package dev.logos.auth.user;
 
 
-public abstract class User {
+import dev.logos.auth.principal.Principal;
+
+import java.util.Optional;
+
+public abstract class User implements Principal {
     public static User get() {
         return UserContext.getCurrentUser().orElseThrow();
     }
 
-    public abstract String getDisplayName();
-
-    public abstract boolean isAuthenticated();
-
-    public abstract String getId();
-
-    public abstract String getEmail();
-
-    public abstract String getToken();
+    public Optional<String> getEmail() {
+        return Optional.empty();
+    }
 }

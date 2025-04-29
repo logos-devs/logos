@@ -3,6 +3,8 @@ package app.auth.cognito.user;
 import dev.logos.auth.user.User;
 import io.jsonwebtoken.Claims;
 
+import java.util.Optional;
+
 import static java.util.Objects.requireNonNull;
 
 // TODO: rename to CognitoUser
@@ -30,8 +32,8 @@ public class CognitoUser extends User {
     }
 
     @Override
-    public String getEmail() {
-        return email;
+    public Optional<String> getEmail() {
+        return Optional.ofNullable(email);
     }
 
     @Override
