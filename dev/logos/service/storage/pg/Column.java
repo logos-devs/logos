@@ -32,7 +32,7 @@ public abstract class Column extends Identifier {
     CONTAINS("@>");
      */
 
-    public Filter eq(String value) {
+    public Filter eq(Object value) {
         return filter(this).op(Filter.Op.EQ).value(value).build();
     }
 }

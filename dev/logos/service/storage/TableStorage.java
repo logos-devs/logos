@@ -4,7 +4,6 @@ import com.google.inject.Inject;
 import com.google.protobuf.GeneratedMessage;
 import dev.logos.service.storage.exceptions.EntityReadException;
 import dev.logos.service.storage.exceptions.EntityWriteException;
-import dev.logos.service.storage.pg.QualifierFunctionCall;
 import dev.logos.service.storage.pg.Relation;
 import dev.logos.service.storage.pg.Select;
 import org.jdbi.v3.core.Handle;
@@ -16,7 +15,7 @@ import org.jdbi.v3.core.statement.StatementContext;
 
 import javax.sql.DataSource;
 import java.sql.ResultSet;
-import java.util.HashMap;
+import java.sql.SQLException;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
@@ -59,42 +58,33 @@ public class TableStorage<Entity, StorageIdentifier> implements EntityStorage<En
         }
     }
 
-    public Stream<Entity> query(StorageIdentifier id, Select.Builder selectBuilder) {
-        selectBuilder.where(relation.getColumns().get("id").eq(id.toString()));
+    public Stream<Entity> query(Object id, Select.Builder selectBuilder) throws EntityReadException {
+        selectBuilder.where(relation.getColumns().get("id").eq(id));
         return query(selectBuilder);
     }
 
-    public Stream<Entity> query(Select.Builder selectBuilder) {
+    public Stream<Entity> query(Select.Builder selectBuilder) throws EntityReadException {
         Select selectObj = selectBuilder.build();
-
-        Map<String, Object> params = null;
-        if (selectObj.getQualifiers() != null && !selectObj.getQualifiers().isEmpty()) {
-            params = new HashMap<>();
-            for (QualifierFunctionCall call : selectObj.getQualifiers()) {
-                params.putAll(call.getParameters());
-            }
-        }
-
         String sqlQuery = selectObj.toString();
-        return query(sqlQuery, params);
+        try {
+            return query(sqlQuery, selectObj.getParameters());
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Failed to execute query %s".formatted(sqlQuery), e);
+            throw new EntityReadException(e);
+        }
     }
 
-    public Stream<Entity> query(String sqlQuery) {
-        return query(sqlQuery, null);
+    public Stream<Entity> query(String sqlQuery) throws SQLException {
+        return query(sqlQuery, (Map<String, Object>) null);
     }
 
-    // TODO : write a mapper which uses the proto reflection API. The members
-    //  of this class are not the ones which correspond to field names.
-    public Stream<Entity> query(String sqlQuery, Map<String, Object> params) {
+    public Stream<Entity> query(String sqlQuery, Map<String, Object> parameters) throws SQLException {
         Handle handle = jdbi.open();
         handle.registerRowMapper(FieldMapper.factory(entityClass));
-
         Query queryObj = handle.createQuery(sqlQuery);
 
-        if (params != null && !params.isEmpty()) {
-            for (Map.Entry<String, Object> entry : params.entrySet()) {
-                queryObj.bind(entry.getKey(), entry.getValue());
-            }
+        if (parameters != null) {
+            relation.bindFields(parameters, queryObj);
         }
 
         return queryObj
@@ -124,11 +114,11 @@ public class TableStorage<Entity, StorageIdentifier> implements EntityStorage<En
             return query.mapTo(this.storageIdentifierClass).first();
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Failed to create entity %s".formatted(relation.quotedIdentifier), e);
-            throw new EntityWriteException();
+            throw new EntityWriteException(e);
         }
     }
 
-    public StorageIdentifier update(StorageIdentifier id, Entity entity) throws EntityWriteException {
+    public StorageIdentifier update(Object id, Entity entity) throws EntityWriteException {
         Map<String, Object> fields = ((GeneratedMessage) entity).getAllFields()
                                                                 .entrySet()
                                                                 .stream()
@@ -144,25 +134,26 @@ public class TableStorage<Entity, StorageIdentifier> implements EntityStorage<En
 
         try (Handle handle = jdbi.open()) {
             Query query = handle.createQuery(queryStr);
+            fields.put("id", id);
+            logger.log(Level.SEVERE, "Updating entity %s with fields %s".formatted(relation.quotedIdentifier, fields.toString()));
             relation.bindFields(fields, query);
-            query.bind("id", id);
             return query.mapTo(this.storageIdentifierClass).first();
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Failed to update entity %s".formatted(relation.quotedIdentifier), e);
-            throw new EntityWriteException();
+            throw new EntityWriteException(e);
         }
     }
 
-    public StorageIdentifier delete(StorageIdentifier id) throws EntityWriteException {
+    public StorageIdentifier delete(Object id) throws EntityWriteException {
         String queryStr = String.format("delete from %s where id = :id returning id", relation.quotedIdentifier);
 
         try (Handle handle = jdbi.open()) {
             Query query = handle.createQuery(queryStr);
-            query.bind("id", id);
+            relation.bindFields(Map.of("id", id), query);
             return query.mapTo(this.storageIdentifierClass).first();
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Failed to delete entity %s".formatted(relation.quotedIdentifier), e);
-            throw new EntityWriteException();
+            throw new EntityWriteException(e);
         }
     }
 }

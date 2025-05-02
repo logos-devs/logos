@@ -1,7 +1,9 @@
 package dev.logos.service.storage.pg;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Represents a call to a database function that qualifies records.
@@ -34,8 +36,7 @@ public class QualifierFunctionCall {
     /**
      * Gets the SQL representation of this function call.
      */
-    @Override
-    public String toString() {
+    public String toQuery(HashMap<String, Object> queryParameters) {
         StringBuilder sb = new StringBuilder();
         sb.append(Identifier.quoteIdentifier(relation.schema));
         sb.append(".").append(Identifier.quoteIdentifier(function.name));
@@ -43,7 +44,11 @@ public class QualifierFunctionCall {
 
         if (!parameters.isEmpty()) {
             for (Entry<String, Object> entry : parameters.entrySet()) {
-                sb.append(", :").append(entry.getKey()).append("::").append(function.parameters.get(entry.getKey()).type());
+                queryParameters.put(entry.getKey(), entry.getValue());
+                sb.append(", ")
+                  .append(":%s".formatted(entry.getKey()))
+                  .append("::")
+                  .append(function.parameters.get(entry.getKey()).type());
             }
         }
         sb.append(")");

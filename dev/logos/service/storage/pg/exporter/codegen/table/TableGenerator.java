@@ -6,10 +6,7 @@ import dev.logos.service.storage.exceptions.EntityReadException;
 import dev.logos.service.storage.pg.Column;
 import dev.logos.service.storage.pg.Identifier;
 import dev.logos.service.storage.pg.Relation;
-import dev.logos.service.storage.pg.exporter.descriptor.ColumnDescriptor;
-import dev.logos.service.storage.pg.exporter.descriptor.QualifierDescriptor;
-import dev.logos.service.storage.pg.exporter.descriptor.SchemaDescriptor;
-import dev.logos.service.storage.pg.exporter.descriptor.TableDescriptor;
+import dev.logos.service.storage.pg.exporter.descriptor.*;
 import dev.logos.service.storage.pg.exporter.mapper.PgTypeMapper;
 import org.jdbi.v3.core.statement.Query;
 
@@ -151,21 +148,22 @@ public class TableGenerator {
                                                         .addParameter(ParameterizedTypeName.get(ClassName.get(Map.class),
                                                                 ClassName.get(String.class),
                                                                 ClassName.get(Object.class)), "fields")
-                                                        .addParameter(ClassName.get(Query.class), "query");
+                                                        .addParameter(ClassName.get(Query.class), "query")
+                                                        .addException(SQLException.class);
 
         for (ColumnDescriptor columnDescriptor : columnDescriptors) {
+            String columnName = columnDescriptor.name();
             String columnType = columnDescriptor.type();
             if (!pgColumnTypeMappers.containsKey(columnType)) {
                 throw new RuntimeException("There is no PgTypeMapper bound for type: " + columnType);
             }
 
             PgTypeMapper typeMapper = pgColumnTypeMappers.get(columnType);
-            String columnName = columnDescriptor.name();
-            CodeBlock typeMapperCodeBlock = typeMapper.protoToPg("query", "fields", columnName);
-            bindFieldsMethod.addCode("if (fields.containsKey($S)) { $L\n }", columnName, typeMapperCodeBlock);
+            bindFieldsMethod.beginControlFlow("if (fields.containsKey($S))", columnName);
+            bindFieldsMethod.addCode(typeMapper.protoToPg("query", "fields", columnName));
+            bindFieldsMethod.addCode("\n");
+            bindFieldsMethod.endControlFlow();
         }
-
-        tableClassBuilder.addMethod(bindFieldsMethod.build());
 
         tableClassBuilder.addTypes(qualifierClasses);
 
@@ -175,7 +173,24 @@ public class TableGenerator {
                     FieldSpec.builder(qualifierClassName, qualifierDescriptor.getInstanceVariableName(), PUBLIC, STATIC, FINAL)
                              .initializer("new $T()", qualifierClassName)
                              .build());
+
+            for (QualifierParameterDescriptor qualifierParameterDescriptor : qualifierDescriptor.parameters()) {
+                String parameterName = qualifierParameterDescriptor.name();
+                String columnType = qualifierParameterDescriptor.type();
+                if (!pgColumnTypeMappers.containsKey(columnType)) {
+                    throw new RuntimeException("There is no PgTypeMapper bound for type: " + columnType);
+                }
+
+                PgTypeMapper typeMapper = pgColumnTypeMappers.get(columnType);
+                CodeBlock typeMapperCodeBlock = typeMapper.protoToPg("query", "fields", parameterName);
+                bindFieldsMethod.beginControlFlow("if (fields.containsKey($S))", parameterName);
+                bindFieldsMethod.addCode(typeMapperCodeBlock);
+                bindFieldsMethod.addCode("\n");
+                bindFieldsMethod.endControlFlow();
+            }
         }
+
+        tableClassBuilder.addMethod(bindFieldsMethod.build());
 
         return tableClassBuilder.build();
     }

@@ -114,7 +114,7 @@ public class StorageServiceBaseGenerator {
                                 tableDescriptor,
                                 listRequestMessage,
                                 packageName))
-                        .addMethod(makeIdGetter(storageIdentifier, getRequestMessage, updateRequestMessage, deleteRequestMessage))
+                        .addMethod(makeIdGetter(getRequestMessage, updateRequestMessage, deleteRequestMessage))
 
                         // GetResponse response(Stream<Entity>, GetRequest)
                         .addMethod(MethodSpec.methodBuilder("response")
@@ -219,7 +219,6 @@ public class StorageServiceBaseGenerator {
 
     // <Request> StorageIdentifier id(Request request);
     private MethodSpec makeIdGetter(
-            ClassName storageIdentifier,
             ClassName getRequestMessage,
             ClassName updateRequestMessage,
             ClassName deleteRequestMessage) {
@@ -230,21 +229,21 @@ public class StorageServiceBaseGenerator {
                          .addModifiers(PUBLIC)
                          .addTypeVariable(requestType)
                          .addParameter(requestType, "request")
-                         .returns(storageIdentifier)
-                         .beginControlFlow("if (request instanceof $T)", getRequestMessage)
-                         .addStatement("$T getRequest = ($T) request", getRequestMessage, getRequestMessage)
-                         .addStatement("return $T.bytestringToUuid(getRequest.getId())", Converter.class)
-                         .endControlFlow()
-                         .beginControlFlow("if (request instanceof $T)", updateRequestMessage)
-                         .addStatement("$T updateRequest = ($T) request", updateRequestMessage, updateRequestMessage)
-                         .addStatement("return $T.bytestringToUuid(updateRequest.getId())", Converter.class)
-                         .endControlFlow()
-                         .beginControlFlow("if (request instanceof $T)", deleteRequestMessage)
-                         .addStatement("$T deleteRequest = ($T) request", deleteRequestMessage, deleteRequestMessage)
-                         .addStatement("return $T.bytestringToUuid(deleteRequest.getId())", Converter.class)
-                         .endControlFlow()
-                         .addStatement("throw new $T($S)", RuntimeException.class, "Unexpected request type")
-                         .build();
+                         .returns(Object.class)
+                         .addStatement("""
+                                         return switch (request) {
+                                             case $T getRequest -> getRequest.getId();
+                                             case $T updateRequest -> updateRequest.getId();
+                                             case $T deleteRequest -> deleteRequest.getId();
+                                             default -> throw new $T($S);
+                                         }
+                                         """,
+                                 getRequestMessage,
+                                 updateRequestMessage,
+                                 deleteRequestMessage,
+                                 RuntimeException.class,
+                                 "Unexpected request type"
+                         ).build();
     }
 
     private MethodSpec makeValidateRequestMethod(ClassName requestMessage, boolean validateEntity) {

@@ -36,7 +36,7 @@ public interface EntityStorageService<
 
     <Request> Entity entity(Request ignoredRequest) throws NotAuthenticated;
 
-    <Request> StorageIdentifier id(Request request);
+    <Request> Object id(Request request);
 
     default <Request, Response> void request(Request request, StreamObserver<Response> responseObserver, RequestHandler<Response> handler) {
         try {

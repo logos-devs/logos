@@ -25,5 +25,5 @@ public abstract class Relation extends Identifier {
     public abstract <Entity> Entity toProtobuf(ResultSet resultSet) throws EntityReadException;
 
     // Adjust method signature to accept Map<FieldDescriptor, Object>
-    public abstract void bindFields(Map<String, Object> fields, Query query);
+    public abstract void bindFields(Map<String, Object> fields, Query query) throws SQLException;
 }

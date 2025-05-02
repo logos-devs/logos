@@ -7,6 +7,7 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.sql.ResultSet;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -75,8 +76,32 @@ public class SelectTest {
                                .value("val2")
                                .build();
 
-        assertEquals("select where \"col1\" = 'val1' and \"col2\" = 'val2'",
+        assertEquals("select where \"col1\" = :col1_0 and \"col2\" = :col2_1",
                 Select.select().where(filter1, filter2).build().toString());
+    }
+
+    @Test
+    public void test_selectWithWhereFilters_storesParameterValues() {
+        Filter filter1 = Filter.builder()
+                               .column(new Column("col1", "\"col1\"", "string") {
+                               })
+                               .op(Filter.Op.EQ)
+                               .value("val1")
+                               .build();
+        Filter filter2 = Filter.builder()
+                               .column(new Column("col2", "\"col2\"", "string") {
+                               })
+                               .op(Filter.Op.EQ)
+                               .value("val2")
+                               .build();
+
+        Select query = Select.select().where(filter1, filter2).build();
+        query.toString();
+
+        HashMap<String, Object> params = query.getParameters();
+        assertEquals(2, params.size());
+        assertEquals("val1", params.get(":col1_0"));
+        assertEquals("val2", params.get(":col2_1"));
     }
 
     @Test
@@ -138,7 +163,27 @@ public class SelectTest {
                                 }, params).build().toString();
 
         assertEquals("""
-                select from "schema"."table" where "schema"."my_qualifier"("table", :param1::string, :param2::integer)""", queryStr);
+                select from "schema"."table" where "schema"."my_qualifier"("table", :param1_0::string, :param2_1::integer)""", queryStr);
+    }
+
+    @Test
+    public void test_selectWithQualifier_storesParameterValues() {
+        LinkedHashMap<String, Object> params = new LinkedHashMap<>();
+        params.put("param1", "value1");
+        params.put("param2", 42);
+        Select query = Select.select()
+                             .from(testRelation)
+                             .qualifier(new QualifierFunction("my_qualifier", new LinkedHashMap<>(
+                                     Map.of("param1", new QualifierFunctionParameter("param1", "string"),
+                                             "param2", new QualifierFunctionParameter("param2", "integer"))
+                             )) {
+                             }, params).build();
+
+        assertEquals("""
+                select from "schema"."table" where "schema"."my_qualifier"("table", :param1_0::string, :param2_1::integer)""", query.toString());
+        assertEquals(2, query.getParameters().size());
+        assertEquals("value1", query.getParameters().get(":param1_0"));
+        assertEquals(42, query.getParameters().get(":param2_1"));
     }
 
     @Test
@@ -148,7 +193,7 @@ public class SelectTest {
         Column col2 = new Column("col2", "\"col2\"", "string") {
         };
 
-        assertEquals("select from \"schema\".\"table\" where \"col1\" = 'val' order by \"col2\" asc limit 10 offset 5",
+        assertEquals("select from \"schema\".\"table\" where \"col1\" = :col1_0 order by \"col2\" asc limit 10 offset 5",
                 Select.select()
                       .from(testRelation)
                       .where(col1.eq("val"))

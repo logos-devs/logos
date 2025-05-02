@@ -1,13 +1,11 @@
 package dev.logos.service.storage.pg;
 
-import java.util.regex.Pattern;
+import java.util.HashMap;
 
 public class Filter {
-    public static Pattern SINGLE_QUOTE_RE = Pattern.compile("'");
-
     Column column;
     Op operation;
-    String value;
+    Object value;
 
     public static Filter.Builder filter() {
         return builder();
@@ -56,7 +54,7 @@ public class Filter {
             return this;
         }
 
-        public Builder value(String value) {
+        public Builder value(Object value) {
             this.filter.value = value;
             return this;
         }
@@ -70,12 +68,19 @@ public class Filter {
         return new Builder();
     }
 
-    public String toString() {
+    public String toQuery(HashMap<String, Object> parameters) {
+        String placeholder = "";
+
+        if (this.value != null) {
+            placeholder = ":%s".formatted(this.column.identifier);
+            parameters.put(this.column.identifier, value);
+        }
+
         return String.format(
                 "%s %s%s",
                 this.column,
                 this.operation,
-                this.value == null ? "" : " '" + SINGLE_QUOTE_RE.matcher(this.value).replaceAll("''") + "'"
+                this.value != null ? " " + placeholder : ""
         );
     }
 }

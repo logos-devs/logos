@@ -46,10 +46,8 @@ public class DevModule extends AppModule {
     @ProvidesIntoOptional(ProvidesIntoOptional.Type.ACTUAL)
     @Singleton
     CallCredentials provideUserScopedCallCredentials(@AwsRegion String region, CognitoClientCredentialsSecret clientCredentials) {
-        System.err.println("Before env vars");
         String username = requireNonNull(getenv("LOGOS_DEV_COGNITO_USERNAME"));
         String password = requireNonNull(getenv("LOGOS_DEV_COGNITO_PASSWORD"));
-        System.err.println("After env vars");
 
         try (CognitoIdentityProviderClient cognitoClient =
                      CognitoIdentityProviderClient.builder()

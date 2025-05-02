@@ -1,10 +1,10 @@
 package dev.logos.service.storage.pg;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public class Select {
-
     private final Column[] columns;
     private final Relation from;
     private final List<Filter> where;
@@ -12,6 +12,7 @@ public class Select {
     private final Long limit;
     private final Long offset;
     private final List<OrderBy> orderBy;
+    private final HashMap<String, Object> parameters = new HashMap<>();
 
     public static Builder select(Column... columns) {
         Builder builder = builder();
@@ -20,7 +21,6 @@ public class Select {
     }
 
     public static class Builder {
-
         private Column[] columns = new Column[0];
         private Relation from;
         private List<Filter> where;
@@ -28,6 +28,8 @@ public class Select {
         private Long limit;
         private Long offset;
         private final List<OrderBy> orderBy;
+        private final HashMap<String, Object> parameters = new HashMap<>();
+        private final AtomicInteger placeholderIndex = new AtomicInteger(0);
 
         public Builder() {
             this.offset = 0L;
@@ -57,16 +59,12 @@ public class Select {
         }
 
         public Builder where(Filter... where) {
-            this.where = List.of(where);
+            Collections.addAll(this.where, where);
             return this;
         }
 
         public Builder where(Column column, Filter.Op op) {
-            this.where = List.of(
-                    Filter.builder()
-                          .column(column)
-                          .op(op)
-                          .build());
+            where(Filter.builder().column(column).op(op).build());
             return this;
         }
 
@@ -129,7 +127,13 @@ public class Select {
         return qualifiers;
     }
 
-    @Override
+    /**
+     * Get the parameters bound to this select.
+     */
+    public HashMap<String, Object> getParameters() {
+        return parameters;
+    }
+
     public String toString() {
         List<String> queryParts = new ArrayList<>();
         queryParts.add("select");
@@ -142,26 +146,23 @@ public class Select {
             queryParts.add(String.format("from %s", this.from.quotedIdentifier));
         }
 
-        // Combine standard WHERE clauses and qualifier function calls
         List<String> whereClauses = new ArrayList<>();
-        if (!this.where.isEmpty()) {
-            whereClauses.addAll(this.where.stream()
-                                          .map(Filter::toString)
-                                          .toList());
-        }
+        this.where.stream()
+                  .map(where -> where.toQuery(parameters))
+                  .forEach(whereClauses::add);
 
-        if (!this.qualifiers.isEmpty()) {
-            whereClauses.addAll(this.qualifiers.stream()
-                                               .map(QualifierFunctionCall::toString)
-                                               .toList());
-        }
+        this.qualifiers.stream()
+                       .map(qualifier -> qualifier.toQuery(parameters))
+                       .forEach(whereClauses::add);
 
         if (!whereClauses.isEmpty()) {
             queryParts.add("where " + String.join(" and ", whereClauses));
         }
 
         if (!this.orderBy.isEmpty()) {
-            queryParts.add("order by " + this.orderBy.stream().map(OrderBy::toString).collect(Collectors.joining(", ")));
+            queryParts.add("order by " + this.orderBy.stream()
+                                                     .map(OrderBy::toString)
+                                                     .collect(Collectors.joining(", ")));
         }
         if (this.limit != null) {
             queryParts.add(String.format("limit %d", this.limit));

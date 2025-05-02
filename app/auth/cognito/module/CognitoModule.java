@@ -16,6 +16,7 @@ import dev.logos.app.AppModule;
 import dev.logos.app.register.registerModule;
 import dev.logos.stack.aws.module.EksModule.EksStack;
 import dev.logos.stack.aws.module.annotation.StackOutputsJson;
+import io.grpc.CallCredentials;
 import software.amazon.awscdk.*;
 import software.amazon.awscdk.services.cognito.*;
 import software.amazon.awscdk.services.iam.Policy;
@@ -63,6 +64,8 @@ public class CognitoModule extends AppModule {
         OptionalBinder.newOptionalBinder(binder(), CognitoDomainOptions.Builder.class)
                       .setDefault()
                       .toInstance(CognitoDomainOptions.builder().domainPrefix("logos"));
+
+        OptionalBinder.newOptionalBinder(binder(), CallCredentials.class);
     }
 
     @Provides
