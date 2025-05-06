@@ -101,6 +101,7 @@ MAVEN_SHARED = [
     "com.google.code.gson:gson:2.10.1",
     # guava must be explicitly specified or two separate versions will be pulled into the classpath and cause guice errors.
     "com.google.guava:guava:33.2.1-jre",
+    "com.google.inject.extensions:guice-assistedinject:7.0.0",
     "com.google.inject:guice:7.0.0",
     "io.grpc:grpc-api:1.67.1",
     "io.grpc:grpc-netty-shaded:1.67.1",

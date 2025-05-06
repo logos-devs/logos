@@ -14,6 +14,7 @@ java_library(
         "//dev/logos/app/register:module_library",
         "//dev/logos/module",
         "//dev/logos/service",
+        "//dev/logos/service/backend/server/worker",
         "//dev/logos/service/storage/module",
         "@maven_logos//:com_google_inject_guice",
         "@maven_logos//:io_grpc_grpc_api",

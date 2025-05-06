@@ -4,6 +4,8 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+import static dev.logos.service.storage.pg.Identifier.quoteIdentifier;
+
 public class Select {
     private final Column[] columns;
     private final Relation from;
@@ -143,7 +145,9 @@ public class Select {
         }
 
         if (this.from != null) {
-            queryParts.add(String.format("from %s", this.from.quotedIdentifier));
+            queryParts.add(String.format("from %s as %s",
+                    this.from.quotedIdentifier,
+                    quoteIdentifier(this.from.schema + "_" + this.from.name)));
         }
 
         List<String> whereClauses = new ArrayList<>();

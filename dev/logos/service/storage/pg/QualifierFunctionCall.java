@@ -5,6 +5,8 @@ import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static dev.logos.service.storage.pg.Identifier.quoteIdentifier;
+
 /**
  * Represents a call to a database function that qualifies records.
  * The function must take the row type as its first parameter and return a boolean.
@@ -38,9 +40,11 @@ public class QualifierFunctionCall {
      */
     public String toQuery(HashMap<String, Object> queryParameters) {
         StringBuilder sb = new StringBuilder();
-        sb.append(Identifier.quoteIdentifier(relation.schema));
-        sb.append(".").append(Identifier.quoteIdentifier(function.name));
-        sb.append("(%s".formatted(Identifier.quoteIdentifier(relation.name))); // t is the table alias
+        sb.append(quoteIdentifier(relation.schema))
+          .append(".")
+          .append(quoteIdentifier(function.name))
+          .append("(")
+          .append(quoteIdentifier(relation.schema + "_" + relation.name));
 
         if (!parameters.isEmpty()) {
             for (Entry<String, Object> entry : parameters.entrySet()) {

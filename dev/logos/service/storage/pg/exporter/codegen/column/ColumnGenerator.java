@@ -6,8 +6,10 @@ import com.squareup.javapoet.TypeSpec;
 import dev.logos.service.storage.pg.Column;
 import dev.logos.service.storage.pg.Identifier;
 import dev.logos.service.storage.pg.exporter.descriptor.ColumnDescriptor;
+import dev.logos.service.storage.pg.exporter.descriptor.SchemaDescriptor;
 import dev.logos.service.storage.pg.exporter.descriptor.TableDescriptor;
 
+import static dev.logos.service.storage.pg.Identifier.quoteIdentifier;
 import static javax.lang.model.element.Modifier.PUBLIC;
 import static javax.lang.model.element.Modifier.STATIC;
 
@@ -15,7 +17,8 @@ public class ColumnGenerator {
     public ColumnGenerator() {
     }
 
-    public TypeSpec generate(TableDescriptor tableDescriptor,
+    public TypeSpec generate(SchemaDescriptor schemaDescriptor,
+                             TableDescriptor tableDescriptor,
                              ColumnDescriptor columnDescriptor) {
         String columnIdentifier = columnDescriptor.name();
 
@@ -31,8 +34,8 @@ public class ColumnGenerator {
                        .addMethod(MethodSpec.constructorBuilder()
                                             .addStatement("super($S, $S, $S)",
                                                     columnIdentifier,
-                                                    Identifier.quoteIdentifier(tableDescriptor.name()) + '.'
-                                                            + Identifier.quoteIdentifier(columnIdentifier),
+                                                    quoteIdentifier(schemaDescriptor.name() + "_" + tableDescriptor.name()) + '.'
+                                                            + quoteIdentifier(columnIdentifier),
                                                     columnDescriptor.type())
                                             .build())
                        .build();

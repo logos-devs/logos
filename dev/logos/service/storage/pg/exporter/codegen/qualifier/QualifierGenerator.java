@@ -6,6 +6,7 @@ import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeSpec;
 import dev.logos.service.storage.pg.Identifier;
 import dev.logos.service.storage.pg.exporter.descriptor.QualifierDescriptor;
+import dev.logos.service.storage.pg.exporter.descriptor.SchemaDescriptor;
 import dev.logos.service.storage.pg.exporter.descriptor.TableDescriptor;
 
 import javax.lang.model.element.Modifier;

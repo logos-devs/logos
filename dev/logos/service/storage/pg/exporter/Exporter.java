@@ -136,7 +136,7 @@ public class Exporter {
                         tableDescriptor,
                         tableDescriptor.columns()
                                        .stream()
-                                       .map(columnDescriptor -> columnGenerator.generate(tableDescriptor, columnDescriptor))
+                                       .map(columnDescriptor -> columnGenerator.generate(schemaDescriptor, tableDescriptor, columnDescriptor))
                                        .collect(Collectors.toList()),
                         tableDescriptor.columns(),
                         tableDescriptor.qualifierDescriptors()
