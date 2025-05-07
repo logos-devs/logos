@@ -1,4 +1,4 @@
-package dev.logos.client.interceptor;
+package dev.logos.auth.credentials;
 
 import io.grpc.CallCredentials;
 import io.grpc.Metadata;

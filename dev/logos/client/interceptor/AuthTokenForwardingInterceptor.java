@@ -1,6 +1,7 @@
 package dev.logos.client.interceptor;
 
 import com.google.inject.Inject;
+import dev.logos.auth.credentials.AuthTokenCallCredentials;
 import dev.logos.auth.user.User;
 import dev.logos.auth.user.UserContext;
 import io.grpc.*;
