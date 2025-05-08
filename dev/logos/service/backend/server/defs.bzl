@@ -35,7 +35,7 @@ def java_container(name, base, entrypoint_jar, files = None, mtree = None, visib
         entrypoint = [
             "/usr/sbin/dumb-init",
             "--",
-            "/{}/bin/java".format(JDK_PREFIX),
+            "/opt/jdk/bin/java".format(JDK_PREFIX),
             "-jar",
             "/entrypoint_deploy.jar",
         ],

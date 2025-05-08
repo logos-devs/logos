@@ -36,4 +36,6 @@ run --run_under='@logos//tools:bazel-env'
 common --incompatible_allow_tags_propagation
 common --@aspect_rules_ts//ts:skipLibCheck=honor_tsconfig
 
+build --define=deployment_target=dev
+
 try-import %workspace%/.bazelrc.local

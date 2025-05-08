@@ -34,3 +34,23 @@ npm_link_package(
     name = "node_modules/@logos/web",
     src = "@logos//dev/logos/web:npm",
 )
+
+config_setting(
+    name = "deployment_target_dev",
+    values = {"define": "deployment_target=dev"},
+)
+
+config_setting(
+    name = "deployment_target_test",
+    values = {"define": "deployment_target=test"},
+)
+
+config_setting(
+    name = "deployment_target_stage",
+    values = {"define": "deployment_target=stage"},
+)
+
+config_setting(
+    name = "deployment_target_prod",
+    values = {"define": "deployment_target=prod"},
+)
