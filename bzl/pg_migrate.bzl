@@ -40,7 +40,7 @@ psql() {{
 """
 
 def _pg_migrate_impl(ctx):
-    result = ctx.actions.declare_file("migrations.txt")
+    result = ctx.actions.declare_file(ctx.label.name + "_migrations.txt")
     ctx.actions.run_shell(
         command = (psql(ctx) + """
 for migration in {migrations}
@@ -78,7 +78,7 @@ pg_migrate_rule = rule(
 )
 
 def _pg_check_impl(ctx):
-    result = ctx.actions.declare_file("migrations.txt")
+    result = ctx.actions.declare_file(ctx.label.name + "_pg_check.txt")
     ctx.actions.run_shell(
         command = (psql(ctx) + """
 psql -A -t -c "select name from migrations.migration order by id" > $1
