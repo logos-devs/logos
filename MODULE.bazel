@@ -327,15 +327,13 @@ oci.pull(
 )
 use_repo(oci, "envoy_image_old", "envoy_image_old_linux_amd64", "envoy_image_old_linux_arm64")
 oci.pull(
-    name = "distroless_java_container",
-    digest = "sha256:536c8d7926e96d4c769c471a96e8b59a255d7cb1b4ca1ed1bedee7fff1e5d6c8",
-    image = "gcr.io/distroless/java21-debian12:debug",
-    platforms = [
-        "linux/amd64",
-    ],
-    # tag = "latest",
+    name = "corretto_23_java_container",
+    digest = "sha256:0fdabe028141b9ff461908302d5d9d49d2c5c68f6009b1036131a715bec85a35",
+    image = "amazoncorretto:23",
+    platforms = ["linux/amd64"],
+    #tag = "latest",
 )
-use_repo(oci, "distroless_java_container", "distroless_java_container_linux_amd64")
+use_repo(oci, "corretto_23_java_container", "corretto_23_java_container_linux_amd64")
 oci.pull(
     name = "nginx_container",
     digest = "sha256:e06ffa63074d69b12c7f7712d7aebc4cc72d25217e55788d54160a2bd77182f4",

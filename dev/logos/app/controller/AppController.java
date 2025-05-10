@@ -442,6 +442,12 @@ public class AppController {
                                 "name", gatewayName,
                                 "namespace", "default"
                         ),
+                        "healthCheck", Map.of(
+                                "active", Map.of(
+                                        "type", "GRPC",
+                                        "grpc", Map.of()
+                                )
+                        ),
                         "timeout", Map.of(
                                 "http", Map.of(
                                         "requestTimeout", "600s"
@@ -490,7 +496,7 @@ public class AppController {
                 "spec", Map.of(
                         "hostnames", hostnames,
                         "parentRefs", List.of(Map.of("name", gatewayName,
-                                                     "namespace", "default")),
+                                "namespace", "default")),
                         "rules", List.of(
                                 Map.of(
                                         "matches", List.of(Map.of("path", Map.of("type", "PathPrefix", "value", "/"))),
@@ -555,6 +561,7 @@ public class AppController {
                         break;
 
                     case "DELETED":
+                        apps.remove(app.metadata().getUid());
                         eventLogger.log("App deleted");
                         break;
 

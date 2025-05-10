@@ -3938,7 +3938,7 @@
     "@@rules_oci~//oci:extensions.bzl%oci": {
       "general": {
         "bzlTransitiveDigest": "SMEZ99QlrJn7MfpWW1c/g6riJLGYMCyZ2f+wiZYWZZ0=",
-        "usagesDigest": "onGNb1t3QyZOyYX90NAyiUcPLmiX8UoBkEW5VkT6C/o=",
+        "usagesDigest": "uvujPilIr8B5z7hjJYT7SHoKtc8moge/TP1GYvv0zhs=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
         "envVariables": {},
@@ -4013,32 +4013,32 @@
               "reproducible": true
             }
           },
-          "distroless_java_container_linux_amd64": {
+          "corretto_23_java_container_linux_amd64": {
             "bzlFile": "@@rules_oci~//oci/private:pull.bzl",
             "ruleClassName": "oci_pull",
             "attributes": {
               "scheme": "https",
-              "registry": "gcr.io",
-              "repository": "distroless/java21-debian12",
-              "identifier": "sha256:536c8d7926e96d4c769c471a96e8b59a255d7cb1b4ca1ed1bedee7fff1e5d6c8",
+              "registry": "index.docker.io",
+              "repository": "library/amazoncorretto",
+              "identifier": "sha256:0fdabe028141b9ff461908302d5d9d49d2c5c68f6009b1036131a715bec85a35",
               "platform": "linux/amd64",
-              "target_name": "distroless_java_container_linux_amd64",
+              "target_name": "corretto_23_java_container_linux_amd64",
               "bazel_tags": []
             }
           },
-          "distroless_java_container": {
+          "corretto_23_java_container": {
             "bzlFile": "@@rules_oci~//oci/private:pull.bzl",
             "ruleClassName": "oci_alias",
             "attributes": {
-              "target_name": "distroless_java_container",
+              "target_name": "corretto_23_java_container",
               "scheme": "https",
-              "registry": "gcr.io",
-              "repository": "distroless/java21-debian12",
-              "identifier": "sha256:536c8d7926e96d4c769c471a96e8b59a255d7cb1b4ca1ed1bedee7fff1e5d6c8",
+              "registry": "index.docker.io",
+              "repository": "library/amazoncorretto",
+              "identifier": "sha256:0fdabe028141b9ff461908302d5d9d49d2c5c68f6009b1036131a715bec85a35",
               "platforms": {
-                "@@platforms//cpu:x86_64": "@distroless_java_container_linux_amd64"
+                "@@platforms//cpu:x86_64": "@corretto_23_java_container_linux_amd64"
               },
-              "bzlmod_repository": "distroless_java_container",
+              "bzlmod_repository": "corretto_23_java_container",
               "reproducible": true
             }
           },
@@ -4540,8 +4540,8 @@
             "envoy_image_old",
             "envoy_image_old_linux_amd64",
             "envoy_image_old_linux_arm64",
-            "distroless_java_container",
-            "distroless_java_container_linux_amd64",
+            "corretto_23_java_container",
+            "corretto_23_java_container_linux_amd64",
             "nginx_container",
             "distroless_python_image",
             "distroless_python_image_linux_amd64",

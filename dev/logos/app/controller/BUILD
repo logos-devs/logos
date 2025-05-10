@@ -36,7 +36,7 @@ pkg_tar(
 
 oci_image(
     name = "image",
-    base = "@distroless_java_container",
+    base = "@corretto_23_java_container",
     entrypoint = [
         "java",
         "-jar",
