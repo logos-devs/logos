@@ -135,7 +135,6 @@ public class TableStorage<Entity, StorageIdentifier> implements EntityStorage<En
         try (Handle handle = jdbi.open()) {
             Query query = handle.createQuery(queryStr);
             fields.put("id", id);
-            logger.log(Level.SEVERE, "Updating entity %s with fields %s".formatted(relation.quotedIdentifier, fields.toString()));
             relation.bindFields(fields, query);
             return query.mapTo(this.storageIdentifierClass).first();
         } catch (Exception e) {

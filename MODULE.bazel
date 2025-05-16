@@ -136,6 +136,7 @@ maven.install(
 maven.install(
     name = "maven_logos",
     artifacts = MAVEN_SHARED + [
+        "com.google.api.grpc:proto-google-common-protos:2.57.0",
         "com.google.protobuf:protobuf-java:4.26.0",
         "com.squareup:javapoet:1.13.0",
         "com.zaxxer:HikariCP:5.0.1",

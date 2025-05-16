@@ -6,6 +6,7 @@ import dev.logos.service.storage.exceptions.EntityReadException;
 import dev.logos.service.storage.exceptions.EntityWriteException;
 import dev.logos.service.storage.pg.Select;
 import dev.logos.auth.user.NotAuthenticated;
+import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 
 import java.util.stream.Stream;
@@ -43,6 +44,10 @@ public interface EntityStorageService<
             responseObserver.onNext(handler.handle());
             responseObserver.onCompleted();
         } catch (EntityReadException | EntityWriteException | NotAuthenticated e) {
+            responseObserver.onError(
+                    Status.INVALID_ARGUMENT.withCause(e).withDescription(e.getMessage()).asRuntimeException()
+            );
+
             onFailedRequest(responseObserver, e.getMessage(), e);
         }
     }

@@ -29,16 +29,6 @@ public interface Service extends BindableService {
                 Status.INVALID_ARGUMENT.withDescription(msg).asException());
     }
 
-    default void onFailedRequest(
-            StreamObserver<?> responseObserver,
-            String msg,
-            Object obj
-    ) {
-        logger.atError().log(msg, obj);
-        responseObserver.onError(
-                Status.INVALID_ARGUMENT.withDescription(msg).asException());
-    }
-
     default <Req> Optional<Status> guard(Req request) {
         if (!allow(request)) {
             return Optional.of(Status.PERMISSION_DENIED.withDescription("Permission denied"));
