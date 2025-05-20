@@ -71,50 +71,16 @@ public class QualifierProtoGenerator {
 
     /**
      * Generates additions to request messages to include qualifier fields.
+     * With the QualifierCall pattern, we no longer add qualifier fields directly to request messages.
+     * Instead, we use the qualifier_call field that's added in ProtoGenerator.protoListRequestMessage.
      *
      * @param requestType Type of request (List, Update, Delete)
      * @param qualifiers  List of qualifier descriptors
-     * @return Proto field definitions to add to the request message
+     * @return Empty string as we no longer generate direct qualifier fields
      */
     public String generateQualifierFields(String requestType, List<QualifierDescriptor> qualifiers) {
-        if (qualifiers == null || qualifiers.isEmpty()) {
-            return "";
-        }
-
-        StringBuilder fieldsBuilder = new StringBuilder();
-        int startFieldNumber;
-
-        // Determine starting field number based on message type
-        switch (requestType) {
-            case "List" -> startFieldNumber = 3; // After limit and offset
-            case "Update" -> startFieldNumber = 4; // After id, entity, and sparse
-            case "Delete" -> startFieldNumber = 2; // After id
-            default -> {
-                return ""; // Unsupported message type
-            }
-        }
-
-        // Add each qualifier as a field
-        for (QualifierDescriptor qualifier : qualifiers) {
-            String qualifierName = qualifier.getClassName().simpleName();
-            fieldsBuilder.append("  ")
-                         .append("repeated ")
-                         .append(qualifierName)
-                         .append(" ")
-                         .append(camelCasePlural(qualifierName))
-                         .append(" = ")
-                         .append(startFieldNumber++)
-                         .append(";\n");
-        }
-
-        return fieldsBuilder.toString();
-    }
-
-    /**
-     * Converts a PascalCase class name to camelCase.
-     */
-    private String camelCasePlural(String className) {
-        return Character.toLowerCase(className.charAt(0)) + className.substring(1);
+        // We're now using QualifierCall approach, so don't generate direct fields
+        return "";
     }
 
     /**

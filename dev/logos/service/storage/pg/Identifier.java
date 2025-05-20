@@ -26,6 +26,31 @@ public abstract class Identifier {
         }
         return sb.toString();
     }
+    
+    /**
+     * Convert a camel case string to snake case.
+     * Example: "ByEmbeddingDistance" -> "by_embedding_distance"
+     */
+    public static String camelToSnakeCase(String input) {
+        if (input == null || input.isEmpty()) {
+            return input;
+        }
+        
+        StringBuilder sb = new StringBuilder();
+        sb.append(Character.toLowerCase(input.charAt(0)));
+        
+        for (int i = 1; i < input.length(); i++) {
+            char c = input.charAt(i);
+            if (Character.isUpperCase(c)) {
+                sb.append('_');
+                sb.append(Character.toLowerCase(c));
+            } else {
+                sb.append(c);
+            }
+        }
+        
+        return sb.toString();
+    }
 
     @Override
     public String toString() {
