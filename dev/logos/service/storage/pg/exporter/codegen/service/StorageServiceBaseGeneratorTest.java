@@ -46,7 +46,9 @@ public class StorageServiceBaseGeneratorTest {
                    methodString.contains("PersonQualifierCall qualifierCall"));
         assertTrue("Method should contain qualifier switch statement", 
                    methodString.contains("switch (qualifierCall.getQualifierCase())"));
-        assertTrue("Method should contain QUALIFIER_BY_NAME case", 
-                   methodString.contains("case QUALIFIER_BY_NAME:"));
+        
+        // Case name should be uppercase of the snake_case version
+        assertTrue("Method should contain BY_NAME case", 
+                   methodString.contains("case BY_NAME:"));
     }
 }
