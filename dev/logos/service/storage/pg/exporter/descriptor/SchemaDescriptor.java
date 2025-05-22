@@ -65,7 +65,10 @@ public record SchemaDescriptor(
                             ));
                 }
 
-                tableDescriptors.add(new TableDescriptor(table, columnDescriptors, extractQualifiers(connection, schema, table)));
+                List<QualifierDescriptor> qualifiers = extractQualifiers(connection, schema, table);
+                List<DerivedFieldDescriptor> derivedFields = extractDerivedFields(connection, schema, table);
+                
+                tableDescriptors.add(new TableDescriptor(table, columnDescriptors, qualifiers, derivedFields));
             }
 
             schemaDescriptors.add(new SchemaDescriptor(
@@ -115,7 +118,7 @@ public record SchemaDescriptor(
                     String arguments = rs.getString("arguments");
 
                     // Parse arguments to get parameter list (excluding row type)
-                    List<QualifierParameterDescriptor> params = parseParameters(arguments);
+                    List<QualifierParameterDescriptor> params = parseQualifierParameters(arguments);
 
                     qualifiers.add(new QualifierDescriptor(functionName, params));
                 }
@@ -126,9 +129,60 @@ public record SchemaDescriptor(
     }
 
     /**
-     * Parses PostgreSQL function argument string into parameter descriptors.
+     * Extracts derived field functions for the specified table.
      */
-    private static List<QualifierParameterDescriptor> parseParameters(String arguments) {
+    private static List<DerivedFieldDescriptor> extractDerivedFields(
+            Connection connection,
+            String schema,
+            String table) throws SQLException {
+
+        // SQL to find derived field functions by row type parameter
+        String sql = """
+                SELECT 
+                    p.proname as function_name,
+                    pg_catalog.pg_get_function_arguments(p.oid) as arguments,
+                    pg_catalog.pg_get_function_result(p.oid) as return_type
+                FROM 
+                    pg_catalog.pg_proc p
+                    JOIN pg_catalog.pg_namespace n ON p.pronamespace = n.oid
+                    JOIN pg_catalog.pg_type t ON t.typname = ?
+                    JOIN pg_catalog.pg_namespace tn ON t.typnamespace = tn.oid AND tn.nspname = ?
+                WHERE 
+                    n.nspname = ?
+                    AND pg_catalog.pg_get_function_result(p.oid) != 'boolean'
+                    AND array_position(p.proargtypes, t.oid) = 0  -- First parameter is the row type
+                    AND p.proname LIKE 'df_%'  -- Function name starts with df_
+                ORDER BY 
+                    p.proname;
+                """;
+
+        List<DerivedFieldDescriptor> derivedFields = new ArrayList<>();
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, table);       // Table name (type name)
+            stmt.setString(2, schema);      // Schema for the table type
+            stmt.setString(3, schema);      // Schema for the function
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    String functionName = rs.getString("function_name");
+                    String arguments = rs.getString("arguments");
+                    String returnType = rs.getString("return_type");
+
+                    // Parse arguments to get parameter list (excluding row type)
+                    List<DerivedFieldParameterDescriptor> params = parseDerivedFieldParameters(arguments);
+
+                    derivedFields.add(new DerivedFieldDescriptor(functionName, returnType, params));
+                }
+            }
+        }
+
+        return derivedFields;
+    }
+
+    /**
+     * Parses PostgreSQL function argument string into qualifier parameter descriptors.
+     */
+    private static List<QualifierParameterDescriptor> parseQualifierParameters(String arguments) {
         List<QualifierParameterDescriptor> result = new ArrayList<>();
 
         // Arguments string looks like: "row_param schema.table, param1 type1, param2 type2"
@@ -155,6 +209,42 @@ public record SchemaDescriptor(
                 }
 
                 result.add(new QualifierParameterDescriptor(paramName, paramType));
+            }
+        }
+
+        return result;
+    }
+    
+    /**
+     * Parses PostgreSQL function argument string into derived field parameter descriptors.
+     */
+    private static List<DerivedFieldParameterDescriptor> parseDerivedFieldParameters(String arguments) {
+        List<DerivedFieldParameterDescriptor> result = new ArrayList<>();
+
+        // Arguments string looks like: "row_param schema.table, param1 type1, param2 type2"
+        // Split by comma first
+        String[] params = arguments.split(",");
+
+        // Skip first parameter which is the row type
+        for (int i = 1; i < params.length; i++) {
+            String param = params[i].trim();
+
+            // Parameter format: "name type" possibly with default value "= something"
+            // Split by whitespace but only for the first space
+            int firstSpace = param.indexOf(' ');
+            if (firstSpace > 0) {
+                String paramName = param.substring(0, firstSpace).trim();
+
+                // Extract type
+                String paramType = param.substring(firstSpace + 1);
+
+                // Remove default value if present
+                int defaultValueIndex = paramType.indexOf('=');
+                if (defaultValueIndex > 0) {
+                    paramType = paramType.substring(0, defaultValueIndex).trim();
+                }
+
+                result.add(new DerivedFieldParameterDescriptor(paramName, paramType));
             }
         }
 
