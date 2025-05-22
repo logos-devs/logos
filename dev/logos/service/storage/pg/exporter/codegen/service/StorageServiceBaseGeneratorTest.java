@@ -3,6 +3,8 @@ package dev.logos.service.storage.pg.exporter.codegen.service;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
 import dev.logos.service.storage.pg.exporter.codegen.type.StringMapper;
+import dev.logos.service.storage.pg.exporter.descriptor.DerivedFieldDescriptor;
+import dev.logos.service.storage.pg.exporter.descriptor.DerivedFieldParameterDescriptor;
 import dev.logos.service.storage.pg.exporter.descriptor.QualifierDescriptor;
 import dev.logos.service.storage.pg.exporter.descriptor.QualifierParameterDescriptor;
 import dev.logos.service.storage.pg.exporter.descriptor.TableDescriptor;
@@ -28,27 +30,44 @@ public class StorageServiceBaseGeneratorTest {
         // Create the class names we need
         ClassName listRequestClassName = ClassName.bestGuess("ListPersonRequest");
         ClassName qualifierCallClassName = ClassName.bestGuess("PersonQualifierCall");
+        ClassName derivedFieldCallClassName = ClassName.bestGuess("PersonDerivedFieldCall");
         
         // Generate the method
         MethodSpec queryMethodSpec = generator.generateQueryMethod(
-                new TableDescriptor("person", List.of(), List.of(
-                        new QualifierDescriptor("by_name", List.of(
-                                new QualifierParameterDescriptor("name", "string")
-                        ))
-                )),
+                new TableDescriptor("person", List.of(), 
+                        List.of(
+                            new QualifierDescriptor("by_name", List.of(
+                                    new QualifierParameterDescriptor("name", "string")
+                            ))
+                        ),
+                        List.of(
+                            new DerivedFieldDescriptor("get_friends", "string", List.of(
+                                    new DerivedFieldParameterDescriptor("max_count", "string")
+                            ))
+                        )
+                ),
                 listRequestClassName,
                 qualifierCallClassName,
+                derivedFieldCallClassName,
                 packageName);
 
         // Basic verification
         String methodString = queryMethodSpec.toString();
+        
+        // Verify qualifier handling
         assertTrue("Method should contain PersonQualifierCall handling", 
                    methodString.contains("PersonQualifierCall qualifierCall"));
         assertTrue("Method should contain qualifier switch statement", 
                    methodString.contains("switch (qualifierCall.getQualifierCase())"));
-        
-        // Case name should be uppercase of the snake_case version
         assertTrue("Method should contain BY_NAME case", 
                    methodString.contains("case BY_NAME:"));
+                   
+        // Verify derived field handling
+        assertTrue("Method should contain PersonDerivedFieldCall handling", 
+                   methodString.contains("PersonDerivedFieldCall derivedFieldCall"));
+        assertTrue("Method should contain derived field switch statement", 
+                   methodString.contains("switch (derivedFieldCall.getDerivedFieldCase())"));
+        assertTrue("Method should contain GET_FRIENDS case", 
+                   methodString.contains("case GET_FRIENDS:"));
     }
 }

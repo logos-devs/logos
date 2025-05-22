@@ -7,6 +7,8 @@ import dev.logos.service.storage.EntityStorageService;
 import dev.logos.service.storage.pg.Converter;
 import dev.logos.service.storage.pg.Identifier;
 import dev.logos.service.storage.pg.Select;
+import dev.logos.service.storage.pg.exporter.descriptor.DerivedFieldDescriptor;
+import dev.logos.service.storage.pg.exporter.descriptor.DerivedFieldParameterDescriptor;
 import dev.logos.service.storage.pg.exporter.descriptor.QualifierDescriptor;
 import dev.logos.service.storage.pg.exporter.descriptor.QualifierParameterDescriptor;
 import dev.logos.service.storage.pg.exporter.descriptor.SchemaDescriptor;
@@ -73,9 +75,11 @@ public class StorageServiceBaseGenerator {
                 String.format("%s.Delete%sResponse", packageName, tableClassName));
         ClassName entityMessage = ClassName.bestGuess(String.format("%s.%s", packageName, tableClassName));
         
-        // Create table-specific QualifierCall class name for this package
+        // Create table-specific QualifierCall and DerivedFieldCall class names for this package
         ClassName qualifierCallClassName = ClassName.bestGuess(
                 String.format("%s.%sQualifierCall", packageName, tableClassName.simpleName()));
+        ClassName derivedFieldCallClassName = ClassName.bestGuess(
+                String.format("%s.%sDerivedFieldCall", packageName, tableClassName.simpleName()));
 
         TypeSpec.Builder storageServiceClassSpec =
                 TypeSpec.classBuilder(String.format("%sStorageServiceBase", tableClassName))
@@ -118,6 +122,7 @@ public class StorageServiceBaseGenerator {
                                 tableDescriptor,
                                 listRequestMessage,
                                 qualifierCallClassName,
+                                derivedFieldCallClassName,
                                 packageName))
                         .addMethod(makeIdGetter(getRequestMessage, updateRequestMessage, deleteRequestMessage))
 
@@ -274,6 +279,23 @@ public class StorageServiceBaseGenerator {
             ClassName qualifierCallClassName,
             String qualifierJavaPackage
     ) {
+        // For backward compatibility
+        return generateQueryMethod(
+                table,
+                listRequestMessage,
+                qualifierCallClassName,
+                null, // No derived field call class name
+                qualifierJavaPackage
+        );
+    }
+
+    public MethodSpec generateQueryMethod(
+            TableDescriptor table,
+            ClassName listRequestMessage,
+            ClassName qualifierCallClassName,
+            ClassName derivedFieldCallClassName,
+            String packageName
+    ) {
         MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder("query")
                                                      .addAnnotation(Override.class)
                                                      .addModifiers(PUBLIC, FINAL)
@@ -355,6 +377,70 @@ public class StorageServiceBaseGenerator {
             // Add default case for QUALIFIER_NOT_SET
             codeBuilder.addStatement("case QUALIFIER_NOT_SET:");
             codeBuilder.addStatement("// No qualifier set, nothing to do");
+            codeBuilder.addStatement("break");
+            
+            // End switch and for loop
+            codeBuilder.endControlFlow();
+            codeBuilder.endControlFlow();
+        }
+
+        // Process derived field calls if available
+        if (derivedFieldCallClassName != null && !table.derivedFieldDescriptors().isEmpty()) {
+            codeBuilder.add("\n");
+            codeBuilder.beginControlFlow("for ($T derivedFieldCall : listRequest.getDerivedFieldCallList())", derivedFieldCallClassName);
+            codeBuilder.beginControlFlow("switch (derivedFieldCall.getDerivedFieldCase())");
+            
+            // Generate a case for each derived field
+            int index = 0;
+            for (DerivedFieldDescriptor derivedField : table.derivedFieldDescriptors()) {
+                String derivedFieldMessageName = Identifier.snakeToCamelCase(derivedField.name());
+                String derivedFieldSnakeCase = Identifier.camelToSnakeCase(derivedField.name());
+                
+                // The oneof case name will be in snake_case but uppercased
+                String derivedFieldCaseName = derivedFieldSnakeCase.toUpperCase();
+                
+                // Start case block - use index for unique variable names
+                index++;
+                String varName = "derivedField" + index;
+                codeBuilder.addStatement("case $L:", derivedFieldCaseName);
+                codeBuilder.addStatement("var $L = derivedFieldCall.get$L()", varName, derivedFieldMessageName);
+                
+                // Create parameter map
+                String paramMapVar = derivedField.getInstanceVariableName() + "Params";
+                codeBuilder.addStatement(
+                        "$T $L = new $T<>()",
+                        ParameterizedTypeName.get(
+                                ClassName.get(LinkedHashMap.class),
+                                ClassName.get(String.class),
+                                ClassName.get(Object.class)),
+                        paramMapVar,
+                        LinkedHashMap.class
+                );
+                
+                // Add each parameter
+                for (DerivedFieldParameterDescriptor param : derivedField.parameters()) {
+                    String paramName = param.name();
+                    String getterRoot = "get" + Identifier.snakeToCamelCase(
+                        Character.toUpperCase(paramName.charAt(0)) + paramName.substring(1));
+                    
+                    PgTypeMapper mapper = getPgTypeMapper(param.type());
+                    boolean isRepeated = mapper.protoFieldRepeated();
+                    String getterCall = varName + "." + getterRoot + (isRepeated ? "List()" : "()");
+                    
+                    codeBuilder.addStatement("$L.put($S, $L)", paramMapVar, paramName, getterCall);
+                }
+                
+                // Add derived field to builder
+                codeBuilder.addStatement("builder.derivedField($L.$L, $L)", 
+                                        table.getInstanceVariableName(), 
+                                        derivedField.getInstanceVariableName(), 
+                                        paramMapVar);
+                codeBuilder.addStatement("break");
+            }
+            
+            // Add default case for DERIVED_FIELD_NOT_SET
+            codeBuilder.addStatement("case DERIVED_FIELD_NOT_SET:");
+            codeBuilder.addStatement("// No derived field set, nothing to do");
             codeBuilder.addStatement("break");
             
             // End switch and for loop
