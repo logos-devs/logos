@@ -11,6 +11,7 @@ public class Select {
     private final Relation from;
     private final List<Filter> where;
     private final List<QualifierFunctionCall> qualifiers;
+    private final List<DerivedFieldFunctionCall> derivedFields;
     private final Long limit;
     private final Long offset;
     private final List<OrderBy> orderBy;
@@ -27,6 +28,7 @@ public class Select {
         private Relation from;
         private List<Filter> where;
         private final List<QualifierFunctionCall> qualifiers;
+        private final List<DerivedFieldFunctionCall> derivedFields;
         private Long limit;
         private Long offset;
         private final List<OrderBy> orderBy;
@@ -37,6 +39,7 @@ public class Select {
             this.offset = 0L;
             this.where = new ArrayList<>();
             this.qualifiers = new ArrayList<>();
+            this.derivedFields = new ArrayList<>();
             this.orderBy = new ArrayList<>();
         }
 
@@ -102,6 +105,21 @@ public class Select {
             this.qualifiers.add(new QualifierFunctionCall(this.from, qualifier, parameters));
             return this;
         }
+        
+        /**
+         * Adds a derived field function call to compute values in the SELECT clause.
+         *
+         * @param derivedField The derived field function to call
+         * @param parameters Named parameters to pass to the derived field function
+         * @return this builder
+         */
+        public Builder derivedField(DerivedFieldFunction derivedField, LinkedHashMap<String, Object> parameters) {
+            if (this.from == null) {
+                throw new IllegalStateException("Cannot add derived field function call without a FROM clause");
+            }
+            this.derivedFields.add(new DerivedFieldFunctionCall(this.from, derivedField, parameters));
+            return this;
+        }
 
         public Select build() {
             return new Select(this);
@@ -117,6 +135,7 @@ public class Select {
         this.from = builder.from;
         this.where = builder.where;
         this.qualifiers = builder.qualifiers;
+        this.derivedFields = builder.derivedFields;
         this.limit = builder.limit;
         this.offset = builder.offset;
         this.orderBy = builder.orderBy;
@@ -127,6 +146,13 @@ public class Select {
      */
     public List<QualifierFunctionCall> getQualifiers() {
         return qualifiers;
+    }
+    
+    /**
+     * Gets the derived field functions added to this select.
+     */
+    public List<DerivedFieldFunctionCall> getDerivedFields() {
+        return derivedFields;
     }
 
     /**
@@ -140,9 +166,24 @@ public class Select {
         List<String> queryParts = new ArrayList<>();
         queryParts.add("select");
 
+        List<String> selectItems = new ArrayList<>();
+        
+        // Add regular columns
         if (this.columns.length > 0) {
-            queryParts.add(Arrays.stream(this.columns).map(column -> column.quotedIdentifier).collect(Collectors.joining(", ")));
+            selectItems.addAll(Arrays.stream(this.columns)
+                .map(column -> column.quotedIdentifier)
+                .collect(Collectors.toList()));
         }
+        
+        // Add derived field function calls
+        AtomicInteger paramIndex = new AtomicInteger(0);
+        if (!this.derivedFields.isEmpty()) {
+            selectItems.addAll(this.derivedFields.stream()
+                .map(derivedField -> derivedField.toSelectExpression(parameters, paramIndex))
+                .collect(Collectors.toList()));
+        }
+        
+        queryParts.add(String.join(", ", selectItems));
 
         if (this.from != null) {
             queryParts.add(String.format("from %s as %s",

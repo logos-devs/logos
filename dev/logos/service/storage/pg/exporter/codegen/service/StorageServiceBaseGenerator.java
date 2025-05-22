@@ -176,11 +176,21 @@ public class StorageServiceBaseGenerator {
         // entity-level validator that applies to creates and updates
         storageServiceClassSpec.addMethod(makeValidateEntityMethod(entityMessage));
 
-        return JavaFile.builder(packageName, storageServiceClassSpec.build())
+        // Add imports for derived field classes
+        JavaFile.Builder javaFileBuilder = JavaFile.builder(packageName, storageServiceClassSpec.build())
                        .addStaticImport(
                                ClassName.bestGuess(String.format("%s.%s", targetPackage, schemaDescriptor.getClassName())),
-                               tableDescriptor.getInstanceVariableName())
-                       .build();
+                               tableDescriptor.getInstanceVariableName());
+                               
+        // Add imports for DerivedFieldCase enum class if needed
+        if (!tableDescriptor.derivedFieldDescriptors().isEmpty()) {
+            javaFileBuilder.addStaticImport(
+                    ClassName.bestGuess(String.format("%s.%sDerivedFieldCall.DerivedFieldCase", 
+                            packageName, tableClassName.simpleName())), 
+                    "DERIVED_FIELD_NOT_SET");
+        }
+
+        return javaFileBuilder.build();
     }
 
     MethodSpec makeRpcHandler(ClassName requestMessage, ClassName responseMessage, String methodName) {

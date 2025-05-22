@@ -5,6 +5,8 @@ java_library(
     srcs = [
         "Column.java",
         "Converter.java",
+        "DerivedFieldFunction.java",
+        "DerivedFieldFunctionCall.java",
         "Filter.java",
         "Identifier.java",
         "OrderBy.java",

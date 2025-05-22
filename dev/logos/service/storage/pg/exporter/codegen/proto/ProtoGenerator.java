@@ -111,6 +111,9 @@ public class ProtoGenerator {
         
         return """
                message %sQualifierCall {
+                 // This will generate a Java enum QualifierCase with values like:
+                 // QUALIFIER_NOT_SET = 0 (automatically added)
+                 // BY_NAME = 1 (for a field like by_name)
                  oneof qualifier {
                %s  }
                }
@@ -139,6 +142,9 @@ public class ProtoGenerator {
         
         return """
                message %sDerivedFieldCall {
+                 // This will generate a Java enum DerivedFieldCase with values like:
+                 // DERIVED_FIELD_NOT_SET = 0 (automatically added)
+                 // GET_FRIENDS = 1 (for a field like get_friends)
                  oneof derived_field {
                %s  }
                }
@@ -171,6 +177,9 @@ public class ProtoGenerator {
         
         return """
                message %sDerivedFieldValue {
+                 // This will generate a Java enum ValueCase with values like:
+                 // VALUE_NOT_SET = 0 (automatically added)
+                 // BOOL_VALUE = 1 (for a field like bool_value)
                  oneof value {
                %s  }
                }
