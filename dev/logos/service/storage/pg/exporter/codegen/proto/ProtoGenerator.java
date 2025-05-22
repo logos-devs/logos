@@ -12,8 +12,10 @@ import dev.logos.service.storage.pg.exporter.mapper.PgTypeMapper;
 import dev.logos.service.storage.pg.Identifier;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -62,6 +64,9 @@ public class ProtoGenerator {
             for (DerivedFieldDescriptor derivedField : tableDescriptor.derivedFieldDescriptors()) {
                 messages.add(protoDerivedFieldMessage(derivedField));
             }
+            
+            // Generate the derived field value wrapper message with all used return types
+            messages.add(protoDerivedFieldValueMessage(tableSimpleName, tableDescriptor.derivedFieldDescriptors()));
         }
         
         // Add service definition last
@@ -133,6 +138,48 @@ public class ProtoGenerator {
     }
     
     /**
+     * Generate a DerivedFieldValue message for this table that wraps all possible return types
+     * from the derived fields in a oneof.
+     */
+    private String protoDerivedFieldValueMessage(String entityName, List<DerivedFieldDescriptor> derivedFields) {
+        // Get unique return types
+        Set<String> uniqueReturnTypes = getUniqueDerivedFieldReturnTypes(derivedFields);
+        
+        // Generate oneof fields for each unique type
+        StringBuilder oneofBody = new StringBuilder();
+        int fieldNumber = 1;
+        
+        for (String returnType : uniqueReturnTypes) {
+            PgTypeMapper typeMapper = getPgTypeMapper(returnType);
+            String fieldTypeName = typeMapper.protoFieldTypeKeyword();
+            String fieldName = Identifier.camelToSnakeCase(fieldTypeName) + "_value";
+            
+            oneofBody.append(String.format("    %s%s %s = %d;\n", 
+                             typeMapper.protoFieldRepeated() ? "repeated " : "",
+                             fieldTypeName, 
+                             fieldName, 
+                             fieldNumber++));
+        }
+        
+        return """
+               message %sDerivedFieldValue {
+                 oneof value {
+               %s  }
+               }
+               """.formatted(entityName, oneofBody);
+    }
+    
+    /**
+     * Get the set of unique return types used by all derived fields.
+     */
+    private Set<String> getUniqueDerivedFieldReturnTypes(List<DerivedFieldDescriptor> derivedFields) {
+        // Use LinkedHashSet to maintain insertion order for consistent field numbers
+        return derivedFields.stream()
+                .map(DerivedFieldDescriptor::returnType)
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+    }
+    
+    /**
      * Generate a message for a specific qualifier function
      */
     private String protoQualifierMessage(QualifierDescriptor qualifier) {
@@ -189,9 +236,15 @@ public class ProtoGenerator {
                 .map(importPath -> importPath.replaceAll("\"", ""))
                 .collect(Collectors.toList());
         
-        // Add import for google.protobuf.Any if we have derived fields
+        // Add imports for derived field return types
         if (!tableDescriptor.derivedFieldDescriptors().isEmpty()) {
-            importPaths.add("google/protobuf/any.proto");
+            Set<String> uniqueReturnTypes = getUniqueDerivedFieldReturnTypes(tableDescriptor.derivedFieldDescriptors());
+            for (String returnType : uniqueReturnTypes) {
+                PgTypeMapper typeMapper = getPgTypeMapper(returnType);
+                importPaths.addAll(typeMapper.protoImports().stream()
+                        .map(importPath -> importPath.replaceAll("\"", ""))
+                        .collect(Collectors.toList()));
+            }
         }
         
         // Format imports
@@ -326,7 +379,8 @@ public class ProtoGenerator {
         // Add derived fields map if derived fields exist
         if (!derivedFieldDescriptors.isEmpty()) {
             int nextFieldNumber = columnDescriptors.size() + 1;
-            fields += "\n    map<string, google.protobuf.Any> derived_fields = " + nextFieldNumber + ";";
+            fields += "\n    map<string, %sDerivedFieldValue> derived_fields = %d;".formatted(
+                    entityName, nextFieldNumber);
         }
         
         return """
