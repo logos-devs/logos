@@ -9,7 +9,7 @@ import static com.google.protobuf.DescriptorProtos.FieldDescriptorProto.Type.TYP
 
 public class BooleanMapper extends PgTypeMapper {
     public BooleanMapper() {
-        super(List.of("bool"), TYPE_BOOL, "getBoolean");
+        super(List.of("bool", "boolean"), TYPE_BOOL, "getBoolean");
     }
 
     @Override
