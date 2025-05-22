@@ -2,7 +2,6 @@ java_library(
     name = "proto",
     srcs = [
         "ProtoGenerator.java",
-        "QualifierProtoGenerator.java",
     ],
     visibility = [
         "//dev/logos/service/storage/pg/exporter:__subpackages__",

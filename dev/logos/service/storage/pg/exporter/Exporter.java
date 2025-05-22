@@ -11,13 +11,11 @@ import dev.logos.module.ModuleLoader;
 import dev.logos.service.storage.pg.exporter.codegen.column.ColumnGenerator;
 import dev.logos.service.storage.pg.exporter.codegen.module.StorageModuleGenerator;
 import dev.logos.service.storage.pg.exporter.codegen.proto.ProtoGenerator;
-import dev.logos.service.storage.pg.exporter.codegen.proto.QualifierProtoGenerator;
 import dev.logos.service.storage.pg.exporter.codegen.qualifier.QualifierGenerator;
 import dev.logos.service.storage.pg.exporter.codegen.schema.SchemaGenerator;
 import dev.logos.service.storage.pg.exporter.codegen.service.StorageServiceBaseGenerator;
 import dev.logos.service.storage.pg.exporter.codegen.storage.TableStorageGenerator;
 import dev.logos.service.storage.pg.exporter.codegen.table.TableGenerator;
-import dev.logos.service.storage.pg.exporter.descriptor.QualifierDescriptor;
 import dev.logos.service.storage.pg.exporter.descriptor.SchemaDescriptor;
 import dev.logos.service.storage.pg.exporter.descriptor.TableDescriptor;
 import dev.logos.service.storage.pg.exporter.module.ExportModule;
@@ -47,7 +45,6 @@ public class Exporter {
     private final TableGenerator tableGenerator;
     private final ColumnGenerator columnGenerator;
     private final ProtoGenerator protoGenerator;
-    private final QualifierProtoGenerator qualifierProtoGenerator;
     private final QualifierGenerator qualifierGenerator;
     private final StorageServiceBaseGenerator storageServiceBaseGenerator;
     private final StorageModuleGenerator storageModuleGenerator;
@@ -63,7 +60,6 @@ public class Exporter {
             TableGenerator tableGenerator,
             ColumnGenerator columnGenerator,
             ProtoGenerator protoGenerator,
-            QualifierProtoGenerator qualifierProtoGenerator,
             QualifierGenerator qualifierGenerator,
             StorageServiceBaseGenerator storageServiceBaseGenerator,
             StorageModuleGenerator storageModuleGenerator,
@@ -76,7 +72,6 @@ public class Exporter {
         this.tableGenerator = tableGenerator;
         this.columnGenerator = columnGenerator;
         this.protoGenerator = protoGenerator;
-        this.qualifierProtoGenerator = qualifierProtoGenerator;
         this.qualifierGenerator = qualifierGenerator;
         this.storageServiceBaseGenerator = storageServiceBaseGenerator;
         this.storageModuleGenerator = storageModuleGenerator;

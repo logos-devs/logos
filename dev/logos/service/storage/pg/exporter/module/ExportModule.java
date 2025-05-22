@@ -5,7 +5,6 @@ import com.google.inject.multibindings.MapBinder;
 import dev.logos.service.storage.pg.exporter.codegen.column.ColumnGenerator;
 import dev.logos.service.storage.pg.exporter.codegen.module.StorageModuleGenerator;
 import dev.logos.service.storage.pg.exporter.codegen.proto.ProtoGenerator;
-import dev.logos.service.storage.pg.exporter.codegen.proto.QualifierProtoGenerator;
 import dev.logos.service.storage.pg.exporter.codegen.qualifier.QualifierGenerator;
 import dev.logos.service.storage.pg.exporter.codegen.schema.SchemaGenerator;
 import dev.logos.service.storage.pg.exporter.codegen.service.StorageServiceBaseGenerator;
@@ -39,7 +38,6 @@ public class ExportModule extends AbstractModule {
         bind(StorageServiceBaseGenerator.class).asEagerSingleton();
         bind(StorageModuleGenerator.class).asEagerSingleton();
         bind(TableStorageGenerator.class).asEagerSingleton();
-        bind(QualifierProtoGenerator.class).asEagerSingleton();
         bind(QualifierGenerator.class).asEagerSingleton();
 
         MapBinder<String, PgTypeMapper> pgTypeMapperBinder =
