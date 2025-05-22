@@ -197,7 +197,7 @@ public class ProtoGenerator {
         // Format imports
         String imports = importPaths.stream()
                 .distinct()
-                .map("import \"%s\";\"::formatted)
+                .map(path -> "import \"" + path + "\";")
                 .collect(Collectors.joining("\n"));
 
         return """
