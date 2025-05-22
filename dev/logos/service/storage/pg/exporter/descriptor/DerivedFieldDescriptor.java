@@ -5,9 +5,10 @@ import java.util.List;
 /**
  * Descriptor for a PostgreSQL function that can be used as a derived field.
  * A derived field function must:
- * - Return a specific value type
  * - Have its first parameter be the row type of the table
- * - Have additional parameters that can be mapped to proto types
+ * - Be defined in the same schema as the table
+ * - Return any type (including boolean)
+ * - Have optional additional parameters that can be mapped to proto types
  */
 public record DerivedFieldDescriptor(
     String name,

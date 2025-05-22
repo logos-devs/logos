@@ -130,6 +130,10 @@ public record SchemaDescriptor(
 
     /**
      * Extracts derived field functions for the specified table.
+     * Derived field functions:
+     * - Must take the table's row type as their first parameter
+     * - Must be defined in the same schema as the table
+     * - Can return any type (including boolean)
      */
     private static List<DerivedFieldDescriptor> extractDerivedFields(
             Connection connection,
@@ -149,9 +153,7 @@ public record SchemaDescriptor(
                     JOIN pg_catalog.pg_namespace tn ON t.typnamespace = tn.oid AND tn.nspname = ?
                 WHERE 
                     n.nspname = ?
-                    AND pg_catalog.pg_get_function_result(p.oid) != 'boolean'
                     AND array_position(p.proargtypes, t.oid) = 0  -- First parameter is the row type
-                    AND p.proname LIKE 'df_%'  -- Function name starts with df_
                 ORDER BY 
                     p.proname;
                 """;
@@ -160,7 +162,7 @@ public record SchemaDescriptor(
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, table);       // Table name (type name)
             stmt.setString(2, schema);      // Schema for the table type
-            stmt.setString(3, schema);      // Schema for the function
+            stmt.setString(3, schema);      // Schema for the function (same as table schema)
 
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
