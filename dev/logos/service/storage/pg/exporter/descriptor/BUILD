@@ -2,6 +2,8 @@ java_library(
     name = "descriptor",
     srcs = [
         "ColumnDescriptor.java",
+        "DerivedFieldDescriptor.java",
+        "DerivedFieldParameterDescriptor.java",
         "ExportedIdentifier.java",
         "QualifierDescriptor.java",
         "QualifierParameterDescriptor.java",
