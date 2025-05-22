@@ -183,7 +183,10 @@ public class Select {
                 .collect(Collectors.toList()));
         }
         
-        queryParts.add(String.join(", ", selectItems));
+        // Only add select items if there are any
+        if (!selectItems.isEmpty()) {
+            queryParts.add(String.join(", ", selectItems));
+        }
 
         if (this.from != null) {
             queryParts.add(String.format("from %s as %s",
