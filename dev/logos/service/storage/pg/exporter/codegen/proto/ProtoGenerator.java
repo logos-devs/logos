@@ -60,9 +60,16 @@ public class ProtoGenerator {
         if (!tableDescriptor.derivedFieldDescriptors().isEmpty()) {
             messages.add(protoDerivedFieldCallMessage(tableDescriptor));
 
-            // Generate individual derived field messages
+            // Generate individual derived field messages, but only if they don't share a name with a qualifier
+            Set<String> qualifierNames = tableDescriptor.qualifierDescriptors().stream()
+                    .map(QualifierDescriptor::name)
+                    .collect(Collectors.toSet());
+                    
             for (DerivedFieldDescriptor derivedField : tableDescriptor.derivedFieldDescriptors()) {
-                messages.add(protoDerivedFieldMessage(derivedField));
+                // Skip generating message if it shares a name with a qualifier
+                if (!qualifierNames.contains(derivedField.name())) {
+                    messages.add(protoDerivedFieldMessage(derivedField));
+                }
             }
             
             // Generate the derived field value wrapper message with all used return types
@@ -121,6 +128,7 @@ public class ProtoGenerator {
         int fieldNumber = 1;
         
         for (DerivedFieldDescriptor derivedField : tableDescriptor.derivedFieldDescriptors()) {
+            // Use the same message name for both qualifiers and derived fields if they share a function name
             String derivedFieldName = Identifier.snakeToCamelCase(derivedField.name());
             String fieldName = Identifier.camelToSnakeCase(derivedField.name());
             oneofBody.append(String.format("    %s %s = %d;\n", 
