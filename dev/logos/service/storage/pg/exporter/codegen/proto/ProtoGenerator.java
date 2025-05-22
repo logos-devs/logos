@@ -2,6 +2,8 @@ package dev.logos.service.storage.pg.exporter.codegen.proto;
 
 import com.google.inject.Inject;
 import dev.logos.service.storage.pg.exporter.descriptor.ColumnDescriptor;
+import dev.logos.service.storage.pg.exporter.descriptor.DerivedFieldDescriptor;
+import dev.logos.service.storage.pg.exporter.descriptor.DerivedFieldParameterDescriptor;
 import dev.logos.service.storage.pg.exporter.descriptor.QualifierDescriptor;
 import dev.logos.service.storage.pg.exporter.descriptor.QualifierParameterDescriptor;
 import dev.logos.service.storage.pg.exporter.descriptor.SchemaDescriptor;
@@ -39,7 +41,7 @@ public class ProtoGenerator {
                 protoDeleteResponseMessage(tableSimpleName),
                 protoListRequestMessage(tableSimpleName, tableDescriptor),
                 protoListResponseMessage(tableSimpleName),
-                protoEntityMessage(tableSimpleName, tableDescriptor.columns())
+                protoEntityMessage(tableSimpleName, tableDescriptor.columns(), tableDescriptor.derivedFieldDescriptors())
         ));
         
         // Generate qualifier messages if there are qualifiers
@@ -49,6 +51,16 @@ public class ProtoGenerator {
             // Generate individual qualifier messages
             for (QualifierDescriptor qualifier : tableDescriptor.qualifierDescriptors()) {
                 messages.add(protoQualifierMessage(qualifier));
+            }
+        }
+        
+        // Generate derived field messages if there are derived fields
+        if (!tableDescriptor.derivedFieldDescriptors().isEmpty()) {
+            messages.add(protoDerivedFieldCallMessage(tableDescriptor));
+
+            // Generate individual derived field messages
+            for (DerivedFieldDescriptor derivedField : tableDescriptor.derivedFieldDescriptors()) {
+                messages.add(protoDerivedFieldMessage(derivedField));
             }
         }
         
@@ -94,6 +106,33 @@ public class ProtoGenerator {
     }
     
     /**
+     * Generate a DerivedFieldCall message for this table that wraps all derived fields in a oneof.
+     */
+    private String protoDerivedFieldCallMessage(TableDescriptor tableDescriptor) {
+        String tableSimpleName = tableDescriptor.getClassName().simpleName();
+        
+        // Generate the oneof block containing all derived fields
+        StringBuilder oneofBody = new StringBuilder();
+        int fieldNumber = 1;
+        
+        for (DerivedFieldDescriptor derivedField : tableDescriptor.derivedFieldDescriptors()) {
+            String derivedFieldName = Identifier.snakeToCamelCase(derivedField.name());
+            String fieldName = Identifier.camelToSnakeCase(derivedField.name());
+            oneofBody.append(String.format("    %s %s = %d;\n", 
+                             derivedFieldName, 
+                             fieldName, 
+                             fieldNumber++));
+        }
+        
+        return """
+               message %sDerivedFieldCall {
+                 oneof derived_field {
+               %s  }
+               }
+               """.formatted(tableSimpleName, oneofBody);
+    }
+    
+    /**
      * Generate a message for a specific qualifier function
      */
     private String protoQualifierMessage(QualifierDescriptor qualifier) {
@@ -115,15 +154,51 @@ public class ProtoGenerator {
                %s}
                """.formatted(qualifierName, fields);
     }
+    
+    /**
+     * Generate a message for a specific derived field function
+     */
+    private String protoDerivedFieldMessage(DerivedFieldDescriptor derivedField) {
+        String derivedFieldName = Identifier.snakeToCamelCase(derivedField.name());
+        StringBuilder fields = new StringBuilder();
+        int fieldNumber = 1;
+        
+        for (DerivedFieldParameterDescriptor param : derivedField.parameters()) {
+            PgTypeMapper typeMapper = getPgTypeMapper(param.type());
+            fields.append(String.format("  %s%s %s = %d;\n",
+                         typeMapper.protoFieldRepeated() ? "repeated " : "",
+                         typeMapper.protoFieldTypeKeyword(),
+                         param.name(),
+                         fieldNumber++));
+        }
+        
+        return """
+               message %s {
+               %s}
+               """.formatted(derivedFieldName, fields);
+    }
 
     private String protoHeader(String targetPackage, SchemaDescriptor schemaDescriptor, TableDescriptor tableDescriptor) {
         String packageName = targetPackage + "." + schemaDescriptor.name();
-        String imports = tableDescriptor
+        
+        // Collect imports from column types
+        List<String> importPaths = tableDescriptor
                 .columns()
                 .stream()
                 .flatMap(columnDescriptor -> pgColumnTypeMappers.get(columnDescriptor.type()).protoImports().stream())
                 .map(importPath -> importPath.replaceAll("\"", ""))
-                .map("import \"%s\";"::formatted).collect(Collectors.joining("\n"));
+                .collect(Collectors.toList());
+        
+        // Add import for google.protobuf.Any if we have derived fields
+        if (!tableDescriptor.derivedFieldDescriptors().isEmpty()) {
+            importPaths.add("google/protobuf/any.proto");
+        }
+        
+        // Format imports
+        String imports = importPaths.stream()
+                .distinct()
+                .map("import \"%s\";\"::formatted)
+                .collect(Collectors.joining("\n"));
 
         return """
                 syntax = "proto3";
@@ -162,6 +237,11 @@ public class ProtoGenerator {
         // Add qualifier_call field if there are qualifiers
         if (!tableDescriptor.qualifierDescriptors().isEmpty()) {
             builder.append("    repeated %sQualifierCall qualifier_call = 3;\n".formatted(entityName));
+        }
+        
+        // Add derived_field_call field if there are derived fields
+        if (!tableDescriptor.derivedFieldDescriptors().isEmpty()) {
+            builder.append("    repeated %sDerivedFieldCall derived_field_call = 4;\n".formatted(entityName));
         }
 
         builder.append("}\n");
@@ -226,7 +306,8 @@ public class ProtoGenerator {
                 """.formatted(entityName);
     }
 
-    private String protoEntityMessage(String entityName, List<ColumnDescriptor> columnDescriptors) {
+    private String protoEntityMessage(String entityName, List<ColumnDescriptor> columnDescriptors, List<DerivedFieldDescriptor> derivedFieldDescriptors) {
+        // Generate regular column fields
         String fields = String.join("\n    ",
                 IntStream.range(0, columnDescriptors.size())
                          .mapToObj(i -> {
@@ -241,6 +322,13 @@ public class ProtoGenerator {
                              );
                          })
                          .toList());
+        
+        // Add derived fields map if derived fields exist
+        if (!derivedFieldDescriptors.isEmpty()) {
+            int nextFieldNumber = columnDescriptors.size() + 1;
+            fields += "\n    map<string, google.protobuf.Any> derived_fields = " + nextFieldNumber + ";";
+        }
+        
         return """
                 message %s {
                     %s
