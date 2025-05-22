@@ -5,6 +5,7 @@ import com.squareup.javapoet.*;
 import dev.logos.service.storage.EntityStorage;
 import dev.logos.service.storage.EntityStorageService;
 import dev.logos.service.storage.pg.Converter;
+import dev.logos.service.storage.pg.DerivedFieldFunction;
 import dev.logos.service.storage.pg.Identifier;
 import dev.logos.service.storage.pg.Select;
 import dev.logos.service.storage.pg.exporter.descriptor.DerivedFieldDescriptor;
@@ -176,19 +177,23 @@ public class StorageServiceBaseGenerator {
         // entity-level validator that applies to creates and updates
         storageServiceClassSpec.addMethod(makeValidateEntityMethod(entityMessage));
 
-        // Add imports for derived field classes
+        // Add field constants for derived field functions
+        if (!tableDescriptor.derivedFieldDescriptors().isEmpty()) {
+            for (DerivedFieldDescriptor derivedField : tableDescriptor.derivedFieldDescriptors()) {
+                String fieldName = derivedField.getInstanceVariableName() + "Function";
+                storageServiceClassSpec.addField(
+                    FieldSpec.builder(DerivedFieldFunction.class, fieldName, PRIVATE, STATIC, FINAL)
+                            .initializer("new $T($S)", DerivedFieldFunction.class, derivedField.name())
+                            .build()
+                );
+            }
+        }
+
+        // Add imports for field classes
         JavaFile.Builder javaFileBuilder = JavaFile.builder(packageName, storageServiceClassSpec.build())
                        .addStaticImport(
                                ClassName.bestGuess(String.format("%s.%s", targetPackage, schemaDescriptor.getClassName())),
                                tableDescriptor.getInstanceVariableName());
-                               
-        // Add imports for DerivedFieldCase enum class if needed
-        if (!tableDescriptor.derivedFieldDescriptors().isEmpty()) {
-            javaFileBuilder.addStaticImport(
-                    ClassName.bestGuess(String.format("%s.%sDerivedFieldCall.DerivedFieldCase", 
-                            packageName, tableClassName.simpleName())), 
-                    "DERIVED_FIELD_NOT_SET");
-        }
 
         return javaFileBuilder.build();
     }
@@ -405,6 +410,7 @@ public class StorageServiceBaseGenerator {
             for (DerivedFieldDescriptor derivedField : table.derivedFieldDescriptors()) {
                 String derivedFieldMessageName = Identifier.snakeToCamelCase(derivedField.name());
                 String derivedFieldSnakeCase = Identifier.camelToSnakeCase(derivedField.name());
+                String functionFieldName = derivedField.getInstanceVariableName() + "Function";
                 
                 // The oneof case name will be in snake_case but uppercased
                 String derivedFieldCaseName = derivedFieldSnakeCase.toUpperCase();
@@ -440,20 +446,14 @@ public class StorageServiceBaseGenerator {
                     codeBuilder.addStatement("$L.put($S, $L)", paramMapVar, paramName, getterCall);
                 }
                 
-                // Add derived field to builder
-                codeBuilder.addStatement("builder.derivedField($L.$L, $L)", 
-                                        table.getInstanceVariableName(), 
-                                        derivedField.getInstanceVariableName(), 
+                // Add derived field to builder using the DerivedFieldFunction instance
+                codeBuilder.addStatement("builder.derivedField($L, $L)", 
+                                        functionFieldName,
                                         paramMapVar);
                 codeBuilder.addStatement("break");
             }
             
-            // Add default case for DERIVED_FIELD_NOT_SET
-            codeBuilder.addStatement("case DERIVED_FIELD_NOT_SET:");
-            codeBuilder.addStatement("// No derived field set, nothing to do");
-            codeBuilder.addStatement("break");
-            
-            // End switch and for loop
+            // End switch and for loop - No default case needed
             codeBuilder.endControlFlow();
             codeBuilder.endControlFlow();
         }
