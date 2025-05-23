@@ -38,7 +38,7 @@ public class DerivedFieldFunctionCall {
     public String toSelectExpression(Map<String, Object> parameters, AtomicInteger index) {
         String tableAlias = relation.schema + "_" + relation.name;
         
-        String paramsList = parameters.isEmpty() ? "" : ", " + 
+        String paramsList = this.parameters.isEmpty() ? "" : ", " + 
             this.parameters.entrySet().stream()
                 .map(entry -> {
                     String paramName = "p_" + index.getAndIncrement();
