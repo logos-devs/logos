@@ -12,8 +12,11 @@ import org.jdbi.v3.core.statement.Query;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static dev.logos.service.storage.pg.Identifier.snakeToCamelCase;
 import static javax.lang.model.element.Modifier.*;
@@ -59,50 +62,99 @@ public class TableGenerator {
                                                      schemaDescriptor.name()) + "." + Identifier.quoteIdentifier(
                                                      tableDescriptor.name()))
                                      .build())
-                .addMethod(
-                        MethodSpec
-                                .methodBuilder("toProtobuf")
-                                .addModifiers(PUBLIC)
-                                .addException(EntityReadException.class)
-                                .addParameter(ResultSet.class, "resultSet")
-                                .returns(resultProtoClassName)
-                                .addStatement(
-                                        CodeBlock.builder()
-                                                 .beginControlFlow("try")
-                                                 .add(
-                                                         CodeBlock.builder()
-                                                                  .add("$T.Builder builder = $T.newBuilder();\n",
-                                                                          resultProtoClassName,
-                                                                          resultProtoClassName)
-                                                                  .add(columnDescriptors
-                                                                          .stream()
-                                                                          .map(columnDescriptor -> {
-                                                                              String columnName = columnDescriptor.name();
-                                                                              String setterName = snakeToCamelCase(columnDescriptor.name());
-                                                                              PgTypeMapper typeMapper = getPgTypeMapper(columnDescriptor.type());
-                                                                              return CodeBlock.of(
-                                                                                      "if (resultSet.getObject($S) != null) { builder.$N($L); }",
-                                                                                      columnName,
-                                                                                      "%s%s%s".formatted(
-                                                                                              typeMapper.protoFieldRepeated() ? "addAll" : "set",
-                                                                                              setterName.substring(0, 1).toUpperCase(),
-                                                                                              setterName.substring(1)
-                                                                                      ),
-                                                                                      typeMapper.pgToProto(
-                                                                                              CodeBlock.of(
-                                                                                                      "$L resultSet.$N($S)",
-                                                                                                      typeMapper.resultSetFieldCast(),
-                                                                                                      typeMapper.resultSetFieldGetter(),
-                                                                                                      columnName)));
-                                                                          }).collect(CodeBlock.joining("\n")))
-                                                                  .add("return builder.build()")
-                                                                  .build()).build()
-                                )
-                                .nextControlFlow("catch ($T e)", SQLException.class)
-                                .addStatement("throw new $T(e)", EntityReadException.class)
-                                .endControlFlow()
-                                .build())
-                .addTypes(columnClasses);
+                .addTypes(columnClasses); // Include column classes in the table class
+
+        // Add toProtobuf method with derived field support
+        MethodSpec.Builder toProtobufMethod = MethodSpec.methodBuilder("toProtobuf")
+                .addModifiers(PUBLIC)
+                .addException(EntityReadException.class)
+                .addParameter(ResultSet.class, "resultSet")
+                .returns(resultProtoClassName)
+                .beginControlFlow("try");
+
+        // Create builder for the proto message
+        toProtobufMethod.addStatement("$T.Builder builder = $T.newBuilder()",
+                resultProtoClassName,
+                resultProtoClassName);
+
+        // Process regular columns
+        for (ColumnDescriptor columnDescriptor : columnDescriptors) {
+            String columnName = columnDescriptor.name();
+            String setterName = snakeToCamelCase(columnDescriptor.name());
+            PgTypeMapper typeMapper = getPgTypeMapper(columnDescriptor.type());
+
+            toProtobufMethod.beginControlFlow("if (resultSet.getObject($S) != null)", columnName)
+                    .addStatement("builder.$N($L)",
+                            "%s%s%s".formatted(
+                                    typeMapper.protoFieldRepeated() ? "addAll" : "set",
+                                    setterName.substring(0, 1).toUpperCase(),
+                                    setterName.substring(1)
+                            ),
+                            typeMapper.pgToProto(
+                                    CodeBlock.of(
+                                            "$L resultSet.$N($S)",
+                                            typeMapper.resultSetFieldCast(),
+                                            typeMapper.resultSetFieldGetter(),
+                                            columnName)))
+                    .endControlFlow();
+        }
+
+        // Process derived fields if present
+        List<DerivedFieldDescriptor> derivedFields = tableDescriptor.derivedFieldDescriptors();
+        if (!derivedFields.isEmpty()) {
+            ClassName entityName = ClassName.get(targetPackage + "." + schemaDescriptor.name(),
+                    tableDescriptor.getClassName().simpleName());
+            ClassName derivedFieldValueClassName = ClassName.get(targetPackage + "." + schemaDescriptor.name(),
+                    tableDescriptor.getClassName().simpleName() + "DerivedFieldValue");
+
+            // Process each derived field
+            for (DerivedFieldDescriptor derivedField : derivedFields) {
+                String derivedFieldName = derivedField.name();
+                String derivedFieldType = derivedField.returnType();
+                PgTypeMapper typeMapper = getPgTypeMapper(derivedFieldType);
+
+                // Check if the derived field exists in the result set
+                toProtobufMethod.beginControlFlow("try")
+                        .beginControlFlow("if (resultSet.getObject($S) != null)", derivedFieldName);
+
+                // Get the appropriate field name in the DerivedFieldValue based on type
+                String valueFieldName = Identifier.camelToSnakeCase(typeMapper.protoFieldTypeKeyword()) + "_value";
+                // Use proper lowercase 's' for the setter method per protobuf-java convention
+                String setterMethod = "set" + Identifier.snakeToCamelCase(valueFieldName).substring(0, 1).toUpperCase() 
+                        + Identifier.snakeToCamelCase(valueFieldName).substring(1);
+
+                // Create the DerivedFieldValue and set the appropriate oneof field
+                toProtobufMethod.addStatement("$T.Builder valueBuilder = $T.newBuilder()",
+                        derivedFieldValueClassName, derivedFieldValueClassName);
+
+                // Use the type mapper to convert the PostgreSQL value to the proto value
+                toProtobufMethod.addStatement("valueBuilder.$L($L)",
+                        setterMethod,
+                        typeMapper.pgToProto(
+                                CodeBlock.of(
+                                        "$L resultSet.$N($S)",
+                                        typeMapper.resultSetFieldCast(),
+                                        typeMapper.resultSetFieldGetter(),
+                                        derivedFieldName)));
+
+                // Add the derived field value to the map with the field name as the key
+                toProtobufMethod.addStatement("builder.putDerivedFields($S, valueBuilder.build())", derivedFieldName);
+
+                // End the if and try blocks
+                toProtobufMethod.endControlFlow()
+                        .nextControlFlow("catch ($T e)", SQLException.class)
+                        .addStatement("// Ignore errors for derived fields that aren't in the result set")
+                        .endControlFlow();
+            }
+        }
+
+        // Build and return the entity
+        toProtobufMethod.addStatement("return builder.build()")
+                .nextControlFlow("catch ($T e)", SQLException.class)
+                .addStatement("throw new $T(e)", EntityReadException.class)
+                .endControlFlow();
+
+        tableClassBuilder.addMethod(toProtobufMethod.build());
 
         // Relation.getColumns
         MethodSpec.Builder getColumnsMethodBuilder =
@@ -167,6 +219,11 @@ public class TableGenerator {
 
         tableClassBuilder.addTypes(qualifierClasses);
 
+        // Create set of qualifier names to avoid duplicates
+        Set<String> qualifierNames = tableDescriptor.qualifierDescriptors().stream()
+                .map(QualifierDescriptor::name)
+                .collect(Collectors.toSet());
+
         for (QualifierDescriptor qualifierDescriptor : tableDescriptor.qualifierDescriptors()) {
             ClassName qualifierClassName = ClassName.bestGuess(snakeToCamelCase(qualifierDescriptor.name()));
             tableClassBuilder.addField(
@@ -191,6 +248,20 @@ public class TableGenerator {
         }
 
         tableClassBuilder.addMethod(bindFieldsMethod.build());
+
+        // Add derived field classes as static fields - only for those NOT already defined as qualifiers
+        for (DerivedFieldDescriptor derivedField : tableDescriptor.derivedFieldDescriptors()) {
+            // Skip if a qualifier with the same name already exists
+            if (!qualifierNames.contains(derivedField.name())) {
+                tableClassBuilder.addField(
+                        FieldSpec.builder(
+                                ClassName.get("dev.logos.service.storage.pg", "DerivedFieldFunction"), 
+                                derivedField.getInstanceVariableName(), 
+                                PUBLIC, STATIC, FINAL)
+                        .initializer("new dev.logos.service.storage.pg.DerivedFieldFunction($S)", derivedField.name())
+                        .build());
+            }
+        }
 
         return tableClassBuilder.build();
     }
