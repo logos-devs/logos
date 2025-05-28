@@ -1,5 +1,6 @@
 package dev.logos.auth.credentials;
 
+import dev.logos.auth.user.UserContext;
 import io.grpc.CallCredentials;
 import io.grpc.Metadata;
 import io.grpc.Status;
@@ -29,5 +30,10 @@ public class AuthTokenCallCredentials extends CallCredentials {
     @Override
     public void thisUsesUnstableApi() {
         // No-op
+    }
+
+    public static AuthTokenCallCredentials userCredentials() {
+        return new AuthTokenCallCredentials(
+                UserContext.getCurrentUser().orElseThrow().getToken());
     }
 }

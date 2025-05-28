@@ -12,7 +12,6 @@ java_library(
         "//app/auth/cognito/proto:java_proto",
         "@logos//dev/logos/auth/user",
         "@logos//dev/logos/service",
-        "@logos//dev/logos/service/storage:storage_library",
         "@maven_logos//:com_google_code_gson_gson",
         "@maven_logos//:com_google_inject_guice",
         "@maven_logos//:io_grpc_grpc_api",

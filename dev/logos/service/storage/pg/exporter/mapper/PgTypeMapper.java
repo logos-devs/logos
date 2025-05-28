@@ -59,8 +59,8 @@ public abstract class PgTypeMapper {
         // If we get here, there's a mix of array and non-array types
         throw new IllegalStateException(
                 String.format("Inconsistent array types detected in pgTypes %s. Some types are arrays while others are not. " +
-                                      "Please override protoFieldRepeated() in the child class to handle this case.",
-                              pgTypes)
+                                "Please override protoFieldRepeated() in the child class to handle this case.",
+                        pgTypes)
         );
     }
 
@@ -86,9 +86,19 @@ public abstract class PgTypeMapper {
         return innerCall;
     }
 
-    public abstract CodeBlock protoToPg(String queryVariable, String fieldVariable, String fieldName);
+    public CodeBlock protoToPg(String queryVariable, String dbField, String protoVariable, String protoGetter) {
+        return CodeBlock.of("$L.bind($S, $L.$L());",
+                queryVariable, dbField, protoVariable, protoGetter);
+    }
 
     public Set<String> protoImports() {
         return Set.of();
+    }
+
+    public String protoField(String name) {
+        return String.format("%s%s %s",
+                protoFieldRepeated() ? "repeated " : "",
+                protoFieldTypeKeyword(),
+                name);
     }
 }

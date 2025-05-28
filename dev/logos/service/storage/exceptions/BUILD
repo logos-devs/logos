@@ -1,8 +1,5 @@
 java_library(
     name = "exceptions",
-    srcs = [
-        "EntityReadException.java",
-        "EntityWriteException.java",
-    ],
+    srcs = ["StorageException.java"],
     visibility = ["//visibility:public"],
 )

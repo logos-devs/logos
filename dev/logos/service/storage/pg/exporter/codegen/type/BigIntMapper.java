@@ -9,12 +9,12 @@ import static com.google.protobuf.DescriptorProtos.FieldDescriptorProto.Type.TYP
 
 public class BigIntMapper extends PgTypeMapper {
     public BigIntMapper() {
-        super(List.of("bigint"), TYPE_SINT64, "getLong");
+        super(List.of("pg_catalog.int8"), TYPE_SINT64, "getLong");
     }
 
     @Override
-    public CodeBlock protoToPg(String queryVariable, String fieldVariable, String fieldName) {
-        return CodeBlock.of("$L.bind($S, (BigInteger) $L.get($S));",
-                queryVariable, fieldName, fieldVariable, fieldName);
+    public CodeBlock protoToPg(String queryVariable, String dbField, String protoVariable, String protoGetter) {
+        return CodeBlock.of("$L.bind($S, (BigInteger) $L.$L());",
+                queryVariable, dbField, protoVariable, protoGetter);
     }
 }

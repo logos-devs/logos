@@ -2,26 +2,24 @@ package dev.logos.service.storage.pg.exporter.codegen.service;
 
 import com.google.inject.Inject;
 import com.squareup.javapoet.*;
-import dev.logos.service.storage.EntityStorage;
-import dev.logos.service.storage.EntityStorageService;
-import dev.logos.service.storage.pg.Converter;
-import dev.logos.service.storage.pg.DerivedFieldFunction;
-import dev.logos.service.storage.pg.Identifier;
-import dev.logos.service.storage.pg.Select;
-import dev.logos.service.storage.pg.exporter.descriptor.DerivedFieldDescriptor;
-import dev.logos.service.storage.pg.exporter.descriptor.DerivedFieldParameterDescriptor;
-import dev.logos.service.storage.pg.exporter.descriptor.QualifierDescriptor;
-import dev.logos.service.storage.pg.exporter.descriptor.QualifierParameterDescriptor;
-import dev.logos.service.storage.pg.exporter.descriptor.SchemaDescriptor;
-import dev.logos.service.storage.pg.exporter.descriptor.TableDescriptor;
+import dev.logos.service.Service;
+import dev.logos.service.storage.pg.exporter.descriptor.FunctionDescriptor;
 import dev.logos.service.storage.pg.exporter.mapper.PgTypeMapper;
 import dev.logos.service.storage.validator.Validator;
+import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
+import org.jdbi.v3.core.Handle;
+import org.jdbi.v3.core.Jdbi;
+import org.jdbi.v3.core.statement.Query;
+import org.jdbi.v3.core.statement.StatementContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.util.*;
-import java.util.stream.Stream;
+import java.sql.ResultSet;
+import java.util.List;
+import java.util.Map;
 
+import static dev.logos.service.storage.pg.exporter.descriptor.ExportedIdentifier.snakeToCamelCase;
 import static javax.lang.model.element.Modifier.*;
 
 public class StorageServiceBaseGenerator {
@@ -40,430 +38,151 @@ public class StorageServiceBaseGenerator {
         return pgColumnTypeMappers.get(type);
     }
 
-    public JavaFile generate(String targetPackage,
-                             SchemaDescriptor schemaDescriptor,
-                             TableDescriptor tableDescriptor) throws IOException {
-        String packageName = targetPackage + "." + schemaDescriptor.name();
-        ClassName tableClassName = tableDescriptor.getClassName();
-        ClassName entityClassName = ClassName.bestGuess(String.format("%s.%s", packageName, tableClassName));
-        ClassName storageIdentifier = ClassName.get(UUID.class);
-
-        ParameterizedTypeName entityStorageClass = ParameterizedTypeName.get(
-                ClassName.get(EntityStorage.class),
-                entityClassName,
-                storageIdentifier
-        );
-
-        ClassName createRequestMessage = ClassName.bestGuess(
-                String.format("%s.Create%sRequest", packageName, tableClassName));
-        ClassName createResponseMessage = ClassName.bestGuess(
-                String.format("%s.Create%sResponse", packageName, tableClassName));
-        ClassName listRequestMessage = ClassName.bestGuess(
-                String.format("%s.List%sRequest", packageName, tableClassName));
-        ClassName listResponseMessage = ClassName.bestGuess(
-                String.format("%s.List%sResponse", packageName, tableClassName));
-        ClassName getRequestMessage = ClassName.bestGuess(
-                String.format("%s.Get%sRequest", packageName, tableClassName));
-        ClassName getResponseMessage = ClassName.bestGuess(
-                String.format("%s.Get%sResponse", packageName, tableClassName));
-        ClassName updateRequestMessage = ClassName.bestGuess(
-                String.format("%s.Update%sRequest", packageName, tableClassName));
-        ClassName updateResponseMessage = ClassName.bestGuess(
-                String.format("%s.Update%sResponse", packageName, tableClassName));
-        ClassName deleteRequestMessage = ClassName.bestGuess(
-                String.format("%s.Delete%sRequest", packageName, tableClassName));
-        ClassName deleteResponseMessage = ClassName.bestGuess(
-                String.format("%s.Delete%sResponse", packageName, tableClassName));
-        ClassName entityMessage = ClassName.bestGuess(String.format("%s.%s", packageName, tableClassName));
-        
-        // Create table-specific QualifierCall and DerivedFieldCall class names for this package
-        ClassName qualifierCallClassName = ClassName.bestGuess(
-                String.format("%s.%sQualifierCall", packageName, tableClassName.simpleName()));
-        ClassName derivedFieldCallClassName = ClassName.bestGuess(
-                String.format("%s.%sDerivedFieldCall", packageName, tableClassName.simpleName()));
-
-        TypeSpec.Builder storageServiceClassSpec =
-                TypeSpec.classBuilder(String.format("%sStorageServiceBase", tableClassName))
-                        .addModifiers(PUBLIC, ABSTRACT)
-                        .superclass(ClassName.bestGuess(
-                                String.format("%s.%sStorageServiceGrpc.%sStorageServiceImplBase", packageName,
-                                        tableClassName, tableClassName)))
-                        .addField(FieldSpec.builder(entityStorageClass, "storage", PRIVATE)
-                                           .addAnnotation(Inject.class)
-                                           .build())
-                        .addSuperinterface(ParameterizedTypeName.get(
-                                ClassName.get(EntityStorageService.class),
-                                getRequestMessage,
-                                getResponseMessage,
-                                listRequestMessage,
-                                listResponseMessage,
-                                createRequestMessage,
-                                createResponseMessage,
-                                updateRequestMessage,
-                                updateResponseMessage,
-                                deleteRequestMessage,
-                                deleteResponseMessage,
-                                entityMessage,
-                                ClassName.get(UUID.class)
-                        ))
-                        .addMethod(MethodSpec.methodBuilder("getStorage")
-                                             .addAnnotation(Override.class)
-                                             .addModifiers(PUBLIC)
-                                             .returns(entityStorageClass)
-                                             .addStatement("return this.storage")
-                                             .build())
-                        .addMethod(makeRpcHandler(getRequestMessage, getResponseMessage, "get"))
-                        .addMethod(makeRpcHandler(listRequestMessage, listResponseMessage, "list"))
-                        .addMethod(makeRpcHandler(createRequestMessage, createResponseMessage, "create"))
-                        .addMethod(makeRpcHandler(updateRequestMessage, updateResponseMessage, "update"))
-                        .addMethod(makeRpcHandler(deleteRequestMessage, deleteResponseMessage, "delete"))
-                        .addMethod(makePreSaveMethod(entityMessage))
-                        .addMethod(makeEntityGetter(entityMessage, getRequestMessage, createRequestMessage, updateRequestMessage))
-                        .addMethod(generateQueryMethod(
-                                tableDescriptor,
-                                listRequestMessage,
-                                qualifierCallClassName,
-                                derivedFieldCallClassName,
-                                packageName))
-                        .addMethod(makeIdGetter(getRequestMessage, updateRequestMessage, deleteRequestMessage))
-
-                        // GetResponse response(Stream<Entity>, GetRequest)
-                        .addMethod(MethodSpec.methodBuilder("response")
-                                             .addModifiers(PUBLIC)
-                                             .returns(TypeVariableName.get("Response"))
-                                             .addTypeVariable(TypeVariableName.get("Request"))
-                                             .addTypeVariable(TypeVariableName.get("Response"))
-                                             .addParameter(
-                                                     ParameterizedTypeName.get(ClassName.get(Stream.class),
-                                                             entityMessage),
-                                                     "%sStream".formatted(tableDescriptor.getInstanceVariableName()))
-                                             .addParameter(TypeVariableName.get("Request"), "request")
-                                             .addStatement("""
-                                                             return switch(request) {
-                                                                 case $T r -> ($T)$T.newBuilder().setEntity($LStream.findFirst().get()).build();
-                                                                 case $T r -> ($T)$T.newBuilder().addAllResults($LStream.toList()).build();
-                                                                 default -> throw new $T("Unexpected request type");
-                                                             }
-                                                             """,
-                                                     getRequestMessage,
-                                                     TypeVariableName.get("Response"),
-                                                     getResponseMessage,
-                                                     tableDescriptor.getInstanceVariableName(),
-                                                     listRequestMessage,
-                                                     TypeVariableName.get("Response"),
-                                                     listResponseMessage,
-                                                     tableDescriptor.getInstanceVariableName(),
-                                                     RuntimeException.class).build())
-                        .addMethod(
-                                MethodSpec.methodBuilder("response")
-                                          .addAnnotation(Override.class)
-                                          .addModifiers(PUBLIC)
-                                          .addTypeVariable(TypeVariableName.get("Request"))
-                                          .addTypeVariable(TypeVariableName.get("Response"))
-                                          .returns(TypeVariableName.get("Response"))
-                                          .addParameter(UUID.class, "id")
-                                          .addParameter(TypeVariableName.get("Request"), "request")
-                                          .beginControlFlow("if (request instanceof $T)", createRequestMessage)
-                                          .addStatement("return (Response) $T.newBuilder().setId($T.uuidToBytestring(id)).build()", createResponseMessage, Converter.class)
-                                          .endControlFlow()
-                                          .addStatement("return null")
-                                          .build());
-
-        storageServiceClassSpec.addMethod(makeValidateRequestMethod(listRequestMessage, false))
-                               .addMethod(makeValidateRequestMethod(createRequestMessage, true))
-                               .addMethod(makeValidateRequestMethod(updateRequestMessage, true))
-                               .addMethod(makeValidateRequestMethod(deleteRequestMessage, false));
-
-        // entity-level validator that applies to creates and updates
-        storageServiceClassSpec.addMethod(makeValidateEntityMethod(entityMessage));
-
-        // Add field constants for derived field functions
-        if (!tableDescriptor.derivedFieldDescriptors().isEmpty()) {
-            for (DerivedFieldDescriptor derivedField : tableDescriptor.derivedFieldDescriptors()) {
-                String fieldName = derivedField.getInstanceVariableName() + "Function";
-                storageServiceClassSpec.addField(
-                    FieldSpec.builder(DerivedFieldFunction.class, fieldName, PRIVATE, STATIC, FINAL)
-                            .initializer("new $T($S)", DerivedFieldFunction.class, derivedField.name())
-                            .build()
-                );
-            }
-        }
-
-        // Add imports for field classes
-        JavaFile.Builder javaFileBuilder = JavaFile.builder(packageName, storageServiceClassSpec.build())
-                       .addStaticImport(
-                               ClassName.bestGuess(String.format("%s.%s", targetPackage, schemaDescriptor.getClassName())),
-                               tableDescriptor.getInstanceVariableName());
-
-        return javaFileBuilder.build();
-    }
-
-    MethodSpec makeRpcHandler(ClassName requestMessage, ClassName responseMessage, String methodName) {
-        return MethodSpec.methodBuilder(methodName)
-                         .addAnnotation(Override.class)
-                         .addModifiers(PUBLIC)
-                         .addParameter(requestMessage, "request")
-                         .addParameter(makeStreamObserverType(responseMessage), "responseObserver")
-                         .addStatement("$T.super.$L(request, responseObserver)",
-                                 EntityStorageService.class,
-                                 methodName)
-                         .build();
-    }
-
-    private ParameterizedTypeName makeStreamObserverType(ClassName responseMessage) {
-        return ParameterizedTypeName.get(ClassName.get(StreamObserver.class), responseMessage);
-    }
-
-    MethodSpec makePreSaveMethod(ClassName entityMessage) {
-        return MethodSpec.methodBuilder("preSave")
-                         .addModifiers(PUBLIC)
-                         .addParameter(entityMessage, "entity")
-                         .returns(entityMessage)
-                         .addStatement("return $L", "entity")
-                         .build();
-    }
-
-    private MethodSpec makeEntityGetter(ClassName entityMessage, ClassName getRequestMessage, ClassName createRequestMessage, ClassName updateRequestMessage) {
-        TypeVariableName requestType = TypeVariableName.get("Request");
-        return MethodSpec.methodBuilder("entity")
-                         .addModifiers(PUBLIC)
-                         .addTypeVariable(requestType)
-                         .addParameter(requestType, "request")
-                         .returns(entityMessage)
-                         .beginControlFlow("if (request instanceof $T)", createRequestMessage)
-                         .addStatement("return preSave((($T)request).getEntity())", createRequestMessage)
-                         .endControlFlow()
-                         .beginControlFlow("if (request instanceof $T)", updateRequestMessage)
-                         .addStatement("return preSave((($T)request).getEntity())", updateRequestMessage)
-                         .endControlFlow()
-                         .addStatement("throw new $T($S)", RuntimeException.class, "Unexpected request type")
-                         .build();
-    }
-
-    // <Request> StorageIdentifier id(Request request);
-    private MethodSpec makeIdGetter(
-            ClassName getRequestMessage,
-            ClassName updateRequestMessage,
-            ClassName deleteRequestMessage) {
-
-        TypeVariableName requestType = TypeVariableName.get("Request");
-
-        return MethodSpec.methodBuilder("id")
-                         .addModifiers(PUBLIC)
-                         .addTypeVariable(requestType)
-                         .addParameter(requestType, "request")
-                         .returns(Object.class)
-                         .addStatement("""
-                                         return switch (request) {
-                                             case $T getRequest -> getRequest.getId();
-                                             case $T updateRequest -> updateRequest.getId();
-                                             case $T deleteRequest -> deleteRequest.getId();
-                                             default -> throw new $T($S);
-                                         }
-                                         """,
-                                 getRequestMessage,
-                                 updateRequestMessage,
-                                 deleteRequestMessage,
-                                 RuntimeException.class,
-                                 "Unexpected request type"
-                         ).build();
-    }
-
-    private MethodSpec makeValidateRequestMethod(ClassName requestMessage, boolean validateEntity) {
+    private MethodSpec makeValidateRequestMethod(ClassName requestMessage) {
         MethodSpec.Builder method = MethodSpec.methodBuilder("validate")
                                               .addModifiers(PROTECTED)
                                               .addParameter(requestMessage, "request")
                                               .addParameter(ClassName.get(Validator.class), "validator");
-        if (validateEntity) {
-            method.addStatement("validate(entity(request), validator);");
-        }
         return method.build();
     }
 
-    private MethodSpec makeValidateEntityMethod(ClassName requestMessage) {
-        return MethodSpec.methodBuilder("validate")
-                         .addModifiers(PROTECTED)
-                         .addParameter(requestMessage, "request")
-                         .addParameter(ClassName.get(Validator.class), "validator")
-                         .build();
-    }
+    /*
+    protected void message_list(
+        MessageListRequest request,
+        StreamObserver<MessageListResponse> responseObserver
+       ) {
+               String sqlQuery = "...";
 
-    public MethodSpec generateQueryMethod(
-            TableDescriptor table,
-            ClassName listRequestMessage,
-            ClassName qualifierCallClassName,
-            String qualifierJavaPackage
-    ) {
-        // For backward compatibility
-        return generateQueryMethod(
-                table,
-                listRequestMessage,
-                qualifierCallClassName,
-                null, // No derived field call class name
-                qualifierJavaPackage
+               try {
+                   Handle handle = jdbi.open();
+                   Query query = handle.createQuery(sqlQuery);
+
+                   // bindFields(...)
+
+                   return query.map((ResultSet rs, StatementContext ctx) -> {
+                       // mapResultFields(...)
+                   })
+                   .stream()
+                   .onClose(handle::close);
+               } catch (SQLException e) {
+                   logger.log(Level.SEVERE, "Failed to execute query %s".formatted(sqlQuery), e);
+                   responseObserver.onError(
+                           Status.INTERNAL.withDescription("Failed to execute query")
+                                         .withCause(e)
+                                         .asRuntimeException()
+                   );
+               }
+         }
+     */
+    MethodSpec makeRpcHandler(FunctionDescriptor functionDescriptor, ClassName requestMessage, ClassName responseMessage) {
+        MethodSpec.Builder rpcHandlerBuilder =
+                MethodSpec.methodBuilder(functionDescriptor.rpcMethodName())
+                          .addModifiers(PUBLIC)
+                          .addParameter(requestMessage, "request")
+                          .addParameter(ParameterizedTypeName.get(ClassName.get(StreamObserver.class), responseMessage),
+                                  "responseObserver")
+                          .addStatement("$T handle = jdbi.open()", Handle.class)
+                          .addStatement("$T query = handle.createQuery($S)", Query.class, functionDescriptor.toSql());
+
+        functionDescriptor.parameters().forEach(functionParameterDescriptor -> {
+            String parameterName = functionParameterDescriptor.name();
+            String parameterType = functionParameterDescriptor.type();
+            PgTypeMapper pgTypeMapper = getPgTypeMapper(parameterType);
+
+            rpcHandlerBuilder
+                    .addStatement(
+                            pgTypeMapper.protoToPg(
+                                    "query",
+                                    parameterName,
+                                    "request",
+                                    "get" + functionParameterDescriptor.protoMethodName() + (pgTypeMapper.protoFieldRepeated() ? "List" : "")));
+        });
+
+        rpcHandlerBuilder
+                .beginControlFlow("query.map(($T resultSet, $T ctx) -> ", ResultSet.class, StatementContext.class)
+                .addStatement("$T.Builder builder = $T.newBuilder()", responseMessage, responseMessage)
+                .beginControlFlow("try");
+
+        functionDescriptor.returnType().forEach(
+                functionParameterDescriptor -> {
+                    String fieldName = functionParameterDescriptor.name();
+                    String fieldType = functionParameterDescriptor.type();
+                    String protoMethodName = functionParameterDescriptor.protoMethodName();
+
+                    PgTypeMapper typeMapper = getPgTypeMapper(fieldType);
+                    String setterName = "%s%s".formatted(
+                            typeMapper.protoFieldRepeated() ? "addAll" : "set",
+                            protoMethodName
+                    );
+
+                    rpcHandlerBuilder.beginControlFlow("if (resultSet.getObject($S) != null)", fieldName)
+                                     .addStatement("builder.$N($L)",
+                                             setterName
+                                             ,
+                                             typeMapper.pgToProto(
+                                                     CodeBlock.of(
+                                                             "$L resultSet.$N($S)",
+                                                             typeMapper.resultSetFieldCast(),
+                                                             typeMapper.resultSetFieldGetter(),
+                                                             fieldName)))
+                                     .endControlFlow();
+                }
         );
+
+        rpcHandlerBuilder
+                .addStatement("return builder.build()")
+                .endControlFlow()
+                .beginControlFlow("catch ($T e)", Throwable.class)
+                .addStatement("logger.atError().setCause(e).addKeyValue(\"query\", $S).log(\"Failed to map result set\")",
+                        functionDescriptor.toSql())
+                .addStatement("""
+                        responseObserver.onError($T.INTERNAL.withDescription("Failed to execute query")
+                                        .withCause(e)
+                                        .asRuntimeException())
+                        """, Status.class)
+                .addStatement("throw new $T(e)", RuntimeException.class)
+                .endControlFlow()
+                .endControlFlow()
+                .addStatement(").stream().forEach(responseObserver::onNext)")
+                .addStatement("query.close()")
+                .addStatement("handle.close()")
+                .addStatement("responseObserver.onCompleted()");
+
+        return rpcHandlerBuilder.build();
     }
 
-    public MethodSpec generateQueryMethod(
-            TableDescriptor table,
-            ClassName listRequestMessage,
-            ClassName qualifierCallClassName,
-            ClassName derivedFieldCallClassName,
-            String packageName
-    ) {
-        MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder("query")
-                                                     .addAnnotation(Override.class)
-                                                     .addModifiers(PUBLIC, FINAL)
-                                                     .addTypeVariable(TypeVariableName.get("Request"))
-                                                     .addParameter(TypeVariableName.get("Request"), "request")
-                                                     .returns(ClassName.get("dev.logos.service.storage.pg", "Select.Builder"));
+    public TypeSpec generate(String targetPackage, String serviceName, List<FunctionDescriptor> functionDescriptors) {
+        System.err.println(this.pgColumnTypeMappers.keySet());
+        ClassName serviceClassName = ClassName.bestGuess(String.format("%s.%s", targetPackage, serviceName));
 
-        CodeBlock.Builder codeBuilder = CodeBlock.builder()
-                                                 .addStatement("$T builder = $T.builder().from($L)",
-                                                         ClassName.get("dev.logos.service.storage.pg", "Select.Builder"),
-                                                         ClassName.get("dev.logos.service.storage.pg", "Select"),
-                                                         table.getInstanceVariableName());
+        TypeSpec.Builder storageServiceBuilder =
+                TypeSpec.classBuilder(String.format("%sBase", serviceClassName.simpleName()))
+                        .addModifiers(PUBLIC, ABSTRACT)
+                        .superclass(ClassName.bestGuess(
+                                String.format("%s.%sGrpc.%sImplBase", targetPackage,
+                                        serviceClassName.simpleName(),
+                                        serviceClassName.simpleName())))
+                        .addSuperinterface(Service.class)
+                        .addMethod(MethodSpec.constructorBuilder()
+                                             .addModifiers(PUBLIC)
+                                             .build())
+                        .addField(FieldSpec.builder(Jdbi.class, "jdbi", PROTECTED)
+                                           .addAnnotation(Inject.class)
+                                           .build())
+                        .addField(FieldSpec.builder(Logger.class, "logger", FINAL)
+                                           .initializer("$T.getLogger($TBase.class)", LoggerFactory.class, serviceClassName)
+                                           .build());
 
-        codeBuilder.beginControlFlow("if (request instanceof $T listRequest)", listRequestMessage);
-        
-        // Add pagination handling
-        codeBuilder.beginControlFlow("if (listRequest.hasLimit())");
-        codeBuilder.addStatement("builder.limit(listRequest.getLimit())");
-        codeBuilder.endControlFlow();
-        codeBuilder.add("\n");
-        codeBuilder.beginControlFlow("if (listRequest.hasOffset())");
-        codeBuilder.addStatement("builder.offset(listRequest.getOffset())");
-        codeBuilder.endControlFlow();
-        codeBuilder.add("\n");
+        for (FunctionDescriptor functionDescriptor : functionDescriptors) {
+            String functionName = snakeToCamelCase(functionDescriptor.name());
+            ClassName requestMessage = ClassName.bestGuess(String.format("%s.%sRequest", targetPackage, functionName));
+            ClassName responseMessage = ClassName.bestGuess(String.format("%s.%sResponse", targetPackage, functionName));
 
-        // Process qualifiers using the QualifierCall wrapper
-        if (!table.qualifierDescriptors().isEmpty()) {
-            codeBuilder.beginControlFlow("for ($T qualifierCall : listRequest.getQualifierCallList())", qualifierCallClassName);
-            codeBuilder.beginControlFlow("switch (qualifierCall.getQualifierCase())");
-            
-            // Generate a case for each qualifier
-            int index = 0;
-            for (QualifierDescriptor qualifier : table.qualifierDescriptors()) {
-                String qualifierMessageName = Identifier.snakeToCamelCase(qualifier.name());
-                String qualifierSnakeCase = Identifier.camelToSnakeCase(qualifier.name());
-                
-                // The oneof case name will be in snake_case but uppercased
-                String qualifierCaseName = qualifierSnakeCase.toUpperCase();
-                
-                // Start case block - use index for unique variable names
-                index++;
-                String varName = "qualifier" + index;
-                codeBuilder.addStatement("case $L:", qualifierCaseName);
-                codeBuilder.addStatement("var $L = qualifierCall.get$L()", varName, qualifierMessageName);
-                
-                // Create parameter map
-                String paramMapVar = qualifier.getInstanceVariableName() + "Params";
-                codeBuilder.addStatement(
-                        "$T $L = new $T<>()",
-                        ParameterizedTypeName.get(
-                                ClassName.get(LinkedHashMap.class),
-                                ClassName.get(String.class),
-                                ClassName.get(Object.class)),
-                        paramMapVar,
-                        LinkedHashMap.class
-                );
-                
-                // Add each parameter
-                for (QualifierParameterDescriptor param : qualifier.parameters()) {
-                    String paramName = param.name();
-                    String getterRoot = "get" + Identifier.snakeToCamelCase(
-                        Character.toUpperCase(paramName.charAt(0)) + paramName.substring(1));
-                    
-                    PgTypeMapper mapper = getPgTypeMapper(param.type());
-                    boolean isRepeated = mapper.protoFieldRepeated();
-                    String getterCall = varName + "." + getterRoot + (isRepeated ? "List()" : "()");
-                    
-                    codeBuilder.addStatement("$L.put($S, $L)", paramMapVar, paramName, getterCall);
-                }
-                
-                // Add qualifier to builder
-                codeBuilder.addStatement("builder.qualifier($L.$L, $L)", 
-                                        table.getInstanceVariableName(), 
-                                        qualifier.getInstanceVariableName(), 
-                                        paramMapVar);
-                codeBuilder.addStatement("break");
-            }
-            
-            // Add default case for QUALIFIER_NOT_SET
-            codeBuilder.addStatement("case QUALIFIER_NOT_SET:");
-            codeBuilder.addStatement("// No qualifier set, nothing to do");
-            codeBuilder.addStatement("break");
-            
-            // End switch and for loop
-            codeBuilder.endControlFlow();
-            codeBuilder.endControlFlow();
+            storageServiceBuilder.addMethod(makeRpcHandler(functionDescriptor, requestMessage, responseMessage))
+                                 .addMethod(makeValidateRequestMethod(requestMessage));
+
         }
 
-        // Process derived field calls if available
-        if (derivedFieldCallClassName != null && !table.derivedFieldDescriptors().isEmpty()) {
-            codeBuilder.add("\n");
-            codeBuilder.beginControlFlow("for ($T derivedFieldCall : listRequest.getDerivedFieldCallList())", derivedFieldCallClassName);
-            codeBuilder.beginControlFlow("switch (derivedFieldCall.getDerivedFieldCase())");
-            
-            // Generate a case for each derived field
-            int index = 0;
-            for (DerivedFieldDescriptor derivedField : table.derivedFieldDescriptors()) {
-                String derivedFieldMessageName = Identifier.snakeToCamelCase(derivedField.name());
-                String derivedFieldSnakeCase = Identifier.camelToSnakeCase(derivedField.name());
-                String functionFieldName = derivedField.getInstanceVariableName() + "Function";
-                
-                // The oneof case name will be in snake_case but uppercased
-                String derivedFieldCaseName = derivedFieldSnakeCase.toUpperCase();
-                
-                // Start case block - use index for unique variable names
-                index++;
-                String varName = "derivedField" + index;
-                codeBuilder.addStatement("case $L:", derivedFieldCaseName);
-                codeBuilder.addStatement("var $L = derivedFieldCall.get$L()", varName, derivedFieldMessageName);
-                
-                // Create parameter map
-                String paramMapVar = derivedField.getInstanceVariableName() + "Params";
-                codeBuilder.addStatement(
-                        "$T $L = new $T<>()",
-                        ParameterizedTypeName.get(
-                                ClassName.get(LinkedHashMap.class),
-                                ClassName.get(String.class),
-                                ClassName.get(Object.class)),
-                        paramMapVar,
-                        LinkedHashMap.class
-                );
-                
-                // Add each parameter
-                for (DerivedFieldParameterDescriptor param : derivedField.parameters()) {
-                    String paramName = param.name();
-                    String getterRoot = "get" + Identifier.snakeToCamelCase(
-                        Character.toUpperCase(paramName.charAt(0)) + paramName.substring(1));
-                    
-                    PgTypeMapper mapper = getPgTypeMapper(param.type());
-                    boolean isRepeated = mapper.protoFieldRepeated();
-                    String getterCall = varName + "." + getterRoot + (isRepeated ? "List()" : "()");
-                    
-                    codeBuilder.addStatement("$L.put($S, $L)", paramMapVar, paramName, getterCall);
-                }
-                
-                // Add derived field to builder using the DerivedFieldFunction instance
-                codeBuilder.addStatement("builder.derivedField($L, $L)", 
-                                        functionFieldName,
-                                        paramMapVar);
-                codeBuilder.addStatement("break");
-            }
-            
-            // End switch and for loop - No default case needed
-            codeBuilder.endControlFlow();
-            codeBuilder.endControlFlow();
-        }
-
-        codeBuilder.endControlFlow(); // End if request instanceof ListRequest
-
-        // Let subclasses modify the builder
-        codeBuilder.addStatement("builder = query(request, builder)");
-        codeBuilder.add("return builder;\n");
-
-        return methodBuilder.addCode(codeBuilder.build()).build();
+        return storageServiceBuilder.build();
     }
 }

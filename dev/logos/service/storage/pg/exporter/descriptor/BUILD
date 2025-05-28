@@ -1,14 +1,9 @@
 java_library(
     name = "descriptor",
     srcs = [
-        "ColumnDescriptor.java",
-        "DerivedFieldDescriptor.java",
-        "DerivedFieldParameterDescriptor.java",
         "ExportedIdentifier.java",
-        "QualifierDescriptor.java",
-        "QualifierParameterDescriptor.java",
-        "SchemaDescriptor.java",
-        "TableDescriptor.java",
+        "FunctionDescriptor.java",
+        "FunctionParameterDescriptor.java",
     ],
     visibility = ["//visibility:public"],
     deps = [

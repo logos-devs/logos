@@ -3,8 +3,6 @@ java_library(
     srcs = ["ExportModule.java"],
     visibility = ["//dev/logos/service/storage/pg:__subpackages__"],
     deps = [
-        "//dev/logos/service/storage/pg",
-        "//dev/logos/service/storage/pg/exporter/codegen",
         "//dev/logos/service/storage/pg/exporter/codegen/proto",
         "//dev/logos/service/storage/pg/exporter/codegen/service",
         "//dev/logos/service/storage/pg/exporter/codegen/type",

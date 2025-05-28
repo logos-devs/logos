@@ -10,13 +10,13 @@ def _schema_export_impl(ctx):
     ctx.actions.run_shell(
         # required to pass db connection params to exporter's DatabaseModule
         use_default_shell_env = True,
-        command = """{exporter} -- json {bin_dir} {output_package} '{tables}'
+        command = """{exporter} -- json {bin_dir} {output_package} '{functions}'
 """.format(
             bin_dir = ctx.bin_dir.path,
             exporter = ctx.executable.exporter.path,
             output_package = ctx.build_file_path.replace("/BUILD", "").replace("/", "."),
             schema_export_json = schema_export_json.path,
-            tables = json.encode(ctx.attr.tables),
+            functions = json.encode(ctx.attr.functions),
         ),
         # forces a dependency on migrations
         inputs = depset(transitive = [tool_inputs] + [migration[DefaultInfo].files for migration in ctx.attr.migrations]),
@@ -37,14 +37,14 @@ schema_export_rule = rule(
         "exporter": attr.label(executable = True, cfg = "exec"),
         "migrations": attr.label_list(allow_files = False),
         "deps": attr.label_list(allow_files = True),
-        "tables": attr.string_list_dict(mandatory = True),
+        "functions": attr.string_list_dict(mandatory = True),
     },
     toolchains = [
         "@bazel_tools//tools/jdk:toolchain_type",
     ],
 )
 
-def schema_export(name, tables, visibility = None, mappers = None, migrations = None):
+def schema_export(name, functions, visibility = None, mappers = None, migrations = None):
     native.java_binary(
         name = name + "_exporter",
         main_class = "dev.logos.service.storage.pg.exporter.Exporter",
@@ -53,7 +53,7 @@ def schema_export(name, tables, visibility = None, mappers = None, migrations = 
 
     schema_export_rule(
         name = name,
-        tables = tables,
+        functions = functions,
         tags = [
             "external",
             "no-remote",
@@ -66,9 +66,8 @@ def schema_export(name, tables, visibility = None, mappers = None, migrations = 
 
 def _schema_storage_proto_impl(ctx):
     outputs = []
-    for schema in ctx.attr.tables.keys():
-        for table in ctx.attr.tables[schema]:
-            outputs.append(ctx.actions.declare_file("%s_%s.proto" % (schema, table)))
+    for service_name in ctx.attr.functions.keys():
+        outputs.append(ctx.actions.declare_file("%s.proto" % service_name))
 
     tool_inputs, tool_input_manifests = ctx.resolve_tools(tools = [ctx.attr.exporter, ctx.attr.schema_export])
 
@@ -106,14 +105,14 @@ schema_proto_src_rule = rule(
             cfg = "exec",
         ),
         "schema_export": attr.label(allow_single_file = True),
-        "tables": attr.string_list_dict(mandatory = True),
+        "functions": attr.string_list_dict(mandatory = True),
     },
     toolchains = [
         "@bazel_tools//tools/jdk:toolchain_type",
     ],
 )
 
-def schema_proto_src(name, schema_export, tables, mappers = None, visibility = None):
+def schema_proto_src(name, schema_export, functions, mappers = None, visibility = None):
     native.java_binary(
         name = name + "_exporter",
         main_class = "dev.logos.service.storage.pg.exporter.Exporter",
@@ -124,7 +123,7 @@ def schema_proto_src(name, schema_export, tables, mappers = None, visibility = N
         name = name,
         exporter = ":" + name + "_exporter",
         schema_export = schema_export,
-        tables = tables,
+        functions = functions,
         tags = [
             "external",
             "no-remote",
@@ -135,16 +134,8 @@ def schema_proto_src(name, schema_export, tables, mappers = None, visibility = N
 
 def _java_storage_service_impl(ctx):
     outputs = []
-    for schema in ctx.attr.tables.keys():
-        schema_title_case = schema.replace("_", " ").title().replace(" ", "")
-        outputs.append(ctx.actions.declare_file("%s.java" % schema_title_case))
-
-        for table in ctx.attr.tables[schema]:
-            table_title_case = table.replace("_", " ").title().replace(" ", "")
-            outputs.append(ctx.actions.declare_file("%s.java" % schema_title_case))
-            outputs.append(ctx.actions.declare_file("%s/%s/StorageModule.java" % (schema, table)))
-            outputs.append(ctx.actions.declare_file("%s/%s/%sTableStorage.java" % (schema, table, table_title_case)))
-            outputs.append(ctx.actions.declare_file("%s/%sStorageServiceBase.java" % (schema, table_title_case)))
+    for service_name in ctx.attr.functions.keys():
+        outputs.append(ctx.actions.declare_file("%sBase.java" % service_name))
 
     tool_inputs, tool_input_manifests = ctx.resolve_tools(tools = [ctx.attr.exporter, ctx.attr.schema_export])
 
@@ -183,27 +174,27 @@ java_storage_service_rule = rule(
             cfg = "exec",
         ),
         "schema_export": attr.label(allow_single_file = True),
-        "tables": attr.string_list_dict(mandatory = True),
+        "functions": attr.string_list_dict(mandatory = True),
     },
     toolchains = [
         "@bazel_tools//tools/jdk:toolchain_type",
     ],
 )
 
-def java_storage_service(name, schema_export, tables, deps, mappers = None, visibility = None):
+def java_storage_service(name, schema_export, functions, deps, mappers = None, visibility = None):
+    mappers = (mappers or []) + ["@logos//dev/logos/service/storage/pg/exporter"]
+
     native.java_binary(
         name = name + "_exporter",
         main_class = "dev.logos.service.storage.pg.exporter.Exporter",
-        runtime_deps = (mappers or []) + [
-            "@logos//dev/logos/service/storage/pg/exporter",
-        ],
+        runtime_deps = mappers,
     )
 
     java_storage_service_rule(
         name = name + "_src",
         exporter = ":" + name + "_exporter",
         schema_export = schema_export,
-        tables = tables,
+        functions = functions,
         tags = [
             "external",
             "no-remote",
@@ -220,11 +211,12 @@ def java_storage_service(name, schema_export, tables, deps, mappers = None, visi
             "@com_google_protobuf//:protobuf_java",
             "@logos//dev/logos/app",
             "@logos//dev/logos/app/register:module_library",
+            "@logos//dev/logos/logger",
+            "@logos//dev/logos/service",
             "@logos//dev/logos/service/storage/exceptions",
-            "@logos//dev/logos/service/storage/pg",
+            "@logos//dev/logos/service/storage/pg/exporter/codegen/type",
             "@logos//dev/logos/service/storage/pg/exporter/descriptor",
             "@logos//dev/logos/service/storage/validator",
-            "@logos//dev/logos/service/storage:storage_library",
             "@logos//dev/logos/auth/user",
             "@maven_logos//:com_google_inject_guice",
             "@maven_logos//:io_grpc_grpc_api",
@@ -233,7 +225,8 @@ def java_storage_service(name, schema_export, tables, deps, mappers = None, visi
             "@maven_logos//:io_vavr_vavr",
             "@maven_logos//:javax_annotation_javax_annotation_api",
             "@maven_logos//:org_jdbi_jdbi3_core",
-        ],
+            "@maven_logos//:org_slf4j_slf4j_api",
+        ] + mappers,
         plugins = [
             "@logos//dev/logos/app/register:module",
         ],

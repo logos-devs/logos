@@ -9,12 +9,12 @@ import static com.google.protobuf.DescriptorProtos.FieldDescriptorProto.Type.TYP
 
 public class IntegerMapper extends PgTypeMapper {
     public IntegerMapper() {
-        super(List.of("smallint", "integer"), TYPE_SINT32, "getInt");
+        super(List.of("pg_catalog.int2", "pg_catalog.int4"), TYPE_SINT32, "getInt");
     }
 
     @Override
-    public CodeBlock protoToPg(String queryVariable, String fieldVariable, String fieldName) {
-        return CodeBlock.of("$L.bind($S, (Integer) $L.get($S));",
-                queryVariable, fieldName, fieldVariable, fieldName);
+    public CodeBlock protoToPg(String queryVariable, String dbField, String protoVariable, String protoGetter) {
+        return CodeBlock.of("$L.bind($S, (Integer) $L.$L());",
+                queryVariable, dbField, protoVariable, protoGetter);
     }
 }

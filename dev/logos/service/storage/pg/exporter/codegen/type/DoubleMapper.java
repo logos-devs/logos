@@ -9,12 +9,12 @@ import static com.google.protobuf.DescriptorProtos.FieldDescriptorProto.Type.TYP
 
 public class DoubleMapper extends PgTypeMapper {
     public DoubleMapper() {
-        super(List.of("double precision"), TYPE_DOUBLE, "getDouble");
+        super(List.of("pg_catalog.float8"), TYPE_DOUBLE, "getDouble");
     }
 
     @Override
-    public CodeBlock protoToPg(String queryVariable, String fieldVariable, String fieldName) {
-        return CodeBlock.of("$L.bind($S, (Double) $L.get($S));",
-                queryVariable, fieldName, fieldVariable, fieldName);
+    public CodeBlock protoToPg(String queryVariable, String dbField, String protoVariable, String protoGetter) {
+        return CodeBlock.of("$L.bind($S, (Double) $L.$L());",
+                queryVariable, dbField, protoVariable, protoGetter);
     }
 }

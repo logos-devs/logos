@@ -10,12 +10,12 @@ import static com.google.protobuf.DescriptorProtos.FieldDescriptorProto.Type.TYP
 
 public class DateMapper extends PgTypeMapper {
     public DateMapper() {
-        super(List.of("date"), TYPE_STRING, "getString");
+        super(List.of("pg_catalog.date"), TYPE_STRING, "getString");
     }
 
     @Override
-    public CodeBlock protoToPg(String queryVariable, String fieldVariable, String fieldName) {
-        return CodeBlock.of("$L.bind($S, $T.parse((String) $L.get($S)));",
-                queryVariable, fieldName, LocalDate.class, fieldVariable, fieldName);
+    public CodeBlock protoToPg(String queryVariable, String dbField, String protoVariable, String protoGetter) {
+        return CodeBlock.of("$L.bind($S, $T.parse((String) $L.$L()));",
+                queryVariable, dbField, LocalDate.class, protoVariable, protoGetter);
     }
 }

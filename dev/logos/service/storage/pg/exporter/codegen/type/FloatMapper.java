@@ -9,12 +9,12 @@ import static com.google.protobuf.DescriptorProtos.FieldDescriptorProto.Type.TYP
 
 public class FloatMapper extends PgTypeMapper {
     public FloatMapper() {
-        super(List.of("float8", "real"), TYPE_FLOAT, "getFloat");
+        super(List.of("pg_catalog.float4"), TYPE_FLOAT, "getFloat");
     }
 
     @Override
-    public CodeBlock protoToPg(String queryVariable, String fieldVariable, String fieldName) {
-        return CodeBlock.of("$L.bind($S, (Float) $L.get($S));",
-                queryVariable, fieldName, fieldVariable, fieldName);
+    public CodeBlock protoToPg(String queryVariable, String dbField, String protoVariable, String protoGetter) {
+        return CodeBlock.of("$L.bind($S, (Float) $L.$L());",
+                queryVariable, dbField, protoVariable, protoGetter);
     }
 }

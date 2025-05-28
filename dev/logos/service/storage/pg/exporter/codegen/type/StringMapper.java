@@ -9,12 +9,12 @@ import static com.google.protobuf.DescriptorProtos.FieldDescriptorProto.Type.TYP
 
 public class StringMapper extends PgTypeMapper {
     public StringMapper() {
-        super(List.of("char", "varchar", "character varying", "text"), TYPE_STRING, "getString");
+        super(List.of("pg_catalog.bpchar", "pg_catalog.varchar", "pg_catalog.text"), TYPE_STRING, "getString");
     }
 
     @Override
-    public CodeBlock protoToPg(String queryVariable, String fieldVariable, String fieldName) {
-        return CodeBlock.of("$L.bind($S, (String) $L.get($S));",
-                queryVariable, fieldName, fieldVariable, fieldName);
+    public CodeBlock protoToPg(String queryVariable, String dbField, String protoVariable, String protoGetter) {
+        return CodeBlock.of("$L.bind($S, (String) $L.$L());",
+                queryVariable, dbField, protoVariable, protoGetter);
     }
 }

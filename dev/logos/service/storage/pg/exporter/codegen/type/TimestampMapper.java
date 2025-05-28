@@ -12,7 +12,7 @@ import static com.google.protobuf.DescriptorProtos.FieldDescriptorProto.Type.TYP
 
 public class TimestampMapper extends PgTypeMapper {
     public TimestampMapper() {
-        super(List.of("timestamp", "timestamptz"), TYPE_STRING, "getString");
+        super(List.of("pg_catalog.timestamptz", "pg_catalog.timestamp"), TYPE_STRING, "getString");
     }
 
     public static DateTimeFormatterBuilder getDateTimeFormatterBuilder() {
@@ -23,13 +23,19 @@ public class TimestampMapper extends PgTypeMapper {
     }
 
     @Override
-    public CodeBlock protoToPg(String queryVariable, String fieldVariable, String fieldName) {
-        return CodeBlock.of("$L.bind($S, $T.parse((String) $L.get($S), new $T()" +
-                        ".appendPattern(\"yyyy-MM-dd HH:mm:ss\")" +
-                        ".appendFraction($T.MICRO_OF_SECOND, 0, 6, true)" +
-                        ".appendPattern(\"x\")" +
-                        ".toFormatter()));",
-                queryVariable, fieldName, OffsetDateTime.class, fieldVariable, fieldName,
-                DateTimeFormatterBuilder.class, ChronoField.class);
+    public CodeBlock protoToPg(String queryVariable, String dbField, String protoVariable, String protoGetter) {
+        return CodeBlock.builder()
+                        .beginControlFlow("if (!$L.$L().isEmpty())", protoVariable, protoGetter)
+                        .add("$L.bind($S, $T.parse((String) $L.$L(), new $T()" +
+                                        ".appendPattern(\"yyyy-MM-dd HH:mm:ss\")" +
+                                        ".appendFraction($T.MICRO_OF_SECOND, 0, 6, true)" +
+                                        ".appendPattern(\"x\")" +
+                                        ".toFormatter()));",
+                                queryVariable, dbField, OffsetDateTime.class, protoVariable, protoGetter,
+                                DateTimeFormatterBuilder.class, ChronoField.class)
+                        .nextControlFlow("else")
+                        .add("$L.bind($S, ($T) null);", queryVariable, dbField, OffsetDateTime.class)
+                        .endControlFlow()
+                        .build();
     }
 }

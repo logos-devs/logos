@@ -10,7 +10,7 @@ import static com.google.protobuf.DescriptorProtos.FieldDescriptorProto.Type.TYP
 
 public class ByteaMapper extends PgTypeMapper {
     public ByteaMapper() {
-        super(List.of("bytea"), TYPE_BYTES, "getBytes");
+        super(List.of("pg_catalog.bytea"), TYPE_BYTES, "getBytes");
     }
 
     @Override
@@ -19,8 +19,8 @@ public class ByteaMapper extends PgTypeMapper {
     }
 
     @Override
-    public CodeBlock protoToPg(String queryVariable, String fieldVariable, String fieldName) {
-        return CodeBlock.of("$L.bind($S, (($T) $L.get($S)).toByteArray());",
-                queryVariable, fieldName, ByteString.class, fieldVariable, fieldName);
+    public CodeBlock protoToPg(String queryVariable, String dbField, String protoVariable, String protoGetter) {
+        return CodeBlock.of("$L.bind($S, (($T) $L.$L()).toByteArray());",
+                queryVariable, dbField, ByteString.class, protoVariable, protoGetter);
     }
 }
