@@ -1,8 +1,7 @@
 package dev.logos.service.storage.pg.exporter.descriptor;
 
-import com.squareup.javapoet.ClassName;
-
 import java.util.List;
+import java.util.Optional;
 
 import static dev.logos.service.storage.pg.exporter.descriptor.ExportedIdentifier.quoteIdentifier;
 
@@ -18,16 +17,11 @@ public record FunctionDescriptor(
         String schema,
         String name,
         List<FunctionParameterDescriptor> returnType,
-        List<FunctionParameterDescriptor> parameters
+        List<FunctionParameterDescriptor> parameters,
+        /** unqualified PG type name for SETOF-composite returns, or null */
+        String returnTypeName
 ) implements ExportedIdentifier {
 
-    /**
-     * Creates a new derived field descriptor.
-     *
-     * @param name       Function name
-     * @param returnType The PostgreSQL return type of the function
-     * @param parameters Parameter descriptors, excluding the row-type parameter
-     */
     public FunctionDescriptor {
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("Derived field name cannot be null or blank");
@@ -37,6 +31,9 @@ public record FunctionDescriptor(
         }
         if (parameters == null) {
             parameters = List.of();
+        }
+        if (returnTypeName != null && returnType.isEmpty()) {
+            throw new IllegalArgumentException("Composite return type declared but no return columns");
         }
     }
 
@@ -56,15 +53,20 @@ public record FunctionDescriptor(
 
     public String toSql() {
         StringBuilder sql = new StringBuilder();
-        sql.append("select * from ").append(quoteIdentifier(schema)).append(".").append(quoteIdentifier(name)).append("(");
+        sql.append("select * from ")
+                .append(quoteIdentifier(schema))
+                .append(".")
+                .append(quoteIdentifier(name))
+                .append("(");
         if (!parameters.isEmpty()) {
-            sql.append(String.join(", ", parameters.stream()
-                                                   .map(functionParameterDescriptor ->
-                                                           "%s => :%s".formatted(
-                                                                   quoteIdentifier(functionParameterDescriptor.name()),
-                                                                   functionParameterDescriptor.name()
-                                                           ))
-                                                   .toList()));
+            sql.append(String.join(", ",
+                    parameters.stream()
+                            .map(p -> "%s => :%s".formatted(
+                                    quoteIdentifier(p.name()),
+                                    p.name()
+                            ))
+                            .toList()
+            ));
         }
         sql.append(")");
         return sql.toString();
@@ -92,5 +94,17 @@ public record FunctionDescriptor(
 
     public String responseMessageClassName() {
         return capitalize(responseMessageInstanceName());
+    }
+
+    /**
+     * For SETOF composite returns, yields e.g. Optional.of("CustomerSubscription").
+     * Empty if this function does not share a composite return.
+     */
+    public Optional<String> protoResponseMessageName() {
+        return Optional.ofNullable(returnTypeName)
+                .map(rt -> {
+                    String camel = snakeCaseToCamelCase(rt);
+                    return Character.toUpperCase(camel.charAt(0)) + camel.substring(1);
+                });
     }
 }

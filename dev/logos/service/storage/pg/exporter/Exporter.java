@@ -3,6 +3,8 @@ package dev.logos.service.storage.pg.exporter;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.squareup.javapoet.JavaFile;
@@ -34,7 +36,7 @@ public class Exporter {
     private final DataSource dataSource;
     private final ProtoGenerator protoGenerator;
     private final StorageServiceBaseGenerator storageServiceBaseGenerator;
-    private final Gson gson = new GsonBuilder().create();
+    private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
     @Inject
     public Exporter(
@@ -72,11 +74,9 @@ public class Exporter {
             Map<String, List<String>> selectedFunctions
     ) throws SQLException {
 
-        // cache for fully-qualified type names
         Map<Integer, String> typeCache = new HashMap<>();
         Map<String, List<FunctionDescriptor>> result = new HashMap<>();
 
-        // metadata query pulls in everything we need for TABLE and SETOF composite
         String metaSql = """
                 select
                   p.oid,
@@ -120,6 +120,9 @@ public class Exporter {
                         boolean isSetOf = rs.getBoolean("proretset");
                         String rettypeKind = rs.getString("rettypekind");
 
+                        // new: holder for unqualified composite returnTypeName
+                        String returnTypeName = null;
+
                         // parse IN-params
                         int[] inOids = (inOidsStr == null || inOidsStr.isBlank())
                                 ? new int[0]
@@ -130,7 +133,7 @@ public class Exporter {
                                 ? (String[]) inNamesArr.getArray()
                                 : new String[0];
 
-                        // holders for raw parameters
+                        // raw holders
                         class Param {
                             final String name;
                             final int oid;
@@ -144,11 +147,10 @@ public class Exporter {
                         List<Param> returnRaw = new ArrayList<>();
                         Set<Integer> allTypeOids = new HashSet<>();
 
-                        // always include IN types and return type for type lookup
                         Arrays.stream(inOids).forEach(allTypeOids::add);
                         allTypeOids.add((int) rettypeOid);
 
-                        // CASE A: RETURNS TABLE (OUT and INOUT)
+                        // CASE A: RETURNS TABLE / OUT / INOUT
                         if (allOidsArr != null && modesArr != null) {
                             Long[] allOids = (Long[]) allOidsArr.getArray();
                             String[] modes = (String[]) modesArr.getArray();
@@ -169,15 +171,12 @@ public class Exporter {
                                 allTypeOids.add(oid);
                                 switch (mode) {
                                     case "i" -> inParamsRaw.add(new Param(name, oid));
-                                    case "o", "t" ->
-                                            returnRaw.add(new Param(name, oid));  // include 't' for TABLE columns
+                                    case "o", "t" -> returnRaw.add(new Param(name, oid));
                                     case "b" -> {
                                         inParamsRaw.add(new Param(name, oid));
                                         returnRaw.add(new Param(name, oid));
                                     }
-                                    default -> {
-                                        // ignore variadic etc.
-                                    }
+                                    default -> { /* ignore variadic etc. */ }
                                 }
                             }
                             if (returnRaw.isEmpty()) {
@@ -189,7 +188,7 @@ public class Exporter {
                         }
                         // CASE B: RETURNS SETOF composite_type
                         else if (isSetOf && "c".equals(rettypeKind)) {
-                            // parse IN params
+                            // IN params
                             for (int i = 0; i < inOids.length; i++) {
                                 if (i >= inNames.length || inNames[i] == null || inNames[i].isBlank()) {
                                     throw new IllegalArgumentException(
@@ -199,14 +198,14 @@ public class Exporter {
                                 }
                                 inParamsRaw.add(new Param(inNames[i], inOids[i]));
                             }
-                            // decompose composite return
+                            // decompose composite
                             try (PreparedStatement ds = connection.prepareStatement("""
                                     select attname, atttypid
                                       from pg_attribute
                                      where attrelid = (
-                                             select typrelid
-                                               from pg_type
-                                              where oid = ?
+                                           select typrelid
+                                             from pg_type
+                                            where oid = ?
                                          )
                                        and attnum > 0
                                        and not attisdropped
@@ -215,10 +214,8 @@ public class Exporter {
                                 ds.setLong(1, rettypeOid);
                                 try (ResultSet dr = ds.executeQuery()) {
                                     while (dr.next()) {
-                                        String fld = dr.getString(1);
-                                        int oid = dr.getInt(2);
-                                        returnRaw.add(new Param(fld, oid));
-                                        allTypeOids.add(oid);
+                                        returnRaw.add(new Param(dr.getString(1), dr.getInt(2)));
+                                        allTypeOids.add(dr.getInt(2));
                                     }
                                 }
                             }
@@ -229,7 +226,7 @@ public class Exporter {
                                 );
                             }
                         }
-                        // unsupported signature
+                        // unsupported
                         else {
                             throw new IllegalArgumentException(
                                     "Cannot export function " + signature +
@@ -237,14 +234,12 @@ public class Exporter {
                             );
                         }
 
-                        // batch-fetch missing type names
+                        // batch-fetch type names
                         Set<Integer> missing = allTypeOids.stream()
                                 .filter(o -> !typeCache.containsKey(o))
                                 .collect(Collectors.toSet());
                         if (!missing.isEmpty()) {
-                            String inList = missing.stream()
-                                    .map(String::valueOf)
-                                    .collect(Collectors.joining(","));
+                            String inList = missing.stream().map(String::valueOf).collect(Collectors.joining(","));
                             String typeSql = String.format("""
                                     SELECT t.oid, n.nspname, t.typname
                                       FROM pg_type t
@@ -254,31 +249,34 @@ public class Exporter {
                             try (Statement ts = connection.createStatement();
                                  ResultSet tr = ts.executeQuery(typeSql)) {
                                 while (tr.next()) {
-                                    int oid = tr.getInt(1);
-                                    String fqName = tr.getString(2) + "." + tr.getString(3);
-                                    typeCache.put(oid, fqName);
+                                    typeCache.put(tr.getInt(1),
+                                            tr.getString(2) + "." + tr.getString(3));
                                 }
                             }
                         }
 
-                        // materialize descriptors
-                        List<FunctionParameterDescriptor> inParams = new ArrayList<>();
-                        for (Param p : inParamsRaw) {
-                            inParams.add(new FunctionParameterDescriptor(
-                                    p.name,
-                                    typeCache.get(p.oid)
-                            ));
-                        }
-                        List<FunctionParameterDescriptor> outParams = new ArrayList<>();
-                        for (Param p : returnRaw) {
-                            outParams.add(new FunctionParameterDescriptor(
-                                    p.name,
-                                    typeCache.get(p.oid)
-                            ));
+                        // capture unqualified composite name if SETOF
+                        if (isSetOf && "c".equals(rettypeKind)) {
+                            String fq = typeCache.get((int) rettypeOid);
+                            returnTypeName = fq.contains(".")
+                                    ? fq.substring(fq.indexOf('.') + 1)
+                                    : fq;
                         }
 
+                        // materialize descriptors
+                        List<FunctionParameterDescriptor> inParams = inParamsRaw.stream()
+                                .map(p -> new FunctionParameterDescriptor(p.name, typeCache.get(p.oid)))
+                                .collect(Collectors.toList());
+                        List<FunctionParameterDescriptor> outParams = returnRaw.stream()
+                                .map(p -> new FunctionParameterDescriptor(p.name, typeCache.get(p.oid)))
+                                .collect(Collectors.toList());
+
                         descriptors.add(new FunctionDescriptor(
-                                schema, funcName, outParams, inParams
+                                schema,
+                                funcName,
+                                outParams,
+                                inParams,
+                                returnTypeName
                         ));
                     }
                 }
@@ -335,10 +333,11 @@ public class Exporter {
     public Map<String, List<FunctionDescriptor>> loadDescriptorsFromJson(String json) {
         System.err.println("Loading function descriptors from JSON: " + json);
 
-        Map<String, List<FunctionDescriptor>> descriptors = gson.fromJson(json, new TypeToken<Map<String, List<FunctionDescriptor>>>() {
+        JsonElement jsonElement = JsonParser.parseString(json);
+        Map<String, List<FunctionDescriptor>> descriptors = gson.fromJson(jsonElement, new TypeToken<Map<String, List<FunctionDescriptor>>>() {
         }.getType());
 
-        System.err.println(descriptors);
+        System.err.println(gson.toJson(jsonElement));
 
         return descriptors;
     }

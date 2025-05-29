@@ -40,9 +40,9 @@ public class StorageServiceBaseGenerator {
 
     private MethodSpec makeValidateRequestMethod(ClassName requestMessage) {
         MethodSpec.Builder method = MethodSpec.methodBuilder("validate")
-                                              .addModifiers(PROTECTED)
-                                              .addParameter(requestMessage, "request")
-                                              .addParameter(ClassName.get(Validator.class), "validator");
+                .addModifiers(PROTECTED)
+                .addParameter(requestMessage, "request")
+                .addParameter(ClassName.get(Validator.class), "validator");
         return method.build();
     }
 
@@ -77,12 +77,12 @@ public class StorageServiceBaseGenerator {
     MethodSpec makeRpcHandler(FunctionDescriptor functionDescriptor, ClassName requestMessage, ClassName responseMessage) {
         MethodSpec.Builder rpcHandlerBuilder =
                 MethodSpec.methodBuilder(functionDescriptor.rpcMethodName())
-                          .addModifiers(PUBLIC)
-                          .addParameter(requestMessage, "request")
-                          .addParameter(ParameterizedTypeName.get(ClassName.get(StreamObserver.class), responseMessage),
-                                  "responseObserver")
-                          .addStatement("$T handle = jdbi.open()", Handle.class)
-                          .addStatement("$T query = handle.createQuery($S)", Query.class, functionDescriptor.toSql());
+                        .addModifiers(PUBLIC)
+                        .addParameter(requestMessage, "request")
+                        .addParameter(ParameterizedTypeName.get(ClassName.get(StreamObserver.class), responseMessage),
+                                "responseObserver")
+                        .addStatement("$T handle = jdbi.open()", Handle.class)
+                        .addStatement("$T query = handle.createQuery($S)", Query.class, functionDescriptor.toSql());
 
         functionDescriptor.parameters().forEach(functionParameterDescriptor -> {
             String parameterName = functionParameterDescriptor.name();
@@ -116,16 +116,16 @@ public class StorageServiceBaseGenerator {
                     );
 
                     rpcHandlerBuilder.beginControlFlow("if (resultSet.getObject($S) != null)", fieldName)
-                                     .addStatement("builder.$N($L)",
-                                             setterName
-                                             ,
-                                             typeMapper.pgToProto(
-                                                     CodeBlock.of(
-                                                             "$L resultSet.$N($S)",
-                                                             typeMapper.resultSetFieldCast(),
-                                                             typeMapper.resultSetFieldGetter(),
-                                                             fieldName)))
-                                     .endControlFlow();
+                            .addStatement("builder.$N($L)",
+                                    setterName
+                                    ,
+                                    typeMapper.pgToProto(
+                                            CodeBlock.of(
+                                                    "$L resultSet.$N($S)",
+                                                    typeMapper.resultSetFieldCast(),
+                                                    typeMapper.resultSetFieldGetter(),
+                                                    fieldName)))
+                            .endControlFlow();
                 }
         );
 
@@ -164,22 +164,26 @@ public class StorageServiceBaseGenerator {
                                         serviceClassName.simpleName())))
                         .addSuperinterface(Service.class)
                         .addMethod(MethodSpec.constructorBuilder()
-                                             .addModifiers(PUBLIC)
-                                             .build())
+                                .addModifiers(PUBLIC)
+                                .build())
                         .addField(FieldSpec.builder(Jdbi.class, "jdbi", PROTECTED)
-                                           .addAnnotation(Inject.class)
-                                           .build())
+                                .addAnnotation(Inject.class)
+                                .build())
                         .addField(FieldSpec.builder(Logger.class, "logger", FINAL)
-                                           .initializer("$T.getLogger($TBase.class)", LoggerFactory.class, serviceClassName)
-                                           .build());
+                                .initializer("$T.getLogger($TBase.class)", LoggerFactory.class, serviceClassName)
+                                .build());
 
         for (FunctionDescriptor functionDescriptor : functionDescriptors) {
             String functionName = snakeToCamelCase(functionDescriptor.name());
             ClassName requestMessage = ClassName.bestGuess(String.format("%s.%sRequest", targetPackage, functionName));
-            ClassName responseMessage = ClassName.bestGuess(String.format("%s.%sResponse", targetPackage, functionName));
+            ClassName responseMessage = ClassName.bestGuess(
+                    String.format("%s.%s",
+                            targetPackage,
+                            functionDescriptor.protoResponseMessageName()
+                                    .orElse("%sResponse".formatted(functionName))));
 
             storageServiceBuilder.addMethod(makeRpcHandler(functionDescriptor, requestMessage, responseMessage))
-                                 .addMethod(makeValidateRequestMethod(requestMessage));
+                    .addMethod(makeValidateRequestMethod(requestMessage));
 
         }
 
