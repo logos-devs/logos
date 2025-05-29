@@ -23,7 +23,6 @@ import java.nio.file.Path;
 import java.sql.*;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import static java.nio.file.StandardOpenOption.CREATE;
 import static java.nio.file.StandardOpenOption.WRITE;
@@ -52,23 +51,6 @@ public class Exporter {
         this.storageServiceBaseGenerator = storageServiceBaseGenerator;
     }
 
-    private static Map<Integer, String> getQualifiedTypeNames(Connection connection, Set<Integer> oids) throws SQLException {
-        if (oids.isEmpty()) return Collections.emptyMap();
-        String inSql = oids.stream().map(String::valueOf).collect(Collectors.joining(","));
-        String sql = """
-                SELECT t.oid, pn.nspname || '.' || t.typname AS qname
-                FROM pg_type t
-                JOIN pg_namespace pn ON t.typnamespace = pn.oid
-                WHERE t.oid IN (%s)
-                """.formatted(inSql);
-        Map<Integer, String> out = new HashMap<>();
-        try (Statement st = connection.createStatement();
-             ResultSet rs = st.executeQuery(sql)) {
-            while (rs.next()) out.put(rs.getInt(1), rs.getString(2));
-        }
-        return out;
-    }
-
     /*
      * Lookup functions in the database based on the selected functions.
      * This method will return a list of FunctionDescriptor objects that represent the functions found in the database.
@@ -87,154 +69,227 @@ public class Exporter {
      */
     public static Map<String, List<FunctionDescriptor>> lookupFunctions(
             Connection connection,
-            Map<String, List<String>> selectedFunctions) throws SQLException {
+            Map<String, List<String>> selectedFunctions
+    ) throws SQLException {
 
-        Map<String, List<FunctionDescriptor>> serviceMap = new HashMap<>();
-        Map<Integer, String> typeOidToQualifiedName = new HashMap<>(); // Cache for qualified type names
+        // cache for fully-qualified type names
+        Map<Integer, String> typeCache = new HashMap<>();
+        Map<String, List<FunctionDescriptor>> result = new HashMap<>();
 
-        for (var entry : selectedFunctions.entrySet()) {
-            String serviceClassName = entry.getKey();
+        // metadata query pulls in everything we need for TABLE and SETOF composite
+        String metaSql = """
+                select
+                  p.oid,
+                  n.nspname       as schema,
+                  p.proname       as name,
+                  p.proargtypes,            -- input-only types
+                  p.proargnames,            -- names for IN + OUT
+                  p.proallargtypes,         -- all types (IN + OUT)
+                  p.proargmodes,            -- modes array parallel to proallargtypes
+                  p.prorettype,
+                  p.proretset,
+                  t.typtype       as rettypekind,
+                  t.oid           as rettypeoid
+                from pg_proc p
+                join pg_namespace n on p.pronamespace = n.oid
+                join pg_type t      on p.prorettype  = t.oid
+                where p.oid = ?::regprocedure
+                """;
+
+        for (var svcEntry : selectedFunctions.entrySet()) {
+            String serviceName = svcEntry.getKey();
             List<FunctionDescriptor> descriptors = new ArrayList<>();
 
-            for (String signature : entry.getValue()) {
-                // --- 1. Lookup function metadata by regprocedure OID ---
-                String metaSql = """
-                        SELECT
-                          p.oid,
-                          n.nspname AS schema,
-                          p.proname AS name,
-                          p.proargnames,
-                          p.proargtypes,
-                          p.prorettype,
-                          t.typtype AS rettypekind,
-                          t.oid AS rettypeoid
-                        FROM pg_proc p
-                        JOIN pg_namespace n ON p.pronamespace = n.oid
-                        JOIN pg_type t ON p.prorettype = t.oid
-                        WHERE p.oid = ?::regprocedure
-                        """;
-                long rettypeOid;
-                String schema, funcName, rettypeKind;
-                String[] argNames;
-                int[] argOids;
-
-                try (PreparedStatement stmt = connection.prepareStatement(metaSql)) {
-                    stmt.setString(1, signature);
-                    try (ResultSet rs = stmt.executeQuery()) {
-                        if (!rs.next())
-                            continue; // Function signature did not resolve, skip
-
-                        schema = rs.getString("schema");
-                        funcName = rs.getString("name");
-                        rettypeOid = rs.getLong("rettypeoid");
-                        rettypeKind = rs.getString("rettypekind");
-
-                        // Parse proargtypes (oidvector: "23 20 1114")
-                        String proargtypesStr = rs.getString("proargtypes");
-                        argOids = (proargtypesStr != null && !proargtypesStr.isBlank())
-                                ? Arrays.stream(proargtypesStr.trim().split("\\s+"))
-                                        .filter(s -> !s.isEmpty())
-                                        .mapToInt(Integer::parseInt)
-                                        .toArray()
-                                : new int[0];
-
-                        // Get proargnames (String[], may be null or shorter than argOids)
-                        Array namesArr = rs.getArray("proargnames");
-                        argNames = (namesArr != null) ? (String[]) namesArr.getArray() : new String[0];
-
-                        // Strict: Only include if all param names are present and non-blank
-                        if (argNames.length < argOids.length ||
-                                Arrays.stream(argNames).anyMatch(n -> n == null || n.isBlank())) {
-                            continue; // Skip this function, strict param name policy
+            for (String signature : svcEntry.getValue()) {
+                try (PreparedStatement ps = connection.prepareStatement(metaSql)) {
+                    ps.setString(1, signature);
+                    try (ResultSet rs = ps.executeQuery()) {
+                        if (!rs.next()) {
+                            throw new IllegalArgumentException(
+                                    "Cannot export function " + signature + ": function not found"
+                            );
                         }
-                    }
-                }
 
-                // --- 2. Gather all OIDs for type name lookup (parameters + return + composite fields) ---
-                Set<Integer> allTypeOids = new HashSet<>();
-                Arrays.stream(argOids).forEach(allTypeOids::add);
-                allTypeOids.add((int) rettypeOid);
+                        String schema = rs.getString("schema");
+                        String funcName = rs.getString("name");
+                        String inOidsStr = rs.getString("proargtypes");
+                        Array inNamesArr = rs.getArray("proargnames");
+                        Array allOidsArr = rs.getArray("proallargtypes");
+                        Array modesArr = rs.getArray("proargmodes");
+                        long rettypeOid = rs.getLong("rettypeoid");
+                        boolean isSetOf = rs.getBoolean("proretset");
+                        String rettypeKind = rs.getString("rettypekind");
 
-                // --- 3. If return is composite, get its field info ---
-                List<FunctionParameterDescriptor> returnType;
-                List<String> returnFieldNames = new ArrayList<>();
-                List<Integer> returnFieldOids = new ArrayList<>();
-                if ("c".equals(rettypeKind)) {
-                    // Decompose composite fields
-                    try (PreparedStatement stmt = connection.prepareStatement("""
-                            SELECT a.attname, a.atttypid
-                              FROM pg_attribute a
-                             WHERE a.attrelid = (SELECT typrelid FROM pg_type WHERE oid = ?)
-                               AND a.attnum > 0 AND NOT a.attisdropped
-                             ORDER BY a.attnum
-                            """)) {
-                        stmt.setLong(1, rettypeOid);
-                        try (ResultSet rs = stmt.executeQuery()) {
-                            while (rs.next()) {
-                                returnFieldNames.add(rs.getString(1));
-                                int foid = rs.getInt(2);
-                                returnFieldOids.add(foid);
-                                allTypeOids.add(foid);
+                        // parse IN-params
+                        int[] inOids = (inOidsStr == null || inOidsStr.isBlank())
+                                ? new int[0]
+                                : Arrays.stream(inOidsStr.trim().split("\\s+"))
+                                .mapToInt(Integer::parseInt)
+                                .toArray();
+                        String[] inNames = inNamesArr != null
+                                ? (String[]) inNamesArr.getArray()
+                                : new String[0];
+
+                        // holders for raw parameters
+                        class Param {
+                            final String name;
+                            final int oid;
+
+                            Param(String n, int o) {
+                                name = n;
+                                oid = o;
                             }
                         }
-                    }
-                }
+                        List<Param> inParamsRaw = new ArrayList<>();
+                        List<Param> returnRaw = new ArrayList<>();
+                        Set<Integer> allTypeOids = new HashSet<>();
 
-                // --- 4. Batch fetch qualified type names for OIDs not yet cached ---
-                Set<Integer> missing = allTypeOids.stream()
-                                                  .filter(oid -> !typeOidToQualifiedName.containsKey(oid))
-                                                  .collect(Collectors.toSet());
-                if (!missing.isEmpty()) {
-                    String oidsIn = missing.stream().map(String::valueOf).collect(Collectors.joining(","));
-                    String typeSql = """
-                            SELECT t.oid, n.nspname, t.typname
-                              FROM pg_type t JOIN pg_namespace n ON t.typnamespace = n.oid
-                             WHERE t.oid IN (%s)
-                            """.formatted(oidsIn);
-                    try (Statement stmt = connection.createStatement();
-                         ResultSet rs = stmt.executeQuery(typeSql)) {
-                        while (rs.next()) {
-                            int oid = rs.getInt(1);
-                            String typSchema = rs.getString(2);
-                            String typName = rs.getString(3);
-                            // Always fully qualify, even pg_catalog/public
-                            typeOidToQualifiedName.put(oid, typSchema + "." + typName);
+                        // always include IN types and return type for type lookup
+                        Arrays.stream(inOids).forEach(allTypeOids::add);
+                        allTypeOids.add((int) rettypeOid);
+
+                        // CASE A: RETURNS TABLE (OUT and INOUT)
+                        if (allOidsArr != null && modesArr != null) {
+                            Long[] allOids = (Long[]) allOidsArr.getArray();
+                            String[] modes = (String[]) modesArr.getArray();
+                            String[] allNames = inNamesArr != null
+                                    ? (String[]) inNamesArr.getArray()
+                                    : new String[0];
+
+                            for (int i = 0; i < modes.length; i++) {
+                                int oid = allOids[i].intValue();
+                                String mode = modes[i];
+                                String name = i < allNames.length ? allNames[i] : null;
+                                if (name == null || name.isBlank()) {
+                                    throw new IllegalArgumentException(
+                                            "Cannot export function " + signature +
+                                                    ": missing name for " + mode + "-parameter at position " + i
+                                    );
+                                }
+                                allTypeOids.add(oid);
+                                switch (mode) {
+                                    case "i" -> inParamsRaw.add(new Param(name, oid));
+                                    case "o", "t" ->
+                                            returnRaw.add(new Param(name, oid));  // include 't' for TABLE columns
+                                    case "b" -> {
+                                        inParamsRaw.add(new Param(name, oid));
+                                        returnRaw.add(new Param(name, oid));
+                                    }
+                                    default -> {
+                                        // ignore variadic etc.
+                                    }
+                                }
+                            }
+                            if (returnRaw.isEmpty()) {
+                                throw new IllegalArgumentException(
+                                        "Cannot export function " + signature +
+                                                ": declared RETURNS TABLE but found no output columns"
+                                );
+                            }
                         }
+                        // CASE B: RETURNS SETOF composite_type
+                        else if (isSetOf && "c".equals(rettypeKind)) {
+                            // parse IN params
+                            for (int i = 0; i < inOids.length; i++) {
+                                if (i >= inNames.length || inNames[i] == null || inNames[i].isBlank()) {
+                                    throw new IllegalArgumentException(
+                                            "Cannot export function " + signature +
+                                                    ": missing name for IN parameter at position " + i
+                                    );
+                                }
+                                inParamsRaw.add(new Param(inNames[i], inOids[i]));
+                            }
+                            // decompose composite return
+                            try (PreparedStatement ds = connection.prepareStatement("""
+                                    select attname, atttypid
+                                      from pg_attribute
+                                     where attrelid = (
+                                             select typrelid
+                                               from pg_type
+                                              where oid = ?
+                                         )
+                                       and attnum > 0
+                                       and not attisdropped
+                                     order by attnum
+                                    """)) {
+                                ds.setLong(1, rettypeOid);
+                                try (ResultSet dr = ds.executeQuery()) {
+                                    while (dr.next()) {
+                                        String fld = dr.getString(1);
+                                        int oid = dr.getInt(2);
+                                        returnRaw.add(new Param(fld, oid));
+                                        allTypeOids.add(oid);
+                                    }
+                                }
+                            }
+                            if (returnRaw.isEmpty()) {
+                                throw new IllegalArgumentException(
+                                        "Cannot export function " + signature +
+                                                ": RETURNS SETOF composite but composite has no attributes"
+                                );
+                            }
+                        }
+                        // unsupported signature
+                        else {
+                            throw new IllegalArgumentException(
+                                    "Cannot export function " + signature +
+                                            ": only RETURNS TABLE(...) or RETURNS SETOF composite_type are supported"
+                            );
+                        }
+
+                        // batch-fetch missing type names
+                        Set<Integer> missing = allTypeOids.stream()
+                                .filter(o -> !typeCache.containsKey(o))
+                                .collect(Collectors.toSet());
+                        if (!missing.isEmpty()) {
+                            String inList = missing.stream()
+                                    .map(String::valueOf)
+                                    .collect(Collectors.joining(","));
+                            String typeSql = String.format("""
+                                    SELECT t.oid, n.nspname, t.typname
+                                      FROM pg_type t
+                                      JOIN pg_namespace n ON t.typnamespace = n.oid
+                                     WHERE t.oid IN (%s)
+                                    """, inList);
+                            try (Statement ts = connection.createStatement();
+                                 ResultSet tr = ts.executeQuery(typeSql)) {
+                                while (tr.next()) {
+                                    int oid = tr.getInt(1);
+                                    String fqName = tr.getString(2) + "." + tr.getString(3);
+                                    typeCache.put(oid, fqName);
+                                }
+                            }
+                        }
+
+                        // materialize descriptors
+                        List<FunctionParameterDescriptor> inParams = new ArrayList<>();
+                        for (Param p : inParamsRaw) {
+                            inParams.add(new FunctionParameterDescriptor(
+                                    p.name,
+                                    typeCache.get(p.oid)
+                            ));
+                        }
+                        List<FunctionParameterDescriptor> outParams = new ArrayList<>();
+                        for (Param p : returnRaw) {
+                            outParams.add(new FunctionParameterDescriptor(
+                                    p.name,
+                                    typeCache.get(p.oid)
+                            ));
+                        }
+
+                        descriptors.add(new FunctionDescriptor(
+                                schema, funcName, outParams, inParams
+                        ));
                     }
                 }
-
-                // --- 5. Build FunctionParameterDescriptor for parameters (using strictly argNames, argOids) ---
-                List<FunctionParameterDescriptor> params = IntStream.range(0, argOids.length)
-                                                                    .mapToObj(i -> new FunctionParameterDescriptor(
-                                                                            argNames[i],
-                                                                            typeOidToQualifiedName.getOrDefault(argOids[i], "unknown")
-                                                                    ))
-                                                                    .collect(Collectors.toList());
-
-                // --- 6. Build FunctionParameterDescriptor for return type ---
-                if (!returnFieldOids.isEmpty()) {
-                    // Composite return type
-                    returnType = IntStream.range(0, returnFieldOids.size())
-                                          .mapToObj(i -> new FunctionParameterDescriptor(
-                                                  returnFieldNames.get(i),
-                                                  typeOidToQualifiedName.getOrDefault(returnFieldOids.get(i), "unknown"))
-                                          )
-                                          .collect(Collectors.toList());
-                } else {
-                    // Scalar/domain return type
-                    returnType = List.of(
-                            new FunctionParameterDescriptor("result",
-                                    typeOidToQualifiedName.getOrDefault((int) rettypeOid, "unknown"))
-                    );
-                }
-
-                // --- 7. Assemble and add FunctionDescriptor ---
-                descriptors.add(new FunctionDescriptor(schema, funcName, returnType, params));
             }
-            if (!descriptors.isEmpty())
-                serviceMap.put(serviceClassName, descriptors);
+
+            if (!descriptors.isEmpty()) {
+                result.put(serviceName, descriptors);
+            }
         }
-        return serviceMap;
+
+        return result;
     }
 
     public static void main(String[] args) throws SQLException, IOException {
@@ -268,8 +323,8 @@ public class Exporter {
 
             try (OutputStream outputStream = Files.newOutputStream(
                     Files.createDirectories(
-                                 Path.of("%s/%s/".formatted(buildDir, buildPackage.replace(".", "/"))))
-                         .resolve("schema_export.json"),
+                                    Path.of("%s/%s/".formatted(buildDir, buildPackage.replace(".", "/"))))
+                            .resolve("schema_export.json"),
                     CREATE, WRITE)) {
 
                 outputStream.write(gson.toJson(functionDescriptors).getBytes());

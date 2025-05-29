@@ -1,0 +1,23 @@
+<component name="ProjectCodeStyleConfiguration">
+  <code_scheme name="Project" version="173">
+    <SqlCodeStyleSettings version="7">
+      <option name="KEYWORD_CASE" value="1" />
+      <option name="CUSTOM_TYPE_CASE" value="0" />
+      <option name="BUILT_IN_CASE" value="0" />
+      <option name="QUERY_SECTION_1ST_WORD_ALIGN" value="8" />
+      <option name="INSERT_INTO_NL" value="2" />
+      <option name="INSERT_TABLE_EL_LINE" value="1" />
+      <option name="SET_ALIGN_EQUAL_SIGN" value="false" />
+      <option name="FROM_INDENT_JOIN" value="false" />
+      <option name="TABLE_OPENING" value="1" />
+      <option name="TABLE_CONTENT" value="2" />
+      <option name="TABLE_CLOSING" value="3" />
+      <option name="TABLE_TYPES_ALIGN" value="false" />
+      <option name="TABLE_DEFAULTS_ALIGN" value="false" />
+      <option name="TABLE_NULLABILITIES_ALIGN" value="false" />
+      <option name="VIEW_INDENT_QUERY" value="true" />
+      <option name="ROUTINE_AS_WRAP" value="true" />
+      <option name="ROUTINE_PG_R_QUOTE_WRAP_AFTER" value="true" />
+    </SqlCodeStyleSettings>
+  </code_scheme>
+</component>
