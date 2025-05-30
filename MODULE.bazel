@@ -68,8 +68,8 @@ http_file(
 # k8s cert-manager
 http_file(
     name = "cert_manager",
-    integrity = "sha256-HVHN7NRC8fX4l4Pp4BabldNyck2iA8x13XpcTlChDOY=",
-    url = "https://github.com/cert-manager/cert-manager/releases/download/v1.16.2/cert-manager.yaml",
+    integrity = "sha256-2rJ5QXZinYBCzpe4hfN43+Tve1vtWFnp8GYW6tmYD0s=",
+    url = "https://github.com/cert-manager/cert-manager/releases/download/v1.17.2/cert-manager.yaml",
 )
 
 # minikube
