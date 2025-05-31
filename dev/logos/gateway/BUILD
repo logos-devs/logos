@@ -14,7 +14,7 @@ yq(
     name = "cert_manager",
     srcs = ["@cert_manager//file"],
     outs = ["cert_manager.yaml"],
-    expression = '(select(documentIndex == 45).spec.template.spec.containers[0].args) |= . + ["--enable-gateway-api"]',
+    expression = '(select(documentIndex == 45).spec.template.spec.containers[0].args) |= . + ["--enable-gateway-api", "--dns01-recursive-nameservers-only", "--dns01-recursive-nameservers=8.8.8.8:53,1.1.1.1:53"]',
 )
 
 kubectl(

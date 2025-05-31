@@ -10,9 +10,6 @@ spec:
     privateKeySecretRef:
       name: logos-gateway-tls
     solvers:
-      - http01:
-          gatewayHTTPRoute:
-            parentRefs:
-              - namespace: default
-                name: logos-gateway
-                kind: Gateway
+      - dns01:
+          route53:
+            region: us-east-2
