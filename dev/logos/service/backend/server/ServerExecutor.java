@@ -9,8 +9,11 @@ import io.grpc.Server;
 import java.io.IOException;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import dev.logos.service.backend.server.ServerModule.ServerThreadPool;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 
@@ -21,12 +24,17 @@ public class ServerExecutor {
     private final Logger logger;
     private final Set<Server> servers;
     private final Set<Worker> workers;
+    private final ExecutorService executorService;
 
     @Inject
-    public ServerExecutor(Set<Server> servers, Set<Worker> workers, Logger logger) {
+    public ServerExecutor(Set<Server> servers,
+                          Set<Worker> workers,
+                          Logger logger,
+                          @ServerModule.ServerThreadPool ExecutorService executorService) {
         this.servers = servers;
         this.workers = workers;
         this.logger = logger;
+        this.executorService = executorService;
     }
 
     public void start() {
@@ -56,6 +64,7 @@ public class ServerExecutor {
                             logger.log(Level.SEVERE, "Failed to stop worker %s: %s".formatted(worker.getName(), e.getMessage()), e);
                         }
                     }
+                    executorService.shutdown();
                     logger.info("Server %s has shut down".formatted(server));
                 }));
             }

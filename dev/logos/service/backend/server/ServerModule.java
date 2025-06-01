@@ -18,6 +18,7 @@ import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.logging.Logger;
 
 
 @registerModule
@@ -75,6 +76,15 @@ public class ServerModule extends AbstractModule {
     @ServerThreadPool
     ExecutorService serverThreadPool(@ThreadPoolSize Integer threadPoolSize) {
         return Executors.newFixedThreadPool(threadPoolSize);
+    }
+
+    @Provides
+    ServerExecutor provideServerExecutor(
+            Set<Server> servers,
+            Set<Worker> workers,
+            Logger logger,
+            @ServerThreadPool ExecutorService executorService) {
+        return new ServerExecutor(servers, workers, logger, executorService);
     }
 
     @Provides
