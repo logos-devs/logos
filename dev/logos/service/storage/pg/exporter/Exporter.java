@@ -17,6 +17,9 @@ import dev.logos.service.storage.pg.exporter.module.ExportModule;
 import dev.logos.service.storage.pg.exporter.module.annotation.BuildDir;
 import dev.logos.service.storage.pg.exporter.module.annotation.BuildPackage;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -31,6 +34,8 @@ import static java.nio.file.StandardOpenOption.WRITE;
 
 
 public class Exporter {
+    private static final Logger logger = LoggerFactory.getLogger(Exporter.class);
+
     private final Path buildDir;
     private final String buildPackage;
     private final DataSource dataSource;
@@ -331,13 +336,15 @@ public class Exporter {
     }
 
     public Map<String, List<FunctionDescriptor>> loadDescriptorsFromJson(String json) {
-        System.err.println("Loading function descriptors from JSON: " + json);
+        logger.atInfo()
+              .addKeyValue("json", json)
+              .log("Loading function descriptors from JSON");
 
         JsonElement jsonElement = JsonParser.parseString(json);
         Map<String, List<FunctionDescriptor>> descriptors = gson.fromJson(jsonElement, new TypeToken<Map<String, List<FunctionDescriptor>>>() {
         }.getType());
 
-        System.err.println(gson.toJson(jsonElement));
+        logger.atInfo().log(gson.toJson(jsonElement));
 
         return descriptors;
     }
@@ -348,10 +355,12 @@ public class Exporter {
         for (Map.Entry<String, List<FunctionDescriptor>> entry : functionDescriptors.entrySet()) {
             String serviceName = entry.getKey();
             List<FunctionDescriptor> serviceFunctions = entry.getValue();
-            System.err.println("buildDir" + " = " + buildDir);
-            System.err.println("buildPackage" + " = " + buildPackage);
-            System.err.println("serviceName" + " = " + serviceName);
-            System.err.println("serviceFunctions" + " = " + serviceFunctions);
+            logger.atInfo()
+                  .addKeyValue("buildDir", buildDir)
+                  .addKeyValue("buildPackage", buildPackage)
+                  .addKeyValue("serviceName", serviceName)
+                  .addKeyValue("serviceFunctions", serviceFunctions)
+                  .log("Generating Java service");
 
             JavaFile.builder(buildPackage, storageServiceBaseGenerator.generate(buildPackage, serviceName, serviceFunctions))
                     .build()

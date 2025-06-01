@@ -15,5 +15,6 @@ java_library(
         "@maven_logos//:com_google_guava_guava",
         "@maven_logos//:com_google_inject_guice",
         "@maven_logos//:com_squareup_javapoet",
+        "@maven_logos//:org_slf4j_slf4j_api",
     ],
 )

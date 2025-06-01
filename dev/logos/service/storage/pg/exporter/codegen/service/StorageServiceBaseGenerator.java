@@ -23,6 +23,7 @@ import static dev.logos.service.storage.pg.exporter.descriptor.ExportedIdentifie
 import static javax.lang.model.element.Modifier.*;
 
 public class StorageServiceBaseGenerator {
+    private static final Logger logger = LoggerFactory.getLogger(StorageServiceBaseGenerator.class);
     private final Map<String, PgTypeMapper> pgColumnTypeMappers;
 
     @Inject
@@ -159,7 +160,9 @@ public class StorageServiceBaseGenerator {
     }
 
     public TypeSpec generate(String targetPackage, String serviceName, List<FunctionDescriptor> functionDescriptors) {
-        System.err.println(this.pgColumnTypeMappers.keySet());
+        logger.atInfo()
+              .addKeyValue("pgColumnTypeMappers", pgColumnTypeMappers.keySet())
+              .log("Generating service base");
         ClassName serviceClassName = ClassName.bestGuess(String.format("%s.%s", targetPackage, serviceName));
 
         TypeSpec.Builder storageServiceBuilder =
