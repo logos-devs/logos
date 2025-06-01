@@ -13,6 +13,7 @@ export class RouterPath extends LitElement {
     @state() private active: boolean = false;
     @state() private params: string[] = [];
     private routeMatcher: MatchFunction<Record<string, string>>;
+    private boundCheckRoute = this.checkRoute.bind(this);
 
     static go(path: string, state?: any) {
         if (!path.startsWith('/')) {
@@ -34,12 +35,12 @@ export class RouterPath extends LitElement {
             throw new Error(`Route with pattern ${this.pattern} already exists`);
         }
         RouterPath.routes.set(this.pattern, this);
-        window.addEventListener('popstate', this.checkRoute.bind(this));
+        window.addEventListener('popstate', this.boundCheckRoute);
     }
 
     override disconnectedCallback() {
         RouterPath.routes.delete(this.pattern);
-        window.removeEventListener('popstate', this.checkRoute.bind(this));
+        window.removeEventListener('popstate', this.boundCheckRoute);
         super.disconnectedCallback();
     }
 
