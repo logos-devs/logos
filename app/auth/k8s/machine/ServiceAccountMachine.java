@@ -23,6 +23,25 @@ public class ServiceAccountMachine extends Machine {
     private static final String TOKEN_PATH = "/var/run/secrets/kubernetes.io/serviceaccount/token";
     private static final String CA_CERT_PATH = "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt";
 
+    private static final Optional<PublicKey> PUBLIC_KEY;
+    private static final Optional<Exception> PUBLIC_KEY_ERROR;
+
+    static {
+        Optional<PublicKey> key = Optional.empty();
+        Optional<Exception> error = Optional.empty();
+        try {
+            byte[] caCertBytes = Files.readAllBytes(Paths.get(CA_CERT_PATH));
+            CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
+            X509Certificate caCert = (X509Certificate)
+                    certFactory.generateCertificate(new ByteArrayInputStream(caCertBytes));
+            key = Optional.of(caCert.getPublicKey());
+        } catch (IOException | CertificateException e) {
+            error = Optional.of(e);
+        }
+        PUBLIC_KEY = key;
+        PUBLIC_KEY_ERROR = error;
+    }
+
     private final String token;
     private final Claims claims;
 
@@ -49,7 +68,7 @@ public class ServiceAccountMachine extends Machine {
         try {
             Claims claims = validateToken(token);
             return Optional.of(new ServiceAccountMachine(token, claims));
-        } catch (IOException | CertificateException e) {
+        } catch (IOException | CertificateException | IllegalStateException e) {
             return Optional.empty();
         }
     }
@@ -59,14 +78,14 @@ public class ServiceAccountMachine extends Machine {
     }
 
     public static Claims validateToken(String token) throws IOException, CertificateException {
-        byte[] caCertBytes = Files.readAllBytes(Paths.get(CA_CERT_PATH));
-        CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
-        X509Certificate caCert = (X509Certificate)
-                certFactory.generateCertificate(new ByteArrayInputStream(caCertBytes));
-        PublicKey publicKey = caCert.getPublicKey();
+        if (PUBLIC_KEY.isEmpty()) {
+            IllegalStateException ex = new IllegalStateException("Kubernetes CA certificate unavailable, cannot validate token");
+            PUBLIC_KEY_ERROR.ifPresent(ex::initCause);
+            throw ex;
+        }
 
         Jws<Claims> jwsClaims = Jwts.parser()
-                                    .verifyWith(publicKey)
+                                    .verifyWith(PUBLIC_KEY.get())
                                     .build()
                                     .parseSignedClaims(token);
         return jwsClaims.getPayload();
