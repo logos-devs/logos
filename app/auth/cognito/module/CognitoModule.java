@@ -11,6 +11,7 @@ import com.google.gson.reflect.TypeToken;
 import com.google.inject.BindingAnnotation;
 import com.google.inject.Inject;
 import com.google.inject.Provides;
+import com.google.inject.Singleton;
 import com.google.inject.multibindings.OptionalBinder;
 import dev.logos.app.AppModule;
 import dev.logos.app.register.registerModule;
@@ -69,8 +70,11 @@ public class CognitoModule extends AppModule {
     }
 
     @Provides
+    @Singleton
     SecretsManagerClient secretsManagerClient() {
-        return SecretsManagerClient.create();
+        SecretsManagerClient client = SecretsManagerClient.create();
+        Runtime.getRuntime().addShutdownHook(new Thread(client::close));
+        return client;
     }
 
     @Provides
