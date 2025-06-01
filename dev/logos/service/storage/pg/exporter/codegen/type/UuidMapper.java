@@ -46,7 +46,16 @@ public class UuidMapper extends PgTypeMapper {
 
     @Override
     public CodeBlock protoToPg(String queryVariable, String dbField, String protoVariable, String protoGetter) {
-        return CodeBlock.of("$L.bind($S, $T.bytestringToUuid(($T) $L.$L()));",
-                queryVariable, dbField, UuidMapper.class, ByteString.class, protoVariable, protoGetter);
+        return CodeBlock.of("""
+                        if (!$L.$L().isEmpty()) {
+                            $L.bind($S, $T.bytestringToUuid(($T) $L.$L()));
+                        } else {
+                            $L.bind($S, ($T) null);
+                        }
+                        """,
+                protoVariable, protoGetter,
+                queryVariable, dbField, UuidMapper.class, ByteString.class, protoVariable, protoGetter,
+                queryVariable, dbField, UUID.class
+        );
     }
 }
