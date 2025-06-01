@@ -1,6 +1,7 @@
 package app.auth.cognito.interceptor.cognito;
 
 import app.auth.cognito.module.data.CognitoStackOutputs;
+import app.auth.cognito.module.data.CognitoClientCredentialsSecret;
 import app.auth.cognito.user.CognitoUser;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -14,6 +15,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
+import java.util.Date;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -28,6 +30,7 @@ import java.security.spec.RSAPublicKeySpec;
 import java.util.Base64;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -47,12 +50,18 @@ public class CognitoServerInterceptor implements ServerInterceptor {
                                                                   .build();
 
     private final String userPoolId;
+    private final String clientId;
     private final String region;
     private final Logger logger;
 
     @Inject
-    public CognitoServerInterceptor(final CognitoStackOutputs cognitoStackOutputs, @AwsRegion String region, Logger logger) {
+    public CognitoServerInterceptor(
+            final CognitoStackOutputs cognitoStackOutputs,
+            final CognitoClientCredentialsSecret clientCredentials,
+            @AwsRegion String region,
+            Logger logger) {
         this.userPoolId = requireNonNull(cognitoStackOutputs.cognitoUserPoolId());
+        this.clientId = requireNonNull(clientCredentials.clientId());
         this.region = requireNonNull(region);
         this.logger = logger;
     }
@@ -93,7 +102,7 @@ public class CognitoServerInterceptor implements ServerInterceptor {
         return Optional.empty();
     }
 
-    private Optional<User> authenticateUser(String token) {
+    protected Optional<User> authenticateUser(String token) {
         try {
             String headerJson = new String(Base64.getUrlDecoder().decode(token.split("\\.")[0]), StandardCharsets.UTF_8);
             Gson gson = new Gson();
@@ -111,14 +120,25 @@ public class CognitoServerInterceptor implements ServerInterceptor {
                                      .build()
                                      .parseSignedClaims(token);
 
-            return Optional.of(new CognitoUser(token, claims.getPayload()));
+            Claims payload = claims.getPayload();
+            Date expiration = payload.getExpiration();
+            if (expiration != null && expiration.before(new Date())) {
+                return Optional.empty();
+            }
+
+            Set<String> audiences = payload.getAudience();
+            if (audiences != null && !audiences.contains(clientId)) {
+                return Optional.empty();
+            }
+
+            return Optional.of(new CognitoUser(token, payload));
         } catch (ExpiredJwtException | IOException | NoSuchAlgorithmException | InvalidKeySpecException e) {
             logger.log(Level.SEVERE, "Failed to authenticate", e);
             return Optional.empty();
         }
     }
 
-    private Optional<PublicKey> getPublicKey(String kid, String userPoolId, String region)
+    protected Optional<PublicKey> getPublicKey(String kid, String userPoolId, String region)
             throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
         PublicKey cachedKey = keyCache.getIfPresent(kid);
         if (cachedKey != null) {

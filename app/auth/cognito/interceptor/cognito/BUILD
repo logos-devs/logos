@@ -20,3 +20,15 @@ java_library(
         "@maven_logos//:io_jsonwebtoken_jjwt_jackson",
     ],
 )
+
+java_test(
+    name = "test",
+    srcs = ["CognitoServerInterceptorTest.java"],
+    test_class = "app.auth.cognito.interceptor.cognito.CognitoServerInterceptorTest",
+    deps = [
+        ":cognito",
+        "//app/auth/cognito/module/data",
+        "@maven_logos//:io_jsonwebtoken_jjwt_api",
+        "@maven_logos//:junit_junit",
+    ],
+)
