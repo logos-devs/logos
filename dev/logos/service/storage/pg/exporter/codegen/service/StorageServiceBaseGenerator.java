@@ -81,8 +81,8 @@ public class StorageServiceBaseGenerator {
                         .addParameter(requestMessage, "request")
                         .addParameter(ParameterizedTypeName.get(ClassName.get(StreamObserver.class), responseMessage),
                                 "responseObserver")
-                        .addStatement("$T handle = jdbi.open()", Handle.class)
-                        .addStatement("$T query = handle.createQuery($S)", Query.class, functionDescriptor.toSql());
+                        .beginControlFlow("try ($T handle = jdbi.open())", Handle.class)
+                        .beginControlFlow("try ($T query = handle.createQuery($S))", Query.class, functionDescriptor.toSql());
 
         functionDescriptor.parameters().forEach(functionParameterDescriptor -> {
             String parameterName = functionParameterDescriptor.name();
@@ -144,9 +144,16 @@ public class StorageServiceBaseGenerator {
                 .endControlFlow()
                 .endControlFlow()
                 .addStatement(").stream().forEach(responseObserver::onNext)")
-                .addStatement("query.close()")
-                .addStatement("handle.close()")
-                .addStatement("responseObserver.onCompleted()");
+                .addStatement("responseObserver.onCompleted()")
+                .endControlFlow()
+                .beginControlFlow("catch ($T e)", Throwable.class)
+                .addStatement("logger.atError().setCause(e).addKeyValue(\"query\", $S).log(\"Failed to execute query\")",
+                        functionDescriptor.toSql())
+                .addStatement("responseObserver.onError($T.INTERNAL.withDescription(\"Failed to execute query\")"
+                        + ".withCause(e)"
+                        + ".asRuntimeException())", Status.class)
+                .endControlFlow()
+                .endControlFlow();
 
         return rpcHandlerBuilder.build();
     }
