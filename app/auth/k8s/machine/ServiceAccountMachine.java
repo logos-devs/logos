@@ -16,6 +16,7 @@ import java.security.PublicKey;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.util.Date;
 import java.util.Optional;
 import java.util.concurrent.Executor;
 
@@ -78,17 +79,29 @@ public class ServiceAccountMachine extends Machine {
     }
 
     public static Claims validateToken(String token) throws IOException, CertificateException {
-        if (PUBLIC_KEY.isEmpty()) {
+        if (getPublicKey().isEmpty()) {
             IllegalStateException ex = new IllegalStateException("Kubernetes CA certificate unavailable, cannot validate token");
-            PUBLIC_KEY_ERROR.ifPresent(ex::initCause);
+            getPublicKeyError().ifPresent(ex::initCause);
             throw ex;
         }
 
-        Jws<Claims> jwsClaims = Jwts.parser()
-                                    .verifyWith(PUBLIC_KEY.get())
-                                    .build()
-                                    .parseSignedClaims(token);
-        return jwsClaims.getPayload();
+        Jws<Claims> jws = Jwts.parser()
+                .verifyWith(getPublicKey().get())
+                .build()
+                .parseSignedClaims(token);
+        Date exp = jws.getPayload().getExpiration();
+        if (exp != null && exp.before(new Date())) {
+            throw new IllegalStateException("Expired service account token");
+        }
+        return jws.getPayload();
+    }
+
+    static Optional<PublicKey> getPublicKey() {
+        return PUBLIC_KEY;
+    }
+
+    static Optional<Exception> getPublicKeyError() {
+        return PUBLIC_KEY_ERROR;
     }
 
     @Override
