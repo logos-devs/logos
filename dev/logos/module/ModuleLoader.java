@@ -40,7 +40,7 @@ public class ModuleLoader extends AbstractModule {
     URLClassLoader getURLClassLoader() {
         return new URLClassLoader(
                 readConfigMap().stream().map(jarPathStr -> {
-                    Path jarPath = Paths.get(getRequiredEnv("LOGOS_JAR_DIR"), jarPathStr);
+                    Path jarPath = Paths.get(getEnvOrDefault("LOGOS_JAR_DIR", ""), jarPathStr);
                     if (!Files.exists(jarPath)) {
                         throw new IllegalStateException("Jar file not found: " + jarPath);
                     }
@@ -102,6 +102,14 @@ public class ModuleLoader extends AbstractModule {
         for (String appModule : appModules) {
             try {
                 Class<?> clazz = Class.forName(appModule, true, classLoader);
+                if (clazz.getSimpleName().equals("InfrastructureModule")
+                        && System.getenv("AWS_REGION") == null) {
+                    logger.atInfo()
+                          .addKeyValue("module", clazz.getCanonicalName())
+                          .log("Skipping module due to missing AWS_REGION");
+                    continue;
+                }
+
                 logger.atInfo()
                       .addKeyValue("module", clazz.getCanonicalName())
                       .log("Loading module");
@@ -116,10 +124,10 @@ public class ModuleLoader extends AbstractModule {
         }
     }
 
-    private static String getRequiredEnv(String key) {
+    private static String getEnvOrDefault(String key, String defaultVal) {
         String value = System.getenv(key);
         if (value == null || value.isEmpty()) {
-            throw new IllegalStateException("Required environment variable " + key + " is not set");
+            return defaultVal;
         }
         return value;
     }
@@ -129,7 +137,10 @@ public class ModuleLoader extends AbstractModule {
             return List.of();
         }
 
-        String configPath = getRequiredEnv("LOGOS_SERVICE_JAR_CONFIG_PATH");
+        String configPath = getEnvOrDefault("LOGOS_SERVICE_JAR_CONFIG_PATH", "");
+        if (configPath.isEmpty()) {
+            return List.of();
+        }
         try (Reader reader = Files.newBufferedReader(Paths.get(configPath))) {
             return Arrays.asList(new Gson().fromJson(reader, String[].class));
         } catch (IOException e) {

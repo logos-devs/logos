@@ -31,7 +31,10 @@ build --tool_java_language_version=23
 build --tool_java_runtime_version=23
 
 build --sandbox_default_allow_network=false
+build --build_tag_filters=-requires-network
 run --run_under='@logos//tools:bazel-env'
+
+test --build_tag_filters=-requires-network
 
 common --incompatible_allow_tags_propagation
 common --@aspect_rules_ts//ts:skipLibCheck=honor_tsconfig

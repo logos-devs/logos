@@ -4,7 +4,11 @@ def push_image(name, image, repository, remote_tags = None, visibility = None):
     native.genrule(
         name = name + "_repository",
         outs = [name + "_repository.txt"],
-        cmd = 'echo "$$LOGOS_AWS_REGISTRY/{}" > $@'.format(repository),
+        # Allow tests to run without LOGOS_AWS_REGISTRY set by using an empty default
+        cmd = (
+            'LOGOS_AWS_REGISTRY=$${LOGOS_AWS_REGISTRY:-}; ' +
+            'echo "$$LOGOS_AWS_REGISTRY/%s" > $@'
+        ) % repository,
         visibility = visibility,
     )
 

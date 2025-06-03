@@ -21,6 +21,11 @@ public class Synthesizer {
             System.exit(1);
         }
 
+        if (System.getenv("AWS_REGION") == null) {
+            logger.info("AWS_REGION not set; skipping AWS stack synthesis");
+            return;
+        }
+
         Injector injector = ModuleLoader.createInjector();
         CloudAssembly assembly = injector.getInstance(CloudAssembly.class);
 

@@ -12,6 +12,6 @@ cdk.cdk_binary(
         "--app",
         "$$(realpath ../synthesizer/synthesizer)",
     ],
-    tags = ["no-sandbox"],
+    tags = ["no-sandbox", "requires-network"],
     visibility = ["//visibility:public"],
 )

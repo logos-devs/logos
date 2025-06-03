@@ -94,7 +94,7 @@ def aws(name, deps = None, visibility = None):
             "--app",
             "$$(rm -rf stack; mkdir stack; cd stack; unzip -qq ../stack.zip; echo stack)",
         ],
-        tags = ["no-remote", "no-sandbox", "requires-network"],
+        tags = ["no-remote", "no-sandbox", "requires-network", "manual"],
         visibility = visibility,
     )
 
@@ -117,6 +117,7 @@ def aws(name, deps = None, visibility = None):
         tags = [
             "no-remote",
             "no-sandbox",
+            "manual",
         ],
         tool = ":" + name,
         visibility = visibility,

@@ -18,10 +18,9 @@ import software.amazon.awssdk.services.cognitoidentityprovider.model.AuthFlowTyp
 import software.amazon.awssdk.services.cognitoidentityprovider.model.InitiateAuthRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.InitiateAuthResponse;
 
-import java.io.Console;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.Executor;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -29,9 +28,12 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 
-import static java.lang.System.getenv;
-import static java.util.Objects.requireNonNull;
 
+/**
+ * Development-only module for authentication. During tests, the username
+ * and password environment variables may be absent. In that case dummy
+ * credentials with the value {@code "NOT_SET"} are used.
+ */
 @registerModule
 public class DevModule extends AppModule {
     public DevModule() {
@@ -46,8 +48,10 @@ public class DevModule extends AppModule {
     @ProvidesIntoOptional(ProvidesIntoOptional.Type.ACTUAL)
     @Singleton
     CallCredentials provideUserScopedCallCredentials(@AwsRegion String region, CognitoClientCredentialsSecret clientCredentials) {
-        String username = requireNonNull(getenv("LOGOS_DEV_COGNITO_USERNAME"));
-        String password = requireNonNull(getenv("LOGOS_DEV_COGNITO_PASSWORD"));
+        String username = Optional.ofNullable(System.getenv("LOGOS_DEV_COGNITO_USERNAME"))
+                .orElse("NOT_SET");
+        String password = Optional.ofNullable(System.getenv("LOGOS_DEV_COGNITO_PASSWORD"))
+                .orElse("NOT_SET");
 
         try (CognitoIdentityProviderClient cognitoClient =
                      CognitoIdentityProviderClient.builder()

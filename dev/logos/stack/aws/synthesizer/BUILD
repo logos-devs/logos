@@ -9,6 +9,7 @@ java_binary(
     main_class = "dev.logos.stack.aws.synthesizer.Synthesizer",
     plugins = ["@logos//dev/logos/app/register:module"],
     visibility = ["//visibility:public"],
+    tags = ["requires-network"],
     deps = [
         "//dev/logos/module",
         "//dev/logos/stack/aws/module",

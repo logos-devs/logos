@@ -6,6 +6,7 @@ java_binary(
     main_class = "dev.logos.stack.k8s.synthesizer.Synthesizer",
     plugins = ["@logos//dev/logos/app/register:module"],
     visibility = ["//visibility:public"],
+    tags = ["requires-network"],
     deps = [
         "//dev/logos/module",
         "//dev/logos/service",
@@ -24,7 +25,7 @@ genrule(
     outs = ["stack-chart.k8s.yaml"],
     cmd = "$(location :synthesizer) && mv dist/* $(@D)/ && rm -rf dist",
     exec_properties = {"cdk_lock": "1"},
-    tags = ["no-sandbox"],
+    tags = ["no-sandbox", "requires-network"],
     tools = [":synthesizer"],
     visibility = ["//visibility:public"],
 )
