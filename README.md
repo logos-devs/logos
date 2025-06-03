@@ -1,4 +1,4 @@
-# Logos Framework
+# Logos
 
 Logos is a microservice framework built with **Bazel**. It assembles Java
 services and TypeScript clients into a Kubernetes stack. Modules are provided
