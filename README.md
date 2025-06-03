@@ -16,7 +16,7 @@ as Guice bindings and discovered at runtime.
 1. **Use the dev container.** It includes all needed prerequisites.
 2. **Install Node dependencies**
    ```bash
-   pnpm install
+   bazel build //:node_modules
    ```
 3. **Run the stack**
    ```bash
