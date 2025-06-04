@@ -25,3 +25,19 @@ java_library(
         "@maven_logos//:software_amazon_awssdk_secretsmanager",
     ],
 )
+
+java_test(
+    name = "test",
+    srcs = ["CognitoServiceTest.java"],
+    test_class = "app.auth.cognito.service.CognitoServiceTest",
+    deps = [
+        ":service",
+        "//app/auth/cognito/module/data",
+        "//app/auth/cognito/proto:java_proto",
+        "//dev/logos/auth/user",
+        "@grpc_java_bzlmod//api",
+        "@grpc_java_bzlmod//stub",
+        "@maven_logos//:org_mockito_mockito_core",
+        "@maven_logos//:junit_junit",
+    ],
+)
