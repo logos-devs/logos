@@ -46,7 +46,6 @@ public class DevModule extends AppModule {
 
     @UserScoped
     @ProvidesIntoOptional(ProvidesIntoOptional.Type.ACTUAL)
-    @Singleton
     CallCredentials provideUserScopedCallCredentials(@AwsRegion String region, CognitoClientCredentialsSecret clientCredentials) {
         String username = Optional.ofNullable(System.getenv("LOGOS_DEV_COGNITO_USERNAME"))
                 .orElse("NOT_SET");
