@@ -102,13 +102,6 @@ public class ModuleLoader extends AbstractModule {
         for (String appModule : appModules) {
             try {
                 Class<?> clazz = Class.forName(appModule, true, classLoader);
-                if (clazz.getSimpleName().equals("InfrastructureModule")
-                        && System.getenv("AWS_REGION") == null) {
-                    logger.atInfo()
-                          .addKeyValue("module", clazz.getCanonicalName())
-                          .log("Skipping module due to missing AWS_REGION");
-                    continue;
-                }
 
                 logger.atInfo()
                       .addKeyValue("module", clazz.getCanonicalName())
