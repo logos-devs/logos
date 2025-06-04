@@ -55,9 +55,9 @@ public class DevModule extends AppModule {
 
         try (CognitoIdentityProviderClient cognitoClient =
                      CognitoIdentityProviderClient.builder()
-                                                  .region(Region.of(region))
-                                                  .credentialsProvider(AnonymousCredentialsProvider.create())
-                                                  .build()) {
+                             .region(Region.of(region))
+                             .credentialsProvider(AnonymousCredentialsProvider.create())
+                             .build()) {
 
             Map<String, String> authParams = new HashMap<>();
             authParams.put("USERNAME", username);
@@ -68,10 +68,10 @@ public class DevModule extends AppModule {
             authParams.put("SECRET_HASH", secretHash);
 
             InitiateAuthRequest authRequest = InitiateAuthRequest.builder()
-                                                                 .clientId(clientCredentials.clientId())
-                                                                 .authFlow(AuthFlowType.USER_PASSWORD_AUTH)
-                                                                 .authParameters(authParams)
-                                                                 .build();
+                    .clientId(clientCredentials.clientId())
+                    .authFlow(AuthFlowType.USER_PASSWORD_AUTH)
+                    .authParameters(authParams)
+                    .build();
 
             InitiateAuthResponse authResponse = cognitoClient.initiateAuth(authRequest);
             String token = authResponse.authenticationResult().idToken();
@@ -96,7 +96,7 @@ public class DevModule extends AppModule {
 
     private static class CognitoDevCallCredentials extends CallCredentials {
         private static final Metadata.Key<String> AUTHORIZATION_METADATA_KEY =
-                Metadata.Key.of("Authorization", Metadata.ASCII_STRING_MARSHALLER);
+                Metadata.Key.of("authorization", Metadata.ASCII_STRING_MARSHALLER);
 
         private final String idToken;
 
