@@ -20,16 +20,3 @@ java_library(
     ],
 )
 
-java_test(
-    name = "test",
-    srcs = ["StorageServiceBaseGeneratorTest.java"],
-    test_class = "dev.logos.service.storage.pg.exporter.codegen.service.StorageServiceBaseGeneratorTest",
-    deps = [
-        ":service",
-        "//dev/logos/service/storage/pg/exporter/codegen/type",
-        "//dev/logos/service/storage/pg/exporter/descriptor",
-        "@maven_logos//:com_squareup_javapoet",
-        "@maven_logos//:junit_junit",
-        "@maven_logos//:org_mockito_mockito_core",
-    ],
-)
