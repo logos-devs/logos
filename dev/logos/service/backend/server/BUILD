@@ -23,3 +23,16 @@ java_library(
         "@maven_logos//:io_grpc_grpc_services",
     ],
 )
+
+java_test(
+    name = "test",
+    srcs = ["GuardServerInterceptorTest.java"],
+    test_class = "dev.logos.service.backend.server.GuardServerInterceptorTest",
+    deps = [
+        ":server",
+        "//dev/logos/service",
+        "@maven_logos//:io_grpc_grpc_api",
+        "@maven_logos//:org_mockito_mockito_core",
+        "@maven_logos//:junit_junit",
+    ],
+)
