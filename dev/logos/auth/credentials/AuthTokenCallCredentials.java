@@ -27,11 +27,6 @@ public class AuthTokenCallCredentials extends CallCredentials {
         });
     }
 
-    @Override
-    public void thisUsesUnstableApi() {
-        // No-op
-    }
-
     public static AuthTokenCallCredentials userCredentials() {
         return new AuthTokenCallCredentials(
                 UserContext.getCurrentUser().orElseThrow().getToken());
