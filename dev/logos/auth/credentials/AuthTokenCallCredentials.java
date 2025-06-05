@@ -17,13 +17,9 @@ public class AuthTokenCallCredentials extends CallCredentials {
     @Override
     public void applyRequestMetadata(RequestInfo requestInfo, Executor appExecutor, MetadataApplier applier) {
         appExecutor.execute(() -> {
-            try {
-                Metadata headers = new Metadata();
-                headers.put(Metadata.Key.of("Authorization", Metadata.ASCII_STRING_MARSHALLER), "Bearer " + authToken);
-                applier.apply(headers);
-            } catch (Throwable e) {
-                applier.fail(Status.UNAUTHENTICATED.withCause(e));
-            }
+            Metadata headers = new Metadata();
+            headers.put(Metadata.Key.of("authorization", Metadata.ASCII_STRING_MARSHALLER), "Bearer " + authToken);
+            applier.apply(headers);
         });
     }
 

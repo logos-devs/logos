@@ -15,18 +15,18 @@ import software.amazon.awssdk.auth.credentials.AnonymousCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityProviderClient;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AuthFlowType;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.AuthenticationResultType;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.InitiateAuthRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.InitiateAuthResponse;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.Executor;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.Base64;
+
+import static java.util.Objects.requireNonNull;
 
 
 /**
@@ -45,12 +45,11 @@ public class DevModule extends AppModule {
     }
 
     @UserScoped
+    @Singleton
     @ProvidesIntoOptional(ProvidesIntoOptional.Type.ACTUAL)
     CallCredentials provideUserScopedCallCredentials(@AwsRegion String region, CognitoClientCredentialsSecret clientCredentials) {
-        String username = Optional.ofNullable(System.getenv("LOGOS_DEV_COGNITO_USERNAME"))
-                .orElse("NOT_SET");
-        String password = Optional.ofNullable(System.getenv("LOGOS_DEV_COGNITO_PASSWORD"))
-                .orElse("NOT_SET");
+        String username = requireNonNull(System.getenv("LOGOS_DEV_COGNITO_USERNAME"));
+        String password = requireNonNull(System.getenv("LOGOS_DEV_COGNITO_PASSWORD"));
 
         try (CognitoIdentityProviderClient cognitoClient =
                      CognitoIdentityProviderClient.builder()
@@ -73,7 +72,8 @@ public class DevModule extends AppModule {
                     .build();
 
             InitiateAuthResponse authResponse = cognitoClient.initiateAuth(authRequest);
-            String token = authResponse.authenticationResult().idToken();
+            AuthenticationResultType authenticationResult = authResponse.authenticationResult();
+            String token = authenticationResult.idToken();
 
             return new CognitoDevCallCredentials(token);
         }
@@ -106,13 +106,9 @@ public class DevModule extends AppModule {
         @Override
         public void applyRequestMetadata(RequestInfo requestInfo, Executor appExecutor, MetadataApplier applier) {
             appExecutor.execute(() -> {
-                try {
-                    Metadata headers = new Metadata();
-                    headers.put(AUTHORIZATION_METADATA_KEY, "Bearer " + idToken);
-                    applier.apply(headers);
-                } catch (Throwable e) {
-                    applier.fail(Status.UNAUTHENTICATED.withCause(e));
-                }
+                Metadata headers = new Metadata();
+                headers.put(AUTHORIZATION_METADATA_KEY, "Bearer " + idToken);
+                applier.apply(headers);
             });
         }
     }

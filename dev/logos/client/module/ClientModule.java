@@ -1,14 +1,11 @@
 package dev.logos.client.module;
 
-import com.google.inject.Provides;
 import com.google.inject.multibindings.Multibinder;
 import com.google.inject.multibindings.ProvidesIntoOptional;
 import dev.logos.app.AppModule;
 import dev.logos.app.register.registerModule;
-import dev.logos.client.interceptor.AuthTokenForwardingInterceptor;
 import io.grpc.ClientInterceptor;
 import io.grpc.ManagedChannel;
-import io.grpc.ManagedChannelBuilder;
 import io.grpc.inprocess.InProcessChannelBuilder;
 
 import java.util.Set;
@@ -17,10 +14,7 @@ import java.util.Set;
 public class ClientModule extends AppModule {
     @Override
     protected void configure() {
-        Multibinder
-                .newSetBinder(binder(), ClientInterceptor.class)
-                .addBinding().to(AuthTokenForwardingInterceptor.class);
-
+        Multibinder.newSetBinder(binder(), ClientInterceptor.class);
     }
 
     @ProvidesIntoOptional(ProvidesIntoOptional.Type.DEFAULT)

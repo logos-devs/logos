@@ -1,21 +1,17 @@
 package app.auth.cognito.interceptor.cognito;
 
-import app.auth.cognito.module.data.CognitoStackOutputs;
 import app.auth.cognito.module.data.CognitoClientCredentialsSecret;
+import app.auth.cognito.module.data.CognitoStackOutputs;
 import app.auth.cognito.user.CognitoUser;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import com.google.inject.Inject;
-import dev.logos.stack.aws.module.annotation.AwsRegion;
 import dev.logos.auth.user.User;
+import dev.logos.stack.aws.module.annotation.AwsRegion;
 import io.grpc.*;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.Jwts;
-import java.util.Date;
+import io.jsonwebtoken.*;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -27,10 +23,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.RSAPublicKeySpec;
-import java.util.Base64;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -45,9 +38,9 @@ public class CognitoServerInterceptor implements ServerInterceptor {
     private static final String COGNITO_IDENTITY_POOL_URL_TEMPLATE = "https://cognito-idp.{region}.amazonaws.com/{userPoolId}/.well-known/jwks.json";
 
     private final Cache<String, PublicKey> keyCache = CacheBuilder.newBuilder()
-                                                                  .expireAfterWrite(1, TimeUnit.HOURS)
-                                                                  .maximumSize(100)
-                                                                  .build();
+            .expireAfterWrite(1, TimeUnit.HOURS)
+            .maximumSize(100)
+            .build();
 
     private final String userPoolId;
     private final String clientId;
@@ -73,10 +66,10 @@ public class CognitoServerInterceptor implements ServerInterceptor {
         internalRequestHeaders.merge(requestHeaders);
 
         Optional<String> idToken = Optional.ofNullable(requestHeaders.get(AUTHORIZATION_METADATA_KEY))
-                                           .filter(authHeader -> authHeader.startsWith("Bearer "))
-                                           .map(authHeader -> authHeader.substring("Bearer ".length()))
-                                           .or(() -> Optional.ofNullable(requestHeaders.get(COOKIE_METADATA_KEY))
-                                                             .flatMap(this::extractIdTokenFromCookies));
+                .filter(authHeader -> authHeader.startsWith("Bearer "))
+                .map(authHeader -> authHeader.substring("Bearer ".length()))
+                .or(() -> Optional.ofNullable(requestHeaders.get(COOKIE_METADATA_KEY))
+                        .flatMap(this::extractIdTokenFromCookies));
 
         if (idToken.isPresent()) {
             String token = idToken.get();
@@ -112,13 +105,13 @@ public class CognitoServerInterceptor implements ServerInterceptor {
 
             Optional<PublicKey> optionalPublicKey = getPublicKey(kid, userPoolId, region);
             if (optionalPublicKey.isEmpty()) {
+                logger.severe("No public key found for kid: " + kid);
                 return Optional.empty();
             }
 
-            Jws<Claims> claims = Jwts.parser()
-                                     .verifyWith(optionalPublicKey.get())
-                                     .build()
-                                     .parseSignedClaims(token);
+            JwtParser jwtParser = Jwts.parser().verifyWith(optionalPublicKey.get()).build();
+            var unverifiedClaims = jwtParser.parse(token);
+            Jws<Claims> claims = unverifiedClaims.accept(Jws.CLAIMS);
 
             Claims payload = claims.getPayload();
             Date expiration = payload.getExpiration();
