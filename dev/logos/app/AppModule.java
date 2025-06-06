@@ -91,8 +91,18 @@ public abstract class AppModule extends AbstractModule {
         Class<AbstractStub<?>> stubClass = (Class<AbstractStub<?>>) dummyStub.getClass();
         Provider<ManagedChannel> channelProvider = getProvider(ManagedChannel.class);
 
-        // This cast is safe because stubFactory always produces the correct subclass for stubClass
-        Provider<? extends AbstractStub<?>> provider = () -> stubFactory.apply(channelProvider.get());
+        Provider<Optional<CallCredentials>> credentialsProvider = getProvider(Key.get(new TypeLiteral<Optional<CallCredentials>>() {
+        }));
+
+        Provider<? extends AbstractStub<?>> provider = () -> {
+            var stub = stubFactory.apply(channelProvider.get());
+            Optional<CallCredentials> credentialsProviderOpt = credentialsProvider.get();
+            if (credentialsProviderOpt.isPresent()) {
+                CallCredentials credentials = credentialsProviderOpt.get();
+                stub = stub.withCallCredentials(credentials);
+            }
+            return stub;
+        };
 
         bind(stubClass).toProvider((Provider) provider);
     }
