@@ -18,10 +18,16 @@ def _proto_json_schema_impl(ctx):
     for source in ctx.attr.proto[ProtoInfo].direct_sources:
         cmd_inputs.append(source)
         
+    # Add descriptors which contain the compiled proto definitions
     for descriptor_set in ctx.attr.proto[ProtoInfo].transitive_descriptor_sets.to_list():
         descriptors.append(descriptor_set.path)
         cmd_inputs.append(descriptor_set)
-
+        
+    # If the proto import paths are available, add them as well
+    if hasattr(ctx.attr.proto[ProtoInfo], "transitive_imports"):
+        for imp in ctx.attr.proto[ProtoInfo].transitive_imports.to_list():
+            cmd_inputs.append(imp)
+            
     outputs = []
 
     for proto_file in entrypoints:
@@ -37,18 +43,28 @@ def _proto_json_schema_impl(ctx):
             ctx.actions.run_shell(
                 command = """
                     command -v gfind && find_="gfind" || find_="find"
-
+                    set -e  # Exit immediately if a command fails
+                    
+                    # Log which proto is being processed for debugging
+                    echo "Generating JSON schema for {proto} message {entrypoint}"
+                    
                     mkdir -p {outdir}
-                    $1 {proto} \
-                      --descriptor_set_in=<(cat {descriptors}) \
-                      --plugin=protoc-gen-jsonschema=$2 \
-                      --jsonschema_opt=output_file_suffix=_{entrypoint}.raw.schema.json \
-                      --jsonschema_out={outdir} \
+                    $1 {proto} \\
+                      --descriptor_set_in=<(cat {descriptors}) \\
+                      --plugin=protoc-gen-jsonschema=$2 \\
+                      --jsonschema_opt=output_file_suffix=_{entrypoint}.raw.schema.json \\
+                      --jsonschema_out={outdir} \\
                       --jsonschema_opt=entrypoint_message={entrypoint}
 
-                    pushd {outdir} \
-                    && $find_ -type f -mindepth 1 -exec mv {{}} . \\; \
-                    && $find_ -type d -mindepth 1 -maxdepth 1 -exec rm -r {{}} \\; \
+                    # Check if output was generated correctly
+                    if [ $? -ne 0 ]; then
+                      echo "ERROR: Failed to generate schema for {proto}:{entrypoint}" >&2
+                      exit 1
+                    fi
+                    
+                    pushd {outdir} \\
+                    && $find_ -type f -mindepth 1 -exec mv {{}} . \\; \\
+                    && $find_ -type d -mindepth 1 -maxdepth 1 -exec rm -r {{}} \\; \\
                     && popd
                 """.format(
                     proto = proto_file,
