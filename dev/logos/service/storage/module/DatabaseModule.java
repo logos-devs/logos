@@ -23,7 +23,8 @@ import javax.sql.DataSource;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Optional;
-
+import java.util.Properties;
+import java.util.Map;
 
 @registerModule
 public class DatabaseModule extends AbstractModule {
@@ -44,9 +45,32 @@ public class DatabaseModule extends AbstractModule {
     static String DB_USER = Optional.ofNullable(System.getenv("STORAGE_PG_BACKEND_USER"))
             .orElse("storage");
 
+    private static void logDebugSnapshot(String phase, Object... extra) {
+        System.err.println("=== [AUTHOR-DB-DEBUG] DatabaseModule: " + phase + " ===");
+        System.err.println("  user.dir=" + System.getProperty("user.dir"));
+        System.err.println("  java.class.path=" + System.getProperty("java.class.path"));
+        for (Map.Entry<String,String> env : System.getenv().entrySet()) {
+            String k = env.getKey().toLowerCase();
+            if(k.contains("pg") || k.contains("db") || k.contains("jdbc"))
+                System.err.println("  ENV " + env.getKey() + "=" + env.getValue());
+        }
+        for (Map.Entry<Object,Object> e : System.getProperties().entrySet()) {
+            String k = e.getKey().toString().toLowerCase();
+            if(k.contains("pg") || k.contains("db") || k.contains("jdbc"))
+                System.err.println("  PROP " + e.getKey() + "=" + e.getValue());
+        }
+        if (extra != null) {
+            for (Object obj : extra) {
+                System.err.println("  EXTRA: " + obj);
+            }
+        }
+        System.err.println("=== [AUTHOR-DB-DEBUG] END SNAPSHOT ===");
+    }
+
     @Provides
     @DatabaseEndpoint
     String provideDatabaseEndpoint() throws TextParseException {
+        logDebugSnapshot("provideDatabaseEndpoint()");
         return Optional.ofNullable(new Lookup(CLUSTER_RW_CNAME, Type.CNAME).run())
                 .filter(r -> r.length > 0)
                 .map(record -> ((CNAMERecord) record[0]).getTarget().toString(true))
@@ -56,6 +80,7 @@ public class DatabaseModule extends AbstractModule {
     @Provides
     @DatabaseJdbcUrl
     String provideDatabaseJdbcUrl(@DatabaseEndpoint String endpoint) {
+        logDebugSnapshot("provideDatabaseJdbcUrl()", "endpoint=" + endpoint, "DB_URL=" + DB_URL);
         if (endpoint.equals(CLUSTER_RW_CNAME)) {
             return DB_URL;
         }
@@ -68,10 +93,11 @@ public class DatabaseModule extends AbstractModule {
     @Provides
     @Singleton
     DataSource provideHikariDataSource(HikariConfig config, @DatabaseEndpoint String endpoint) {
+        logDebugSnapshot("provideHikariDataSource()", "config.jdbcUrl=" + config.getJdbcUrl(), "config.username=" + config.getUsername(), "endpoint=" + endpoint);
         return new HikariDataSource(config) {
             @Override
             public String getPassword() {
-                return RdsUtilities.builder()
+                String token = RdsUtilities.builder()
                         .region(new DefaultAwsRegionProviderChain().getRegion())
                         .build()
                         .generateAuthenticationToken(
@@ -84,6 +110,8 @@ public class DatabaseModule extends AbstractModule {
                                         .port(CLUSTER_RW_PORT)
                                         .username(getUsername())
                                         .build());
+                logDebugSnapshot("getPassword()", "hostname=" + Optional.ofNullable(System.getenv("STORAGE_PG_BACKEND_HOST")).orElse(endpoint), "port=" + CLUSTER_RW_PORT, "username=" + getUsername());
+                return token;
             }
         };
     }
@@ -96,11 +124,13 @@ public class DatabaseModule extends AbstractModule {
         config.setUsername(DB_USER);
         config.addDataSourceProperty("minimumIdle", 5);
         config.addDataSourceProperty("maximumPoolSize", 25);
+        logDebugSnapshot("provideHikariConfig()", "jdbcUrl=" + jdbcUrl, "DB_USER=" + DB_USER);
         return config;
     }
 
     @Provides
     Jdbi provideJdbi(DataSource dataSource) {
+        logDebugSnapshot("provideJdbi()", "dataSource.class=" + dataSource.getClass().getName());
         return Jdbi.create(dataSource).installPlugin(new PostgresPlugin());
     }
 }
