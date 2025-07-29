@@ -1,14 +1,14 @@
-import { html, LitElement, TemplateResult } from 'lit';
-import { customElement, property, state } from 'lit/decorators.js';
-import { match, MatchFunction, MatchResult } from 'path-to-regexp';
+import {html, LitElement, TemplateResult} from 'lit';
+import {customElement, property, state} from 'lit/decorators.js';
+import {match, MatchFunction, MatchResult} from 'path-to-regexp';
 
 @customElement('router-path')
 export class RouterPath extends LitElement {
     static routes = new Map<string, RouterPath>();
 
-    @property({ type: String }) pattern: string;
-    @property({ type: Function }) content: (...params: string[]) => TemplateResult = () => html``;
-    @property({ type: Object }) action?: () => Promise<unknown>;
+    @property({type: String}) pattern: string;
+    @property({type: Function}) content: (...params: string[]) => TemplateResult = () => html``;
+    @property({type: Object}) action?: () => Promise<unknown>;
 
     @state() private active: boolean = false;
     @state() private params: string[] = [];
@@ -29,7 +29,7 @@ export class RouterPath extends LitElement {
 
     connectedCallback() {
         super.connectedCallback();
-        this.routeMatcher = match(this.pattern, { decode: decodeURIComponent });
+        this.routeMatcher = match(this.pattern, {decode: decodeURIComponent});
         this.checkRoute();
         if (RouterPath.routes.has(this.pattern)) {
             throw new Error(`Route with pattern ${this.pattern} already exists`);
@@ -57,6 +57,7 @@ export class RouterPath extends LitElement {
         } else {
             this.params = [];
         }
+        this.requestUpdate();
     }
 
     render(): TemplateResult {
