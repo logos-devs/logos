@@ -51,8 +51,8 @@ dependencies:
     specifier: 2.8.0
     version: 2.8.0
   aws-cdk:
-    specifier: 2.1001.0
-    version: 2.1001.0
+    specifier: 2.1024.0
+    version: 2.1024.0
   aws-sdk:
     specifier: 2.1692.0
     version: 2.1692.0
@@ -1310,9 +1310,9 @@ packages:
     engines: {node: '>= 0.4'}
     dev: false
 
-  /aws-cdk@2.1001.0:
-    resolution: {integrity: sha512-Wp6fKNXcxBm+f8U1GkLV4gEgqq1pu5uwyDCMBg7ZB/6CtP+PsD/mPhuKyMULNWucDvYN8oy70XLOkMnxa3NWFw==}
-    engines: {node: '>= 14.15.0'}
+  /aws-cdk@2.1024.0:
+    resolution: {integrity: sha512-hY0iVT2gPX/QOQXL7RSP2sqIRI/4BYU27vSmbhZxLEj//c3pkMkd9QpIHj7gOhyWC2gf6n5JuYPw27Dgw8FEdA==}
+    engines: {node: '>= 18.0.0'}
     hasBin: true
     optionalDependencies:
       fsevents: 2.3.2
@@ -1814,7 +1814,7 @@ packages:
     dependencies:
       semver: 7.7.1
       shelljs: 0.8.5
-      typescript: 5.9.0-dev.20250327
+      typescript: 6.0.0-dev.20250809
     dev: true
 
   /ee-first@1.1.1:
@@ -3488,8 +3488,8 @@ packages:
     hasBin: true
     dev: true
 
-  /typescript@5.9.0-dev.20250327:
-    resolution: {integrity: sha512-mgPk1NuIM28WIA17sk771bQcwoqcS5k1Xyq0LgnWOEBjCjqDNevoVqAlU5pxW4uIgdZfpkk1b/lF577831be5Q==}
+  /typescript@6.0.0-dev.20250809:
+    resolution: {integrity: sha512-Qn4q7eEdZKg6iQAkLS7SDM9ASNlyvaFkP4ze7jTadOvtEA5EQNj+Si8lmAu2FV/zVZAgLrQRcfMj3yCNeMIo3Q==}
     engines: {node: '>=14.17'}
     hasBin: true
     dev: true

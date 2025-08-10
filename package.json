@@ -21,7 +21,7 @@
     "@spectrum-web-components/textfield": "1.1.2",
     "@spectrum-web-components/reactive-controllers": "1.1.2",
     "@webcomponents/webcomponentsjs": "2.8.0",
-    "aws-cdk": "2.1001.0",
+    "aws-cdk": "2.1024.0",
     "aws-sdk": "2.1692.0",
     "google-protobuf": "3.21.4",
     "grpc-web": "1.5.0",

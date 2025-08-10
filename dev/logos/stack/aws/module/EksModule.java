@@ -8,7 +8,7 @@ import com.google.inject.multibindings.ProvidesIntoSet;
 import dev.logos.stack.aws.module.annotation.RpcServerDatabaseRoles;
 import software.amazon.awscdk.Stack;
 import software.amazon.awscdk.*;
-import software.amazon.awscdk.cdk.lambdalayer.kubectl.v30.KubectlV30Layer;
+import software.amazon.awscdk.cdk.lambdalayer.kubectl.v32.KubectlV32Layer;
 import software.amazon.awscdk.services.autoscaling.AutoScalingGroup;
 import software.amazon.awscdk.services.autoscaling.UpdatePolicy;
 import software.amazon.awscdk.services.ec2.*;
@@ -130,11 +130,11 @@ public class EksModule extends AbstractModule {
         try (
                 DefaultCredentialsProvider defaultCredentialsProvider = DefaultCredentialsProvider.create();
                 IamClient iamClient = IamClient.builder()
-                                               .credentialsProvider(defaultCredentialsProvider)
-                                               .build();
+                        .credentialsProvider(defaultCredentialsProvider)
+                        .build();
                 StsClient stsClient = StsClient.builder()
-                                               .credentialsProvider(defaultCredentialsProvider)
-                                               .build()
+                        .credentialsProvider(defaultCredentialsProvider)
+                        .build()
         ) {
             GetCallerIdentityResponse identityResponse = stsClient.getCallerIdentity(
                     GetCallerIdentityRequest.builder().build());
@@ -143,8 +143,8 @@ public class EksModule extends AbstractModule {
             String sessionName = assumedRoleArn.substring(assumedRoleArn.lastIndexOf('/') + 1);
             ListRolesResponse rolesResponse = iamClient.listRoles(
                     ListRolesRequest.builder()
-                                    .pathPrefix("/aws-reserved/sso.amazonaws.com/")
-                                    .build());
+                            .pathPrefix("/aws-reserved/sso.amazonaws.com/")
+                            .build());
 
             for (software.amazon.awssdk.services.iam.model.Role role : rolesResponse.roles()) {
                 if (assumedRoleArn.contains(role.roleName()) && assumedRoleArn.endsWith(sessionName)) {
@@ -162,11 +162,11 @@ public class EksModule extends AbstractModule {
     List<SubnetSelection> provideClusterSubnetSelection() {
         return List.of(
                 SubnetSelection.builder()
-                               .subnetType(SubnetType.PUBLIC)
-                               .build(),
+                        .subnetType(SubnetType.PUBLIC)
+                        .build(),
                 SubnetSelection.builder()
-                               .subnetType(SubnetType.PRIVATE_WITH_EGRESS)
-                               .build()
+                        .subnetType(SubnetType.PRIVATE_WITH_EGRESS)
+                        .build()
         );
     }
 
@@ -195,11 +195,11 @@ public class EksModule extends AbstractModule {
                                              AlbControllerOptions.Builder albControllerOptionsBuilder,
                                              @ClusterSubnetSelection List<SubnetSelection> subnetSelection) {
         return ClusterProps.builder()
-                           .version(KubernetesVersion.V1_30)
-                           .albController(albControllerOptionsBuilder.build())
-                           .defaultCapacity(0)
-                           .vpc(vpc)
-                           .vpcSubnets(subnetSelection);
+                .version(KubernetesVersion.V1_32)
+                .albController(albControllerOptionsBuilder.build())
+                .defaultCapacity(0)
+                .vpc(vpc)
+                .vpcSubnets(subnetSelection);
     }
 
     @Provides
@@ -208,18 +208,18 @@ public class EksModule extends AbstractModule {
             @WorkerNodeInstanceType InstanceType instanceType
     ) {
         return AutoScalingGroupCapacityOptions.builder()
-                                              .instanceType(instanceType)
-                                              .machineImageType(MachineImageType.BOTTLEROCKET)
-                                              .minCapacity(1)
-                                              .maxCapacity(2)
-                                              .updatePolicy(UpdatePolicy.rollingUpdate())
-                                              .updatePolicy(UpdatePolicy.rollingUpdate())
-                                              .blockDevices(List.of(
-                                                      software.amazon.awscdk.services.autoscaling.BlockDevice.builder()
-                                                                 .deviceName("/dev/xvda")
-                                                                 .volume(software.amazon.awscdk.services.autoscaling.BlockDeviceVolume.ebs(100))
-                                                                 .build()
-                                              ))
+                .instanceType(instanceType)
+                .machineImageType(MachineImageType.BOTTLEROCKET)
+                .minCapacity(1)
+                .maxCapacity(2)
+                .updatePolicy(UpdatePolicy.rollingUpdate())
+                .updatePolicy(UpdatePolicy.rollingUpdate())
+                .blockDevices(List.of(
+                        software.amazon.awscdk.services.autoscaling.BlockDevice.builder()
+                                .deviceName("/dev/xvda")
+                                .volume(software.amazon.awscdk.services.autoscaling.BlockDeviceVolume.ebs(100))
+                                .build()
+                ))
 
                 ;
     }
@@ -242,9 +242,9 @@ public class EksModule extends AbstractModule {
     @EfsSecurityGroupBuilder
     SecurityGroupProps.Builder provideEfsSecurityGroupPropsBuilder(Vpc vpc) {
         return SecurityGroupProps.builder()
-                                 .vpc(vpc)
-                                 .description("Security group for EFS")
-                                 .allowAllOutbound(true);
+                .vpc(vpc)
+                .description("Security group for EFS")
+                .allowAllOutbound(true);
     }
 
     @Provides
@@ -252,14 +252,14 @@ public class EksModule extends AbstractModule {
     @EksFileSystemBuilder
     FileSystemProps.Builder provideFileSystemPropsBuilder(Vpc vpc) {
         return FileSystemProps.builder()
-                              .vpc(vpc)
-                              .lifecyclePolicy(LifecyclePolicy.AFTER_7_DAYS)
-                              .performanceMode(PerformanceMode.GENERAL_PURPOSE)
-                              .throughputMode(ThroughputMode.ELASTIC)
-                              .outOfInfrequentAccessPolicy(OutOfInfrequentAccessPolicy.AFTER_1_ACCESS)
-                              .lifecyclePolicy(LifecyclePolicy.AFTER_14_DAYS)
-                              // TODO switch to RETAIN upon release
-                              .removalPolicy(RemovalPolicy.DESTROY)
+                .vpc(vpc)
+                .lifecyclePolicy(LifecyclePolicy.AFTER_7_DAYS)
+                .performanceMode(PerformanceMode.GENERAL_PURPOSE)
+                .throughputMode(ThroughputMode.ELASTIC)
+                .outOfInfrequentAccessPolicy(OutOfInfrequentAccessPolicy.AFTER_1_ACCESS)
+                .lifecyclePolicy(LifecyclePolicy.AFTER_14_DAYS)
+                // TODO switch to RETAIN upon release
+                .removalPolicy(RemovalPolicy.DESTROY)
                 //.removalPolicy(software.amazon.awscdk.RemovalPolicy.RETAIN)
                 ;
     }
@@ -310,15 +310,15 @@ public class EksModule extends AbstractModule {
             @RpcServerDatabaseRoles Set<String> databaseRoles
     ) {
         return PolicyStatement.Builder.create()
-                                      .actions(Collections.singletonList("rds-db:connect"))
-                                      .effect(Effect.ALLOW)
-                                      .resources(databaseRoles.stream()
-                                                              .map(role -> "arn:aws:rds-db:%s:%s:dbuser:%s/%s".formatted(
-                                                                      dbCluster.getStack().getRegion(),
-                                                                      dbCluster.getStack().getAccount(),
-                                                                      dbCluster.getClusterResourceIdentifier(),
-                                                                      role
-                                                              )).toList());
+                .actions(Collections.singletonList("rds-db:connect"))
+                .effect(Effect.ALLOW)
+                .resources(databaseRoles.stream()
+                        .map(role -> "arn:aws:rds-db:%s:%s:dbuser:%s/%s".formatted(
+                                dbCluster.getStack().getRegion(),
+                                dbCluster.getStack().getAccount(),
+                                dbCluster.getClusterResourceIdentifier(),
+                                role
+                        )).toList());
     }
 
     @Provides
@@ -346,9 +346,9 @@ public class EksModule extends AbstractModule {
     @WorkerNodePolicyBuilder
     PolicyStatement.Builder provideWorkerNodePolicyStatementBuilder(@WorkerNodePolicyActions List<String> actions) {
         return PolicyStatement.Builder.create()
-                                      .actions(actions)
-                                      .effect(Effect.ALLOW)
-                                      .resources(List.of("*"));
+                .actions(actions)
+                .effect(Effect.ALLOW)
+                .resources(List.of("*"));
     }
 
     @Provides
@@ -388,23 +388,23 @@ public class EksModule extends AbstractModule {
                     this,
                     clusterId,
                     clusterPropsBuilder.clusterName(clusterId).kubectlLayer(
-                                               new KubectlV30Layer(this, id + "-kubectl-layer"))
-                                       .endpointAccess(EndpointAccess.PUBLIC_AND_PRIVATE)
-                                       .authenticationMode(AuthenticationMode.API_AND_CONFIG_MAP)
-                                       .mastersRole(Role.fromRoleArn(this, id + "-deployment-role", mastersRoleArn))
-                                       .build()
+                                    new KubectlV32Layer(this, id + "-kubectl-layer"))
+                            .endpointAccess(EndpointAccess.PUBLIC_AND_PRIVATE)
+                            .authenticationMode(AuthenticationMode.API_AND_CONFIG_MAP)
+                            .mastersRole(Role.fromRoleArn(this, id + "-deployment-role", mastersRoleArn))
+                            .build()
             );
 
             for (Map<String, Object> addon : addonConfigs) {
                 Addon.Builder.create(this, id + "-" + addon.get("name") + "-addon")
-                             .cluster(cluster)
-                             .addonName((String) addon.get("name"))
-                             .addonVersion((String) addon.get("version"))
-                             .build();
+                        .cluster(cluster)
+                        .addonName((String) addon.get("name"))
+                        .addonVersion((String) addon.get("version"))
+                        .build();
             }
 
             AutoScalingGroup asg = cluster.addAutoScalingGroupCapacity(id + "-autoscalinggroup",
-                                                                       autoScalingGroupCapacityOptionsBuilder.build());
+                    autoScalingGroupCapacityOptionsBuilder.build());
 
             SecurityGroup efsSg = new SecurityGroup(this, id + "-efs-sg", efsSecurityGroupPropsBuilder.build());
             efsSg.addIngressRule(Peer.securityGroupId(cluster.getClusterSecurityGroupId()), Port.tcp(2049));
@@ -447,17 +447,17 @@ public class EksModule extends AbstractModule {
             ServiceAccount rpcServerServiceAccount = cluster.addServiceAccount(
                     id + "-backend-service-account",
                     serviceAccountOptionsBuilder.name(id + "-backend-service-account")
-                                                .build());
+                            .build());
 
             serviceAccountPolicyStatementBuilderSet.forEach(
                     policyStatementBuilder ->
                             rpcServerServiceAccount.addToPrincipalPolicy(policyStatementBuilder.build()));
 
             new CfnOutput(this, id + "-backend-service-account-role-arn",
-                          CfnOutputProps.builder()
-                                        .exportName(RPC_SERVICE_ACCOUNT_ROLE_ARN_OUTPUT)
-                                        .value(rpcServerServiceAccount.getRole().getRoleArn())
-                                        .build());
+                    CfnOutputProps.builder()
+                            .exportName(RPC_SERVICE_ACCOUNT_ROLE_ARN_OUTPUT)
+                            .value(rpcServerServiceAccount.getRole().getRoleArn())
+                            .build());
 
             IRole role = asg.getRole();
             role.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName("service-role/AmazonEFSCSIDriverPolicy"));
