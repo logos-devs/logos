@@ -18,7 +18,7 @@ java_library(
         "@maven_logos//:com_google_inject_guice",
         "@maven_logos//:org_jetbrains_annotations",
         "@maven_logos//:software_amazon_awscdk_aws_cdk_lib",
-        "@maven_logos//:software_amazon_awscdk_cdk_lambda_layer_kubectl_v32",
+        "@maven_logos//:software_amazon_awscdk_cdk_lambda_layer_kubectl_v33",
         "@maven_logos//:software_amazon_awssdk_auth",
         "@maven_logos//:software_amazon_awssdk_iam",
         "@maven_logos//:software_amazon_awssdk_regions",

@@ -166,7 +166,7 @@ maven.install(
         "org.slf4j:slf4j-api:2.0.7",
         "org.slf4j:slf4j-simple:2.0.7",
         "software.amazon.awscdk:aws-cdk-lib:2.210.0",
-        "software.amazon.awscdk:cdk-lambda-layer-kubectl-v32:2.1.0",
+        "software.amazon.awscdk:cdk-lambda-layer-kubectl-v33:2.0.0",
         "software.amazon.awssdk:cognitoidentityprovider:" + MAVEN_AWSSDK_VERSION,
         "software.amazon.awssdk:cognitoidentityprovider:" + MAVEN_AWSSDK_VERSION,
         "software.amazon.awssdk:ec2:" + MAVEN_AWSSDK_VERSION,

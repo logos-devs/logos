@@ -8,7 +8,7 @@ import com.google.inject.multibindings.ProvidesIntoSet;
 import dev.logos.stack.aws.module.annotation.RpcServerDatabaseRoles;
 import software.amazon.awscdk.Stack;
 import software.amazon.awscdk.*;
-import software.amazon.awscdk.cdk.lambdalayer.kubectl.v32.KubectlV32Layer;
+import software.amazon.awscdk.cdk.lambdalayer.kubectl.v33.KubectlV33Layer;
 import software.amazon.awscdk.services.autoscaling.AutoScalingGroup;
 import software.amazon.awscdk.services.autoscaling.UpdatePolicy;
 import software.amazon.awscdk.services.ec2.*;
@@ -195,7 +195,7 @@ public class EksModule extends AbstractModule {
                                              AlbControllerOptions.Builder albControllerOptionsBuilder,
                                              @ClusterSubnetSelection List<SubnetSelection> subnetSelection) {
         return ClusterProps.builder()
-                .version(KubernetesVersion.V1_32)
+                .version(KubernetesVersion.V1_33)
                 .albController(albControllerOptionsBuilder.build())
                 .defaultCapacity(0)
                 .vpc(vpc)
@@ -388,7 +388,7 @@ public class EksModule extends AbstractModule {
                     this,
                     clusterId,
                     clusterPropsBuilder.clusterName(clusterId).kubectlLayer(
-                                    new KubectlV32Layer(this, id + "-kubectl-layer"))
+                                    new KubectlV33Layer(this, id + "-kubectl-layer"))
                             .endpointAccess(EndpointAccess.PUBLIC_AND_PRIVATE)
                             .authenticationMode(AuthenticationMode.API_AND_CONFIG_MAP)
                             .mastersRole(Role.fromRoleArn(this, id + "-deployment-role", mastersRoleArn))
