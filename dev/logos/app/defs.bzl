@@ -1,3 +1,4 @@
+load("@bazel_skylib//rules:common_settings.bzl", "BuildSettingInfo")
 load("@logos//dev/logos/stack/k8s:defs.bzl", "k8s_manifest")
 load("@logos//bzl:push_image.bzl", "push_image")
 load("//bzl:k8s.bzl", "kubectl")
@@ -7,6 +8,27 @@ K8S_ACTIONS = ["apply", "delete", "diff", "replace"]
 def _app_impl(ctx):
     executable = ctx.actions.declare_file(ctx.attr.name)
     runfiles = ctx.runfiles(files = ctx.files.kubectl + ctx.files.web)
+
+    registry_prefix = ctx.attr._registry_prefix[BuildSettingInfo].value
+    if registry_prefix:
+        registry_prefix = registry_prefix.rstrip("/") + "/"
+
+    kubectl_context = ctx.attr._kubectl_context[BuildSettingInfo].value
+    load_strategy = ctx.attr._load_strategy[BuildSettingInfo].value
+
+    env_lines = []
+    if kubectl_context:
+        env_lines.append('export LOGOS_KUBECTL_CONTEXT="{}"'.format(kubectl_context))
+    if registry_prefix:
+        env_lines.append('export LOGOS_CONTAINER_REGISTRY="{}"'.format(registry_prefix))
+    if load_strategy == "load":
+        env_lines.append('''if command -v minikube >/dev/null 2>&1; then
+  eval "$(minikube docker-env --shell bash)"
+else
+  echo "minikube executable not found; required for load strategy" >&2
+  exit 1
+fi''')
+    env_block = "\n".join(env_lines)
 
     rpc_servers_yaml = ""
     if ctx.attr.rpc_servers:
@@ -27,6 +49,7 @@ def _app_impl(ctx):
     ctx.actions.write(
         output = executable,
         content = """#!/bin/bash -eu
+{env_block}
 CONSOLE_POD_NAME="$({kubectl} get pods -l app=console -o jsonpath="{{.items[0].metadata.name}}")"
 
 forward_local_port() {{
@@ -88,6 +111,7 @@ EOF
             deps = "\n".join(deps),
             kubectl = ctx.attr.kubectl.files_to_run.executable.short_path,
             action = ctx.attr.action,
+            env_block = env_block,
             web_sh = """
 WEB_HASHES="$(
     find -H {web_files} -type f | while read -r file
@@ -136,6 +160,9 @@ app_rule = rule(
             default = Label("//tools:kubectl"),
             executable = True,
         ),
+        "_registry_prefix": attr.label(default = Label("//dev/logos/config/registry:prefix")),
+        "_kubectl_context": attr.label(default = Label("//dev/logos/config/kubectl:context")),
+        "_load_strategy": attr.label(default = Label("//dev/logos/config/registry:load_strategy")),
     },
     executable = True,
 )

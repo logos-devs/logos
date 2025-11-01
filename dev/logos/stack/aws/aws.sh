@@ -46,6 +46,18 @@ _update_bazelrc_env() {
   echo "build --host_action_env=$var_name=$var_value" >> "$bazelrc_local"
 }
 
+_update_bazelrc_flag() {
+  local setting="$1"; shift 1
+  local value="$1"; shift 1
+  local bazelrc_local="$BUILD_WORKSPACE_DIRECTORY/.bazelrc.local"
+
+  touch "$bazelrc_local"
+  echo -e "Updating $bazelrc_local with flag //$setting=$value"
+
+  "$SED" -i "|^build --//$setting=|d" "$bazelrc_local" || true
+  echo "build --//$setting=$value" >> "$bazelrc_local"
+}
+
 _run_with_pid() {
     PID_FILE="$1"; shift 1
 
@@ -128,13 +140,19 @@ dev_setup() {
 
     EKS_STACK_CLUSTER="logos-eks-stack-cluster"
 
-    _update_bazelrc_env LOGOS_AWS_REGION "$AWS_REGION"
-    _update_bazelrc_env LOGOS_AWS_REGISTRY "$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com"
+    _update_bazelrc_flag "dev/logos/config/infra:provider" "aws"
+    _update_bazelrc_flag "dev/logos/config/kubectl:context" "$EKS_STACK_CLUSTER"
+    _update_bazelrc_flag "dev/logos/config/registry:prefix" "$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com"
+    _update_bazelrc_flag "dev/logos/config/registry:load_strategy" "push"
+    _update_bazelrc_flag "dev/logos/stack/aws:cluster_name" "$EKS_STACK_CLUSTER"
+    _update_bazelrc_flag "dev/logos/stack/aws:account_id" "$AWS_ACCOUNT_ID"
+    _update_bazelrc_flag "dev/logos/stack/aws:region" "$AWS_REGION"
     _update_bazelrc_env STORAGE_PG_BACKEND_HOST "localhost"
 
     bazel run @logos//dev/logos/stack/aws/cdk -- deploy --all --require-approval never
 
     ACCOUNT="$(aws sts get-caller-identity --query "Account" --output text)"
+    _update_bazelrc_flag "dev/logos/stack/aws:account_id" "$ACCOUNT"
     STACK="logos-eks-stack"
 
     echo "Updating kubeconfig for $STACK in $AWS_REGION"

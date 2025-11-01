@@ -4,6 +4,7 @@ load("@rules_pkg//pkg:pkg.bzl", "pkg_tar")
 load("@aspect_bazel_lib//lib:tar.bzl", "tar")
 load("//bzl:k8s.bzl", "kubectl")
 load("//bzl:push_image.bzl", "push_image")
+load("//bzl:minikube.bzl", "minikube_load_image")
 
 java_binary(
     name = "controller_bin",
@@ -13,6 +14,7 @@ java_binary(
     ],
     main_class = "dev.logos.app.controller.AppController",
     deps = [
+        "//dev/logos/stack/aws:environment",
         "@maven_logos_app_controller//:com_google_code_gson_gson",
         "@maven_logos_app_controller//:com_google_inject_guice",
         "@maven_logos_app_controller//:io_grpc_grpc_api",
@@ -52,9 +54,18 @@ push_image(
     repository = "logos-ecr-app-controller",
 )
 
+minikube_load_image(
+    name = "image_load_minikube",
+    image = ":image",
+)
+
 kubectl(
     name = "controller",
-    image_pushes = [":image_push"],
+    image_pushes = select({
+        "//dev/logos/config/infra:aws": [":image_push"],
+        "//dev/logos/config/infra:minikube": [":image_load_minikube"],
+        "//conditions:default": [":image_push"],
+    }),
     images = {":image.digest": "logos-ecr-app-controller"},
     manifests = [
         "manifests/serviceaccount.yaml",

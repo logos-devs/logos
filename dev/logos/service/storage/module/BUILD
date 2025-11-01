@@ -7,6 +7,7 @@ java_library(
     visibility = ["//visibility:public"],
     deps = [
         "//dev/logos/app/register:module_library",
+        "//dev/logos/stack/aws:environment",
         "@maven_logos//:com_google_inject_guice",
         "@maven_logos//:com_zaxxer_HikariCP",
         "@maven_logos//:dnsjava_dnsjava",

@@ -1,14 +1,27 @@
 load("@rules_oci//oci:defs.bzl", "oci_push")
+load("@bazel_skylib//rules:common_settings.bzl", "BuildSettingInfo")
+
+def _repository_file_impl(ctx):
+    prefix = ctx.attr._registry_prefix[BuildSettingInfo].value
+    if prefix and not prefix.endswith("/"):
+        prefix = prefix + "/"
+    ctx.actions.write(ctx.outputs.out, prefix + ctx.attr.repository)
+
+repository_file = rule(
+    implementation = _repository_file_impl,
+    attrs = {
+        "repository": attr.string(mandatory = True),
+        "_registry_prefix": attr.label(
+            default = Label("//dev/logos/config/registry:prefix"),
+        ),
+    },
+    outputs = {"out": "%{name}.txt"},
+)
 
 def push_image(name, image, repository, remote_tags = None, visibility = None):
-    native.genrule(
+    repository_file(
         name = name + "_repository",
-        outs = [name + "_repository.txt"],
-        # Allow tests to run without LOGOS_AWS_REGISTRY set by using an empty default
-        cmd = (
-            'LOGOS_AWS_REGISTRY=$${LOGOS_AWS_REGISTRY:-}; ' +
-            'echo "$$LOGOS_AWS_REGISTRY/%s" > $@'
-        ) % repository,
+        repository = repository,
         visibility = visibility,
     )
 

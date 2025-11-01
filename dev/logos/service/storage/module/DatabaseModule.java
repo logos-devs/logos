@@ -14,6 +14,7 @@ import org.xbill.DNS.CNAMERecord;
 import org.xbill.DNS.Lookup;
 import org.xbill.DNS.TextParseException;
 import org.xbill.DNS.Type;
+import dev.logos.stack.aws.AwsEnvironment;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.regions.providers.DefaultAwsRegionProviderChain;
 import software.amazon.awssdk.services.rds.RdsUtilities;
@@ -43,6 +44,7 @@ public class DatabaseModule extends AbstractModule {
             .orElse("jdbc:postgresql://localhost:15432/logos");
     static String DB_USER = Optional.ofNullable(System.getenv("STORAGE_PG_BACKEND_USER"))
             .orElse("storage");
+    static String DB_PASSWORD = System.getenv("STORAGE_PG_BACKEND_PASSWORD");
 
     @Provides
     @DatabaseEndpoint
@@ -71,6 +73,14 @@ public class DatabaseModule extends AbstractModule {
         return new HikariDataSource(config) {
             @Override
             public String getPassword() {
+                if (DB_PASSWORD != null && !DB_PASSWORD.isBlank()) {
+                    return DB_PASSWORD;
+                }
+
+                if (!AwsEnvironment.isEnabled()) {
+                    throw new IllegalStateException("STORAGE_PG_BACKEND_PASSWORD must be set when AWS infrastructure is disabled");
+                }
+
                 return RdsUtilities.builder()
                         .region(new DefaultAwsRegionProviderChain().getRegion())
                         .build()

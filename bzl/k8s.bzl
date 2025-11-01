@@ -1,6 +1,33 @@
+load("@bazel_skylib//rules:common_settings.bzl", "BuildSettingInfo")
+
 def _kubectl_impl(ctx):
     executable = ctx.actions.declare_file(ctx.attr.name)
+    kubectl_info = ctx.attr.kubectl[DefaultInfo]
     runfiles = ctx.runfiles(files = ctx.files.kubectl)
+    runfiles = runfiles.merge(kubectl_info.default_runfiles)
+    registry_prefix = ctx.attr._registry_prefix[BuildSettingInfo].value
+    if registry_prefix:
+        registry_prefix = registry_prefix.rstrip("/") + "/"
+
+    kubectl_cmd = ctx.attr.kubectl.files_to_run.executable.short_path
+    kubectl_context = ctx.attr._kubectl_context[BuildSettingInfo].value
+    if kubectl_context:
+        kubectl_cmd = "{} --context={}".format(kubectl_cmd, kubectl_context)
+
+    load_strategy = ctx.attr._load_strategy[BuildSettingInfo].value
+    env_lines = []
+    if kubectl_context:
+        env_lines.append('export LOGOS_KUBECTL_CONTEXT="{}"'.format(kubectl_context))
+    if registry_prefix:
+        env_lines.append('export LOGOS_CONTAINER_REGISTRY="{}"'.format(registry_prefix))
+    if load_strategy == "load":
+        env_lines.append('''if command -v minikube >/dev/null 2>&1; then
+  eval "$(minikube docker-env --shell bash)"
+else
+  echo "minikube executable not found; required for load strategy" >&2
+  exit 1
+fi''')
+    env_block = "\n".join(env_lines)
 
     if ctx.files.manifests:
         runfiles = runfiles.merge(ctx.runfiles(files = ctx.files.manifests + ctx.files.images))
@@ -10,14 +37,18 @@ def _kubectl_impl(ctx):
             for manifest in ctx.files.manifests
         ])
 
-        images = "".join([
-            "  - name: {}\n".format(repository) +
-            "    newName: {}@$(cat {})\n".format(
-                "$LOGOS_AWS_REGISTRY/" + repository,
-                image[DefaultInfo].files.to_list()[0].short_path,
+        image_entries = []
+        for image, repository in ctx.attr.images.items():
+            digest_path = image[DefaultInfo].files.to_list()[0].short_path
+            new_name = "{}{}@$(cat {})".format(
+                registry_prefix,
+                repository,
+                digest_path,
             )
-            for image, repository in ctx.attr.images.items()
-        ])
+            image_entries.append(
+                "  - name: {}\n    newName: {}\n".format(repository, new_name)
+            )
+        images = "".join(image_entries)
 
     image_pushers = []
 
@@ -35,11 +66,13 @@ def _kubectl_impl(ctx):
             runfiles = runfiles.merge(ctx.runfiles(files = migration[DefaultInfo].files.to_list()))
 
     content = """#!/bin/bash -eu
+{env_block}
 {deps}
 {image_pushers}
 """.format(
         image_pushers = "\n".join(image_pushers),
         deps = "\n".join(deps),
+        env_block = env_block,
     )
 
     if ctx.files.manifests:
@@ -56,7 +89,7 @@ EOF
             manifests = manifests,
             server_side = "--server-side" if ctx.attr.server_side else "",
             images = images,
-            kubectl = ctx.attr.kubectl.files_to_run.executable.short_path,
+            kubectl = kubectl_cmd,
             action = ctx.attr.action,
         )
 
@@ -87,6 +120,15 @@ kubectl_rule = rule(
             cfg = "exec",
             default = Label("//tools:kubectl"),
             executable = True,
+        ),
+        "_registry_prefix": attr.label(
+            default = Label("//dev/logos/config/registry:prefix"),
+        ),
+        "_kubectl_context": attr.label(
+            default = Label("//dev/logos/config/kubectl:context"),
+        ),
+        "_load_strategy": attr.label(
+            default = Label("//dev/logos/config/registry:load_strategy"),
         ),
     },
     executable = True,

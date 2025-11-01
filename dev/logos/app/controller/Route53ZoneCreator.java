@@ -1,5 +1,6 @@
 package dev.logos.app.controller;
 
+import dev.logos.stack.aws.AwsEnvironment;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.regions.providers.DefaultAwsRegionProviderChain;
 import software.amazon.awssdk.services.route53.Route53Client;
@@ -9,12 +10,23 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 public class Route53ZoneCreator {
-    private final Route53Client route53Client =
-            Route53Client.builder().region(
-                    new DefaultAwsRegionProviderChain().getRegion()
-            ).credentialsProvider(DefaultCredentialsProvider.create()).build();
+    private final Route53Client route53Client;
+
+    public Route53ZoneCreator() {
+        if (AwsEnvironment.isEnabled()) {
+            this.route53Client = Route53Client.builder()
+                    .region(new DefaultAwsRegionProviderChain().getRegion())
+                    .credentialsProvider(DefaultCredentialsProvider.create())
+                    .build();
+        } else {
+            this.route53Client = null;
+        }
+    }
 
     public Optional<String> createZoneIfNotExists(String domainName, String txtValue) {
+        if (!AwsEnvironment.isEnabled()) {
+            return Optional.empty();
+        }
         return findHostedZoneId(domainName).or(() -> createZoneAndAddTxtRecord(domainName, txtValue));
     }
 

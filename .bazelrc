@@ -8,20 +8,10 @@ build --action_env=STORAGE_PG_BACKEND_JDBC_URL
 build --action_env=AWS_WEB_IDENTITY_TOKEN_FILE
 build --action_env=AWS_ROLE_ARN
 build --action_env=HOME
-build --action_env=LOGOS_AWS_ACCOUNT_ID
-build --action_env=LOGOS_AWS_EKS_CLUSTER
-build --action_env=LOGOS_AWS_EKS_USER
-build --action_env=LOGOS_AWS_REGION
-build --action_env=LOGOS_AWS_REGISTRY
 
 build --host_action_env=AWS_WEB_IDENTITY_TOKEN_FILE
 build --host_action_env=AWS_ROLE_ARN
 build --host_action_env=HOME
-build --host_action_env=LOGOS_AWS_ACCOUNT_ID
-build --host_action_env=LOGOS_AWS_EKS_CLUSTER
-build --host_action_env=LOGOS_AWS_EKS_USER
-build --host_action_env=LOGOS_AWS_REGION
-build --host_action_env=LOGOS_AWS_REGISTRY
 
 build --local_resources=cdk_lock=1
 build --extra_toolchains=//:java_toolchain
@@ -32,13 +22,18 @@ build --tool_java_runtime_version=23
 
 build --sandbox_default_allow_network=false
 build --build_tag_filters=-requires-network
-run --run_under='@logos//tools:bazel-env'
-
+run --build_tag_filters=
 test --build_tag_filters=-requires-network
 
 common --incompatible_allow_tags_propagation
 common --@aspect_rules_ts//ts:skipLibCheck=honor_tsconfig
 
 build --define=deployment_target=dev
-
+build --//dev/logos/config/infra:provider=minikube
+build --//dev/logos/config/kubectl:context=minikube
+build --//dev/logos/config/registry:prefix=
+build --//dev/logos/config/registry:load_strategy=load
+build --//dev/logos/stack/aws:cluster_name=
+build --//dev/logos/stack/aws:account_id=
+build --//dev/logos/stack/aws:region=
 try-import %workspace%/.bazelrc.local
