@@ -1,3 +1,4 @@
+load("@aspect_bazel_lib//lib:paths.bzl", "BASH_RLOCATION_FUNCTION", "to_rlocation_path")
 load("@bazel_skylib//rules:common_settings.bzl", "BuildSettingInfo")
 
 def _kubectl_impl(ctx):
@@ -9,7 +10,8 @@ def _kubectl_impl(ctx):
     if registry_prefix:
         registry_prefix = registry_prefix.rstrip("/") + "/"
 
-    kubectl_cmd = ctx.attr.kubectl.files_to_run.executable.short_path
+    kubectl_path = to_rlocation_path(ctx, ctx.attr.kubectl.files_to_run.executable)
+    kubectl_cmd = "$(rlocation \"{}\")".format(kubectl_path)
     kubectl_context = ctx.attr._kubectl_context[BuildSettingInfo].value
     if kubectl_context:
         kubectl_cmd = "{} --context={}".format(kubectl_cmd, kubectl_context)
@@ -53,27 +55,28 @@ fi''')
     image_pushers = []
 
     for image in ctx.attr.image_pushes:
-        image_pushers.append(image[DefaultInfo].files_to_run.executable.short_path)
+        image_pushers.append("$(rlocation \"{}\")".format(to_rlocation_path(ctx, image[DefaultInfo].files_to_run.executable)))
         runfiles = runfiles.merge(image[DefaultInfo].default_runfiles)
 
     deps = []
     if ctx.attr.action == "apply":
         for dep in ctx.attr.deps:
-            deps.append(dep[DefaultInfo].files_to_run.executable.short_path)
+            deps.append("$(rlocation \"{}\")".format(to_rlocation_path(ctx, dep[DefaultInfo].files_to_run.executable)))
             runfiles = runfiles.merge(dep[DefaultInfo].default_runfiles)
 
         for migration in ctx.attr.migrations:
             runfiles = runfiles.merge(ctx.runfiles(files = migration[DefaultInfo].files.to_list()))
 
-    content = """#!/bin/bash -eu
-{env_block}
-{deps}
-{image_pushers}
-""".format(
-        image_pushers = "\n".join(image_pushers),
-        deps = "\n".join(deps),
-        env_block = env_block,
-    )
+    script_lines = ["#!/bin/bash -eu", BASH_RLOCATION_FUNCTION.rstrip()]
+    if env_block:
+        script_lines.append(env_block)
+    script_lines.extend(deps)
+    script_lines.extend(image_pushers)
+    filtered_lines = []
+    for line in script_lines:
+        if line:
+            filtered_lines.append(line)
+    content = "\n".join(filtered_lines) + "\n"
 
     if ctx.files.manifests:
         content += """

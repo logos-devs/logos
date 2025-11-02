@@ -14,6 +14,7 @@ java_binary(
     ],
     main_class = "dev.logos.app.controller.AppController",
     deps = [
+        "//dev/logos/config/infra:infra_config",
         "//dev/logos/stack/aws:environment",
         "@maven_logos_app_controller//:com_google_code_gson_gson",
         "@maven_logos_app_controller//:com_google_inject_guice",
@@ -57,6 +58,8 @@ push_image(
 minikube_load_image(
     name = "image_load_minikube",
     image = ":image",
+    repository = "logos-ecr-app-controller",
+    tag = "latest",
 )
 
 kubectl(
@@ -66,7 +69,11 @@ kubectl(
         "//dev/logos/config/infra:minikube": [":image_load_minikube"],
         "//conditions:default": [":image_push"],
     }),
-    images = {":image.digest": "logos-ecr-app-controller"},
+    images = select({
+        "//dev/logos/config/infra:aws": {":image.digest": "logos-ecr-app-controller"},
+        "//dev/logos/config/infra:minikube": {},
+        "//conditions:default": {":image.digest": "logos-ecr-app-controller"},
+    }),
     manifests = [
         "manifests/serviceaccount.yaml",
         "manifests/clusterrole.yaml",

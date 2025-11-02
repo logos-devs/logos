@@ -17,5 +17,5 @@ spec:
       serviceAccountName: app-controller-sa
       containers:
         - name: backend
-          image: logos-ecr-app-controller
-          imagePullPolicy: Always
+          image: logos-ecr-app-controller:latest
+          imagePullPolicy: IfNotPresent

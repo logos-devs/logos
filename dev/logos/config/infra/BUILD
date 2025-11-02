@@ -21,6 +21,7 @@ genrule(
     outs = ["InfrastructureProvider.java"],
     cmd = select({
         ":aws": provider_class_cmd("aws"),
+        ":minikube": provider_class_cmd("minikube"),
         "//conditions:default": provider_class_cmd("aws"),
     }),
     visibility = ["//visibility:private"],

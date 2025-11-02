@@ -23,6 +23,8 @@ import io.vavr.control.Try;
 import org.slf4j.Logger;
 import org.slf4j.spi.LoggingEventBuilder;
 
+import dev.logos.config.infra.InfrastructureProvider;
+
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.time.Instant;
@@ -30,6 +32,7 @@ import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -101,8 +104,23 @@ public class AppController {
     private static final String CLIENT_DEPLOYMENT_NAMESPACE = "default";
     private static final Logger logger = getLogger(AppController.class);
 
-    private static final Route53ZoneCreator route53ZoneCreator = new Route53ZoneCreator();
     private static final Gson gson = new GsonBuilder().create();
+
+    private enum InfrastructureProfile {
+        AWS,
+        MINIKUBE;
+
+        static InfrastructureProfile fromValue(String value) {
+            if ("minikube".equalsIgnoreCase(value)) {
+                return MINIKUBE;
+            }
+            return AWS;
+        }
+
+        boolean isAws() {
+            return this == AWS;
+        }
+    }
 
     private static void updateConfigMap(HashMap<String, App> appList) throws IOException, ApiException {
         CoreV1Api api = new CoreV1Api(Config.defaultClient());
@@ -524,6 +542,16 @@ public class AppController {
     }
 
     public static void main(String[] args) throws Exception {
+        InfrastructureProfile profile = InfrastructureProfile.fromValue(InfrastructureProvider.VALUE);
+        logger.atInfo()
+              .addKeyValue("infrastructure", profile.name().toLowerCase(Locale.ROOT))
+              .log("Starting AppController");
+
+        Route53ZoneCreator route53ZoneCreator = profile.isAws() ? new Route53ZoneCreator() : null;
+        if (!profile.isAws()) {
+            logger.atInfo().log("Route53 integration disabled for current infrastructure profile");
+        }
+
         ApiClient client = Config.defaultClient();
         Configuration.setDefaultApiClient(client);
         CustomObjectsApi customObjectsApi = new CustomObjectsApi();
@@ -549,13 +577,17 @@ public class AppController {
 
                 switch (response.type) {
                     case "ADDED":
-                        route53ZoneCreator.createZoneIfNotExists(app.metadata().getName(), "logos-dns");
+                        if (route53ZoneCreator != null) {
+                            route53ZoneCreator.createZoneIfNotExists(app.metadata().getName(), "logos-dns");
+                        }
                         apps.put(app.metadata().getUid(), app);
                         eventLogger.log("App added");
                         break;
 
                     case "MODIFIED":
-                        route53ZoneCreator.createZoneIfNotExists(app.metadata().getName(), "logos-dns");
+                        if (route53ZoneCreator != null) {
+                            route53ZoneCreator.createZoneIfNotExists(app.metadata().getName(), "logos-dns");
+                        }
                         apps.put(app.metadata().getUid(), app);
                         eventLogger.log("App modified");
                         break;
