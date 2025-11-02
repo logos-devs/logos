@@ -7,6 +7,8 @@ import dev.logos.app.register.registerModule;
 import org.cdk8s.*;
 import org.cdk8s.plus30.*;
 
+import dev.logos.config.infra.InfrastructureProvider;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.*;
@@ -164,8 +166,14 @@ public class K8sModule extends AbstractModule {
                                     "logos-apps")));
 
             Map<String, EnvValue> containerEnv = new HashMap<>(rpcServer.rpcServerEnv());
-            containerEnv.put("STORAGE_PG_BACKEND_JDBC_URL",
-                    EnvValue.fromValue("jdbc:postgresql://db-rw-service/logos?usessl=require&sslmode=verify-full&sslrootcert=/etc/ssl/certs/aws-rds-global-bundle.pem"));
+            if ("minikube".equalsIgnoreCase(InfrastructureProvider.VALUE)) {
+                containerEnv.put("STORAGE_PG_BACKEND_JDBC_URL",
+                        EnvValue.fromValue("jdbc:postgresql://db-rw-service/logos?sslmode=disable"));
+                containerEnv.put("STORAGE_PG_BACKEND_PASSWORD", EnvValue.fromValue("storage"));
+            } else {
+                containerEnv.put("STORAGE_PG_BACKEND_JDBC_URL",
+                        EnvValue.fromValue("jdbc:postgresql://db-rw-service/logos?usessl=require&sslmode=verify-full&sslrootcert=/etc/ssl/certs/aws-rds-global-bundle.pem"));
+            }
             containerEnv.put("STORAGE_PG_BACKEND_USER", EnvValue.fromValue("storage"));
 
             List<ContainerProps> containers = new ArrayList<>();

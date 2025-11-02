@@ -2,9 +2,7 @@ load("//bzl:k8s.bzl", "kubectl")
 load("@rules_oci//oci:defs.bzl", "oci_image")
 load("@rules_pkg//pkg:pkg.bzl", "pkg_tar")
 load("@aspect_bazel_lib//lib:tar.bzl", "tar")
-load("//bzl:k8s.bzl", "kubectl")
 load("//bzl:push_image.bzl", "push_image")
-load("//bzl:minikube.bzl", "minikube_load_image")
 
 java_binary(
     name = "controller_bin",
@@ -55,20 +53,9 @@ push_image(
     repository = "logos-ecr-app-controller",
 )
 
-minikube_load_image(
-    name = "image_load_minikube",
-    image = ":image",
-    repository = "logos-ecr-app-controller",
-    tag = "latest",
-)
-
 kubectl(
     name = "controller",
-    image_pushes = select({
-        "//dev/logos/config/infra:aws": [":image_push"],
-        "//dev/logos/config/infra:minikube": [":image_load_minikube"],
-        "//conditions:default": [":image_push"],
-    }),
+    image_pushes = [":image_push"],
     images = select({
         "//dev/logos/config/infra:aws": {":image.digest": "logos-ecr-app-controller"},
         "//dev/logos/config/infra:minikube": {},

@@ -1,4 +1,4 @@
-load("@rules_oci//oci:defs.bzl", "oci_push")
+load("@rules_oci//oci:defs.bzl", "oci_load", "oci_push")
 load("@bazel_skylib//rules:common_settings.bzl", "BuildSettingInfo")
 
 def _repository_file_impl(ctx):
@@ -19,6 +19,10 @@ repository_file = rule(
 )
 
 def push_image(name, image, repository, remote_tags = None, visibility = None):
+    push_target = name + "_push_impl"
+    load_target = name + "_load_impl"
+    tags = remote_tags or ["latest"]
+
     repository_file(
         name = name + "_repository",
         repository = repository,
@@ -26,9 +30,25 @@ def push_image(name, image, repository, remote_tags = None, visibility = None):
     )
 
     oci_push(
-        name = name,
+        name = push_target,
         image = image,
         remote_tags = remote_tags,
         repository_file = ":{}_repository".format(name),
+        visibility = visibility,
+    )
+
+    oci_load(
+        name = load_target,
+        image = image,
+        repo_tags = ["{}:{}".format(repository, tag) for tag in tags],
+        visibility = visibility,
+    )
+
+    native.alias(
+        name = name,
+        actual = select({
+            "//dev/logos/config/infra:minikube": ":{}".format(load_target),
+            "//conditions:default": ":{}".format(push_target),
+        }),
         visibility = visibility,
     )

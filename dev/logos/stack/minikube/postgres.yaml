@@ -1,0 +1,98 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: logos-postgres
+  namespace: default
+  labels:
+    app: logos-postgres
+spec:
+  serviceName: logos-postgres
+  replicas: 1
+  selector:
+    matchLabels:
+      app: logos-postgres
+  template:
+    metadata:
+      labels:
+        app: logos-postgres
+    spec:
+      securityContext:
+        fsGroup: 999
+      containers:
+        - name: postgres
+          image: postgres:16
+          ports:
+            - containerPort: 5432
+              name: postgres
+          env:
+            - name: POSTGRES_DB
+              value: logos
+            - name: POSTGRES_USER
+              value: storage
+            - name: POSTGRES_PASSWORD
+              value: storage
+            - name: POSTGRES_HOST_AUTH_METHOD
+              value: trust
+          volumeMounts:
+            - name: postgres-data
+              mountPath: /var/lib/postgresql/data
+  volumeClaimTemplates:
+    - metadata:
+        name: postgres-data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 10Gi
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: logos-postgres
+  namespace: default
+  labels:
+    app: logos-postgres
+spec:
+  clusterIP: None
+  selector:
+    app: logos-postgres
+  ports:
+    - port: 5432
+      targetPort: postgres
+      name: postgres
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: db-rw-service
+  namespace: default
+  labels:
+    app: logos-postgres
+spec:
+  selector:
+    app: logos-postgres
+  ports:
+    - port: 5432
+      targetPort: postgres
+      name: postgres
+  type: ClusterIP
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: db-ro-service
+  namespace: default
+  labels:
+    app: logos-postgres
+spec:
+  selector:
+    app: logos-postgres
+  ports:
+    - port: 5432
+      targetPort: postgres
+      name: postgres
+  type: ClusterIP

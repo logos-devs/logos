@@ -6,6 +6,7 @@ java_library(
     plugins = ["//dev/logos/app/register:module"],
     visibility = ["//visibility:public"],
     deps = [
+        "//dev/logos/config/infra:infra_config",
         "//dev/logos/app/register:module_library",
         "//dev/logos/module",
         "//dev/logos/stack/k8s/module/annotation",

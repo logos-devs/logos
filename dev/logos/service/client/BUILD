@@ -41,7 +41,10 @@ push_image(
 kubectl(
     name = "client",
     image_pushes = [":image_push"],
-    images = {":image.digest": "logos-ecr-client"},
+    images = select({
+        "//dev/logos/config/infra:minikube": {},
+        "//conditions:default": {":image.digest": "logos-ecr-client"},
+    }),
     manifests = [
         "manifests/deployment.yaml",
         "manifests/service.yaml",
